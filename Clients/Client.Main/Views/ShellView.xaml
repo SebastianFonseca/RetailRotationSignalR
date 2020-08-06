@@ -5,8 +5,38 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client.Main.Views"
         mc:Ignorable="d"
-        Title="ShellView" Height="450" Width="800">
-    <Grid>
-        
+        Title="ShellView" Height="400" Width="247.2" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+    <Grid x:Name="MainGrid">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"   />
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"   />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions  >
+            <RowDefinition Height="0.75*"/>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="0.25*"/>
+        </Grid.RowDefinitions>
+
+
+        <TextBlock   Grid.Row="1" Grid.Column="1" Margin="0    0  0   0" HorizontalAlignment="Center"  x:Name="InsesionTb"   VerticalAlignment="Center" FontSize="24"  FontFamily="Corbel"       Grid.ColumnSpan="2" Text="INICIAR SESIÓN"/>
+        <TextBlock   Grid.Row="2" Grid.Column="1" Margin="0  8.0 14 3.5" HorizontalAlignment="Right"   x:Name="UsuarioTb"    VerticalAlignment="Center" FontSize="15"  FontFamily="Corbel light" FontWeight="Bold"   Text="Usuario:"/>
+        <TextBox     Grid.Row="2" Grid.Column="2" Margin="2.5 10  0   3" HorizontalAlignment="Center"  x:Name="UserNameTbx"  BorderThickness="0"        MaxWidth="100" MinWidth="100" />                             
+        <TextBlock   Grid.Row="3" Grid.Column="1" Margin="0    0  5  10" HorizontalAlignment="Right"   x:Name="ContraseñaTb" VerticalAlignment="Center" FontSize="15"  FontFamily="Corbel light" FontWeight="Bold"   Text="Contraseña:"/>
+        <PasswordBox Grid.Row="3" Grid.Column="2" Margin="2.5  3  0  10" HorizontalAlignment="Center"  x:Name="PasswordPbx"  BorderThickness="0"        MaxWidth="100" MinWidth="100"/>                              
+        <Button      Grid.Row="4" Grid.Column="1" Margin="5    0  5   0" HorizontalAlignment="Stretch" x:Name="EntrarBtn"    VerticalAlignment="Center" FontSize="10"  FontFamily="Corbel"       FontWeight="Bold"   Content="ENTRAR"      
+                                                                                                                             Background="#FFF3E0C2"     Opacity="0.50" BorderThickness="0"       Grid.ColumnSpan="2" Click="Button_Click"/>
+
+
+        <Grid.Background >
+            <ImageBrush ImageSource="Files\InicioDeSesion.png"/>
+        </Grid.Background>
+
     </Grid>
 </Window>
