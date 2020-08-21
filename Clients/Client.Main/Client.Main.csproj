@@ -7,8 +7,27 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Views\iniciodesesion.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Caliburn.Micro" Version="3.2.0" />
     <PackageReference Include="Caliburn.Micro.Core" Version="3.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.7" />
+    <PackageReference Include="System.Composition.AttributedModel" Version="1.4.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Caliburn.Micro.Platform">
+      <HintPath>..\..\..\Proyecto\RetailRotation\packages\Caliburn.Micro.3.2.0\lib\net45\Caliburn.Micro.Platform.dll</HintPath>
+    </Reference>
+    <Reference Include="Caliburn.Micro.Platform.Core">
+      <HintPath>C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\LiveShare\Agent\Caliburn.Micro.Platform.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Views\iniciodesesion.png" />
   </ItemGroup>
 
 </Project>

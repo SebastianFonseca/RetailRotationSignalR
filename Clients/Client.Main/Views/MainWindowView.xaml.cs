@@ -17,6 +17,7 @@ namespace Client.Main.Views
     /// </summary>
     public partial class MainWindowView : Window
     {
+
         public MainWindowView()
         {
             InitializeComponent();

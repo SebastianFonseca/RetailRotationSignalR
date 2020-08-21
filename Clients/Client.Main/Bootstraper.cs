@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Caliburn.Micro;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
-using Caliburn.Micro;
 using Client.Main.ViewModels;
 
 namespace Client.Main

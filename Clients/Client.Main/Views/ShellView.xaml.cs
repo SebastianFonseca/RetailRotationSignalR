@@ -18,8 +18,23 @@ namespace Client.Main.Views
     public partial class ShellView : Window
     {
         public ShellView()
+
         {
+            try
+            {
             InitializeComponent();
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+
+        }
+
+        private void Entrar_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
