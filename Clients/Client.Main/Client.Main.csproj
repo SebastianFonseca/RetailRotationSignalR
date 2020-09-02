@@ -28,6 +28,9 @@
     <Reference Include="Caliburn.Micro.Platform.Core">
       <HintPath>C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\LiveShare\Agent\Caliburn.Micro.Platform.Core.dll</HintPath>
     </Reference>
+    <Reference Include="System.Configuration">
+      <HintPath>C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\LiveShare\Agent\System.Configuration.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

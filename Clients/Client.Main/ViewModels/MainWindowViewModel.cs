@@ -9,12 +9,7 @@ namespace Client.Main.ViewModels
 {
     public class MainWindowViewModel : Conductor<object>
     {     
-        public MainWindowViewModel(string argUsuario)
-        {
-            _usuario = argUsuario;
-            base.OnActivate();
-            
-        }
+
         private string _usuario;
 
         public string Usuario
@@ -27,6 +22,24 @@ namespace Client.Main.ViewModels
             }
         }
 
+        private string _status;
+
+        public string Status
+        {
+            get { return _status; }
+            set { 
+                _status = value;
+                NotifyOfPropertyChange(() =>Status);
+            }
+        }
+
+        public MainWindowViewModel(string argUsuario, string argStatus)
+        {
+            _usuario = argUsuario;
+            _status = argStatus;
+            base.OnActivate();
+            
+        }
 
 
     }

@@ -7,6 +7,9 @@
         mc:Ignorable="d"
         Title="" Height="450" Width="800" WindowStartupLocation="CenterScreen" >
     <Grid>
+        <StackPanel Orientation="Vertical">
         <TextBlock Text="{Binding Path=Usuario, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="50"/>
+        <TextBlock x:Name="Status" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="50"/>
+        </StackPanel>
     </Grid>
 </Window>
