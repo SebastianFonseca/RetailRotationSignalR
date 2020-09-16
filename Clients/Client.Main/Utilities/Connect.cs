@@ -1,4 +1,5 @@
 ﻿using Client.Main.Utilities;
+using Client.Main.ViewModels;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -95,6 +96,7 @@ namespace Client.Main
         private static  async Task HubConnection_Closed(Exception arg)
         {
             Statics.ClientStatus = "Trabajando localmente";
+            
             MessageBox.Show("Trabajando localmente, se intentara reestablecer la conexión en segundo plano.");
             try
             {

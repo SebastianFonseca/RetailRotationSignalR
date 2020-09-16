@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:pwbx="clr-namespace:Client.Main"
+        xmlns:gif="http://wpfanimatedgif.codeplex.com"
         mc:Ignorable="d"
         Title="  " Height="400" Width="247.2" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
         
@@ -36,12 +37,23 @@
         <TextBlock   Grid.Row="3" Grid.Column="1" Margin="0    0  5  10" HorizontalAlignment="Right"   x:Name="ContraseñaTb" VerticalAlignment="Center" FontSize="15"  FontFamily="Corbel light" FontWeight="Bold"   Text="Contraseña:"/>
         <PasswordBox pwbx:PasswordBoxAssistant.BoundPassword="{Binding UserPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True, ValidatesOnDataErrors=True}"   Grid.Row="3" Grid.Column="2" Margin="2.5  3  0  10"   HorizontalAlignment="Center"   BorderThickness="0"        MaxWidth="100" MinWidth="100"/>
 
-           <!--Fila 4.Boton de entrar-->
-        <Button      Grid.Row="4" Grid.Column="1" Margin="5    0  5   0" HorizontalAlignment="Stretch" x:Name="Entrar"    VerticalAlignment="Center" FontSize="10"  FontFamily="Corbel"       FontWeight="Bold"   Content="ENTRAR"      
-                                                                                                                             Background="#FFF3E0C2"     Opacity="0.50" BorderThickness="0"       Grid.ColumnSpan="2" Click="Entrar_Click"/>
+            <!--Fila 4.Boton de entrar-->
+        <Button      Grid.Row="4" Grid.Column="1" Margin="5    0  5   0" HorizontalAlignment="Stretch" x:Name="Entrar"    VerticalAlignment="Center" FontSize="10"  FontFamily="Corbel"       FontWeight="Bold"   Content="ENTRAR"                           
+                                                                                                                             Background="#FFF3E0C2"     Opacity="0.50" BorderThickness="0"       Grid.ColumnSpan="2"/>
+            <!--x:Name="WaitingGIF"-->
+        <StackPanel  Visibility="{Binding  Path=StackVisibility, Delay=0}" Grid.Column="0"  Grid.Row="1" Grid.RowSpan="4" Grid.ColumnSpan="4"  Height="80" Width="150" >
+            <Image  Height="100" gif:ImageBehavior.AnimatedSource="D:\RetailRotationSignalR\Clients\Client.Main\Resources\waiting.gif" Width="150" Margin="0 0 0 0" />
+        </StackPanel>
+        
+            <!--Grid background-->
         <Grid.Background>
             <ImageBrush ImageSource="/views/iniciodesesion.png"/>
         </Grid.Background>
 
     </Grid>
 </Window>
+
+
+
+
+
