@@ -4,12 +4,141 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client.Main.Views"
+        xmlns:fa="http://schemas.fontawesome.io/icons/"
+        xmlns:cal="http://www.caliburnproject.org"
         mc:Ignorable="d"
-        Title="" Height="450" Width="800" WindowStartupLocation="CenterScreen" >
-    <Grid>
-        <StackPanel Orientation="Vertical">
-        <TextBlock Text="{Binding Path=Usuario, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="50"/>
-        <TextBlock x:Name="Status" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="50"/>
-        </StackPanel>
-    </Grid>
+        Title="" Height="480" Width="800" MinWidth="800" MinHeight="480" WindowStartupLocation="CenterScreen" >
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="{Binding Fondo, Mode=TwoWay}"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="cal:Message.Attach" Value="[Event OnMouseHover] = [Action ChangeBackground]"/>
+        </Style>
+    </Window.Resources>
+    
+    <Border BorderBrush="#87ac47" BorderThickness="4">
+        
+        <Grid >
+            
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.05*"/>
+                <ColumnDefinition Width="0.25*"/>
+                <ColumnDefinition Width="0.25*"/>
+                <ColumnDefinition Width="0.25*"/>
+                <ColumnDefinition Width="0.05*"/>
+            </Grid.ColumnDefinitions>
+            
+            <Grid.RowDefinitions  >
+                <RowDefinition Height="0.08*" />
+                <RowDefinition Height="0.3*" />
+                <RowDefinition Height="0.3*" />
+                <RowDefinition Height="0.07*" />
+            </Grid.RowDefinitions>
+
+            <!-- FONDO CON BORDES REDONDEADOS-->
+            <Border Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="2" BorderThickness="1" CornerRadius="15,15,15,15" Background="#F3E0C2" Opacity="0.45"/>
+
+            <!-- ICONO DE INICIO-->
+            <Border  Grid.Row="0" Grid.Column="2"  HorizontalAlignment="Center" VerticalAlignment="Center"  BorderThickness="1" CornerRadius="25,25,15,15" Background="#F3E0C2" >
+                <fa:ImageAwesome Icon="Home" Height="25"  Margin="5" />
+            </Border>
+
+            <!--Boton DEPARTAMENTO DE COMPRAS-->
+            <Button Grid.Column="1" Grid.Row="1" FontSize="30" cal:Message.Attach="[Event MouseHover] = [Action  ChangeBackground]">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="10"/>
+                    </Style>
+                </Button.Resources>
+                <StackPanel HorizontalAlignment="Center">
+                    <fa:ImageAwesome Icon="Briefcase" Height="30" />
+                    <TextBlock Margin="5"><Run Text="GERENCIA"/></TextBlock>
+                </StackPanel>
+            </Button>
+
+            <!-- Boton ENVIO DE PRODUCTOS-->
+            <Button Grid.Column="2" Grid.Row="1" FontSize="35">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="10"/>
+                    </Style>
+                </Button.Resources>
+                <StackPanel>
+                    <fa:ImageAwesome Icon="Truck" Height="30" />
+                    <TextBlock Margin="5" Text="  ENVIOS  "/>
+                </StackPanel>
+            </Button>
+
+            <!--Boton ADMINSTRACION DE BODEGAS-->
+            <Button Grid.Column="3" Grid.Row="1" FontSize="20" FontWeight="SemiBold">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="10"/>
+                    </Style>
+                </Button.Resources>
+                <StackPanel>
+                    <fa:ImageAwesome Icon="Building" Height="35" />
+                    <TextBlock Margin="5"><Run Text="ADMINISTRACION"/></TextBlock>
+                </StackPanel>
+            </Button>
+
+            <!--Boton GESTION DE CLIENTES-->
+            <Button Grid.Column="1" Grid.Row="2" FontSize="30">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="10"/>
+                    </Style>
+                </Button.Resources>
+                <StackPanel>
+                    <fa:ImageAwesome Icon="AddressBook" Height="30" Margin="8"/>
+                    <TextBlock Margin="5" Text=" CLIENTES   "/>
+                </StackPanel>
+            </Button>
+
+            <!-- Boton CAJERO-->
+            <Button Grid.Column="2" Grid.Row="2" FontSize="30">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="10"/>
+                    </Style>
+                </Button.Resources>
+                <StackPanel>
+                    <fa:ImageAwesome Icon="Money" Height="30" Margin="8"/>
+                    <TextBlock Margin="5" Text=" CAJERO  "/>
+                </StackPanel>
+            </Button>
+
+            <!--Boton de cerrar sesion-->
+            <Button Grid.Row="2" Grid.Column="3"  FontSize="30"  x:Name="CerrarSesion">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="10"/>
+                    </Style>
+                </Button.Resources>
+                <StackPanel>
+                    <fa:ImageAwesome Icon="SignIn" Height="30" Margin="8"/>
+                    <TextBlock Margin="5"  Text="SALIR"/>
+                </StackPanel>
+            </Button>
+
+            <!--STATUS Y NOMBRE DEL USUARIO-->
+            <Border BorderThickness="1" CornerRadius="5,5,5,5" Background="#F3E0C2" Grid.Row="8" Grid.Column="0" Margin="10" Grid.ColumnSpan="5" HorizontalAlignment="Right" Opacity="0.9">
+                <StackPanel   Orientation="Horizontal" Opacity="1">
+                    <TextBlock Text="{Binding Usuario, Mode=TwoWay}" Margin="5 0 0 0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="15"/>
+                    <TextBlock Text="  " Margin="5 0 0 0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="15" />
+                    <TextBlock x:Name="Status" Margin="0 0 5 0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="15" />
+                </StackPanel>
+            </Border>
+
+
+            <!--IMAGEN DE FONDO-->
+            <Grid.Background>
+                <ImageBrush ImageSource="C:\Users\sebas\Desktop\fondo.png"/>
+            </Grid.Background>
+
+        </Grid>
+    </Border>
 </Window>

@@ -40,12 +40,12 @@
             <!--Fila 4.Boton de entrar-->
         <Button      Grid.Row="4" Grid.Column="1" Margin="5    0  5   0" HorizontalAlignment="Stretch" x:Name="Entrar"    VerticalAlignment="Center" FontSize="10"  FontFamily="Corbel"       FontWeight="Bold"   Content="ENTRAR"                           
                                                                                                                              Background="#FFF3E0C2"     Opacity="0.50" BorderThickness="0"       Grid.ColumnSpan="2"/>
-            <!--x:Name="WaitingGIF"-->
-        <StackPanel  Visibility="{Binding  Path=StackVisibility, Delay=0}" Grid.Column="0"  Grid.Row="1" Grid.RowSpan="4" Grid.ColumnSpan="4"  Height="80" Width="150" >
-            <Image  Height="100" gif:ImageBehavior.AnimatedSource="D:\RetailRotationSignalR\Clients\Client.Main\Resources\waiting.gif" Width="150" Margin="0 0 0 0" />
-        </StackPanel>
+            
         
-            <!--Grid background-->
+            <!--WaitingGIF--><!--        
+         <Image Grid.Column="0"  Grid.Row="1" Grid.RowSpan="4" Grid.ColumnSpan="4"  Visibility="{Binding  Path=StackVisibility}"  Height="80"  Width="150" gif:ImageBehavior.AnimatedSource="D:\RetailRotationSignalR\Clients\Client.Main\Resources\waiting.gif" Margin="0 0 0 0" />-->
+
+        <!--Grid background-->
         <Grid.Background>
             <ImageBrush ImageSource="/views/iniciodesesion.png"/>
         </Grid.Background>

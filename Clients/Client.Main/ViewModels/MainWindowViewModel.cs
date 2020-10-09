@@ -8,7 +8,10 @@ using System.Windows;
 namespace Client.Main.ViewModels
 {
     public class MainWindowViewModel : Conductor<object>
-    {     
+    {
+
+        ///Objeto responsable de la administracion de las ventanas.
+        private readonly IWindowManager window = new WindowManager();
 
         private string _usuario;
 
@@ -32,6 +35,19 @@ namespace Client.Main.ViewModels
                 NotifyOfPropertyChange(() =>Status);
             }
         }
+        private string _fondo = "#F3E0C2";
+
+        public string Fondo
+        {
+            get { return _fondo; }
+            set { _fondo  = value; }
+        }
+        
+        void ChangeBackground()
+        {
+
+            _fondo = "#000000";
+        }
 
         public MainWindowViewModel(string argUsuario, string argStatus)
         {
@@ -41,6 +57,13 @@ namespace Client.Main.ViewModels
             
         }
 
+        public void CerrarSesion()
+        {
+            ShellViewModel model = new ShellViewModel();
+            window.ShowWindow(model);    
+            this.TryClose();
+
+        }
 
     }
 }

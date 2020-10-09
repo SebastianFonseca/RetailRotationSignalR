@@ -131,8 +131,6 @@ namespace Client.Main.ViewModels
                 else
                 {
                     StackVisibility = "Collapsed";
-                    //MessageBox.Show($"Trabaja localmente, la informacion se cargara cuando se conecte al servidor.");
-
                     if (DbConnection.Login(User:User, Password:UserPassword))
                     {
                     MainWindowViewModel model = new MainWindowViewModel(User, Statics.ClientStatus);
@@ -142,9 +140,7 @@ namespace Client.Main.ViewModels
                     else
                     {
                         MessageBox.Show("Usuario no registrado.");
-                        User = "";
-                        UserPassword = "";
-                        
+                        havepassflag = false;
                     }
 
                 }

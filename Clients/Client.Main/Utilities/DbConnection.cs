@@ -27,15 +27,11 @@ namespace Client.Main.Utilities
                     parameters.Add(name: "@RetVal", dbType: DbType.Int32,direction: ParameterDirection.ReturnValue);
 
 
-                    var returnCode = conn.Execute(sql:"Login", param:parameters, commandType: CommandType.StoredProcedure);
-                    //MessageBox.Show(parameters.Get<String>("@RetVal").ToString());
+                    var returnCode = conn.Execute(sql:"Login", param:parameters, commandType: CommandType.StoredProcedure);                    
                     if (parameters.Get<Int32>("@RetVal") == 0)
                         return false;
                     else 
                         return true;
-
-
-
                 }
 
             }

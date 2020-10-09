@@ -60,12 +60,12 @@ namespace ServerConsole
 
                options.Events = new JwtBearerEvents
                {
-                   OnTokenValidated = context =>
+                   OnAuthenticationFailed = context =>
                    {
 
-                       //Console.ForegroundColor = ConsoleColor.DarkRed;
-                       //Console.WriteLine("\t\n" + context.SecurityToken + "\n");
-                       //Console.ResetColor();
+                       Console.ForegroundColor = ConsoleColor.Red;
+                       Console.WriteLine(context.ToString());
+                       Console.ResetColor();
 
                        return Task.CompletedTask;
 

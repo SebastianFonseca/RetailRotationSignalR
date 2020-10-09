@@ -26,6 +26,7 @@
     <PackageReference Include="Caliburn.Micro" Version="3.2.0" />
     <PackageReference Include="Caliburn.Micro.Core" Version="3.2.0" />
     <PackageReference Include="Dapper" Version="2.0.35" />
+    <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
     <PackageReference Include="JWT" Version="7.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.8" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.7.1" />
@@ -55,7 +56,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Resource Include="Resources\waiting.gif">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
 

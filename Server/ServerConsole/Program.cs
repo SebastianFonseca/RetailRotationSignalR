@@ -27,8 +27,7 @@ namespace ServerConsole
                 UseStartup<Startup>();
         static void Main(string[] args)
         {
-            CreateWebHostBuildder(args).Build().Run();
-        
+            CreateWebHostBuildder(args).Build().Run();        
         }
 
 

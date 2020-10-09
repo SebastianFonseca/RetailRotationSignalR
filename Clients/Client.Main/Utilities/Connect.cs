@@ -27,11 +27,11 @@ namespace Client.Main
             get { return hubConnection; }
         }
         /// <summary>
-        /// Starts the connection with te server, the User and Role info are into the token.
+        /// Starts the connection with te server, the User and HashedPassword info are into the token.
         /// </summary>
         /// <param name="User"></param>
-        /// <param name="Role"></param>
-        public static async void ConnectToServer(string User, string Role)
+        /// <param name="HashedPassword"></param>
+        public static async void ConnectToServer(string User, string HashedPassword)
         {
             try
             {
@@ -42,7 +42,7 @@ namespace Client.Main
 
                      options.AccessTokenProvider = () =>
                      {
-                         IJWTContainerModel model = GetJWTContainerModel(User, Role);
+                         IJWTContainerModel model = GetJWTContainerModel(User, HashedPassword);
 
                          IJWTService authService = new JWTService(model.SecretKey);
 
@@ -50,14 +50,14 @@ namespace Client.Main
                         
                          return Task.FromResult(token);
 
-                         static JWTContainerModel GetJWTContainerModel(string name, string Role = "Admin")
+                         static JWTContainerModel GetJWTContainerModel(string name, string HashedPassword)
                          {
                              return new JWTContainerModel()
                              {
                                 Claims = new Claim[]
                                 {
                                      new Claim(ClaimTypes.Name, name),
-                                     new Claim(ClaimTypes.Role, Role)
+                                     new Claim(ClaimTypes.Hash, HashedPassword)
                                 }
                              };
                          }
