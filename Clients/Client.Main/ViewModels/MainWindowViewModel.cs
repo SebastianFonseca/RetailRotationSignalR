@@ -30,24 +30,13 @@ namespace Client.Main.ViewModels
         public string Status
         {
             get { return _status; }
-            set { 
+            set
+            { 
                 _status = value;
                 NotifyOfPropertyChange(() =>Status);
             }
         }
-        private string _fondo = "#F3E0C2";
 
-        public string Fondo
-        {
-            get { return _fondo; }
-            set { _fondo  = value; }
-        }
-        
-        void ChangeBackground()
-        {
-
-            _fondo = "#000000";
-        }
 
         public MainWindowViewModel(string argUsuario, string argStatus)
         {
@@ -63,6 +52,11 @@ namespace Client.Main.ViewModels
             window.ShowWindow(model);    
             this.TryClose();
 
+        }
+
+        public static void Hola()
+        {
+            MessageBox.Show("Boton dentro de la cuadricula");
         }
 
     }
