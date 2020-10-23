@@ -1,5 +1,6 @@
 ﻿using Caliburn.Micro;
 using Client.Main.Utilities;
+using Client.Main.Views;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,7 +12,6 @@ namespace Client.Main.ViewModels
     {
 
         ///Objeto responsable de la administracion de las ventanas.
-        private readonly IWindowManager window = new WindowManager();
 
         private string _usuario;
 
@@ -42,22 +42,17 @@ namespace Client.Main.ViewModels
         {
             _usuario = argUsuario;
             _status = argStatus;
+            ActivateItem(new MainMenuViewModel(this));
             base.OnActivate();
             
         }
 
-        public void CerrarSesion()
+        public void ButtonMainMenu()
         {
-            ShellViewModel model = new ShellViewModel();
-            window.ShowWindow(model);    
-            this.TryClose();
-
-        }
-
-        public static void Hola()
-        {
-            MessageBox.Show("Boton dentro de la cuadricula");
+            ActivateItem(new MainMenuViewModel(this));
+            
         }
 
     }
 }
+               

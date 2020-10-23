@@ -3,13 +3,70 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:Client.Main">
     <Application.Resources>
+            
         <ResourceDictionary>
-        <FontFamily x:Key="FontAwesome">/Fonts/fontawesome-webfont.ttf#FontAwesome</FontFamily>
-        <ResourceDictionary.MergedDictionaries>
-                    <ResourceDictionary>
-                        <local:Bootstrapper x:Key="Bootstrapper" />
-                    </ResourceDictionary>
-                </ResourceDictionary.MergedDictionaries>
-            </ResourceDictionary>
-        </Application.Resources>
+            <Style TargetType="Button" x:Key="GeneralButton">
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Background" Value="#F7EBD7"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="FontSize" Value="19"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Border Background="{TemplateBinding Background}" CornerRadius="10" BorderThickness="0.8" BorderBrush="Beige">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5" />
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="#F3E0C2"/>
+                        <Setter Property="RenderTransformOrigin" Value="0.5, 0.5"/>
+                        <Setter Property="RenderTransform">
+                            <Setter.Value>
+                                <ScaleTransform ScaleX="1.05" ScaleY="1.05"/>
+                            </Setter.Value>
+                        </Setter>
+                    </Trigger>
+                    
+                </Style.Triggers>
+            </Style>
+
+            
+            
+            <Style TargetType="TextBox" x:Key="GeneralTextBox">
+                <Setter Property="SpellCheck.IsEnabled" Value="True"/>
+                <Setter Property="Background" Value="#F3E0C2"/>
+                <Setter Property="Cursor" Value="IBeam"/>
+                <Setter Property="Foreground" Value="Black"/>
+                <Setter Property="OverridesDefaultStyle" Value="True"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type TextBoxBase}">
+                            <DockPanel>
+                                <Separator DockPanel.Dock="Bottom" Background="Black" Width="Auto" HorizontalAlignment="Stretch" Margin="0 0 0 5" VerticalAlignment="Bottom"  />
+                                <TextBox FontSize="25" Background="Transparent" BorderThickness="0"  Margin="0" DockPanel.Dock="Bottom" VerticalContentAlignment="Bottom" />
+                            </DockPanel>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+
+            <FontFamily x:Key="FontAwesome">/Fonts/fontawesome-webfont.ttf#FontAwesome</FontFamily>
+            
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary>
+                    <local:Bootstrapper x:Key="Bootstrapper" />
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
 </Application>
+
+

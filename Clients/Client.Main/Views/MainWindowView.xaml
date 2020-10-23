@@ -9,18 +9,10 @@
         mc:Ignorable="d"
         Title="" Height="480" Width="800" MinWidth="800" MinHeight="480" WindowStartupLocation="CenterScreen" >
     <Window.Resources>
-        
-        <Style x:Key="MainOptions" TargetType="{x:Type Border}" >
-            <Setter Property="HorizontalAlignment" Value="Stretch"/>
-            <Setter Property="Background" Value="#F3E0C2"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Margin" Value="10"/>
-            <Setter Property="CornerRadius" Value="10"/>
-        </Style>
-
-        <Style x:Key="OptionsSubMenu" TargetType="{x:Type Button}" >
-            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Style x:Key="MenuButton" TargetType="{x:Type Button}" >
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Background" Value="#F3E0C2"/>
             <Setter Property="Cursor" Value="Hand"/>
@@ -36,29 +28,10 @@
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="#c1d92e"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="BorderBrush" Value="Beige"/>
                 </Trigger>
             </Style.Triggers>
-        </Style>
-
-        <Style TargetType="{x:Type Grid}" x:Key="Submenu">
-            <Style.Triggers>
-                <EventTrigger RoutedEvent="Control.MouseEnter">
-                    <BeginStoryboard>
-                        <Storyboard >
-                            <DoubleAnimation Duration="0:0:0.3" To="1" Storyboard.TargetProperty="Opacity"/>
-                        </Storyboard>
-                    </BeginStoryboard>
-                </EventTrigger>
-                <EventTrigger RoutedEvent="Control.MouseLeave">
-                    <BeginStoryboard>
-                        <Storyboard >
-                            <DoubleAnimation Duration="0:0:0.3" To="0.0" Storyboard.TargetProperty="Opacity"/>
-                        </Storyboard>
-                    </BeginStoryboard>
-                </EventTrigger>
-            </Style.Triggers>
-
-
         </Style>
     </Window.Resources>
     
@@ -70,239 +43,68 @@
             
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0.05*"/>
-                <ColumnDefinition Width="0.25*"/>
-                <ColumnDefinition Width="0.25*"/>
-                <ColumnDefinition Width="0.25*"/>
+                <ColumnDefinition Width="0.99*"/>
                 <ColumnDefinition Width="0.05*"/>
             </Grid.ColumnDefinitions>
             
             <Grid.RowDefinitions  >
-                <RowDefinition Height="0.08*" />
-                <RowDefinition Height="0.3*" />
-                <RowDefinition Height="0.3*" />
-                <RowDefinition Height="0.07*" />
+                <RowDefinition Height="0.2*" />
+                <RowDefinition Height="0.965*" />
+                <RowDefinition Height="0.15*" />
             </Grid.RowDefinitions>
 
-            <!-- ....................... FONDO OPACO CON BORDES REDONDEADOS ....................... -->  
-            
-            <Border Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="2" BorderThickness="1" CornerRadius="15,15,15,15" Background="#F3E0C2" Opacity="0.45"/>
-            
+            <!-- ....................... FONDO OPACO CON BORDES REDONDEADOS ....................... -->
 
-            <!-- .......................  BOTON DE INICIO .......................  -->    
-            
-            <Border  Grid.Row="0" Grid.Column="2"  HorizontalAlignment="Center" VerticalAlignment="Center"  BorderThickness="1" CornerRadius="25,25,15,15" Background="#F3E0C2" >
-                
-                <fa:ImageAwesome Icon="Home" Height="25"  Margin="5"/>
-                
-            </Border>
-            
-
-            <!-- ....................... GERENCIA ....................... -->   
-            
-            <Border Style="{StaticResource MainOptions}" Grid.Column="1" Grid.Row="1" >
-                
-                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
-                    
-                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Panel.ZIndex="0">
-                        <fa:ImageAwesome Icon="Briefcase" Height="30" />
-                        <TextBlock Margin="5"  Text="GERENCIA" FontSize="34"/>
-                    </StackPanel>
-
-                    <Grid Panel.ZIndex="1"  Style="{StaticResource Submenu}" Opacity="0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        
-                        <Button Margin="0" Content="GESTION DE PRODUCTOS" FontSize="15" HorizontalAlignment="Stretch"  HorizontalContentAlignment="Center" Grid.Row="0" Style="{StaticResource OptionsSubMenu}">
-                            <Button.Resources>
-                                <Style TargetType="Border">
-                                    <Setter Property="CornerRadius" Value="10 10 0 0"/>
-                                </Style>
-                            </Button.Resources>
-                        </Button>
-
-                        <Button Margin="0" Content="FACTURAS DE COMPRA" FontSize="15"  HorizontalAlignment="Stretch" Grid.Row="1" Style="{StaticResource OptionsSubMenu}"/>
-                        <Button Margin="0" Content="INFORMES" FontSize="15"  HorizontalAlignment="Stretch" Grid.Row="2" Style="{StaticResource OptionsSubMenu}"/>
-
-                        <Button Margin="0" Content="ADMINISTRATIVO" FontSize="15"  HorizontalAlignment="Stretch" Grid.Row="3" Style="{StaticResource OptionsSubMenu}" >
-                            <Button.Resources>
-                                <Style TargetType="Border">
-                                    <Setter Property="CornerRadius" Value="0 0 10 10"/>
-                                </Style>
-                            </Button.Resources>
-
-                        </Button>
-
-                    </Grid>
-                    
-                </Grid>
-            </Border>
-
-            <!-- .......................  ENVIO DE PRODUCTOS ....................... -->
-
-            <Border Style="{StaticResource MainOptions}" Grid.Column="2" Grid.Row="1" >
-
-                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
-
-                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Panel.ZIndex="0">
-                        <fa:ImageAwesome Icon="Truck" Height="30" />
-                        <TextBlock Margin="5"  Text="ENVIOS" FontSize="35"/>
-                    </StackPanel>
-
-                    <Grid Panel.ZIndex="1"  Style="{StaticResource Submenu}" Opacity="0">
-
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-
-                        <Button Margin="0" Content="PEDIDO DE MERCANCIA" FontSize="15" HorizontalAlignment="Stretch"  HorizontalContentAlignment="Center" Grid.Row="0" Style="{StaticResource OptionsSubMenu}">
-                            <Button.Resources>
-                                <Style TargetType="Border">
-                                    <Setter Property="CornerRadius" Value="10 10 0 0"/>
-                                </Style>
-                            </Button.Resources>
-                        </Button>
-
-                        <Button Margin="0" Content="AGREGAR PROVEEDOR" FontSize="15"  HorizontalAlignment="Stretch" Grid.Row="1" Style="{StaticResource OptionsSubMenu}"/>
-
-                        <Button Margin="0" Content="PAGOS" FontSize="15"  HorizontalAlignment="Stretch" Grid.Row="3" Style="{StaticResource OptionsSubMenu}" >
-                            <Button.Resources>
-                                <Style TargetType="Border">
-                                    <Setter Property="CornerRadius" Value="0 0 10 10"/>
-                                </Style>
-                            </Button.Resources>
-
-                        </Button>
-
-                    </Grid>
-
-                </Grid>
-            </Border>
-                                            
-            <!-- ....................... ADMINSTRACION DE BODEGAS ....................... -->
+            <Border Grid.Column="1" Grid.Row="1"  BorderThickness="1" CornerRadius="15,15,15,15" Background="#F3E0C2" Opacity="0.45" />
 
 
 
-            <Border Style="{StaticResource MainOptions}" Grid.Column="3" Grid.Row="1" >
+            <!-- .......................  BOTON DE INICIO .......................  -->
 
-                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
-
-                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Panel.ZIndex="0">
-                        <fa:ImageAwesome Icon="Building" Height="39" />
-                        <TextBlock Margin="5"  Text="ADMINISTRACION" FontSize="21" FontWeight="SemiBold"/>
-                    </StackPanel>
-
-                    <Grid Panel.ZIndex="1"  Style="{StaticResource Submenu}" Opacity="0">
-
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-
-                        <Button Margin="0" Content="MOVIMIENTO DE EFECTIVO" FontSize="15" HorizontalAlignment="Stretch"  HorizontalContentAlignment="Center" Grid.Row="0" Style="{StaticResource OptionsSubMenu}">
-                            <Button.Resources>
-                                <Style TargetType="Border">
-                                    <Setter Property="CornerRadius" Value="10 10 0 0"/>
-                                </Style>
-                            </Button.Resources>
-                        </Button>
-
-
-                        <Button Margin="0" Content="INVENTARIO" FontSize="15"  HorizontalAlignment="Stretch" Grid.Row="3" Style="{StaticResource OptionsSubMenu}" >
-                            <Button.Resources>
-                                <Style TargetType="Border">
-                                    <Setter Property="CornerRadius" Value="0 0 10 10"/>
-                                </Style>
-                            </Button.Resources>
-
-                        </Button>
-
-                    </Grid>
-
-                </Grid>
-            </Border>
-
-            <!-- ....................... GESTION DE CLIENTES ....................... -->
-
-            <Border Style="{StaticResource MainOptions}" Grid.Column="1" Grid.Row="2">
-
-                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-
-                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Panel.ZIndex="0">
-                        <fa:ImageAwesome Icon="AddressBook" Height="35" />
-                        <TextBlock Margin="5" Text="CLIENTES" FontSize="35"/>
-                    </StackPanel>
-
-                    <Grid Panel.ZIndex="1"  Style="{StaticResource Submenu}" Opacity="0">
-
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-
-                        <Button Margin="0" Content="AGREGAR CLIENTE" FontSize="15" HorizontalAlignment="Stretch"  HorizontalContentAlignment="Center" Grid.Row="0" Style="{StaticResource OptionsSubMenu}">
-                            <Button.Resources>
-                                <Style TargetType="Border">
-                                    <Setter Property="CornerRadius" Value="10 10 0 0"/>
-                                </Style>
-                            </Button.Resources>
-                        </Button>
-
-
-                        <Button Margin="0" Content="BUSCAR" FontSize="15"  HorizontalAlignment="Stretch" Grid.Row="3" Style="{StaticResource OptionsSubMenu}" >
-                            <Button.Resources>
-                                <Style TargetType="Border">
-                                    <Setter Property="CornerRadius" Value="0 0 10 10"/>
-                                </Style>
-                            </Button.Resources>
-
-                        </Button>
-
-                    </Grid>
-
-                </Grid>
-            </Border>
-
-            <!-- ....................... CAJERO ....................... -->
-
-
-                <Button Grid.Column="2" Grid.Row="2" FontSize="30" Margin="10" Style="{StaticResource OptionsSubMenu}">
-                    <Button.Resources>
-                        <Style TargetType="Border">
-                            <Setter Property="CornerRadius" Value="10"/>
-                        </Style>
-                    </Button.Resources>
-                    <StackPanel>
-                        <fa:ImageAwesome Icon="Money" Height="35" Margin="8"/>
-                        <TextBlock Margin="5" Text="CAJERO" FontSize="35"/>
-                    </StackPanel>
-                </Button>
-
-            <!-- .......................  Boton de cerrar sesion .......................  -->
-            
-            <Button Grid.Row="2" Grid.Column="3"  FontSize="30"  Margin="10" x:Name="CerrarSesion" Style="{StaticResource OptionsSubMenu}">
+            <Button Style="{StaticResource MenuButton}" Grid.Row="0" Grid.Column="1" x:Name="ButtonMainMenu">
                 <Button.Resources>
                     <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="10"/>
+                        <Setter Property="CornerRadius" Value="28,28,15,15"/>
                     </Style>
                 </Button.Resources>
-                <StackPanel>
-                    <fa:ImageAwesome Icon="SignIn" Height="30" Margin="8"/>
-                    <TextBlock Margin="5"  Text="SALIR" FontSize="35"/>
-                </StackPanel>
+                    
+                <fa:ImageAwesome Icon="Home" Height="35" Width="40" Margin="6" VerticalAlignment="Center" HorizontalAlignment="Center"> 
+                    <fa:ImageAwesome.Resources >
+                        <Style TargetType="fa:ImageAwesome">
+                            <Style.Triggers>
+                                <EventTrigger RoutedEvent="Control.MouseEnter">
+                                    <BeginStoryboard>
+                                        <Storyboard >
+                                            <DoubleAnimation Duration="0:0:0.1" To="40" Storyboard.TargetProperty="Height"/>
+                                            <DoubleAnimation Duration="0:0:0.1" To="45" Storyboard.TargetProperty="Width"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            <EventTrigger RoutedEvent="Control.MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard >
+                                        <DoubleAnimation Duration="0:0:0.1" To="35" Storyboard.TargetProperty="Height"/>
+                                        <DoubleAnimation Duration="0:0:0.1" To="40" Storyboard.TargetProperty="Width"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Style.Triggers>
+                        </Style>
+                    </fa:ImageAwesome.Resources>
+                </fa:ImageAwesome>
             </Button>
+           
+            <!-- Espacio para los diferentes UserControls -->
+
+
+            <ContentControl x:Name="ActiveItem" Grid.Column="1" Grid.Row="1"/>
 
             <!-- .......................  STATUS Y NOMBRE DEL USUARIO .......................  -->
             
             <Border BorderThickness="1" CornerRadius="5" Background="#F3E0C2" Grid.Row="8" Grid.Column="0" Margin="10" Grid.ColumnSpan="5" HorizontalAlignment="Right" Opacity="0.9">
                 <StackPanel   Orientation="Horizontal" Opacity="1">
                     <TextBlock Text="{Binding Usuario, Mode=TwoWay}" Margin="5 0 0 0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="15"/>
-                    <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" VerticalAlignment="Stretch" Margin="15 0 15 0"/>
+                    <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" VerticalAlignment="Stretch" Margin="15 5 15 5"/>
                     <TextBlock x:Name="Status" Margin="0 0 5 0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="15" />
                 </StackPanel>
             </Border>
