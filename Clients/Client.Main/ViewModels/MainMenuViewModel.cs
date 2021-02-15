@@ -30,9 +30,14 @@ namespace Client.Main.ViewModels
     }
         public void AgregarCliente()
         {
-            VentanaPrincipal.ActivateItem(new AddClientViewModel());
+            VentanaPrincipal.ActivateItem(new AddClientViewModel());          
         }
-       
+
+        public void Administrativo()
+        {
+            VentanaPrincipal.ActivateItem(new DC_AdministrativoViewModel(VentanaPrincipal));
+        }
+
 
 
     }

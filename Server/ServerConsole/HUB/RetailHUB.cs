@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Security.Policy;
 using System.Text;
+using ServerConsole.Utilities;
 using System.Threading.Tasks;
+
 
 namespace ServerConsole
 {
@@ -17,10 +19,14 @@ namespace ServerConsole
         {
             Console.ForegroundColor = ConsoleColor.DarkCyan;
             Console.Write("\n\t" + DateTime.Now+"--"); Console.ForegroundColor = ConsoleColor.White;
-            Console.Write(" User "+ Usuario + " is  now connected. Passsword: " + Password);
+            Console.Write(" User "+ Usuario + " is  now connected.");
             Console.ResetColor();
             Console.WriteLine("\n");
-            await Clients.Caller.SendCoreAsync("ClienteValidacion", args: new[] {Usuario});
+            Console.WriteLine(Usuario+ Password +DbConnection.Login(User: Usuario, Password: Password));
+                await Clients.Caller.SendCoreAsync("ClienteValidacion", args: new object[] { Usuario, DbConnection.Login(User: Usuario, Password: Password) });
+            
+            
+    
         }
 
         public async  Task TestMethod(string a)

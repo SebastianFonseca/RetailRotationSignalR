@@ -7,8 +7,13 @@ namespace Client.Main.Models
 {
     public class PersonModel
     {
+        public string Cedula { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+
+        public string Telefono { get; set; }
+
+        public string  Direccion { get; set; }
 
     }
 }

@@ -117,12 +117,20 @@ namespace Client.Main.ViewModels
 
                 if (Statics.ClientStatus == "Conectado al servidor")
                 {
-                    conexion.Connection.On("ClienteValidacion", handler: (string Usr) =>
+                    conexion.Connection.On("ClienteValidacion", handler: (string Usr, bool response) =>
                     {
+                        if(response)
+                        { 
                         MainWindowViewModel model = new MainWindowViewModel(Usr, Statics.ClientStatus);
                         window.ShowWindow(model);
                         this.TryClose();
-                        
+                        }
+                        else
+                        {
+                            MessageBox.Show("Usuario no registrado.");
+                            havepassflag = false;
+                        }
+
                     });
                  var re = conexion.CallServerMethod("ServidorValidarUsuario", Arguments: new[] { User, Statics.Hash(UserPassword) });
                  return;  
