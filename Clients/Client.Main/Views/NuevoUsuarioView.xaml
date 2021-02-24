@@ -6,7 +6,80 @@
              xmlns:local="clr-namespace:Client.Main.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
+    <UserControl.Resources>
+
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="30"/>
+            <Setter Property="FontWeight" Value="DemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Margin"   Value="0"/>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="5"/>
+        </Style>
+
+
+    </UserControl.Resources>
+
+
+    <Grid Background="#F3E0C2" ShowGridLines="False" Opacity="0.9" >
+        <Grid.ColumnDefinitions>
+
+            <ColumnDefinition Width="0.1*"/>
+            <ColumnDefinition Width="0.3*"/>
+            <ColumnDefinition Width="0.4*"/>
+            <ColumnDefinition Width="0.2*"/>
+
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <!--Linea 1-->
+        <TextBlock Grid.Row="1" Grid.Column="1" >Nombres:</TextBlock>
+        <TextBox Grid.Row="1" Grid.Column="2" Style="{StaticResource GeneralTextBox}" x:Name="Nombre"/>
+
+        <!--Linea 2-->
+        <TextBlock Grid.Row="2" Grid.Column="1" >Apellidos:</TextBlock>
+        <TextBox Grid.Row="2" Grid.Column="2"  Style="{StaticResource GeneralTextBox}" x:Name="Apellidos"/>
+
+
+        <!--Linea 3-->
+        <TextBlock Grid.Row="3" Grid.Column="1">Cedula:</TextBlock>
+        <TextBox Grid.Row="3" Grid.Column="2" Style="{StaticResource GeneralTextBox}"  x:Name="CC"/>
+
+        <!--Linea 4-->
+        <TextBlock Grid.Row="4" Grid.Column="1" >Correo:</TextBlock>
+        <TextBox Grid.Row="4" Grid.Column="2" Style="{StaticResource GeneralTextBox}" x:Name="Correo"/>
+
+        <!--Linea 5-->
+        <TextBlock Grid.Row="5" Grid.Column="1"  >Teléfono:</TextBlock>
+        <TextBox Grid.Row="5" Grid.Column="2" Style="{StaticResource GeneralTextBox}" x:Name="Telefono"/>
+
+        <!--Linea 6-->
+        <TextBlock Grid.Row="6" Grid.Column="1"  >Contratacion:</TextBlock>
+        <TextBox Grid.Row="6" Grid.Column="2" Style="{StaticResource GeneralTextBox}" x:Name="FechaContratacion"/>
+
+        <!--Linea 7-->
+        <TextBlock Grid.Row="7" Grid.Column="1"  >Cargo:</TextBlock>
+        <TextBox Grid.Row="7" Grid.Column="2" Style="{StaticResource GeneralTextBox}" x:Name="Cargo"/>
+
+
+
+        <!-- linea 8-->
+        <Button Style="{StaticResource GeneralButton}" Grid.RowSpan="3"  Grid.Column="2" Grid.Row="8" Margin="10" Height="50" Content="   GUARDAR   "  x:Name="Guardar"/>
+
     </Grid>
 </UserControl>

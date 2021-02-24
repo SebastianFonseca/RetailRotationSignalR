@@ -15,5 +15,7 @@ namespace Client.Main.Models
 
         public string  Direccion { get; set; }
 
+        public string Correo { get; set; }
+
     }
 }

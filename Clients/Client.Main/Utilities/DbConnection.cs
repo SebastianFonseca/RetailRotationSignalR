@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using Dapper;
 using System.Text;
 using System.Windows;
+using Client.Main.Models;
 
 namespace Client.Main.Utilities
 {
@@ -31,7 +32,6 @@ namespace Client.Main.Utilities
                     parameters.Add("@password", Password);
                     parameters.Add(name: "@RetVal", dbType: DbType.Int32,direction: ParameterDirection.ReturnValue);
 
-
                     var returnCode = conn.Execute(sql:"Login", param:parameters, commandType: CommandType.StoredProcedure);                    
                     if (parameters.Get<Int32>("@RetVal") == 0)
                         return false;
@@ -48,41 +48,35 @@ namespace Client.Main.Utilities
            
         }
 
-
-        public static void AddClient(string pNombre, string pApellidos,string pCedula ,string pCorreo, string pTelefono )
+        public static void AddClient(ClientesModel Cliente)
         {
             try
             {
-
-                using (IDbConnection conn = new SqlConnection(_connString))
+                using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    var parameters = new DynamicParameters();
-                    parameters.Add("@Nombre", pNombre);
-                    parameters.Add("@Apellidos", pApellidos);
-                    parameters.Add("@Cedula", pCedula);
-                    parameters.Add("@Correo", pCorreo);
-                    parameters.Add("@Telefono", pTelefono);
-                    parameters.Add(name: "@RetVal", dbType: DbType.Int32, direction: ParameterDirection.ReturnValue);
+                    conn.Open();
+                    string cadena = "INSERT INTO Clientes(Nombres,Apellidos,CedulaCliente,Email,Telefono,Puntos) " +
+                        "VALUES ('" + Cliente.FirstName + "', '" + Cliente.LastName + "','" + Cliente.Cedula + "', '" + Cliente.Correo + "', '" + Cliente.Telefono + "', 100 )";
+                    SqlCommand cmd = new SqlCommand(cadena,conn);
+                    cmd.ExecuteNonQuery();
+                    MessageBox.Show($"El cliente {Cliente.FirstName} {Cliente.LastName} ha recibido 100 puntos por registrarce.");
+                    conn.Close();
 
-                    var returnCode = conn.Execute(sql: "AddClient", param: parameters, commandType: CommandType.StoredProcedure);
-                    if (parameters.Get<Int32>("@RetVal") == 0)
-                    {
-                        MessageBox.Show($"El cliente {pNombre} {pApellidos} ha recibido 100 puntos por registrarce.");
-                    }
-                    else
-                        if (parameters.Get<Int32>("@RetVal") == 1)
-                    {
-                        MessageBox.Show($"Ya se registro un cliente con la cedula: {pCedula}.");
-                    }
                 }
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
+                if(e.HResult.ToString() == "-2146232060")
+                {
+                    MessageBox.Show($"La cedula {Cliente.Cedula} ya esta registrada.");
+                }
+                else
+                {
+                    MessageBox.Show(e.Message);
+                }
             }
 
         }
-
 
 
 
@@ -103,3 +97,39 @@ namespace Client.Main.Utilities
 
     }
 }
+
+
+
+//public static void AddClient(string pNombre, string pApellidos, string pCedula, string pCorreo, string pTelefono)
+//{
+//    try
+//    {
+
+//        using (IDbConnection conn = new SqlConnection(_connString))
+//        {
+//            var parameters = new DynamicParameters();
+//            parameters.Add("@Nombre", pNombre);
+//            parameters.Add("@Apellidos", pApellidos);
+//            parameters.Add("@Cedula", pCedula);
+//            parameters.Add("@Correo", pCorreo);
+//            parameters.Add("@Telefono", pTelefono);
+//            parameters.Add(name: "@RetVal", dbType: DbType.Int32, direction: ParameterDirection.ReturnValue);
+
+//            var returnCode = conn.Execute(sql: "AddClient", param: parameters, commandType: CommandType.StoredProcedure);
+//            if (parameters.Get<Int32>("@RetVal") == 0)
+//            {
+//                MessageBox.Show($"El cliente {pNombre} {pApellidos} ha recibido 100 puntos por registrarce.");
+//            }
+//            else
+//                if (parameters.Get<Int32>("@RetVal") == 1)
+//            {
+//                MessageBox.Show($"Ya se registro un cliente con la cedula: {pCedula}.");
+//            }
+//        }
+//    }
+//    catch (Exception e)
+//    {
+//        MessageBox.Show(e.Message);
+//    }
+
+//}

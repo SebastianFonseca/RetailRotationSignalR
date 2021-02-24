@@ -95,16 +95,19 @@
 
 
         <Border Style="{StaticResource MainOptions}" Grid.Column="1" Grid.Row="0">
+            <Button x:Name="NuevoUsuario" Style="{StaticResource ButtonMenu}" VerticalAlignment="Stretch">
+                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
 
-            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
-
-                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Panel.ZIndex="0">
-                    <fa:ImageAwesome Icon="User" Height="30"/>
-                    <TextBlock Margin="5"  Text="Nuevo usuario" FontSize="29"/>
-                </StackPanel>
+                    <fa:ImageAwesome Icon="User" Height="30" Grid.Row="0" VerticalAlignment="Bottom"/>
+                    <TextBlock Margin="5"  Text="Nuevo usuario" FontSize="29" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center"/>
 
 
-            </Grid>
+                </Grid>
+            </Button>
         </Border>
 
 

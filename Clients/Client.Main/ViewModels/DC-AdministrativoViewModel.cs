@@ -20,7 +20,7 @@ namespace Client.Main.ViewModels
             VentanaPrincipal.ActivateItem(new NuevaBodegaViewModel());
         }
 
-        public void NuevoUsusario()
+        public void NuevoUsuario()
         {
             VentanaPrincipal.ActivateItem(new NuevoUsuarioViewModel());
         }
