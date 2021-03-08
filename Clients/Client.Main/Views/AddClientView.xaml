@@ -3,11 +3,18 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Client.Main.Views"             
+             xmlns:local="clr-namespace:Client.Main.Views" 
+             xmlns:src="clr-namespace:Client.Main.Utilities"    
+             xmlns:converter="clr-namespace:Client.Main.Models"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" Focusable="False">
     <UserControl.Resources>
-        
+
+        <src:NotEmpty x:Key="Validation"/>
+
+
+
+
         <Style TargetType="TextBlock">
             <Setter Property="FontSize" Value="30"/>
             <Setter Property="FontWeight" Value="DemiBold"/>
@@ -15,8 +22,12 @@
             <Setter Property="HorizontalAlignment" Value="Center"/>
             <Setter Property="Margin"   Value="0"/>
         </Style>
-
-
+        
+        
+        
+        
+        
+        
 
     </UserControl.Resources>
     
@@ -42,35 +53,62 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         
-        <!--Linea 1-->
+        <!--Linea 1 Nombres-->
         <TextBlock Grid.Row="1" Grid.Column="1" >Nombres:</TextBlock>
-        <TextBox Grid.Row="1" Grid.Column="2" Style="{StaticResource GeneralTextBox}" x:Name="Nombre"/> 
+        <TextBox Grid.Row="1" Grid.Column="2" Style="{StaticResource GeneralTextBox}" Text ="{Binding Nombre, Mode=TwoWay,  ValidatesOnDataErrors=True}"/>
 
-        <!--Linea 2-->
+        <!--Linea 2 Apellidos-->
         <TextBlock Grid.Row="2" Grid.Column="1" >Apellidos:</TextBlock>
         <TextBox Grid.Row="2" Grid.Column="2"  Style="{StaticResource GeneralTextBox}" x:Name="Apellidos"/>
 
 
-        <!--Linea 3-->
+        <!--Linea 3 Cedula-->
         <TextBlock Grid.Row="3" Grid.Column="1">Cedula:</TextBlock>
-        <TextBox Grid.Row="3" Grid.Column="2" Style="{StaticResource GeneralTextBox}"  x:Name="CC"/>
+        
+        <TextBox Grid.Row="3" Grid.Column="2" Style="{StaticResource GeneralTextBox}" >
+            <TextBox.Text>
+                    <Binding Path="CC" ValidatesOnExceptions="True" UpdateSourceTrigger="LostFocus" >
+                    <Binding.ValidationRules>
+                        <src:NotEmpty/>
+                    </Binding.ValidationRules>
+                    
+                </Binding> 
+                    
+                    
 
-        <!--Linea 4-->
+                
+            </TextBox.Text>
+        </TextBox>
+        
+
+
+        <!--Linea 4 Correo-->
         <TextBlock Grid.Row="4" Grid.Column="1" >Correo:</TextBlock>
-        <TextBox Grid.Row="4" Grid.Column="2" Style="{StaticResource GeneralTextBox}" x:Name="Correo"/>
+        <TextBox Grid.Row="4" Grid.Column="2" Style="{StaticResource GeneralTextBox}" >
+            <TextBox.Text>
+                <Binding Path="Correo" Source="{StaticResource Validation}" UpdateSourceTrigger="PropertyChanged">
+                </Binding>
+            </TextBox.Text>
 
-        <!--Linea 5-->
+
+        </TextBox>
+
+
+        <!--<TextBox Grid.Row="4" Grid.Column="2"  Style="{StaticResource GeneralTextBox}" x:Name="Correo" Text="{Binding Correo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >-->
+
+
+            <!--Linea 5 telefono-->
         <TextBlock Grid.Row="5" Grid.Column="1"  >Teléfono:</TextBlock>
         <TextBox Grid.Row="5" Grid.Column="2" Style="{StaticResource GeneralTextBox}" x:Name="Telefono"/>
 
-        <!--Puntos -->
+        <!-- Recuadro puntos -->
         <Border Background="#f6d3b4" BorderBrush="Beige" Margin="20" BorderThickness="1" CornerRadius="20" Grid.Row="1" Grid.Column="3" Grid.RowSpan="6"/>
         <StackPanel Grid.Row="3" Grid.Column="3" Grid.RowSpan="2" VerticalAlignment="Center">
             <TextBlock Margin="0">PUNTOS</TextBlock>
             <TextBlock Margin="0">0</TextBlock>
         </StackPanel>
 
-        <!-- linea 6-->
+        <!-- linea 6 Boron Guardar-->
         <Button Style="{StaticResource GeneralButton}" Grid.RowSpan="3"  Grid.Column="2" Grid.Row="6" Margin="10" Height="50" Content="   GUARDAR   "  x:Name="Guardar"/>
 
     </Grid>

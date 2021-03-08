@@ -7,6 +7,7 @@ using Dapper;
 using System.Text;
 using System.Windows;
 using Client.Main.Models;
+using static Client.Main.ViewModels.AddClientViewModel;
 
 namespace Client.Main.Utilities
 {
@@ -48,7 +49,7 @@ namespace Client.Main.Utilities
            
         }
 
-        public static void AddClient(ClientesModel Cliente)
+        public static bool  AddClient(ClientesModel Cliente)
         {
             try
             {
@@ -61,6 +62,7 @@ namespace Client.Main.Utilities
                     cmd.ExecuteNonQuery();
                     MessageBox.Show($"El cliente {Cliente.FirstName} {Cliente.LastName} ha recibido 100 puntos por registrarce.");
                     conn.Close();
+                    return true;
 
                 }
             }
@@ -69,10 +71,12 @@ namespace Client.Main.Utilities
                 if(e.HResult.ToString() == "-2146232060")
                 {
                     MessageBox.Show($"La cedula {Cliente.Cedula} ya esta registrada.");
+                    return false;
                 }
                 else
                 {
                     MessageBox.Show(e.Message);
+                    return false;
                 }
             }
 

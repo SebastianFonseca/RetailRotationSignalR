@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Caliburn.Micro;
 using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ namespace Client.Main
             var builder = new ContainerBuilder();
 
             builder.RegisterType<Connect>().SingleInstance();
+
 
             return builder.Build();
 

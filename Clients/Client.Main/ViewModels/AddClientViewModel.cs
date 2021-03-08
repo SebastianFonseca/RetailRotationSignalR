@@ -6,9 +6,10 @@ using System.Windows;
 using Client.Main.Utilities;
 using Client.Main.Models;
 
+
 namespace Client.Main.ViewModels
 {
-    public class AddClientViewModel : Screen
+    public class AddClientViewModel : PropertyChangedBase
     {
         ClientesModel NuevoCliente;
 
@@ -16,14 +17,15 @@ namespace Client.Main.ViewModels
         {
             NuevoCliente = new ClientesModel();
         }
-        
+
         public string Nombre
         {
             get { return NuevoCliente.FirstName; }
-            set {
+            set
+            {
 
-                if (NuevoCliente.FirstName != value)                        
-                    NuevoCliente.FirstName = value;                       
+                if (NuevoCliente.FirstName != value)
+                    NuevoCliente.FirstName = value;
                 NotifyOfPropertyChange(() => Nombre);
                 NotifyOfPropertyChange(() => CanGuardar);
             }
@@ -32,8 +34,9 @@ namespace Client.Main.ViewModels
         public string Apellidos
         {
             get { return NuevoCliente.LastName; }
-            set {
-                if(NuevoCliente.LastName != value)
+            set
+            {
+                if (NuevoCliente.LastName != value)
                     NuevoCliente.LastName = value;
                 NotifyOfPropertyChange(() => Apellidos);
                 NotifyOfPropertyChange(() => CanGuardar);
@@ -43,20 +46,21 @@ namespace Client.Main.ViewModels
         public string CC
         {
             get { return NuevoCliente.Cedula; }
-            set {
-                if(NuevoCliente.Cedula != value)
+            set
+            {
+                if (NuevoCliente.Cedula != value)
                     NuevoCliente.Cedula = value;
                 NotifyOfPropertyChange(() => CC);
                 NotifyOfPropertyChange(() => CanGuardar);
             }
         }
 
-
-        public string  Correo
+        public string Correo
         {
             get { return NuevoCliente.Correo; }
-            set {
-                if(NuevoCliente.Correo != value)
+            set
+            {
+                if (NuevoCliente.Correo != value)
                     NuevoCliente.Correo = value;
                 NotifyOfPropertyChange(() => Correo);
             }
@@ -65,8 +69,9 @@ namespace Client.Main.ViewModels
         public string Telefono
         {
             get { return NuevoCliente.Telefono; }
-            set { 
-                if(NuevoCliente.Telefono != value)
+            set
+            {
+                if (NuevoCliente.Telefono != value)
                     NuevoCliente.Telefono = value;
                 NotifyOfPropertyChange(() => Telefono);
 
@@ -75,12 +80,12 @@ namespace Client.Main.ViewModels
 
         public bool CanGuardar => !string.IsNullOrWhiteSpace(this.Nombre) &&
                                   !string.IsNullOrWhiteSpace(this.Apellidos) &&
-                                  !string.IsNullOrWhiteSpace(this.CC);
+                                  !string.IsNullOrWhiteSpace(this.CC) ;
 
         public void Guardar()
         {
             if (string.IsNullOrEmpty(NuevoCliente.Correo))
-            {  
+            {
                 NuevoCliente.Correo = null;
             }
             if (string.IsNullOrEmpty(NuevoCliente.Telefono))
@@ -88,15 +93,26 @@ namespace Client.Main.ViewModels
                 NuevoCliente.Telefono = null;
             }
 
-            DbConnection.AddClient(Cliente: NuevoCliente);
 
-            Nombre = "";
-            Apellidos = "";
-            CC = "";
-            Correo = "";
-            Telefono = "";
+            if (DbConnection.AddClient(Cliente: NuevoCliente))
+            {
+                Nombre = "";
+                Apellidos = "";
+                CC = "";
+                Correo = "";
+                Telefono = "";
+            }
+            else
+            {
+                CC = "";
+            }
+
         }
-    }  
+
+    }
+
+   
+    
 }
 
 
