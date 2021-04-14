@@ -55,7 +55,7 @@
 
             <!-- ....................... FONDO OPACO CON BORDES REDONDEADOS ....................... -->
 
-            <Border Grid.Column="1" Grid.Row="1"  BorderThickness="1" CornerRadius="15,15,15,15" Background="#F3E0C2" Opacity="0.45" />
+            <Border Grid.Column="1" Grid.Row="1"  BorderThickness="1" CornerRadius="15,15,15,15" Background="#F3E0C2" Opacity="0.45" Focusable="False"/>
 
 
 
@@ -97,7 +97,7 @@
             <!-- Espacio para los diferentes UserControls -->
 
 
-            <ContentControl x:Name="ActiveItem" Grid.Column="1" Grid.Row="1"/>
+            <ContentControl x:Name="ActiveItem" Grid.Column="1" Grid.Row="1" Focusable="False"/>
 
             <!-- .......................  STATUS Y NOMBRE DEL USUARIO .......................  -->
             

@@ -10,26 +10,35 @@ using Caliburn.Micro;
 
 namespace Client.Main.Models
 {
-    public class PersonModel : PropertyChangedBase
+    public class PersonModel 
     {
 
-        private String _cedula;
 
-        public String Cedula
+
+        private string _firstName;
+
+        public string FirstName
         {
-            get { return _cedula; }
+            get { return _firstName; }
             set
             {
-                NotifyOfPropertyChange(() => Cedula);
-                _cedula = value; 
+                if (value == null)
+                    MessageBox.Show("Pasando a nulo");
+
+                _firstName = value; 
             }
         }
 
 
-        public string FirstName { get; set; }
 
+        public string LastName { 
+            get; 
+            set; }
 
-        public string LastName { get; set; }
+        public string Cedula { 
+            get; 
+            set; }
+
 
         public string Telefono { get; set; }
 
