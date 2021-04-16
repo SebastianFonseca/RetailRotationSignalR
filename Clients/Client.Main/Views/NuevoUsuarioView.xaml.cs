@@ -21,6 +21,12 @@ namespace Client.Main.Views
         public NuevoUsuarioView()
         {
             InitializeComponent();
+            FechaContratacion.Loaded += delegate
+            {
+                var textBox1 = (TextBox)FechaContratacion.Template.FindName("PART_TextBox", FechaContratacion);
+                textBox1.Background = FechaContratacion.Background;                
+            };
         }
+
     }
 }

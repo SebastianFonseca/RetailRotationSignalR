@@ -13,9 +13,11 @@ namespace Client.Main.ViewModels
     public class AddClientViewModel : PropertyChangedBase, IDataErrorInfo
     {
         ClientesModel NuevoCliente;
+        MainWindowViewModel VentanaPrincipal;
 
-        public AddClientViewModel()
+        public AddClientViewModel(MainWindowViewModel argVentana)
         {
+            VentanaPrincipal = argVentana;
             NuevoCliente = new ClientesModel();
         }
 
@@ -91,16 +93,17 @@ namespace Client.Main.ViewModels
 
                 if (DbConnection.AddClient(Cliente: NuevoCliente))
                 {
-                    Name = "";
-                    Apellidos = "";
-                    CC = "";
-                    Correo = "";
-                    Telefono = "";
+                 
+                    VentanaPrincipal.ActivateItem(new AddClientViewModel(VentanaPrincipal));
                 }
                 else
                 {
                     CC = "";
                 }
+            }
+            else
+            {
+                MessageBox.Show("Primero debe rellenar los datos.");
             }
         
 

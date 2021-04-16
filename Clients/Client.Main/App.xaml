@@ -76,16 +76,12 @@
                         </ControlTemplate>
                     </Setter.Value>
 
-
-
-
                 </Setter>
                     
-
             </Style>
-            
 
-            
+
+
 
             <FontFamily x:Key="FontAwesome">/Fonts/fontawesome-webfont.ttf#FontAwesome</FontFamily>
 

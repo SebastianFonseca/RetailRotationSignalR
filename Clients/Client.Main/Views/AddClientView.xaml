@@ -9,12 +9,7 @@
              d:DesignHeight="450" d:DesignWidth="800" Focusable="False">
     <UserControl.Resources>
 
-        <c:NotEmpty x:Key="NotEmpty"/>
         <c:InverseAndBooleansToBooleanConverter x:Key="InverseAndBooleansToBooleanConverter"/>
-        <local:AddClientViewModel x:Key="AddClientVM"/>
-
-
-
 
         <Style TargetType="TextBlock">
             <Setter Property="FontSize" Value="30"/>
@@ -50,7 +45,7 @@
         
         <!--Linea 1 Nombres-->
         <TextBlock Grid.Row="1" Grid.Column="1" >Nombres:</TextBlock>
-        <TextBox  Grid.Row="1" Grid.Column="2" Style="{StaticResource GeneralTextBox}"  Text="{Binding Path=Name, UpdateSourceTrigger=LostFocus}"/>
+        <TextBox  Grid.Row="1" Grid.Column="2" Style="{StaticResource GeneralTextBox}"  x:Name="Name"/>
 
 
         <!--Linea 2 Apellidos-->
@@ -82,7 +77,7 @@
         <!-- linea 6 Boton Guardar-->
         <Button Style="{StaticResource GeneralButton}" Grid.RowSpan="3"  Grid.Column="2" Grid.Row="6" Margin="10" Height="50" Content="   GUARDAR   "  x:Name="Guardar" >
             <Button.IsEnabled>
-                <MultiBinding Converter="{StaticResource InverseAndBooleansToBooleanConverter}" Mode="TwoWay" UpdateSourceTrigger="LostFocus">
+                <MultiBinding Converter="{StaticResource InverseAndBooleansToBooleanConverter}" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
                     <Binding ElementName="Name" Path="(Validation.HasError)" />
                     <Binding ElementName="Apellidos" Path="(Validation.HasError)" />
                     <Binding ElementName="CC" Path="(Validation.HasError)" />
