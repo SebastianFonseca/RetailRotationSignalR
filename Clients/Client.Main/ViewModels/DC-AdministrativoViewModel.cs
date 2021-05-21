@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows;
 
 namespace Client.Main.ViewModels
 {
@@ -22,7 +23,16 @@ namespace Client.Main.ViewModels
 
         public void NuevoUsuario()
         {
-            VentanaPrincipal.ActivateItem(new NuevoUsuarioViewModel());
+            try
+            {
+                VentanaPrincipal.ActivateItem(new NuevoUsuarioViewModel(VentanaPrincipal));
+
+            }
+            catch (Exception e)
+            {
+
+                MessageBox.Show(e.StackTrace);
+            }
         }
 
         public void NuevoProveedor()

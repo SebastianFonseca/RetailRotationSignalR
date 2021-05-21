@@ -5,10 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:pwbx="clr-namespace:Client.Main"
         xmlns:gif="http://wpfanimatedgif.codeplex.com"
+                     xmlns:c="clr-namespace:Client.Main.Utilities"
+
         mc:Ignorable="d"
         Title="  " Height="400" Width="247.2" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
         
-    <Grid x:Name="MainGrid">
+    <Grid x:Name="MainGrid" c:KeyboardFocus.On="{Binding ElementName=User}" >
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"   />
@@ -23,23 +25,26 @@
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
-            <RowDefinition Height="0.25*"/>
+            <RowDefinition Height="0.17*"/>
         </Grid.RowDefinitions>
         
             <!--Fila 1.Iniciar Sesion-->
         <TextBlock   Grid.Row="1" Grid.Column="1" Margin="0    0  0   0" HorizontalAlignment="Center"  x:Name="InsesionTb"   VerticalAlignment="Center" FontSize="24"  FontFamily="Corbel"       Grid.ColumnSpan="2" Text="INICIAR SESIÓN"/>
 
-            <!--Fila 2.Usuario-->
+            <!--Fila 2.Usuario-->       
         <TextBlock   Grid.Row="2" Grid.Column="1" Margin="0  8.0 14 3.5" HorizontalAlignment="Right"   x:Name="UsuarioTb"    VerticalAlignment="Center" FontSize="15"  FontFamily="Corbel light" FontWeight="Bold"   Text="Usuario:"/>
-        <TextBox     Grid.Row="2" Grid.Column="2" Margin="2.5 10  0   3" HorizontalAlignment="Center"  x:Name="User"                 MaxWidth="100" MinWidth="100" BorderThickness="0"  />
-            
-            <!--Fila 3.Contraseña-->
+        <Border Grid.Row="2" Grid.Column="2" CornerRadius="6" Background="White" VerticalAlignment="Bottom" Margin="2">
+            <TextBox      HorizontalAlignment="Center"  x:Name="User"     Background="Transparent"   MaxWidth="100" MinWidth="100" BorderThickness="0"    VerticalAlignment="Center"      />
+        </Border>
+        <!--Fila 3.Contraseña-->
         <TextBlock   Grid.Row="3" Grid.Column="1" Margin="0    0  5  10" HorizontalAlignment="Right"   x:Name="ContraseñaTb" VerticalAlignment="Center" FontSize="15"  FontFamily="Corbel light" FontWeight="Bold"   Text="Contraseña:"/>
-        <PasswordBox pwbx:PasswordBoxAssistant.BoundPassword="{Binding UserPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True, ValidatesOnDataErrors=True}"   Grid.Row="3" Grid.Column="2" Margin="2.5  3  0  10"   HorizontalAlignment="Center"   BorderThickness="0"        MaxWidth="100" MinWidth="100"/>
-
-            <!--Fila 4.Boton de entrar-->
-        <Button      Grid.Row="4" Grid.Column="1" Margin="5    0  5   0" HorizontalAlignment="Stretch" x:Name="Entrar"    VerticalAlignment="Center" FontSize="10"  FontFamily="Corbel"       FontWeight="Bold"   Content="ENTRAR"                           
-                                                                                                                             Background="#FFF3E0C2"     Opacity="0.50" BorderThickness="0"       Grid.ColumnSpan="2"/>
+        <Border   Grid.Row="3" Grid.Column="2" CornerRadius="6" Background="White" VerticalAlignment="Top" Margin="2">
+            <PasswordBox pwbx:PasswordBoxAssistant.BoundPassword="{Binding UserPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True, ValidatesOnDataErrors=True}"    Background="Transparent"  HorizontalAlignment="Center"   BorderThickness="0"        MaxWidth="100" MinWidth="100"/>
+        </Border>
+        <!--Fila 4.Boton de entrar-->
+        
+        <Button Grid.Row="4" Grid.Column="1" Margin="5    0  5   0" HorizontalAlignment="Stretch" x:Name="Entrar"    VerticalAlignment="Center" FontSize="10"  FontFamily="Corbel"       FontWeight="Bold"   Content="ENTRAR"                           
+         Background="#FFF3E0C2"     Opacity="0.50" BorderThickness="0"       Grid.ColumnSpan="2" Cursor="Hand" Style="{StaticResource GeneralButton}" />
             
         
             <!--WaitingGIF--><!--        

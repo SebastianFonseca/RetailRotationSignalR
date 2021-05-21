@@ -80,26 +80,33 @@ namespace Client.Main.ViewModels
         public void Guardar()
         {
             if (!string.IsNullOrWhiteSpace(NuevoCliente.FirstName) && !string.IsNullOrWhiteSpace(NuevoCliente.LastName) && !string.IsNullOrWhiteSpace(NuevoCliente.Cedula)) 
-            { 
-                if (string.IsNullOrEmpty(NuevoCliente.Correo))
-                {
-                    NuevoCliente.Correo = null;
-                }
-                if (string.IsNullOrEmpty(NuevoCliente.Telefono))
-                {
-                    NuevoCliente.Telefono = null;
-                }
+            {
+                //if (string.IsNullOrEmpty(NuevoCliente.Correo))
+                //{
+                //    NuevoCliente.Correo = null;
+                //}
+                //if (string.IsNullOrEmpty(NuevoCliente.Telefono))
+                //{
+                //    NuevoCliente.Telefono = null;
+                //}
 
 
-                if (DbConnection.AddClient(Cliente: NuevoCliente))
+                try
                 {
-                 
-                    VentanaPrincipal.ActivateItem(new AddClientViewModel(VentanaPrincipal));
+                    if (DbConnection.AddClient(Cliente:NuevoCliente))
+                    {                 
+                        VentanaPrincipal.ActivateItem(new AddClientViewModel(VentanaPrincipal));
+                    }
+                    else
+                    {
+                        CC = "";
+                    }
                 }
-                else
+                catch (Exception e)
                 {
-                    CC = "";
+                    MessageBox.Show(e.Message);
                 }
+
             }
             else
             {
@@ -117,7 +124,7 @@ namespace Client.Main.ViewModels
             {
                 string result = null;
                 long number = 0;
-                if (flag == 3)
+                if (flag == 4)
                 {
                     if (name == "CC")
                     {
@@ -141,7 +148,15 @@ namespace Client.Main.ViewModels
                         }
 
                     }
-            }
+                    else if (name == "Telefono")
+                    {
+                        if (Telefono.Length != 10)
+                        {
+                            result = "El número telefónico debe tener 10 digitos.";
+                        }
+
+                    }
+                }
                 
                 else { flag += 1; }
 

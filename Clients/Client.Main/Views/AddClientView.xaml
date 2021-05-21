@@ -20,9 +20,9 @@
         </Style>
                                 
     </UserControl.Resources>
-    
-    
-    <Grid Background="#F3E0C2" ShowGridLines="False" Opacity="0.9" Focusable="False">
+
+    <Border Background="#F3E0C2" CornerRadius="10">
+    <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9" Focusable="False">
         <Grid.ColumnDefinitions>
             
             <ColumnDefinition Width="0.1*"/>
@@ -65,7 +65,7 @@
 
          <!--Linea 5 telefono-->
         <TextBlock Grid.Row="5" Grid.Column="1"  >Teléfono:</TextBlock>
-        <TextBox Grid.Row="5" Grid.Column="2" Style="{StaticResource GeneralTextBox}" x:Name="Telefono"/>
+            <TextBox Grid.Row="5" Grid.Column="2" Style="{StaticResource GeneralTextBox}" x:Name="Telefono" PreviewTextInput="NumberValidationTextBox"/>
 
         <!-- Recuadro puntos -->
         <Border Background="#f6d3b4" BorderBrush="Beige" Margin="20" BorderThickness="1" CornerRadius="20" Grid.Row="1" Grid.Column="3" Grid.RowSpan="6"/>
@@ -76,17 +76,15 @@
 
         <!-- linea 6 Boton Guardar-->
         <Button Style="{StaticResource GeneralButton}" Grid.RowSpan="3"  Grid.Column="2" Grid.Row="6" Margin="10" Height="50" Content="   GUARDAR   "  x:Name="Guardar" >
-            <Button.IsEnabled>
-                <MultiBinding Converter="{StaticResource InverseAndBooleansToBooleanConverter}" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
-                    <Binding ElementName="Name" Path="(Validation.HasError)" />
-                    <Binding ElementName="Apellidos" Path="(Validation.HasError)" />
-                    <Binding ElementName="CC" Path="(Validation.HasError)" />
-                </MultiBinding>
-            </Button.IsEnabled>
-
-
-
-        </Button>
+                <Button.IsEnabled>
+                    <MultiBinding Converter="{StaticResource InverseAndBooleansToBooleanConverter}" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                        <Binding ElementName="Name" Path="(Validation.HasError)" />
+                        <Binding ElementName="Apellidos" Path="(Validation.HasError)" />
+                        <Binding ElementName="CC" Path="(Validation.HasError)" />
+                    </MultiBinding>
+                </Button.IsEnabled>
+            </Button>
 
     </Grid>
+    </Border>
 </UserControl>

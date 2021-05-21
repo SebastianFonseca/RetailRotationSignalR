@@ -40,12 +40,12 @@ namespace Client.Main.Models
             set; }
 
 
-        public string Telefono { get; set; }
+        public string Telefono { get; set; } = null;
 
-        public string  Direccion { get; set; }
+        public string  Direccion { get; set; } = null;
 
         public string Correo { get;
-            set; }
+            set; } = null;
 
 
     }
