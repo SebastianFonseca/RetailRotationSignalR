@@ -13,10 +13,34 @@ namespace Client.Main.ViewModels
     {
         MainWindowViewModel VentanaPrincipal;
 
-        EmpleadoModel NuevoEmpleado;
+
+        EmpleadoModel NuevoEmpleado = new EmpleadoModel();
+
+        public BindableCollection<LocalModel> Locales
+        {
+            get
+            {
+                return DbConnection.getLocales();
+            }
+
+        }
+
+
+        public LocalModel Local 
+        {
+            get
+            {
+                return NuevoEmpleado.PuntoDeVenta; 
+            }
+            set
+            {
+                NuevoEmpleado.PuntoDeVenta = value;
+                NotifyOfPropertyChange(() => Local);
+            }
+        }
+
         public NuevoUsuarioViewModel(MainWindowViewModel argVentana)
         {
-            NuevoEmpleado = new EmpleadoModel();
             VentanaPrincipal = argVentana;
         }
 
@@ -88,6 +112,7 @@ namespace Client.Main.ViewModels
             }
         }
 
+
         public DateTime FechaContratacion
         {
             get { return NuevoEmpleado.FechaDeContratacion; }
@@ -102,7 +127,7 @@ namespace Client.Main.ViewModels
             }
         }
 
-        public string Cargo 
+        public string Cargo
         {
             get { return NuevoEmpleado.Cargo; }
             set
@@ -116,7 +141,6 @@ namespace Client.Main.ViewModels
             }
         }
 
-        
         public string Password
         {
             get { return NuevoEmpleado.Password; }
@@ -127,6 +151,20 @@ namespace Client.Main.ViewModels
                     NuevoEmpleado.Password = value;
                 }
                 NotifyOfPropertyChange(() => Password);
+
+            }
+        }
+
+        public string Salario
+        {
+            get { return NuevoEmpleado.Salario; }
+            set
+            {
+                if (NuevoEmpleado.Salario != value)
+                {
+                    NuevoEmpleado.Salario = value;
+                }
+                NotifyOfPropertyChange(() => Salario);
 
             }
         }
@@ -143,11 +181,6 @@ namespace Client.Main.ViewModels
             }
         }
 
-
-
-
-
-
         public void Guardar()
         {
             if (Statics.ClientStatus == "Trabajando localmente")
@@ -162,7 +195,14 @@ namespace Client.Main.ViewModels
                     !string.IsNullOrWhiteSpace(NuevoEmpleado.Password) &&
                     !string.IsNullOrWhiteSpace(PasswordAgain))
                 {
-                    MessageBox.Show("Agregar a la base");
+                    if (DbConnection.NuevoUsuario(Empleado: NuevoEmpleado))
+                    {
+                        VentanaPrincipal.ActivateItem(new NuevoUsuarioViewModel(VentanaPrincipal));
+                    }
+                    else
+                    {
+                        CC = "";
+                    }
                 }
                 else
                 {
@@ -181,6 +221,7 @@ namespace Client.Main.ViewModels
        
         public void BackButton()
         {
+            Locales.Clear();
             VentanaPrincipal.ActivateItem(new DC_AdministrativoViewModel(VentanaPrincipal));
         }
 
@@ -195,7 +236,7 @@ namespace Client.Main.ViewModels
             {
                 string result = null;
                 long number = 0;
-                if (flag == 9)
+                if (flag == 10)
                 {
                     if (name == "CC")
                     {
@@ -248,9 +289,17 @@ namespace Client.Main.ViewModels
 
 
                     }
-                    else if (name == "Cargo")
+                    else if (name == "SelectedCargo")
                     {
                         if (String.IsNullOrEmpty(Cargo))
+                        {
+                            result = "Elija una opción.";
+                        }
+
+                    }
+                    else if (name == "Local")
+                    {
+                        if (Local == null)
                         {
                             result = "Elija una opción.";
                         }

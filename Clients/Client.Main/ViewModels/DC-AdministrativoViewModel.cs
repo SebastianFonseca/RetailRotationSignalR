@@ -16,23 +16,14 @@ namespace Client.Main.ViewModels
             VentanaPrincipal = argVentana;
         }
 
-        public void NuevaBodega()
+        public void NuevoLocal()
         {
-            VentanaPrincipal.ActivateItem(new NuevaBodegaViewModel());
+            VentanaPrincipal.ActivateItem(new NuevoLocalViewModel(VentanaPrincipal));
         }
 
         public void NuevoUsuario()
         {
-            try
-            {
                 VentanaPrincipal.ActivateItem(new NuevoUsuarioViewModel(VentanaPrincipal));
-
-            }
-            catch (Exception e)
-            {
-
-                MessageBox.Show(e.StackTrace);
-            }
         }
 
         public void NuevoProveedor()

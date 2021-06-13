@@ -110,5 +110,16 @@ namespace Client.Main.Utilities
         #endregion
 
 
+
+        public static string PrimeraAMayuscula(string palabra)
+        {
+            if (palabra.Length == 0)
+                return palabra;
+            else if (palabra.Length == 1)
+                return palabra.ToUpper();
+            else
+                return palabra[0].ToString().ToUpper() + palabra.Substring(1);
+        }
+
     }
 }

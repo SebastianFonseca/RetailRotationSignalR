@@ -21,6 +21,31 @@
             <Setter Property="CornerRadius" Value="20"/>
 
         </Style>
+        <!--Estilo de los botones en los submenus, cambio de color de fondo IsMouseOver-->
+
+        <Style x:Key="OptionsSubMenu" TargetType="{x:Type Button}" >
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="#F3E0C2"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#c1d92e"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
 
         <!--Estilos cuando entra o sale el puntero, para hacer que el submenu aparezca-->
 
@@ -43,28 +68,10 @@
 
             </Style.Triggers>
         </Style>
-
-        <Style TargetType="Button" x:Key="ButtonMenu">
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            <Setter Property="HorizontalAlignment" Value="Stretch"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Background" Value="#F3E0C2"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="10" BorderThickness="0.8" >
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5" />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
     </UserControl.Resources>
 
 
-    <!--Grid principal con los seis botones-->
+    <!--Grid principal con los tres botones-->
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -74,56 +81,100 @@
         </Grid.ColumnDefinitions>
 
 
-        <!-- ....................... Nueva Bodega ....................... -->
+        <!-- ....................... Nuevo local ....................... -->
 
-        <Border Style="{StaticResource MainOptions}" Grid.Column="0" Grid.Row="0" >
-            <Button x:Name="NuevaBodega" Style="{StaticResource ButtonMenu}" VerticalAlignment="Stretch">
-                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent" >
+        <Border Style="{StaticResource MainOptions}" Grid.Column="0">
+            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Panel.ZIndex="0">
+                    <fa:ImageAwesome Icon="Building" Height="30" Grid.Row="0" VerticalAlignment="Bottom"/>
+                    <TextBlock Margin="5"  Text="Locales" FontSize="29" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+                </StackPanel>
+                <Grid Panel.ZIndex="1"  Style="{StaticResource Submenu}" Opacity="0">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <fa:ImageAwesome Icon="Building" Height="30" Grid.Row="0" VerticalAlignment="Bottom"/>
-                <TextBlock Margin="5"  Text="Nueva Bodega" FontSize="29" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+                    <Button Margin="0" Content="Nuevo" FontSize="15" HorizontalAlignment="Stretch"  HorizontalContentAlignment="Center" Grid.Row="0" Style="{StaticResource OptionsSubMenu}" x:Name="NuevoLocal">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="20 20 0 0"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                    <Button Margin="0" Content="Buscar" FontSize="15"  HorizontalAlignment="Stretch" Grid.Row="1" Style="{StaticResource OptionsSubMenu}" x:Name="BuscarLocal" >
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="0 0 20 20"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                </Grid>
 
             </Grid>
-            </Button>
         </Border>
 
         <!-- ....................... Nuevo usuario ....................... -->
+        
+        <Border Style="{StaticResource MainOptions}" Grid.Column="1">
+            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Panel.ZIndex="0">
+                    <fa:ImageAwesome Icon="User" Height="30" Grid.Row="0" VerticalAlignment="Bottom"/>
+                    <TextBlock Margin="5"  Text="Usuarios" FontSize="29" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center"/>
 
-
-
-        <Border Style="{StaticResource MainOptions}" Grid.Column="1" Grid.Row="0">
-            <Button x:Name="NuevoUsuario" Style="{StaticResource ButtonMenu}" VerticalAlignment="Stretch">
-                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent">
+                </StackPanel>
+                <Grid Panel.ZIndex="1"  Style="{StaticResource Submenu}" Opacity="0">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-
-                    <fa:ImageAwesome Icon="User" Height="30" Grid.Row="0" VerticalAlignment="Bottom"/>
-                    <TextBlock Margin="5"  Text="Nuevo usuario" FontSize="29" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center"/>
-
-
+                    <Button Margin="0" Content="Nuevo" FontSize="15" HorizontalAlignment="Stretch"  HorizontalContentAlignment="Center" Grid.Row="0" Style="{StaticResource OptionsSubMenu}" x:Name="NuevoUsuario">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="20 20 0 0"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                    <Button Margin="0" Content="Buscar" FontSize="15"  HorizontalAlignment="Stretch" Grid.Row="1" Style="{StaticResource OptionsSubMenu}"  x:Name="BuscarUsuario">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="0 0 20 20"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
                 </Grid>
-            </Button>
+
+            </Grid>
         </Border>
-
-
+                
         <!-- ....................... Nuevo Proveedor ....................... -->
 
-
-
-        <Border Style="{StaticResource MainOptions}" Grid.Column="2" Grid.Row="0" >
-
+        <Border Style="{StaticResource MainOptions}" Grid.Column="2">
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
-
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Panel.ZIndex="0">
                     <fa:ImageAwesome Icon="ShoppingBasket" Height="30"/>
-                    <TextBlock Margin="5"  Text="Nuevo proveedor" FontSize="24"/>
-                </StackPanel>
+                    <TextBlock Margin="5"  Text="Proveedores" FontSize="24"/>
 
+                </StackPanel>
+                <Grid Panel.ZIndex="1"  Style="{StaticResource Submenu}" Opacity="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Button Margin="0" Content="Nuevo" FontSize="15" HorizontalAlignment="Stretch"  HorizontalContentAlignment="Center" Grid.Row="0" Style="{StaticResource OptionsSubMenu}" x:Name="NuevoProveedor">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="20 20 0 0"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                    <Button Margin="0" Content="Buscar" FontSize="15"  HorizontalAlignment="Stretch" Grid.Row="1" Style="{StaticResource OptionsSubMenu}" x:Name="BuscarProveedor">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="0 0 20 20"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                </Grid>
 
             </Grid>
         </Border>

@@ -127,7 +127,7 @@ namespace Client.Main.ViewModels
                         }
                         else
                         {
-                            MessageBox.Show("Usuario no registrado.");
+                            MessageBox.Show("El nombre de usuario o la contraseña son incorrectos.");
                             havepassflag = false;
                         }
 
@@ -147,7 +147,7 @@ namespace Client.Main.ViewModels
                     }
                     else
                     {
-                        MessageBox.Show("Usuario no registrado.");
+                        MessageBox.Show("El nombre de usuario o la contraseña son incorrectos.");
                         havepassflag = false;
                     }
 

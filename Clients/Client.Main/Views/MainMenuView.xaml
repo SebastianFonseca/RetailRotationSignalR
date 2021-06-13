@@ -26,6 +26,7 @@
         
         <Style x:Key="OptionsSubMenu" TargetType="{x:Type Button}" >
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Background" Value="#F3E0C2"/>

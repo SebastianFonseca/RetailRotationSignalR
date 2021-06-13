@@ -12,24 +12,15 @@ namespace Client.Main.Models
 {
     public class PersonModel 
     {
-
-
-
         private string _firstName;
-
         public string FirstName
         {
             get { return _firstName; }
             set
             {
-                if (value == null)
-                    MessageBox.Show("Pasando a nulo");
-
                 _firstName = value; 
             }
         }
-
-
 
         public string LastName { 
             get; 
@@ -46,7 +37,6 @@ namespace Client.Main.Models
 
         public string Correo { get;
             set; } = null;
-
 
     }
  }

@@ -22,7 +22,7 @@
     </UserControl.Resources>
 
     <Border Background="#F3E0C2" CornerRadius="10">
-    <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9" Focusable="False">
+    <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9" Focusable="False" c:KeyboardFocus.On="{Binding ElementName=Name}">
         <Grid.ColumnDefinitions>
             
             <ColumnDefinition Width="0.1*"/>
@@ -60,12 +60,12 @@
 
         <!--Linea 4 Correo-->
         <TextBlock Grid.Row="4" Grid.Column="1" >Correo:</TextBlock>
-        <TextBox Grid.Row="4" Grid.Column="2" Style="{StaticResource GeneralTextBox}" />
+        <TextBox Grid.Row="4" Grid.Column="2" Style="{StaticResource GeneralTextBox}" x:Name="Correo" />
 
 
          <!--Linea 5 telefono-->
         <TextBlock Grid.Row="5" Grid.Column="1"  >Teléfono:</TextBlock>
-            <TextBox Grid.Row="5" Grid.Column="2" Style="{StaticResource GeneralTextBox}" x:Name="Telefono" PreviewTextInput="NumberValidationTextBox"/>
+            <TextBox Grid.Row="5" Grid.Column="2" Style="{StaticResource GeneralTextBox}" x:Name="Telefono" PreviewTextInput="NumberValidationTextBox" MaxLength="10"/>
 
         <!-- Recuadro puntos -->
         <Border Background="#f6d3b4" BorderBrush="Beige" Margin="20" BorderThickness="1" CornerRadius="20" Grid.Row="1" Grid.Column="3" Grid.RowSpan="6"/>

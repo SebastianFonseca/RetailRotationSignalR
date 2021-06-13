@@ -11,116 +11,155 @@
              d:DesignHeight="450" d:DesignWidth="800">
 
     <UserControl.Resources>
-
-        
-        
-        
         <!--#region    -->
         <Style TargetType="TextBlock">
             <Setter Property="FontSize" Value="22"/>
             <Setter Property="FontWeight" Value="DemiBold"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
-
         </Style>
 
         <Style TargetType="TextBox">
-            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="FontSize" Value="50"/>
         </Style>
+
         
-        
+         
         <!--#endregion-->
-        
+
+
+
 
     </UserControl.Resources>
 
-    <Border Background="#F3E0C2" CornerRadius="10">
+    <Border Background="#F3E0C2" CornerRadius="10" >
         
-    <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9" c:KeyboardFocus.On="{Binding ElementName=Nombre}" >
-        <Grid.ColumnDefinitions>
+        <ScrollViewer  Style="{StaticResource GeneralScrollViewer}" HorizontalScrollBarVisibility="Disabled">
+            
+            <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9" c:KeyboardFocus.On="{Binding ElementName=Nombre}" HorizontalAlignment="Stretch" Margin="10">
+                
+            <Grid.ColumnDefinitions>
 
-            <ColumnDefinition Width="0.1*"/>
-            <ColumnDefinition Width="0.3*"/>
-            <ColumnDefinition Width="0.4*"/>
-            <ColumnDefinition Width="0.2*"/>
+                <ColumnDefinition Width="0.1*"/>
+                <ColumnDefinition Width="0.35*"/>
+                <ColumnDefinition Width="0.45*"/>
+                <ColumnDefinition Width="0.1*"/>
 
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
+            </Grid.ColumnDefinitions>
+                
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
 
-        </Grid.RowDefinitions>
+            </Grid.RowDefinitions>
 
-        <!--Linea 1-->
-        <TextBlock Grid.Row="1" Grid.Column="1" >Nombres:</TextBlock>
-        <TextBox Grid.Row="1" Grid.Column="2" Style="{StaticResource GeneralTextBox}" x:Name="Nombre"/>
+            <!--Linea 1-->
+            <TextBlock Grid.Row="1" Grid.Column="1" >Nombres:</TextBlock>
+            <TextBox Grid.Row="1" Grid.Column="2" Style="{StaticResource GeneralTextBox}" x:Name="Nombre" />
 
-        <!--Linea 2-->
-        <TextBlock Grid.Row="2" Grid.Column="1" >Apellidos:</TextBlock>
-        <TextBox Grid.Row="2" Grid.Column="2"  Style="{StaticResource GeneralTextBox}" x:Name="Apellidos"/>
+            <!--Linea 2-->
+            <TextBlock Grid.Row="2" Grid.Column="1" >Apellidos:</TextBlock>
+            <TextBox Grid.Row="2" Grid.Column="2"  Style="{StaticResource GeneralTextBox}" x:Name="Apellidos"/>
 
 
-        <!--Linea 3-->
-        <TextBlock Grid.Row="3" Grid.Column="1">Cedula:</TextBlock>
+            <!--Linea 3-->
+            <TextBlock Grid.Row="3" Grid.Column="1">Cedula:</TextBlock>
             <TextBox Grid.Row="3" Grid.Column="2" Style="{StaticResource GeneralTextBox}" PreviewTextInput="NumberValidationTextBox" x:Name="CC"/>
 
-        <!--Linea 4-->
-        <TextBlock Grid.Row="4" Grid.Column="1" >Correo:</TextBlock>
-        <TextBox Grid.Row="4" Grid.Column="2" Style="{StaticResource GeneralTextBox}" x:Name="Correo"/>
+            <!--Linea 4-->
+            <TextBlock Grid.Row="4" Grid.Column="1" >Correo:</TextBlock>
+            <TextBox Grid.Row="4" Grid.Column="2" Style="{StaticResource GeneralTextBox}" x:Name="Correo"/>
 
-        <!--Linea 5-->
-        <TextBlock Grid.Row="5" Grid.Column="1"  >Teléfono:</TextBlock>
-        <TextBox Grid.Row="5" Grid.Column="2" Style="{StaticResource GeneralTextBox}" PreviewTextInput="NumberValidationTextBox" x:Name="Telefono" MaxLength="10"/>
+            <!--Linea 5-->
+            <TextBlock Grid.Row="5" Grid.Column="1"  >Teléfono:</TextBlock>
+            <TextBox Grid.Row="5" Grid.Column="2" Style="{StaticResource GeneralTextBox}" PreviewTextInput="NumberValidationTextBox" x:Name="Telefono" MaxLength="10"/>
 
-        <!--Linea 6-->
-        <TextBlock Grid.Row="6" Grid.Column="1"  >Incio Contrato:</TextBlock>
-        <DatePicker   Style="{DynamicResource date}" Grid.Row="6" Grid.Column="2"  x:Name="FechaContratacion" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" DisplayDate="{Binding FechaContratacion}" Margin="0 2 0 0"/>
-        
-        <!--Linea 7-->
-        <TextBlock Grid.Row="7" Grid.Column="1" VerticalAlignment="Bottom">Cargo:</TextBlock>
-        <ComboBox Template="{StaticResource GeneralComboBox}" Grid.Row="7" Grid.Column="2"  x:Name="Cargo" Margin="1"/>
-        
-        <!--Linea 7-->
-        <TextBlock Grid.Row="8" Grid.Column="1" VerticalAlignment="Bottom">Contraseña:</TextBlock>
-        <TextBox  Grid.Row="8" Grid.Column="2" Style="{StaticResource GeneralTextBox}" x:Name="Password"/>
-        
-        <!--Linea 7-->
-        <TextBlock Grid.Row="9" Grid.Column="1" VerticalAlignment="Bottom" FontSize="21">Repita la contraseña:</TextBlock>
-        <TextBox  Grid.Row="9" Grid.Column="2" Style="{StaticResource GeneralTextBox}" x:Name="PasswordAgain" />
+            <!--Linea 9-->
+            <TextBlock Grid.Row="6" Grid.Column="1" VerticalAlignment="Bottom">Contraseña:</TextBlock>
+            <TextBox  Grid.Row="6" Grid.Column="2" Style="{StaticResource GeneralTextBox}" x:Name="Password"/>
 
-        <!-- linea 10 Guardar -->
-            <Button Style="{StaticResource GeneralButton}" Grid.RowSpan="3"  Grid.Column="2" Grid.Row="10" Margin="10" Height="50" Content="   GUARDAR   "  x:Name="Guardar">
-                <Button.IsEnabled>
-                    <MultiBinding Converter="{StaticResource Converter }" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
-                        <Binding ElementName="Nombre" Path="(Validation.HasError)" />
-                        <Binding ElementName="Apellidos" Path="(Validation.HasError)" />
-                        <Binding ElementName="CC" Path="(Validation.HasError)" />
-                        <Binding ElementName="Correo" Path="(Validation.HasError)" />
-                        <Binding ElementName="Telefono" Path="(Validation.HasError)" />
-                        <Binding ElementName="FechaContratacion" Path="(Validation.HasError)" />
-                        <Binding ElementName="Cargo" Path="(Validation.HasError)" />
-                        <Binding ElementName="PasswordAgain" Path="(Validation.HasError)" />
-                    </MultiBinding>
-                </Button.IsEnabled>
+            <!--Linea 10-->
+            <TextBlock Grid.Row="7" Grid.Column="1" VerticalAlignment="Bottom" FontSize="21">Repita la contraseña:</TextBlock>
+            <TextBox  Grid.Row="7" Grid.Column="2" Style="{StaticResource GeneralTextBox}" x:Name="PasswordAgain" />
+
+            <!--Linea 7-->
+            <TextBlock Grid.Row="8" Grid.Column="1" VerticalAlignment="Bottom">Local:</TextBlock>
+            <ComboBox Template="{StaticResource GeneralComboBox}" Grid.Row="8" Grid.Column="2"  Margin="1" FontWeight="DemiBold" FontSize="12"  x:Name="Locales" SelectedItem="{Binding Path=Local}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate >
+                        <TextBlock>
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat=" {0}. {1}">
+                                    <Binding Path="Codigo"/>
+                                    <Binding Path="Nombre"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+
+
+                <!--Linea 6-->
+            <TextBlock Grid.Row="9" Grid.Column="1"  >Incio Contrato:</TextBlock>
+            <DatePicker   Style="{DynamicResource date}" Grid.Row="9" Grid.Column="2"  x:Name="FechaContratacion" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" DisplayDate="{Binding FechaContratacion}" Margin="0 2 0 0" FontWeight="DemiBold" />
+        
+            <!--Linea 7-->
+            <TextBlock Grid.Row="10" Grid.Column="1" VerticalAlignment="Bottom">Cargo:</TextBlock>
+                <ComboBox Template="{StaticResource GeneralComboBox}" Grid.Row="10" Grid.Column="2"  Margin="1" FontWeight="DemiBold" FontSize="12" x:Name="Carg" SelectedItem="{Binding Path=Cargo}" >
+                    <ComboBoxItem>Administrador de sede</ComboBoxItem>
+                    <ComboBoxItem>Bodeguero</ComboBoxItem>
+                    <ComboBoxItem>Cajero</ComboBoxItem>
+                    <ComboBoxItem >Encargado de Bodega</ComboBoxItem>
+                    <ComboBoxItem >Gerente general</ComboBoxItem>
+                    <ComboBoxItem>Jefe de Compras</ComboBoxItem>
+            </ComboBox>
+        
+            <!--Linea 8-->
+            <TextBlock Grid.Row="11" Grid.Column="1" VerticalAlignment="Bottom">Salario:</TextBlock>
+            <TextBox  Grid.Row="11" Grid.Column="2" Style="{StaticResource GeneralTextBox}" PreviewTextInput="NumberValidationTextBox" x:Name="Salario" />
+
+            <!-- linea 11 Guardar -->
+                <Button Style="{StaticResource GeneralButton}" Grid.RowSpan="3"  Grid.Column="2" Grid.Row="12" Margin="11" Height="50" Content="   GUARDAR   "  x:Name="Guardar">
+                    <Button.IsEnabled>
+                        <MultiBinding Converter="{StaticResource Converter }" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                            <Binding ElementName="Nombre" Path="(Validation.HasError)" />
+                            <Binding ElementName="Apellidos" Path="(Validation.HasError)" />
+                            <Binding ElementName="CC" Path="(Validation.HasError)" />
+                            <Binding ElementName="Correo" Path="(Validation.HasError)" />
+                            <Binding ElementName="Telefono" Path="(Validation.HasError)" />
+                            <Binding ElementName="FechaContratacion" Path="(Validation.HasError)" />
+                            <Binding ElementName="Carg" Path="(Validation.HasError)" />
+                            <Binding ElementName="PasswordAgain" Path="(Validation.HasError)" />
+                            <Binding ElementName="Locales" Path="(Validation.HasError)" />
+                        </MultiBinding>
+                    </Button.IsEnabled>
+                </Button>
+
+            <!--Back Button-->
+            <Button x:Name="BackButton" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Margin="5" Style="{StaticResource GeneralButton}">
+                <fa:ImageAwesome Icon="ArrowLeft" Height="25"/>
             </Button>
-
-        <!--Back Button-->
-
-        <Button x:Name="BackButton" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Margin="5" Style="{StaticResource GeneralButton}">
-                <fa:ImageAwesome Icon="ArrowLeft" Height="30"/>
-        </Button>
-        
-    </Grid>
+                
+        </Grid>  
+            
+        </ScrollViewer>
     </Border>
+
+
+
 </UserControl>

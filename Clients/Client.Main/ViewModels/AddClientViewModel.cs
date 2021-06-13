@@ -81,16 +81,14 @@ namespace Client.Main.ViewModels
         {
             if (!string.IsNullOrWhiteSpace(NuevoCliente.FirstName) && !string.IsNullOrWhiteSpace(NuevoCliente.LastName) && !string.IsNullOrWhiteSpace(NuevoCliente.Cedula)) 
             {
-                //if (string.IsNullOrEmpty(NuevoCliente.Correo))
-                //{
-                //    NuevoCliente.Correo = null;
-                //}
-                //if (string.IsNullOrEmpty(NuevoCliente.Telefono))
-                //{
-                //    NuevoCliente.Telefono = null;
-                //}
-
-
+                if (string.IsNullOrEmpty(NuevoCliente.Correo))
+                {
+                    NuevoCliente.Correo = null;
+                }
+                if (string.IsNullOrEmpty(NuevoCliente.Telefono))
+                {
+                    NuevoCliente.Telefono = null;
+                }
                 try
                 {
                     if (DbConnection.AddClient(Cliente:NuevoCliente))
@@ -124,7 +122,7 @@ namespace Client.Main.ViewModels
             {
                 string result = null;
                 long number = 0;
-                if (flag == 4)
+                if (flag == 5)
                 {
                     if (name == "CC")
                     {

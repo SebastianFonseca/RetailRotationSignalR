@@ -9,8 +9,10 @@
         mc:Ignorable="d"
         Title="" Height="480" Width="800" MinWidth="800" MinHeight="480" WindowStartupLocation="CenterScreen" >
     <Window.Resources>
+        
         <Style x:Key="MenuButton" TargetType="{x:Type Button}" >
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>                  
             <Setter Property="HorizontalAlignment" Value="Center"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -31,6 +33,16 @@
                     <Setter Property="BorderThickness" Value="5"/>
                     <Setter Property="BorderBrush" Value="Beige"/>
                 </Trigger>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="Background" Value="#F3E0C2"/>
+                    <Setter Property="RenderTransformOrigin" Value="0.5, 0.5"/>
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <ScaleTransform ScaleX="1.1" ScaleY="1.1"/>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+
             </Style.Triggers>
         </Style>
     </Window.Resources>
