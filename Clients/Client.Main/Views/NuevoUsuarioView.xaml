@@ -11,6 +11,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
 
     <UserControl.Resources>
+        
         <!--#region    -->
         <Style TargetType="TextBlock">
             <Setter Property="FontSize" Value="22"/>
@@ -23,13 +24,7 @@
             <Setter Property="Margin" Value="0"/>
             <Setter Property="FontSize" Value="50"/>
         </Style>
-
-        
-         
         <!--#endregion-->
-
-
-
 
     </UserControl.Resources>
 

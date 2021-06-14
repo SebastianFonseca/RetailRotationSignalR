@@ -78,7 +78,7 @@ namespace Client.Main.Utilities
             // Check hash
             if (!IsHashSupported(hashedPassword))
             {
-                throw new NotSupportedException("The hashtype is not supported");
+                throw new NotSupportedException("Error en el hasshing de la contraseña.");
             }
 
             // Extract iteration and Base64 string

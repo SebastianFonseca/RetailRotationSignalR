@@ -64,7 +64,7 @@
 
 
          <!--Linea 5 telefono-->
-        <TextBlock Grid.Row="5" Grid.Column="1"  >Teléfono:</TextBlock>
+            <TextBlock Grid.Row="5" Grid.Column="1">N'umero celular:</TextBlock>
             <TextBox Grid.Row="5" Grid.Column="2" Style="{StaticResource GeneralTextBox}" x:Name="Telefono" PreviewTextInput="NumberValidationTextBox" MaxLength="10"/>
 
         <!-- Recuadro puntos -->
@@ -81,6 +81,8 @@
                         <Binding ElementName="Name" Path="(Validation.HasError)" />
                         <Binding ElementName="Apellidos" Path="(Validation.HasError)" />
                         <Binding ElementName="CC" Path="(Validation.HasError)" />
+                        <Binding ElementName="Telefono" Path="(Validation.HasError)" />
+
                     </MultiBinding>
                 </Button.IsEnabled>
             </Button>

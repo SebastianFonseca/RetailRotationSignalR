@@ -19,7 +19,7 @@ using System.Windows;
 
 namespace Client.Main.ViewModels
 {
-    public class ShellViewModel : Conductor<object>
+    public class ShellViewModel : Conductor<object>, IDataErrorInfo
     {
         ///Objeto responsable de la administracion de las ventanas.
         private readonly IWindowManager window = new WindowManager();
@@ -34,8 +34,6 @@ namespace Client.Main.ViewModels
             {
                 _user = value;
                 NotifyOfPropertyChange(() => User);
-                NotifyOfPropertyChange(() => CanEntrar);
-
             }
         }
 
@@ -49,7 +47,6 @@ namespace Client.Main.ViewModels
             {
                 _password = value;
                 NotifyOfPropertyChange(() => UserPassword);
-                NotifyOfPropertyChange(() => CanEntrar);
             }
         }
 
@@ -66,98 +63,102 @@ namespace Client.Main.ViewModels
         {
         }
 
-        bool havepassflag = false;
-        private bool _canEntrar;
-        public bool CanEntrar
-        {
-            get
-            {
-              if((!string.IsNullOrEmpty(User) && !string.IsNullOrEmpty(UserPassword))&& havepassflag == false)
-                { 
-                    _canEntrar = true;
-                    return _canEntrar;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            set
-            {
-                _canEntrar = value;
-                NotifyOfPropertyChange(() => CanEntrar);
-
-            }
-
-        }
-
         /// <summary>
         /// Fired event when 'Entrar' button is pressed.
         /// </summary>
         public async void Entrar()
         {
-            havepassflag = true;
-            CanEntrar = false;
-            StackVisibility = "Visible"; 
-            
-            Connect.ConnectToServer(User, "Admin");
-
-
-            try
+            StackVisibility = "Visible";
+            if (!string.IsNullOrWhiteSpace(User) && !string.IsNullOrWhiteSpace(UserPassword))
             {
-
-                conexion.Connection.On("SetStatus", handler: (string a ) =>
+                Connect.ConnectToServer(User, "Admin");
+                try
                 {
-                    StackVisibility = "Collapsed";
-                    Statics.ClientStatus = "Conectado al servidor";                   
-                    MessageBox.Show(a);
-                
-                });
-                await conexion.CallServerMethod("TestMethod", Arguments: new[] { "Conectado al sevidor."});
-
-                if (Statics.ClientStatus == "Conectado al servidor")
-                {
-                    conexion.Connection.On("ClienteValidacion", handler: (string Usr, bool response) =>
+                    conexion.Connection.On("SetStatus", handler: (string a) =>
                     {
-                        if(response)
-                        { 
-                        MainWindowViewModel model = new MainWindowViewModel(Usr, Statics.ClientStatus);
-                        window.ShowWindow(model);
-                        this.TryClose();
+                        StackVisibility = "Collapsed";
+                        Statics.ClientStatus = "Conectado al servidor";
+                        MessageBox.Show(a);
+
+                    });
+
+                    await conexion.CallServerMethod("TestMethod", Arguments: new[] { "Conectado al sevidor." });
+
+                    if (Statics.ClientStatus == "Conectado al servidor")
+                    {
+                        conexion.Connection.On("ClienteValidacion", handler: (string Usr, bool response) =>
+                        {
+                            if (response)
+                            {
+                                MainWindowViewModel model = new MainWindowViewModel(Usr, Statics.ClientStatus);
+                                window.ShowWindow(model);
+                                this.TryClose();
+                            }
+                            else
+                            {
+                                MessageBox.Show("El nombre de usuario o la contraseña son incorrectos.");
+                            }
+                        });
+                        var re = conexion.CallServerMethod("ServidorValidarUsuario", Arguments: new[] { User, Statics.Hash(UserPassword) });
+                        return;
+                    }
+
+                    else
+                    {
+                        StackVisibility = "Collapsed";
+                        if (DbConnection.Login(User: User, Password: UserPassword))
+                        {
+                            MainWindowViewModel model = new MainWindowViewModel(User, Statics.ClientStatus);
+                            window.ShowWindow(model);
+                            this.TryClose();
                         }
                         else
                         {
-                            MessageBox.Show("El nombre de usuario o la contraseña son incorrectos.");
-                            havepassflag = false;
+                            MessageBox.Show("Usuario o contraseña incorrectas.");
                         }
 
-                    });
-                 var re = conexion.CallServerMethod("ServidorValidarUsuario", Arguments: new[] { User, Statics.Hash(UserPassword) });
-                 return;  
+                    }
                 }
-
-                else
+                catch (Exception ex)
                 {
-                    StackVisibility = "Collapsed";
-                    if (DbConnection.Login(User:User, Password:UserPassword))
-                    {
-                    MainWindowViewModel model = new MainWindowViewModel(User, Statics.ClientStatus);
-                    window.ShowWindow(model);
-                    this.TryClose();
-                    }
-                    else
-                    {
-                        MessageBox.Show("El nombre de usuario o la contraseña son incorrectos.");
-                        havepassflag = false;
-                    }
-
+                    MessageBox.Show(ex.Message);
                 }
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("Debe llenar todos los campos.");
             }
+        }
 
+
+        public string Error { get { return null; } }
+        int flag = 0;
+        public string this[string name]
+        {
+            get
+            {
+                string result = null;
+                if (flag == 3)
+                {
+                    if (name == "User")
+                    {
+                        if (String.IsNullOrEmpty(User))
+                        {
+                            result = "Este campo no puede estar vacío.";
+                        }
+                    }
+                    else if (name == "UserPassword")
+                    {
+                        if (String.IsNullOrEmpty(UserPassword))
+                        {
+                            result = "Este campo no puede estar vacío.";
+                        }
+                    }
+                 
+                }
+                else { flag += 1; }
+                return result;
+            }
         }
 
     }

@@ -25,23 +25,34 @@ namespace Client.Main.Utilities
         /// <returns></returns>
         public static bool Login(string User, string Password)
         {
-            try {
-
-                using (IDbConnection conn = new SqlConnection(_connString))
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
                 {
-
-                    var parameters = new DynamicParameters();
-                    parameters.Add("@cedula", User);
-                    parameters.Add("@password", Password);
-                    parameters.Add(name: "@RetVal", dbType: DbType.Int32, direction: ParameterDirection.ReturnValue);
-
-                    var returnCode = conn.Execute(sql: "Login", param: parameters, commandType: CommandType.StoredProcedure);
-                    if (parameters.Get<Int32>("@RetVal") == 0)
+                    string cadena = "SELECT [Password]  FROM EMPLEADO where [CedulaEmpleado]=@user";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@user", User);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (!reader.HasRows) { return false; }
+                        while (reader.Read())
+                        {
+                            if (Statics.Verify(Password,reader["Password"].ToString()))
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                            
+                        }
+                        conn.Close();
                         return false;
-                    else
-                        return true;
+                    }
+                    
                 }
-
             }
             catch (Exception e)
             {
@@ -49,10 +60,45 @@ namespace Client.Main.Utilities
                 return false;
             }
 
+
+
+
+
+
+
+            //try {
+
+            //    using (IDbConnection conn = new SqlConnection(_connString))
+            //    {
+
+            //        var parameters = new DynamicParameters();
+            //        parameters.Add("@cedula", User);
+            //        MessageBox.Show(Statics.Hash(Password));
+            //        parameters.Add("@password", Statics.Hash(Password));
+            //        parameters.Add(name: "@RetVal", dbType: DbType.Int32, direction: ParameterDirection.ReturnValue);
+
+            //        var returnCode = conn.Execute(sql: "Login", param: parameters, commandType: CommandType.StoredProcedure);
+            //        if (parameters.Get<Int32>("@RetVal") == 0)
+            //            return false;
+            //        else
+            //            return true;
+            //    }
+
+            //}
+            //catch (Exception e)
+            //{
+            //    MessageBox.Show(e.Message);
+            //    return false;
+            //}
+
         }
+
+
+
 
         public static bool AddClient(ClientesModel Cliente)
         {
+
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
@@ -63,8 +109,8 @@ namespace Client.Main.Utilities
                     cmd.Parameters.AddWithValue("@name", Statics.PrimeraAMayuscula(Cliente.FirstName));
                     cmd.Parameters.AddWithValue("@lastname", Statics.PrimeraAMayuscula(Cliente.LastName));
                     cmd.Parameters.AddWithValue("@cedula", Cliente.Cedula);
-                    cmd.Parameters.AddWithValue("@correo", Cliente.Correo);
-                    cmd.Parameters.AddWithValue("@telefono", Cliente.Telefono);
+                    cmd.Parameters.AddWithValue("@correo", string.IsNullOrEmpty(Cliente.Correo) ? (object)DBNull.Value : Cliente.Correo);
+                    cmd.Parameters.AddWithValue("@telefono", string.IsNullOrEmpty(Cliente.Telefono) ? (object)DBNull.Value : Cliente.Telefono); 
                     conn.Open();
                     cmd.ExecuteNonQuery();
                     MessageBox.Show($"El cliente {Cliente.FirstName} {Cliente.LastName} ha recibido 100 puntos por registrarce.");
@@ -107,7 +153,7 @@ namespace Client.Main.Utilities
                     cmd.Parameters.AddWithValue("@salario", Empleado.Salario);
                     cmd.Parameters.AddWithValue("@telefono", Empleado.Telefono);
                     cmd.Parameters.AddWithValue("@cargo", Empleado.Cargo.Substring(37));
-                    cmd.Parameters.AddWithValue("@contraseña", Empleado.Password);                  
+                    cmd.Parameters.AddWithValue("@contraseña", Statics.Hash(Empleado.Password));                  
                     conn.Open();
                     cmd.ExecuteNonQuery();
                     MessageBox.Show($"Se ha registrado al nuevo usuario {Empleado.FirstName} {Empleado.LastName}");
