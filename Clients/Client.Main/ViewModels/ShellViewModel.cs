@@ -23,12 +23,12 @@ namespace Client.Main.ViewModels
     {
         ///Objeto responsable de la administracion de las ventanas.
         private readonly IWindowManager window = new WindowManager();
-
+        ///Clase responsable de la conexion al servidor obteniendo la instanca unica (Autofac) 
         public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
-
         ///Propiedades enlazadas con el textbox y el passwordbox  de la vista.
-        private string _user;
-        public string User { 
+        private static string _user;
+        public  string User
+        { 
             get=> _user;
             set
             {
@@ -59,78 +59,117 @@ namespace Client.Main.ViewModels
                 NotifyOfPropertyChange(() => StackVisibility);
             }
         }
+
+        string Status_conexion = "Trabajando localmente";
+
+
         public ShellViewModel()
         {
+
         }
+
+        bool flag2 = true;
+
+        ///variable de clase neccesaria para abrir la ventana principal.
 
         /// <summary>
         /// Fired event when 'Entrar' button is pressed.
         /// </summary>
+
+        //public MainWindowViewModel VentanaPricipal = ContainerConfig.scope.Resolve<MainWindowViewModel>();
+       // public MainWindowViewModel VentanaPricipal = ContainerConfig.scope.Resolve<MainWindowViewModel>();
+
+
         public async void Entrar()
         {
-            StackVisibility = "Visible";
-            if (!string.IsNullOrWhiteSpace(User) && !string.IsNullOrWhiteSpace(UserPassword))
+            
+            try
             {
-                Connect.ConnectToServer(User, "Admin");
-                try
+                StackVisibility = "Visible";
+                ///Vefificar que los campos no esten vacios.
+                if (!string.IsNullOrWhiteSpace(User) && !string.IsNullOrWhiteSpace(UserPassword))
                 {
-                    conexion.Connection.On("SetStatus", handler: (string a) =>
+                    ///Si ya hubo un intento de logueo y esta conectado al servidor.
+                    if (Status_conexion == "Conectado al servidor")
                     {
-                        StackVisibility = "Collapsed";
-                        Statics.ClientStatus = "Conectado al servidor";
-                        MessageBox.Show(a);
-
-                    });
-
-                    await conexion.CallServerMethod("TestMethod", Arguments: new[] { "Conectado al sevidor." });
-
-                    if (Statics.ClientStatus == "Conectado al servidor")
-                    {
-                        conexion.Connection.On("ClienteValidacion", handler: (string Usr, bool response) =>
+                        if (conexion.Connection != null & conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected)
                         {
-                            if (response)
+                            Task<object> re = conexion.CallServerMethod("ServidorValidarUsuario", Arguments: new[] { User, UserPassword });
+                            await re;
+                            if (Convert.ToBoolean(re.Result.ToString()) == true)
                             {
-                                MainWindowViewModel model = new MainWindowViewModel(Usr, Statics.ClientStatus);
-                                window.ShowWindow(model);
+                                window.ShowWindow(new MainWindowViewModel(User, Status_conexion));
                                 this.TryClose();
+                                return;
                             }
                             else
                             {
                                 MessageBox.Show("El nombre de usuario o la contraseña son incorrectos.");
                             }
+                        }
+                    }
+                    ///Para intentar loguarse por pimera vez y conectarse al servidor.
+                    //else
+                   // {
+
+
+                    await Connect.ConnectToServer(User, "Admin") ;
+                    if (flag2)
+                    {
+                        conexion.Connection.On("SetStatus", handler: (string a) =>
+                        {
+                            StackVisibility = "Collapsed";
+                            Status_conexion = "Conectado al servidor";
+                            MessageBox.Show(a);
+
                         });
-                        var re = conexion.CallServerMethod("ServidorValidarUsuario", Arguments: new[] { User, Statics.Hash(UserPassword) });
-                        return;
+                        flag2 = false;
                     }
 
-                    else
+                    await conexion.CallServerMethod("TestMethod", Arguments: new[] { "Conectado al sevidor." });                              
+                    if (Status_conexion == "Conectado al servidor" & conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected)
                     {
-                        StackVisibility = "Collapsed";
-                        if (DbConnection.Login(User: User, Password: UserPassword))
+                        Task<object> re = conexion.CallServerMethod("ServidorValidarUsuario", Arguments: new[] { User, UserPassword });
+                        await re;
+                        if (Convert.ToBoolean(re.Result.ToString()) == true)
                         {
-                            MainWindowViewModel model = new MainWindowViewModel(User, Statics.ClientStatus);
-                            window.ShowWindow(model);
+                            window.ShowWindow(new MainWindowViewModel(User, Status_conexion));
                             this.TryClose();
+                            return;
                         }
                         else
                         {
-                            MessageBox.Show("Usuario o contraseña incorrectas.");
+                            MessageBox.Show("El nombre de usuario o la contraseña son incorrectos.");
                         }
-
                     }
+                        //else
+                        //{
+
+                    StackVisibility = "Collapsed";
+                    if (DbConnection.Login(User: User, Password: UserPassword))
+                    {
+                        window.ShowWindow(new MainWindowViewModel(User, Status_conexion));
+                        this.TryClose();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Usuario o contraseña incorrectas.");
+                    }
+                      //  }
+                    //}
                 }
-                catch (Exception ex)
+                // Si alguno de los campos no se ha llenado.
+                else
                 {
-                    MessageBox.Show(ex.Message);
+                    MessageBox.Show("Debe llenar todos los campos.");
                 }
             }
-            else
-            {
-                MessageBox.Show("Debe llenar todos los campos.");
-            }
+            catch (Exception e)
+            { MessageBox.Show(e.Message); }
+
         }
 
-
+        ///Codigo necesario para la validacion de los datos ingresados en las cajas de texto del formulario.
         public string Error { get { return null; } }
         int flag = 0;
         public string this[string name]

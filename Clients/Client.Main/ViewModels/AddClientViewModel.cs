@@ -7,6 +7,9 @@ using Client.Main.Utilities;
 using Client.Main.Models;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
+using Autofac;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR.Client;
 
 namespace Client.Main.ViewModels
 {
@@ -19,6 +22,13 @@ namespace Client.Main.ViewModels
         {
             VentanaPrincipal = argVentana;
             NuevoCliente = new ClientesModel();
+            conexion.Connection.On("ClienteExiste", handler: (string a) =>
+            {
+
+                MessageBox.Show(a);
+                CC = "";
+
+            });
         }
 
        
@@ -76,9 +86,15 @@ namespace Client.Main.ViewModels
                 NotifyOfPropertyChange(() => Telefono);
 
             }
-        }                      
-        public void Guardar()
+        }
+
+
+        public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
+
+        public async void Guardar()
         {
+
+
             if (!string.IsNullOrWhiteSpace(NuevoCliente.FirstName) && !string.IsNullOrWhiteSpace(NuevoCliente.LastName) && !string.IsNullOrWhiteSpace(NuevoCliente.Cedula)) 
             {
                 if (string.IsNullOrEmpty(NuevoCliente.Correo))
@@ -89,16 +105,37 @@ namespace Client.Main.ViewModels
                 {
                     NuevoCliente.Telefono = null;
                 }
+
                 try
                 {
+                    if ((Statics.ClientStatus == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+                    {
+                        Task<object> re = conexion.CallServerMethod("ServidorAddClient", Arguments: new[] { NuevoCliente });                        
+                        await re;
+                        if (Convert.ToInt32( re.Result.ToString() ) == 1 )
+                        {
+                            MessageBox.Show($"El cliente {NuevoCliente.FirstName} {NuevoCliente.LastName} se ha registrado en el servidor con 100 puntos.");
+                            VentanaPrincipal.ActivateItem(new AddClientViewModel(VentanaPrincipal));
+                            return;
+                        }
+                        if (Convert.ToInt32(re.Result.ToString()) == 0)
+                        {
+                            MessageBox.Show($"El cliente {NuevoCliente.FirstName} {NuevoCliente.LastName} ya esta registrado.");
+                            CC = "";
+                            return;
+                        }
+                    }
+
                     if (DbConnection.AddClient(Cliente:NuevoCliente))
-                    {                 
+                    {
+                        MessageBox.Show($"El cliente {NuevoCliente.FirstName} {NuevoCliente.LastName} se ha registrado localmente con 100 puntos.");
                         VentanaPrincipal.ActivateItem(new AddClientViewModel(VentanaPrincipal));
                     }
                     else
                     {
                         CC = "";
                     }
+                    
                 }
                 catch (Exception e)
                 {
@@ -121,28 +158,27 @@ namespace Client.Main.ViewModels
             get
             {
                 string result = null;
-                long number = 0;
                 if (flag == 5)
                 {
                     if (name == "CC")
                     {
-                        if (!long.TryParse(CC, out number))
+                        if (String.IsNullOrEmpty(CC))
                         {
-                            result = "Rellene este campo cc.";
+                            result = "Rellene este campo.";
                         }
                     }
                     else if(name == "Name")
                     {
                         if (String.IsNullOrEmpty(Name))
                         {
-                            result = "Rellene este campo name.";
+                            result = "Rellene este campo.";
                         }
                     }
                     else if (name == "Apellidos")
                     {
                         if (String.IsNullOrEmpty(Apellidos))
                         {
-                            result = "Rellene este campo apl.";
+                            result = "Rellene este campo.";
                         }
 
                     }
@@ -152,6 +188,10 @@ namespace Client.Main.ViewModels
                         {
                             result = "El número telefónico debe tener 10 digitos.";
                         }
+                        if (String.IsNullOrEmpty(Telefono))
+                        {
+                            return null;
+                        }
 
                     }
                 }
@@ -160,6 +200,7 @@ namespace Client.Main.ViewModels
 
 
                 return result;
+
             }
         }
 

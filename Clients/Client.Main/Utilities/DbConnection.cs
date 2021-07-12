@@ -113,7 +113,6 @@ namespace Client.Main.Utilities
                     cmd.Parameters.AddWithValue("@telefono", string.IsNullOrEmpty(Cliente.Telefono) ? (object)DBNull.Value : Cliente.Telefono); 
                     conn.Open();
                     cmd.ExecuteNonQuery();
-                    MessageBox.Show($"El cliente {Cliente.FirstName} {Cliente.LastName} ha recibido 100 puntos por registrarce.");
                     conn.Close();
                     return true;
 

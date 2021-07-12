@@ -137,7 +137,7 @@ namespace Client.Main.ViewModels
         {
             DbConnection.NuevoIdLocal();
 
-            if (Statics.ClientStatus == "Trabajando localmente")
+            if (MainWindowViewModel.Status == "Trabajando localmente")
             {
                 if (!string.IsNullOrWhiteSpace(NuevoLocal.Nombre ) &&
                     !string.IsNullOrWhiteSpace(NuevoLocal.Direccion) &&

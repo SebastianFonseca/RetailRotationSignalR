@@ -1,4 +1,5 @@
-﻿using Client.Main.Utilities;
+﻿using Autofac;
+using Client.Main.Utilities;
 using Client.Main.ViewModels;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.IdentityModel.Tokens;
@@ -26,13 +27,16 @@ namespace Client.Main
         {
             get { return hubConnection; }
         }
+
+       static string  Usuario;
         /// <summary>
         /// Starts the connection with te server, the User and HashedPassword info are into the token.
         /// </summary>
         /// <param name="User"></param>
         /// <param name="HashedPassword"></param>
-        public static async void ConnectToServer(string User, string HashedPassword)
+        public static async Task<object> /*void*/ ConnectToServer(string User, string HashedPassword)
         {
+            Usuario = User;
             try
             {
                 if (hubConnection == null)
@@ -64,53 +68,22 @@ namespace Client.Main
                      }
                      ).WithAutomaticReconnect().Build();
                     hubConnection.Closed += HubConnection_Closed;
+                    hubConnection.Reconnected += HubConnection_Reconnected;
+
+
                     Task t = hubConnection.StartAsync();
                     await t;
+                    return t;
                 }
             }
             catch ///(Exception es)
             {
-                return;
+                return null;
                 ///MessageBox.Show(es.Message + "ConnectToServer");
             }
-
-        }
-        public async Task<object> CallServerMethod(string MethodName, Object[] Arguments)
-        {            
-            try
-            {
-            Task result = hubConnection.InvokeCoreAsync(MethodName, args: Arguments);
-                await result;
-             if (hubConnection.ConnectionId != null && hubConnection.State != HubConnectionState.Connecting)
-            {
-                return result;
-            }    
-            }
-            catch
-            {
-                return null;
-            }
             return null;
-
         }
-        private static  async Task HubConnection_Closed(Exception arg)
-        {
-            Statics.ClientStatus = "Trabajando localmente";
-            
-            MessageBox.Show("Trabajando localmente, se intentara reestablecer la conexión en segundo plano.");
-            try
-            {
-                await Task.Delay(new Random().Next(0, 5) * 1000);
-                await hubConnection.StartAsync();
 
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-
-        }
 
 
         /// <summary>
@@ -118,6 +91,80 @@ namespace Client.Main
         /// </summary>
         /// <param name="MethodName">The method name to invoke.</param>
         /// <param name="Arguments">The needed arguments fot the specified method.</param>
+        public async Task<object> CallServerMethod(string MethodName, Object[] Arguments)
+        {
+            if (hubConnection.ConnectionId != null && hubConnection.State != HubConnectionState.Connecting) { 
+            try
+            {
+               /// MessageBox.Show(Connection.State.ToString());
+                Task<object> result = hubConnection.InvokeCoreAsync<object>(MethodName, args: Arguments);
+                await result ;
+                if (hubConnection.ConnectionId != null && hubConnection.State != HubConnectionState.Connecting && result.Status == TaskStatus.RanToCompletion )
+                {
+                    return result.Result;
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+                return null;
+            }
+            }
+            return null;
+
+        }
+
+        
+
+
+        private static  async Task HubConnection_Closed(Exception arg)
+        {
+           Connect conexion = ContainerConfig.scope.Resolve<Connect>();
+           MainWindowViewModel.Status = "Trabajando localmente";
+           await  conexion.CallServerMethod("ClienteDesconectado", Arguments: new[] { Usuario });
+            if (arg.Message.Substring(0, 61) == "Reconnect retries have been exhausted after 5 failed attempts")
+            {
+                while (hubConnection.State == HubConnectionState.Disconnected)
+                {
+                    try
+                    {
+                        await Task.Delay(TimeSpan.FromSeconds(0.5));
+                        //MessageBox.Show(hubConnection.State.ToString());
+                        await hubConnection.StartAsync();
+                        MainWindowViewModel.Status = "Conectado al servidor";
+                        await conexion.CallServerMethod("ClienteReconectado", Arguments: new[] { Usuario });
+
+
+
+                    }
+                    catch (Exception e)
+                    {
+                        if (e.Message == "No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión.")
+                        {
+                        }
+                        else
+                            MessageBox.Show(e.Message);
+                    }
+                }
+            }
+
+
+
+
+          
+
+        }
+
+
+        private static async Task HubConnection_Reconnected(string arg)
+        {
+            Connect conexion = ContainerConfig.scope.Resolve<Connect>();
+            MainWindowViewModel.Status = "Conectado al servidor";
+            await conexion.CallServerMethod("ClienteReconectado", Arguments: new[] { Usuario });
+
+
+        }
+
 
 
         /// <summary>

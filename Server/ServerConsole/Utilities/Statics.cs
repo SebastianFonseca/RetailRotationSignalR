@@ -2,73 +2,15 @@
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
-using System.Windows;
-using Caliburn.Micro;
 
-namespace Client.Main.Utilities
+namespace ServerConsole.Utilities
 {
-    public static class Statics
+    class Statics
     {
-
-
-
-        /// <summary>
-        /// 'Global' variable indicates the server conection ClientStatus.
-        /// </summary>
-        private static string _clientStatus = "Trabajando localmente";
-        public static string ClientStatus
-        {
-            get { return _clientStatus; }
-            set
-            {
-                _clientStatus = value;
-
-            }
-        }
-
-        #region Crypto
-        /// Size of salt, must be 8 bytes or larger.
         private const int SaltSize = 16;
 
         /// Size of hash.
         private const int HashSize = 20;
-
-        /// <summary>
-        ///  Iteration count must be greater than zero, the minimum recommended number of iterations is 1000.
-        /// </summary>
-        private const int iterations = 10000;
-
-        /// Creates a hash from a password.
-        /// <param name="iterations">Number of iterations.</param>
-        /// <returns>The hash.</returns>
-        public static string Hash(string password)
-        {
-            /// Create salt
-            byte[] salt;
-            new RNGCryptoServiceProvider().GetBytes(salt = new byte[SaltSize]);
-
-            /// Create hash
-            var pbkdf2 = new Rfc2898DeriveBytes(password, salt, iterations);
-            var hash = pbkdf2.GetBytes(HashSize);
-
-            // Combine salt and hash
-            var hashBytes = new byte[SaltSize + HashSize];
-            Array.Copy(salt, 0, hashBytes, 0, SaltSize);
-            Array.Copy(hash, 0, hashBytes, SaltSize, HashSize);
-
-            // Convert to base64
-            var base64Hash = Convert.ToBase64String(hashBytes);
-
-            // Format hash with extra information
-            return string.Format("$MYHASH$V1${0}${1}", iterations, base64Hash);
-        }
-
-
-        /// <summary>
-        /// Checks if hash is supported.
-        /// </summary>
-        /// <param name="hashString">The hash.</param>
-        /// <returns>Is supported?</returns>
         public static bool IsHashSupported(string hashString)
         {
             return hashString.Contains("$MYHASH$V1$");
@@ -93,7 +35,7 @@ namespace Client.Main.Utilities
             var iterations = int.Parse(splittedHashString[0]);
             var base64Hash = splittedHashString[1];
 
-            // Get hash bytes
+            // Get hash bytess
             var hashBytes = Convert.FromBase64String(base64Hash);
 
             // Get salt
@@ -113,10 +55,7 @@ namespace Client.Main.Utilities
                 }
             }
             return true;
-        } 
-        #endregion
-
-
+        }
 
         public static string PrimeraAMayuscula(string palabra)
         {

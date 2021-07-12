@@ -7,9 +7,8 @@
         xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:cal="http://www.caliburnproject.org"
         mc:Ignorable="d"
-        Title="" Height="480" Width="800" MinWidth="800" MinHeight="480" WindowStartupLocation="CenterScreen" >
+        Title="" Height="480" Width="800" MinWidth="800" MinHeight="480" WindowStartupLocation="CenterScreen"  >
     <Window.Resources>
-        
         <Style x:Key="MenuButton" TargetType="{x:Type Button}" >
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>                  
@@ -115,13 +114,13 @@
             
             <Border BorderThickness="1" CornerRadius="5" Background="#F3E0C2" Grid.Row="8" Grid.Column="0" Margin="10" Grid.ColumnSpan="5" HorizontalAlignment="Right" Opacity="0.9">
                 <StackPanel   Orientation="Horizontal" Opacity="1">
-                    <TextBlock Text="{Binding Usuario, Mode=TwoWay}" Margin="5 0 0 0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="15"/>
+                    <TextBlock Text="{Binding Usuario}" Margin="5 0 0 0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="15"/>
                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" VerticalAlignment="Stretch" Margin="15 5 15 5"/>
-                    <TextBlock x:Name="Status" Margin="0 0 5 0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="15" />
+                    <TextBlock x:Name="Status" Text="{Binding Path=Status}" Margin="0 0 5 0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="15" />
                 </StackPanel>
             </Border>
 
-
+            <!--x:Name="Status"-->
             <!-- .......................  IMAGEN DE FONDO .......................  -->
             <Grid.Background>
                 <ImageBrush ImageSource="C:\Users\sebas\Desktop\fondo.png"/>

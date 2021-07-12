@@ -72,8 +72,7 @@ namespace ServerConsole
                    }
 
                };
-           });
-
+           }) ;           
 
             services.AddMvc();
             services.AddSignalRCore();
@@ -86,7 +85,7 @@ namespace ServerConsole
 
             app.UseAuthentication();
             app.UseAuthorization();
-
+           
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHub<RetailHUB>("/retailHub");

@@ -3,6 +3,9 @@ using Client.Main.Utilities;
 using Client.Main.Views;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Windows;
 
@@ -10,8 +13,10 @@ namespace Client.Main.ViewModels
 {
     public class MainWindowViewModel : Conductor<object>
     {
-
-        ///Objeto responsable de la administracion de las ventanas.
+        public void Cerrando()
+        {
+            MessageBox.Show("Cerrando");
+        }
 
         private string _usuario;
 
@@ -25,16 +30,24 @@ namespace Client.Main.ViewModels
             }
         }
 
-        private string _status;
 
-        public string Status
+        private static string _status = "Trabajando localmente";
+        public static string Status
         {
             get { return _status; }
             set
-            { 
+            {
                 _status = value;
-                NotifyOfPropertyChange(() =>Status);
+                NotifyPropertyChange(() => Status);
             }
+        }
+
+        public static event PropertyChangedEventHandler StaticPropertyChanged;
+
+        private static void NotifyPropertyChange<T>(Expression<Func<T>> property)
+        {
+            string propertyName = (((MemberExpression)property.Body).Member as PropertyInfo).Name;
+            StaticPropertyChanged?.Invoke(null, new PropertyChangedEventArgs(propertyName));
         }
 
 
@@ -49,8 +62,7 @@ namespace Client.Main.ViewModels
 
         public void ButtonMainMenu()
         {
-            ActivateItem(new MainMenuViewModel(this));
-            
+            ActivateItem(new MainMenuViewModel(this));            
         }
 
     }

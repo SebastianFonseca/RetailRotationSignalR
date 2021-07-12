@@ -20,10 +20,10 @@ namespace Client.Main.ViewModels
             VentanaPrincipal = argVentana;
         }
 
-
+        
+        ShellViewModel model = new ShellViewModel();
         public void CerrarSesion()
     {
-        ShellViewModel model = new ShellViewModel();
         window.ShowWindow(model);
         VentanaPrincipal.TryClose();
 
