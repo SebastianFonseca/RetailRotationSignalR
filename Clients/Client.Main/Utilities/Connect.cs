@@ -147,12 +147,7 @@ namespace Client.Main
                     }
                 }
             }
-
-
-
-
-          
-
+        
         }
 
 

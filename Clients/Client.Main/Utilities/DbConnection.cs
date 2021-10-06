@@ -10,46 +10,47 @@ using Client.Main.Models;
 using static Client.Main.ViewModels.AddClientViewModel;
 using System.Collections.ObjectModel;
 using Caliburn.Micro;
+using Microsoft.SqlServer.Management.Common;
+using Microsoft.SqlServer.Replication;
+using System.Threading.Tasks;
+using Dotmim.Sync.SqlServer;
+using Dotmim.Sync;
 
 namespace Client.Main.Utilities
 {
     public class DbConnection
     {
 
-        private static string _connString = ConnectionString("RetailRotationClientDataBase");
+        private static string _connString = 
+            ConnectionString("RetailRotationClientDataBase");
         /// <summary>
         /// Metodo responsable de verificar en la base de datos localmente si el usuario que intenta ingresar esta o no registrado.
         /// </summary>
         /// <param name="User"></param>
         /// <param name="Password"></param>
         /// <returns></returns>
-        public static bool Login(string User, string Password)
+        public static string[] Login(string User, string Password)
         {
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = "SELECT [Password]  FROM EMPLEADO where [CedulaEmpleado]=@user";
+                    string cadena = "SELECT *  FROM EMPLEADO where [CedulaEmpleado]=@user";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     cmd.Parameters.AddWithValue("@user", User);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
-                        if (!reader.HasRows) { return false; }
+                        if (!reader.HasRows) { return new[] { "Usuario no registrado." }; }
                         while (reader.Read())
                         {
-                            if (Statics.Verify(Password,reader["Password"].ToString()))
+                            if (Statics.Verify(Password, reader["Password"].ToString()))
                             {
-                                return true;
+                                return new[] { "Registrado", reader["Cargo"].ToString() };
                             }
-                            else
-                            {
-                                return false;
-                            }
-                            
                         }
                         conn.Close();
-                        return false;
+                        return new[] { "Contraseña incorrecta." };
                     }
                     
                 }
@@ -57,7 +58,7 @@ namespace Client.Main.Utilities
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
-                return false;
+                return new[] { "Exception" };
             }
 
 
@@ -176,6 +177,52 @@ namespace Client.Main.Utilities
                 }
             }
         }
+
+
+
+        public static BindableCollection<PersonModel> emp = new BindableCollection<PersonModel>();
+        public static BindableCollection<PersonModel> getEmpleados(string Caracteres)
+        {
+            emp.Clear();
+            
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+
+                    //                    string cadena = $"SELECT * FROM EMPLEADO WHERE CedulaEmpleado LIKE '%{Caracteres}%' ";
+                    string cadena = $"SELECT * FROM EMPLEADO WHERE  LIKE '%{Caracteres}%' IN (CedulaEmpleado, Nombres, Apellidos) ";
+
+                    SqlCommand cmd = new SqlCommand(cadena, conn);                    
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            PersonModel persona = new PersonModel();
+                            persona.Cedula = reader["CedulaEmpleado"].ToString();
+                            persona.FirstName = reader["Nombres"].ToString();
+                            persona.LastName = reader["Apellidos"].ToString();
+                            //MessageBox.Show(persona.FirstName);
+                            emp.Add(persona);
+                        }
+                    }
+                    conn.Close();
+                    //foreach (var item in emp)
+                    //{
+                    //    MessageBox.Show(item.FirstName);
+                    //}
+                    return emp;
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+                return null;
+            }
+        }
+
+
 
 
         public static BindableCollection<EmpleadoModel> empleados = new BindableCollection<EmpleadoModel>();
@@ -320,16 +367,238 @@ namespace Client.Main.Utilities
 
 
 
+
+
+        public static async void SincronizarReplicacionMerge()
+        {
+            //try
+            //{
+            //    using (SqlConnection conn = new SqlConnection(_connString))
+            //    {
+
+            //        string cadena = "EXEC msdb.dbo.sp_start_job N'DESKTOP-RB7GS8A-RetailRotationClientD-MergeClientesFromClie-DESKTOP-RB7GS8A-3'";
+            //        SqlCommand cmd = new SqlCommand(cadena, conn);
+            //        conn.Open();
+            //        cmd.ExecuteNonQuery();
+            //        conn.Close();
+
+
+            //    }
+            //}
+            //catch (Exception e)
+            //{
+
+            //        MessageBox.Show(e.Message);
+
+
+            //}
+
+
+
+
+
+            //string subscriberName = "DESKTOP-RB7GS8A"; /*\\MSSQLSERVER*/
+            //string publisherName = "DESKTOP-RB7GS8A";
+            //string publicationName = "MergeClientesFromClients";
+            //string subscriptionDbName = "RetailRotationClientDataBase";
+            //string publicationDbName = "RetailRotationServerDataBase";
+
+
+
+            //try
+            //{
+            //    using (SqlConnection conn = new System.Data.SqlClient.SqlConnection(_connString))
+            //    {
+            //        // Create a connection to the Publisher.
+            //        ////conn.Open();
+            //     ServerConnection serverconn = new Microsoft.SqlServer.Management.Common.ServerConnection(publisherName, userName:"sebas",password:"");
+            //    //ServerConnection serverconn = new ServerConnection(conn);
+
+
+            //    MergeSubscription subscription;
+
+            //       // conn.Open();
+            //    // Connect to the Publisher
+            //    serverconn.Connect();
+            //    MessageBox.Show(serverconn.Login.ToString()); 
+
+            //    // Define the subscription.
+            //    subscription = new MergeSubscription();
+            //    subscription.ConnectionContext = serverconn;
+            //    subscription.DatabaseName = publicationDbName;
+            //    subscription.PublicationName = publicationName;
+            //    subscription.SubscriptionDBName = subscriptionDbName;
+            //    subscription.SubscriberName = subscriberName;
+            //        subscription.SynchronizationAgent.Synchronize();
+
+            //        // If the push subscription exists, start the synchronization.
+            //        if (subscription.LoadProperties())
+            //    {
+            //        // Check that we have enough metadata to start the agent.
+            //        if (subscription.SubscriberSecurity != null)
+            //        {
+            //            // Synchronously start the Merge Agent for the subscription.
+            //            subscription.SynchronizationAgent.Synchronize();
+            //        }
+            //        else
+            //        {
+            //            throw new ApplicationException("There is insufficent metadata to " +
+            //                "synchronize the subscription. Recreate the subscription with " +
+            //                "the agent job or supply the required agent properties at run time.");
+            //        }
+            //    }
+            //    else
+            //    {
+            //        // Do something here if the push subscription does not exist.
+            //        throw new ApplicationException(String.Format(
+            //            "The subscription to '{0}' does not exist on {1}",
+            //            publicationName, subscriberName));
+            //    }
+            //    }
+
+            //}
+            //catch (Exception ex)
+            //{
+            //    // Implement appropriate error handling here.
+            //    MessageBox.Show(ex.Message);
+            //   // throw new ApplicationException("The subscription could not be synchronized.", ex);
+            //}
+            ////finally
+            ////{
+            ////    //conn.Disconnect();
+            ////    //}
+
+            ////}
+            ///
+
+
+
+            // // Define the server, publication, and database names.
+            // string subscriberName = "DESKTOP-RB7GS8A";
+            //// string publisherName = "DESKTOP-RB7GS8A";
+            // string publicationName = "publi";
+            // string subscriptionDbName = "RetailRotationClientDataBase";
+            // string publicationDbName = "RetailRotationServerDataBase";
+
+            // // Create a connection to the Publisher.
+            // SqlConnection sql = new SqlConnection(@"Server= DESKTOP-RB7GS8A; Database=RetailRotationClientDataBase; Trusted_Connection= True;Persist Security Info=True;");
+            // ServerConnection conn = new ServerConnection(sqlConnection:sql);
+
+
+
+            // MergeSubscription subscription;
+
+            // try
+            // {
+            //     // Connect to the Publisher
+            //     conn.Connect();
+            //     MessageBox.Show("db name" + conn.DatabaseName+" currentdb" + conn.CurrentDatabase +" con is open "+ conn.IsOpen.ToString() + " Acces token" + conn.AccessToken );
+            //     // Define the subscription.
+            //     subscription = new MergeSubscription();
+            //     subscription.ConnectionContext = conn;
+            //     subscription.DatabaseName = publicationDbName;
+            //     subscription.PublicationName = publicationName;
+            //     subscription.SubscriptionDBName = subscriptionDbName;
+            //     subscription.SubscriberName = subscriberName;
+
+            //     // If the push subscription exists, start the synchronization.
+            //     if (subscription.LoadProperties())
+            //     {
+            //         // Check that we have enough metadata to start the agent.
+            //         if (subscription.SubscriberSecurity != null)
+            //         {
+            //             // Synchronously start the Merge Agent for the subscription.
+            //             subscription.SynchronizationAgent.Synchronize();
+            //         }
+            //         else
+            //         {
+            //             throw new ApplicationException("There is insufficent metadata to " +
+            //                 "synchronize the subscription. Recreate the subscription with " +
+            //                 "the agent job or supply the required agent properties at run time.");
+            //         }
+            //     }
+            //     else
+            //     {
+            //         // Do something here if the push subscription does not exist.
+            //         throw new ApplicationException(String.Format(
+            //             "The subscription to '{0}' does not exist on {1}",
+            //             publicationName, subscriberName));
+            //     }
+            // }
+            // catch (Exception ex)
+            // {
+            //     // Implement appropriate error handling here.
+            //     ///throw new ApplicationException("The subscription could not be synchronized.", e
+            //     MessageBox.Show(ex.InnerException.ToString());
+            // }
+            // finally
+            // {
+            //     conn.Disconnect();
+            // }
+
+            //try
+            //{
+
+            //    using (IDbConnection conn = new SqlConnection("Server= DESKTOP-RB7GS8A; Database= msdb; Trusted_Connection= True;"))
+            //    {
+            //        conn.Open();
+            //        string sql = "sp_start_job";
+            //        var parameters = new DynamicParameters();
+            //        parameters.Add("@job_name", "DESKTOP-RB7GS8A-RetailRotationClientD-MergeClientesFromClie-DESKTOP-RB7GS8A-3");
+            //        parameters.Add(name: "@RetVal", dbType: DbType.Int32, direction: ParameterDirection.ReturnValue);
+            //         Task result =  conn.ExecuteAsync(sql, commandType: CommandType.StoredProcedure, param : parameters);
+            //        result.Wait();
+            //        MessageBox.Show( parameters.Get<Int32>("@RetVal").ToString());
+
+            //    }
+
+            //}
+            //catch (Exception e)
+            //{
+            // MessageBox.Show(e.Message);
+
+            //}
+
+            var serverProvider = new SqlSyncProvider("Server = DESKTOP-RB7GS8A; Database = RetailRotationClientDataBase; Trusted_Connection = True; Persist Security Info = True;");
+            var clientProvider = new SqlSyncProvider("Server = DESKTOP-RB7GS8A; Database = RetailRotationServerDataBase; Trusted_Connection = True; Persist Security Info = True;");
+
+            var agent = new SyncAgent(clientProvider, serverProvider, new string[]{ "Empleado"});
+
+            var progress = new SynchronousProgress<ProgressArgs>(s =>MessageBox.Show($"{s.Context.SyncStage}:\t{s.Message}"));  
+            
+            try
+            {
+                do
+                {
+                    var syncContext = await agent.SynchronizeAsync(progress);
+                    MessageBox.Show(syncContext.ToString());
+                } while (agent.SessionState == Dotmim.Sync.Enumerations.SyncSessionState.Synchronizing);
+                MessageBox.Show("Hola");
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show (e.Message);
+            }
+
+           
+
+
+
+
+
+        }
+
         /// <summary>
         /// Return the connection string from the App.config file of the giving name.
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
         static string ConnectionString(string name)
-    {
-        return ConfigurationManager.ConnectionStrings[name].ConnectionString;
-    }
-
-
+            {
+                return ConfigurationManager.ConnectionStrings[name].ConnectionString;
+            }
+        
     }
 }
+
+    

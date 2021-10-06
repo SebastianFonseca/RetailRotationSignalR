@@ -15,18 +15,18 @@ namespace ServerConsole
     [Authorize]
     public class RetailHUB : Hub
     {
-        public async Task<bool> ServidorValidarUsuario(string Usuario, string Password)
+        public string[] /*async Task<bool>*/ ServidorValidarUsuario(string Usuario, string Password)
         {
             Console.ForegroundColor = ConsoleColor.DarkCyan;
             Console.Write("\n\t" + DateTime.Now+"--"); 
             Console.ForegroundColor = ConsoleColor.White;
-
-            if (DbConnection.Login(User: Usuario, Password: Password))
+            string[] resultado = DbConnection.Login(User: Usuario, Password: Password);
+            if (resultado[0] == "Registrado")
             {
-                Console.Write(" El usuario " + Usuario + " se conecto.");
+                Console.Write(" El usuario " + Usuario + " se ha conectado.");
                 Console.ResetColor();
                 Console.WriteLine("\n");
-                return true;
+                //return resultado;
                 //await Clients.Caller.SendCoreAsync("ClienteValidacion", args: new object[] { Usuario, true });
             }
             else
@@ -34,11 +34,11 @@ namespace ServerConsole
                 Console.Write(" El usuario " + Usuario + " fallo al conectarse.");
                 Console.ResetColor();
                 Console.WriteLine("\n");
-                return false;
+                //return resultado;
                 //await Clients.Caller.SendCoreAsync("ClienteValidacion", args: new object[] { Usuario, false });
 
             }
-
+            return resultado;
         }
 
         public async Task<int> ServidorAddClient(ClientesModel Cliente)
@@ -72,7 +72,7 @@ namespace ServerConsole
             Console.ForegroundColor = ConsoleColor.DarkCyan;
             Console.Write("\n\t" + DateTime.Now + "--");
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine($"El cliente {a} se ha desonectado.\n\n");
+            Console.WriteLine($"El usuario {a} se ha desconectado.\n\n");
             Console.ResetColor();
 
         }
@@ -82,7 +82,7 @@ namespace ServerConsole
             Console.ForegroundColor = ConsoleColor.DarkCyan;
             Console.Write("\n\t" + DateTime.Now + "--");
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine($"El cliente {a} se ha conectado de nuevo.\n\n");
+            Console.WriteLine($"El usuario {a} se ha conectado de nuevo.\n\n");
             Console.ResetColor();
 
         }

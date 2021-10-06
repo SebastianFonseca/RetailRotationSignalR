@@ -14,32 +14,28 @@ namespace ServerConsole.Utilities
     {
 
         private static string _connString = ConnectionString("RetailRotationServerDataBase");
-        public static bool Login(string User, string Password)
+        public static String[] Login(string User, string Password)
         {
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = "SELECT [Password]  FROM EMPLEADO where [CedulaEmpleado]=@user";
+                    string cadena = "SELECT *  FROM EMPLEADO where [CedulaEmpleado]=@user";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     cmd.Parameters.AddWithValue("@user", User);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
-                        if (!reader.HasRows) { return false; }
+                        if (!reader.HasRows) { return new[] { "Usuario no registrado." }; }
                         while (reader.Read())
                         {
                             if (Statics.Verify(Password, reader["Password"].ToString()))
                             {
-                                return true;
-                            }
-                            else
-                            {
-                                return false;
+                                return new[] {"Registrado", reader["Cargo"].ToString() };
                             }
                         }
                         conn.Close();
-                        return false;
+                        return new[] { "Contraseña incorrecta." };
                     }
 
                 }
@@ -47,7 +43,7 @@ namespace ServerConsole.Utilities
             catch (Exception e)
             {
                 Console.WriteLine(e.Message); 
-                return false;
+                return new[] { "Exception" };
             }
 
 

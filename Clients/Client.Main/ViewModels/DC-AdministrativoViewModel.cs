@@ -21,9 +21,15 @@ namespace Client.Main.ViewModels
             VentanaPrincipal.ActivateItem(new NuevoLocalViewModel(VentanaPrincipal));
         }
 
+
         public void NuevoUsuario()
         {
                 VentanaPrincipal.ActivateItem(new NuevoUsuarioViewModel(VentanaPrincipal));
+        }
+        public void BuscarUsuario()
+        {
+            VentanaPrincipal.ActivateItem(new BuscarUsuarioViewModel(VentanaPrincipal));
+
         }
 
         public void NuevoProveedor()

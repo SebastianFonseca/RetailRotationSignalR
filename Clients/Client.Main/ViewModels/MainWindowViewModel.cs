@@ -1,4 +1,5 @@
-﻿using Caliburn.Micro;
+﻿using Autofac;
+using Caliburn.Micro;
 using Client.Main.Utilities;
 using Client.Main.Views;
 using System;
@@ -13,10 +14,13 @@ namespace Client.Main.ViewModels
 {
     public class MainWindowViewModel : Conductor<object>
     {
-        public void Cerrando()
+        Connect conexion = ContainerConfig.scope.Resolve<Connect>();
+
+        public async void OnClose(CancelEventArgs e)
         {
-            MessageBox.Show("Cerrando");
+            await conexion.CallServerMethod("ClienteDesconectado", Arguments: new[] { Usuario });
         }
+
 
         private string _usuario;
 
@@ -50,11 +54,25 @@ namespace Client.Main.ViewModels
             StaticPropertyChanged?.Invoke(null, new PropertyChangedEventArgs(propertyName));
         }
 
+        private static string _cargo;
 
-        public MainWindowViewModel(string argUsuario, string argStatus)
+        public static string Cargo
         {
-            _usuario = argUsuario;
-            _status = argStatus;
+            get { return _cargo; }
+            set
+            { 
+                _cargo = value;
+                NotifyPropertyChange(() => Cargo);
+            }
+            
+        }
+
+
+        public MainWindowViewModel(string argUsuario,  string argCargo)
+        {
+            _usuario = argUsuario;            
+            _cargo = argCargo;
+            //MessageBox.Show(_cargo);
             ActivateItem(new MainMenuViewModel(this));
             base.OnActivate();
             

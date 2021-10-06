@@ -18,27 +18,98 @@ namespace Client.Main.ViewModels
         public MainMenuViewModel(MainWindowViewModel argVentana)
         {
             VentanaPrincipal = argVentana;
+        }        
+        ShellViewModel model = new ShellViewModel();
+
+
+        #region Gerencia
+        public void GestionDeProductos()
+        {
+
         }
 
-        
-        ShellViewModel model = new ShellViewModel();
-        public void CerrarSesion()
-    {
-        window.ShowWindow(model);
-        VentanaPrincipal.TryClose();
-
-    }
-        public void AgregarCliente()
+        public void FacturasDeCompras()
         {
-            VentanaPrincipal.ActivateItem(new AddClientViewModel(VentanaPrincipal));          
+
+        }
+
+        public void Informes()
+        {
+
         }
 
         public void Administrativo()
         {
-            VentanaPrincipal.ActivateItem(new DC_AdministrativoViewModel(VentanaPrincipal));
+            if (MainWindowViewModel.Cargo == "Gerente General")
+            {
+                //if (MainWindowViewModel.Status == "Conectado al servidor")
+                //{               
+                    VentanaPrincipal.ActivateItem(new DC_AdministrativoViewModel(VentanaPrincipal));
+                //}
+                //else
+                //{
+                //    MessageBox.Show("Debe estar conectado al servidor.");
+                //}
+            }
+            else
+            {
+                MessageBox.Show("No tiene autorizacion para usar este modulo.");
+            }
+           
+        }
+        #endregion
+
+        #region Envios
+        public void Compras()
+        {
+
+        }
+        public void Distribucion()
+        {
+
+        }
+        #endregion
+
+        #region Administracion
+        public void MovimientoDeEfectivo()
+        {
+
         }
 
+        public void Inventario()
+        {
 
+        }
+        #endregion
+
+        #region Clientes
+        public void AgregarCliente()
+        {
+            VentanaPrincipal.ActivateItem(new AddClientViewModel(VentanaPrincipal));
+        }
+
+        public void BuscarCliente()
+        {
+
+        }
+        #endregion
+
+        #region Cajero
+        public void Cajero()
+        {
+
+        }
+        #endregion
+
+        #region Salir
+
+        public void CerrarSesion()
+        {
+            window.ShowWindow(model);
+            VentanaPrincipal.TryClose();
+            MessageBox.Show(MainWindowViewModel.Status);
+        } 
+        #endregion
 
     }
 

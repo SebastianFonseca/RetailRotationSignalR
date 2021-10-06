@@ -60,7 +60,7 @@ namespace Client.Main.ViewModels
             }
         }
 
-        string Status_conexion = "Trabajando localmente";
+        ///string Status_conexion = "Trabajando localmente";
 
 
         public ShellViewModel()
@@ -86,19 +86,20 @@ namespace Client.Main.ViewModels
             try
             {
                 StackVisibility = "Visible";
+
                 ///Vefificar que los campos no esten vacios.
                 if (!string.IsNullOrWhiteSpace(User) && !string.IsNullOrWhiteSpace(UserPassword))
                 {
                     ///Si ya hubo un intento de logueo y esta conectado al servidor.
-                    if (Status_conexion == "Conectado al servidor")
+                    if (MainWindowViewModel.Status == "Conectado al servidor")
                     {
-                        if (conexion.Connection != null & conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected)
+                        if (conexion.Connection != null)
                         {
                             Task<object> re = conexion.CallServerMethod("ServidorValidarUsuario", Arguments: new[] { User, UserPassword });
                             await re;
-                            if (Convert.ToBoolean(re.Result.ToString()) == true)
+                            if (re.Result.ToString().Substring(2, 10) == "Registrado")
                             {
-                                window.ShowWindow(new MainWindowViewModel(User, Status_conexion));
+                                window.ShowWindow(new MainWindowViewModel(User, re.Result.ToString().Substring(15, re.Result.ToString().Length - 17)));
                                 this.TryClose();
                                 return;
                             }
@@ -108,32 +109,30 @@ namespace Client.Main.ViewModels
                             }
                         }
                     }
-                    ///Para intentar loguarse por pimera vez y conectarse al servidor.
-                    //else
-                   // {
-
-
+                    
+                    
+                    ///Para intentar loguarse por primera vez y conectarse al servidor.
                     await Connect.ConnectToServer(User, "Admin") ;
                     if (flag2)
                     {
                         conexion.Connection.On("SetStatus", handler: (string a) =>
                         {
                             StackVisibility = "Collapsed";
-                            Status_conexion = "Conectado al servidor";
+                            MainWindowViewModel.Status = "Conectado al servidor";
                             MessageBox.Show(a);
-
                         });
                         flag2 = false;
                     }
 
-                    await conexion.CallServerMethod("TestMethod", Arguments: new[] { "Conectado al sevidor." });                              
-                    if (Status_conexion == "Conectado al servidor" & conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected)
+
+                    await conexion.CallServerMethod("TestMethod", Arguments: new[] { "Conectado al sevidor." });                                                                      
+                    if (MainWindowViewModel.Status == "Conectado al servidor" & conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected)
                     {
                         Task<object> re = conexion.CallServerMethod("ServidorValidarUsuario", Arguments: new[] { User, UserPassword });
-                        await re;
-                        if (Convert.ToBoolean(re.Result.ToString()) == true)
+                        await re;                        
+                        if (re.Result.ToString().Substring(2, 10) == "Registrado")
                         {
-                            window.ShowWindow(new MainWindowViewModel(User, Status_conexion));
+                            window.ShowWindow(new MainWindowViewModel(User, re.Result.ToString().Substring(15, re.Result.ToString().Length - 17))); 
                             this.TryClose();
                             return;
                         }
@@ -142,21 +141,18 @@ namespace Client.Main.ViewModels
                             MessageBox.Show("El nombre de usuario o la contraseña son incorrectos.");
                         }
                     }
-                        //else
-                        //{
 
                     StackVisibility = "Collapsed";
-                    if (DbConnection.Login(User: User, Password: UserPassword))
+                    string[] verificar = DbConnection.Login(User: User, Password: UserPassword);
+                    if (verificar[0] == "Registrado")
                     {
-                        window.ShowWindow(new MainWindowViewModel(User, Status_conexion));
+                        window.ShowWindow(new MainWindowViewModel(User, verificar[1]));
                         this.TryClose();
                     }
                     else
                     {
                         MessageBox.Show("Usuario o contraseña incorrectas.");
                     }
-                      //  }
-                    //}
                 }
                 // Si alguno de los campos no se ha llenado.
                 else

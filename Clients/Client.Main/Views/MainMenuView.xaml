@@ -143,18 +143,16 @@
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition/>
-                        <RowDefinition/>
                     </Grid.RowDefinitions>
 
-                    <Button Margin="0"  Content="PEDIDO DE MERCANCIA" FontSize="15" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Grid.Row="0" Style="{StaticResource OptionsSubMenu}">
+                    <Button Margin="0"  Content="COMPRAS" FontSize="15" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Grid.Row="0" Style="{StaticResource OptionsSubMenu}">
                         <Button.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="10 10 0 0"/>
                             </Style>
                         </Button.Resources>
                     </Button>
-                    <Button Margin="0" Content="AGREGAR PROVEEDOR" FontSize="15"  HorizontalAlignment="Stretch" Grid.Row="1" Style="{StaticResource OptionsSubMenu}"/>
-                    <Button Margin="0" Content="PAGOS" FontSize="15"  HorizontalAlignment="Stretch" Grid.Row="3" Style="{StaticResource OptionsSubMenu}" >
+                    <Button Margin="0" Content="DISTRIBUCIÓN" FontSize="15"  HorizontalAlignment="Stretch" Grid.Row="1" Style="{StaticResource OptionsSubMenu}" >
                         <Button.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="0 0 10 10"/>

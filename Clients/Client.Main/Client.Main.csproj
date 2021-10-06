@@ -13,11 +13,43 @@
   </ItemGroup>
 
   <ItemGroup>
+    <COMReference Include="SQLDISTXLib.dll">
+      <WrapperTool>tlbimp</WrapperTool>
+      <VersionMinor>0</VersionMinor>
+      <VersionMajor>1</VersionMajor>
+      <Guid>0776929f-4fa6-48fa-8166-853d09253548</Guid>
+      <Lcid>0</Lcid>
+      <Isolated>false</Isolated>
+    </COMReference>
+    <COMReference Include="REPLERRXLib.dll">
+      <WrapperTool>tlbimp</WrapperTool>
+      <VersionMinor>0</VersionMinor>
+      <VersionMajor>1</VersionMajor>
+      <Guid>08f8da49-ae6e-440c-8682-60ac2bad872e</Guid>
+      <Lcid>0</Lcid>
+      <Isolated>false</Isolated>
+    </COMReference>
     <COMReference Include="{215d64d2-031c-33c7-96e3-61794cd1ee61}">
       <Guid>215d64d2-031c-33c7-96e3-61794cd1ee61</Guid>
       <VersionMajor>2</VersionMajor>
       <VersionMinor>4</VersionMinor>
       <WrapperTool>tlbimp</WrapperTool>
+    </COMReference>
+    <COMReference Include="SQLMERGXLib.dll">
+      <WrapperTool>tlbimp</WrapperTool>
+      <VersionMinor>0</VersionMinor>
+      <VersionMajor>1</VersionMajor>
+      <Guid>312778d0-08ab-4165-aa1e-fa8c1111e44a</Guid>
+      <Lcid>0</Lcid>
+      <Isolated>false</Isolated>
+    </COMReference>
+    <COMReference Include="SQLResolver.dll">
+      <WrapperTool>tlbimp</WrapperTool>
+      <VersionMinor>0</VersionMinor>
+      <VersionMajor>21</VersionMajor>
+      <Guid>a3829390-b51d-4277-911f-66c9e961aee5</Guid>
+      <Lcid>0</Lcid>
+      <Isolated>false</Isolated>
     </COMReference>
   </ItemGroup>
 
@@ -26,13 +58,17 @@
     <PackageReference Include="Caliburn.Micro" Version="3.2.0" />
     <PackageReference Include="Caliburn.Micro.Core" Version="3.2.0" />
     <PackageReference Include="Dapper" Version="2.0.35" />
+    <PackageReference Include="Dotmim.Sync.Core" Version="0.8.1-beta-0687" />
+    <PackageReference Include="Dotmim.Sync.SqlServer" Version="0.8.1-beta-0687" />
     <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
-    <PackageReference Include="JWT" Version="7.2.1" />
+    <PackageReference Include="JWT" Version="8.2.3" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.8" />
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.7.1" />
-    <PackageReference Include="System.Composition.AttributedModel" Version="1.4.1" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.12.2" />
+    <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="150.18208.0" />
+    <PackageReference Include="System.Composition.AttributedModel" Version="5.0.1" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.7.1" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.12.2" />
+    <!--PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.8.0" /-->
     <PackageReference Include="WpfAnimatedGif" Version="2.0.0" />
   </ItemGroup>
 
@@ -42,6 +78,15 @@
     </Reference>
     <Reference Include="Caliburn.Micro.Platform.Core">
       <HintPath>C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\LiveShare\Agent\Caliburn.Micro.Platform.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.ConnectionInfo">
+      <HintPath>C:\Program Files\Microsoft SQL Server\150\Setup Bootstrap\SQL2019\x64\Microsoft.SqlServer.ConnectionInfo.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.Replication">
+      <HintPath>C:\Program Files\Microsoft SQL Server\150\SDK\Assemblies\Microsoft.SqlServer.Replication.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.Rmo">
+      <HintPath>C:\Program Files (x86)\Microsoft SQL Server\150\SDK\Assemblies\Microsoft.SqlServer.Rmo.dll</HintPath>
     </Reference>
     <Reference Include="System.Configuration">
       <HintPath>C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\LiveShare\Agent\System.Configuration.dll</HintPath>
