@@ -21,8 +21,12 @@ namespace Client.Main.Utilities
     public class DbConnection
     {
 
-        private static string _connString = 
-            ConnectionString("RetailRotationClientDataBase");
+        /// <summary>
+        /// Variable local para obtener la cadena de conexion de la base de datos local.
+        /// </summary>
+        private static string _connString = ConnectionString("RetailRotationClientDataBase");
+
+
         /// <summary>
         /// Metodo responsable de verificar en la base de datos localmente si el usuario que intenta ingresar esta o no registrado.
         /// </summary>
@@ -96,15 +100,17 @@ namespace Client.Main.Utilities
 
 
 
-
+        /// <summary>
+        /// Metodo encargado de ejecutar el query insert del nuevo cliente en la base de datos local.
+        /// </summary>
+        /// <param name="Cliente">Instancia de la clase cliente.</param>
+        /// <returns></returns>
         public static bool AddClient(ClientesModel Cliente)
         {
-
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-
                     string cadena = "INSERT INTO Clientes(Nombres,Apellidos,CedulaCliente,Email,Telefono,Puntos) VALUES (@name,@lastname,@cedula,@correo,@telefono, 100 )";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     cmd.Parameters.AddWithValue("@name", Statics.PrimeraAMayuscula(Cliente.FirstName));
@@ -135,6 +141,13 @@ namespace Client.Main.Utilities
 
         }
 
+
+        /// <summary>
+        /// Metodo encargado de ejecutar el query insert del nuevo empleado en la base de datos local.
+        /// </summary>
+        /// <param name="Empleado">Instancia de la clase Empleado.</param>
+        /// <returns></returns>
+
         public static bool NuevoUsuario(EmpleadoModel Empleado)
         {
             try
@@ -142,8 +155,8 @@ namespace Client.Main.Utilities
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
 
-                    string cadena = "INSERT INTO Empleado(CedulaEmpleado,CodigoPuntoVenta,Nombres,Apellidos,FechaContratacion,Salario,Telefono,Cargo,Password) VALUES " +
-                                                        "(@cedula,@puntodeventa,@nombre,@apellidos,@fecha,@salario,@telefono,@cargo,@contraseña);";
+                    string cadena = "INSERT INTO Empleado(CedulaEmpleado,CodigoPuntoVenta,Nombres,Apellidos,FechaContratacion,Salario,Telefono,Cargo,Password,Direccion) VALUES " +
+                                                        "(@cedula,@puntodeventa,@nombre,@apellidos,@fecha,@salario,@telefono,@cargo,@contraseña,@direccion);";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     cmd.Parameters.AddWithValue("@cedula", Empleado.Cedula);
                     cmd.Parameters.AddWithValue("@puntodeventa", Empleado.PuntoDeVenta.Codigo);
@@ -152,6 +165,7 @@ namespace Client.Main.Utilities
                     cmd.Parameters.AddWithValue("@fecha", Empleado.FechaDeContratacion.ToString("yyyy-MM-dd"));
                     cmd.Parameters.AddWithValue("@salario", Empleado.Salario);
                     cmd.Parameters.AddWithValue("@telefono", Empleado.Telefono);
+                    cmd.Parameters.AddWithValue("@direccion", Empleado.Direccion);
                     cmd.Parameters.AddWithValue("@cargo", Empleado.Cargo.Substring(37));
                     cmd.Parameters.AddWithValue("@contraseña", Statics.Hash(Empleado.Password));                  
                     conn.Open();
@@ -178,40 +192,89 @@ namespace Client.Main.Utilities
             }
         }
 
-
-
-        public static BindableCollection<PersonModel> emp = new BindableCollection<PersonModel>();
-        public static BindableCollection<PersonModel> getEmpleados(string Caracteres)
+        public static bool ActualizarUsuario(EmpleadoModel Empleado, string CC)
         {
-            emp.Clear();
-            
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
 
-                    //                    string cadena = $"SELECT * FROM EMPLEADO WHERE CedulaEmpleado LIKE '%{Caracteres}%' ";
-                    string cadena = $"SELECT * FROM EMPLEADO WHERE  LIKE '%{Caracteres}%' IN (CedulaEmpleado, Nombres, Apellidos) ";
 
+                    string cadena = "UPDATE Empleado SET CedulaEmpleado = @NuevoCedula, CodigoPuntoVenta = @puntodeventa, Nombres = @nombre, Apellidos = @apellidos, FechaContratacion = @fecha, Salario =@salario, Telefono = @telefono, Cargo = @cargo," +
+                                    "Password = @contraseña, Direccion = @direccion WHERE CedulaEmpleado = @AntiguoCedula ";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@NuevoCedula", Empleado.Cedula);
+                    cmd.Parameters.AddWithValue("@puntodeventa", Empleado.PuntoDeVenta.Codigo);
+                    cmd.Parameters.AddWithValue("@nombre", Statics.PrimeraAMayuscula(Empleado.FirstName));
+                    cmd.Parameters.AddWithValue("@apellidos", Statics.PrimeraAMayuscula(Empleado.LastName));
+                    cmd.Parameters.AddWithValue("@fecha", Empleado.FechaDeContratacion.ToString("yyyy-MM-dd"));
+                    cmd.Parameters.AddWithValue("@salario", Empleado.Salario);
+                    cmd.Parameters.AddWithValue("@telefono", Empleado.Telefono);
+                    cmd.Parameters.AddWithValue("@direccion", Empleado.Direccion);
+                    cmd.Parameters.AddWithValue("@cargo", Empleado.Cargo);
+                    cmd.Parameters.AddWithValue("@contraseña", Statics.Hash(Empleado.Password));
+                    cmd.Parameters.AddWithValue("@AntiguoCedula", CC);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    MessageBox.Show($"Se ha Actualizado el usuario {Empleado.FirstName} {Empleado.LastName}");
+                    conn.Close();
+                    return true;
+
+                }
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Substring(0, 50) == $"Violation of PRIMARY KEY constraint 'PK_Empleado'.")
+                {
+                    MessageBox.Show($"La cedula {Empleado.Cedula} ya esta registrada.");
+                    return false;
+                }
+                else
+                {
+                    MessageBox.Show(e.Message);
+                    return false;
+                }
+            }
+        }
+
+
+        public static BindableCollection<EmpleadoModel> emp = new BindableCollection<EmpleadoModel>();
+        /// <summary>
+        /// Method that does a select query against the local database and get te result of searching the coincidences into the cedula, nombre or apellido of the given characters.
+        /// </summary>
+        /// <param name="Caracteres"></param>
+        /// <returns></returns>
+        public static BindableCollection<EmpleadoModel> getEmpleados(string Caracteres)
+        {
+                        
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+
+                    string cadena = $"SELECT * FROM EMPLEADO WHERE ( CedulaEmpleado like '%{Caracteres}%' ) or ( Nombres like '%{Caracteres}%' ) or ( Apellidos like '%{Caracteres}%' )  ";
                     SqlCommand cmd = new SqlCommand(cadena, conn);                    
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
+                        emp.Clear();
                         while (reader.Read())
                         {
-                            PersonModel persona = new PersonModel();
+                            EmpleadoModel persona = new EmpleadoModel();
                             persona.Cedula = reader["CedulaEmpleado"].ToString();
+                            persona.PuntoDeVenta.Codigo = reader["CodigoPuntoVenta"].ToString();
                             persona.FirstName = reader["Nombres"].ToString();
                             persona.LastName = reader["Apellidos"].ToString();
-                            //MessageBox.Show(persona.FirstName);
+                            persona.FechaDeContratacion = DateTime.Parse(reader["FechaContratacion"].ToString());
+                            persona.Salario = reader["Salario"].ToString();
+                            persona.Telefono = reader["Telefono"].ToString();
+                            persona.Cargo = reader["Cargo"].ToString();
+                            persona.Direccion = reader["Direccion"].ToString();                                                                        
                             emp.Add(persona);
                         }
                     }
                     conn.Close();
-                    //foreach (var item in emp)
-                    //{
-                    //    MessageBox.Show(item.FirstName);
-                    //}
                     return emp;
                 }
             }
@@ -226,6 +289,10 @@ namespace Client.Main.Utilities
 
 
         public static BindableCollection<EmpleadoModel> empleados = new BindableCollection<EmpleadoModel>();
+        /// <summary>
+        /// Metodo que obtiene los empelados con cargo de "Administrador de sede"
+        /// </summary>
+        /// <returns></returns>
         public static BindableCollection<EmpleadoModel> getAdministradores(){
             EmpleadoModel empleado = new EmpleadoModel();
             try
@@ -257,6 +324,11 @@ namespace Client.Main.Utilities
             }
         }
 
+        /// <summary>
+        /// Metodo que inserta la instancia de NuevoLocal en la base de datos local.
+        /// </summary>
+        /// <param name="NuevoLocal"></param>
+        /// <returns></returns>
         public static bool NuevoLocal(LocalModel NuevoLocal)
         {
             try
@@ -264,8 +336,8 @@ namespace Client.Main.Utilities
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
 
-                    string cadena = "INSERT INTO PuntoVenta(codigoPuntoVenta,Nombres,Direccion,Telefono,Ciudad,NumeroCanastillas,FechaDeApertura,Administrador) " +
-                                                   "VALUES (@codigo,@nombre,@direccion,@telefono,@ciudad,@nrocanastillas,@fechaapertura,@administrador)";
+                    string cadena = "INSERT INTO PuntoVenta(codigoPuntoVenta,Nombres,Direccion,Telefono,Ciudad,NumeroCanastillas,FechaDeApertura) " +
+                                                   "VALUES (@codigo,@nombre,@direccion,@telefono,@ciudad,@nrocanastillas,@fechaapertura)";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     cmd.Parameters.AddWithValue("@codigo", NuevoIdLocal());
                     cmd.Parameters.AddWithValue("@nombre", Statics.PrimeraAMayuscula(NuevoLocal.Nombre));
@@ -274,10 +346,9 @@ namespace Client.Main.Utilities
                     cmd.Parameters.AddWithValue("@ciudad", Statics.PrimeraAMayuscula(NuevoLocal.Ciudad));
                     cmd.Parameters.AddWithValue("@nrocanastillas", Statics.PrimeraAMayuscula(NuevoLocal.NumeroDeCanastillas.ToString()));
                     cmd.Parameters.AddWithValue("@fechaapertura", Statics.PrimeraAMayuscula(NuevoLocal.FechaDeApertura.Date.ToString("yyyy-MM-dd")));
-                    //cmd.Parameters.AddWithValue("@administrador", Statics.PrimeraAMayuscula(NuevoLocal.Administrador.Cedula));
                     conn.Open();
                     cmd.ExecuteNonQuery();
-                    MessageBox.Show($"Se ha registrado al nuevo usuario {NuevoLocal.Nombre }");
+                    MessageBox.Show($"Se ha registrado al nuevo local: {NuevoLocal.Nombre }");
                     conn.Close();
                     return true;
 
@@ -286,8 +357,8 @@ namespace Client.Main.Utilities
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
-                
-                if (e.HResult.ToString() == "-2146232060")
+
+                if (e.Message.Substring(0, 52) == $"Violation of PRIMARY KEY constraint 'PK_PuntoVenta'.")
                 {
                     MessageBox.Show($"El nombre {NuevoLocal.Nombre} ya esta registrado.");
                     return false;
@@ -302,23 +373,29 @@ namespace Client.Main.Utilities
 
 
         public static BindableCollection<LocalModel> locales = new BindableCollection<LocalModel>();
+
+        /// <summary>
+        /// Obtener Nombres y CodigoPuntoVenta de los locales en la base de datos.
+        /// </summary>
+        /// <returns></returns>
         public static BindableCollection<LocalModel> getLocales()
         {
+            
+            locales.Clear();
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    LocalModel local = new LocalModel();
-                    string cadena = "SELECT [CodigoPuntoVenta], [Nombres], [NumeroCanastillas]  FROM PuntoVenta";
+                    string cadena = "SELECT [CodigoPuntoVenta], [Nombres]  FROM PuntoVenta";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
+                            LocalModel local = new LocalModel();
                             local.Codigo = reader["CodigoPuntoVenta"].ToString();
                             local.Nombre = reader["Nombres"].ToString();
-                            local.NumeroDeCanastillas = Convert.ToInt32(reader["NumeroCanastillas"]);
                             locales.Add(local);
                         }
                     }
@@ -333,6 +410,11 @@ namespace Client.Main.Utilities
             }
 
         }
+
+        /// <summary>
+        /// Obtiene el siguiente ID para una nueva instancia de NuevoLocal
+        /// </summary>
+        /// <returns></returns>
 
         public static string NuevoIdLocal()
         {
@@ -579,13 +661,7 @@ namespace Client.Main.Utilities
             {
                 MessageBox.Show (e.Message);
             }
-
-           
-
-
-
-
-
+          
         }
 
         /// <summary>

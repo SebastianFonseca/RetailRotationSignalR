@@ -5,23 +5,25 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Input;
+
 
 namespace Client.Main.ViewModels
 {
-    class NuevoUsuarioViewModel : PropertyChangedBase, IDataErrorInfo
+    class NuevoUsuarioEditarBusquedaViewModel : PropertyChangedBase, IDataErrorInfo
     {
         MainWindowViewModel VentanaPrincipal;
 
+        EmpleadoModel resultadoEmpleado = new EmpleadoModel();
+        string CedulaAntigua;
 
-        EmpleadoModel NuevoEmpleado = new EmpleadoModel();
-
-        public NuevoUsuarioViewModel(MainWindowViewModel argVentana)
+        public NuevoUsuarioEditarBusquedaViewModel(MainWindowViewModel argVentana, EmpleadoModel resultadoBusqueda)
         {
             VentanaPrincipal = argVentana;
+            resultadoEmpleado = resultadoBusqueda;
+            CedulaAntigua = resultadoEmpleado.Cedula;
         }
+
 
         public BindableCollection<LocalModel> Locales
         {
@@ -33,16 +35,22 @@ namespace Client.Main.ViewModels
         }
 
 
-        public LocalModel Local 
+        public LocalModel Local
         {
             get
             {
-                return NuevoEmpleado.PuntoDeVenta; 
+                return resultadoEmpleado.PuntoDeVenta;
             }
             set
+                
             {
-                NuevoEmpleado.PuntoDeVenta = value;
-                NotifyOfPropertyChange(() => Local);
+                if (value != null)
+                {
+                    resultadoEmpleado.PuntoDeVenta = value;
+                    NotifyOfPropertyChange(() => Local);
+                }
+
+                
             }
         }
 
@@ -50,24 +58,25 @@ namespace Client.Main.ViewModels
 
         public string Nombre
         {
-            get { return NuevoEmpleado.FirstName; }
-            set { 
-            if(NuevoEmpleado.FirstName != value)
+            get { return resultadoEmpleado.FirstName; }
+            set
+            {
+                if (resultadoEmpleado.FirstName != value)
                 {
-                    NuevoEmpleado.FirstName = value;
+                    resultadoEmpleado.FirstName = value;
                 }
                 NotifyOfPropertyChange(() => Nombre);
-            
+
             }
         }
         public string Apellidos
         {
-            get { return NuevoEmpleado.LastName; }
+            get { return resultadoEmpleado.LastName; }
             set
             {
-                if (NuevoEmpleado.LastName != value)
+                if (resultadoEmpleado.LastName != value)
                 {
-                    NuevoEmpleado.LastName = value;
+                    resultadoEmpleado.LastName = value;
                 }
                 NotifyOfPropertyChange(() => Apellidos);
 
@@ -76,12 +85,12 @@ namespace Client.Main.ViewModels
 
         public string CC
         {
-            get { return NuevoEmpleado.Cedula; }
+            get { return resultadoEmpleado.Cedula; }
             set
             {
-                if (NuevoEmpleado.Cedula != value)
+                if (resultadoEmpleado.Cedula != value)
                 {
-                    NuevoEmpleado.Cedula = value;
+                    resultadoEmpleado.Cedula = value;
                 }
                 NotifyOfPropertyChange(() => CC);
 
@@ -90,12 +99,12 @@ namespace Client.Main.ViewModels
 
         public string Telefono
         {
-            get { return NuevoEmpleado.Telefono; }
+            get { return resultadoEmpleado.Telefono; }
             set
             {
-                if (NuevoEmpleado.Telefono != value)
+                if (resultadoEmpleado.Telefono != value)
                 {
-                    NuevoEmpleado.Telefono = value;
+                    resultadoEmpleado.Telefono = value;
                 }
                 NotifyOfPropertyChange(() => Telefono);
 
@@ -105,12 +114,12 @@ namespace Client.Main.ViewModels
 
         public DateTime FechaContratacion
         {
-            get { return NuevoEmpleado.FechaDeContratacion; }
+            get { return resultadoEmpleado.FechaDeContratacion; }
             set
             {
-                if (NuevoEmpleado.FechaDeContratacion != value)
+                if (resultadoEmpleado.FechaDeContratacion != value)
                 {
-                    NuevoEmpleado.FechaDeContratacion = value;
+                    resultadoEmpleado.FechaDeContratacion = value;
                 }
                 NotifyOfPropertyChange(() => FechaContratacion);
 
@@ -119,12 +128,13 @@ namespace Client.Main.ViewModels
 
         public string Cargo
         {
-            get { return NuevoEmpleado.Cargo; }
+            get { return resultadoEmpleado.Cargo; }
             set
             {
-                if (NuevoEmpleado.Cargo != value)
+                //MessageBox.Show( value.Length.ToString());
+                if (resultadoEmpleado.Cargo != value)
                 {
-                    NuevoEmpleado.Cargo = value;
+                    resultadoEmpleado.Cargo = value.Split(":")[1];
                 }
                 NotifyOfPropertyChange(() => Cargo);
 
@@ -133,12 +143,12 @@ namespace Client.Main.ViewModels
 
         public string Password
         {
-            get { return NuevoEmpleado.Password; }
+            get { return resultadoEmpleado.Password; }
             set
             {
-                if (NuevoEmpleado.Password != value)
+                if (resultadoEmpleado.Password != value)
                 {
-                    NuevoEmpleado.Password = value;
+                    resultadoEmpleado.Password = value;
                 }
                 NotifyOfPropertyChange(() => Password);
 
@@ -147,12 +157,12 @@ namespace Client.Main.ViewModels
 
         public string Salario
         {
-            get { return NuevoEmpleado.Salario; }
+            get { return resultadoEmpleado.Salario; }
             set
-            {
-                if (NuevoEmpleado.Salario != value)
+           {
+                if (resultadoEmpleado.Salario != value)
                 {
-                    NuevoEmpleado.Salario = value;
+                    resultadoEmpleado.Salario = value;
                 }
                 NotifyOfPropertyChange(() => Salario);
 
@@ -161,12 +171,12 @@ namespace Client.Main.ViewModels
 
         public string Direccion
         {
-            get { return NuevoEmpleado.Direccion; }
+            get { return resultadoEmpleado.Direccion; }
             set
             {
-                if (NuevoEmpleado.Direccion != value)
+                if (resultadoEmpleado.Direccion != value)
                 {
-                    NuevoEmpleado.Direccion = value;
+                    resultadoEmpleado.Direccion = value;
                 }
                 NotifyOfPropertyChange(() => Direccion);
 
@@ -178,32 +188,33 @@ namespace Client.Main.ViewModels
         public string PasswordAgain
         {
             get { return _passwordAgain; }
-            set 
-            {               
+            set
+            {
                 _passwordAgain = value;
                 NotifyOfPropertyChange(() => PasswordAgain);
             }
         }
 
-        public void Guardar()
+        public void Actualizar()
         {
             if (Statics.ClientStatus == "Trabajando localmente")
             {
-                if (!string.IsNullOrWhiteSpace(NuevoEmpleado.FirstName) && 
-                    !string.IsNullOrWhiteSpace(NuevoEmpleado.LastName) && 
-                    !string.IsNullOrWhiteSpace(NuevoEmpleado.Cedula) &&
-                    !string.IsNullOrWhiteSpace(NuevoEmpleado.Direccion) &&
-                    !string.IsNullOrWhiteSpace(NuevoEmpleado.Telefono) &&
-                    !string.IsNullOrWhiteSpace(NuevoEmpleado.PuntoDeVenta.Nombre) &&
-                    !string.IsNullOrWhiteSpace(NuevoEmpleado.FechaDeContratacion.ToString()) &&
-                    !string.IsNullOrWhiteSpace(NuevoEmpleado.Cargo) &&
-                    !string.IsNullOrWhiteSpace(NuevoEmpleado.Salario) &&
-                    !string.IsNullOrWhiteSpace(NuevoEmpleado.Password) &&
+                if (!string.IsNullOrWhiteSpace(resultadoEmpleado.FirstName) &&
+                    !string.IsNullOrWhiteSpace(resultadoEmpleado.LastName) &&
+                    !string.IsNullOrWhiteSpace(resultadoEmpleado.Cedula) &&
+                    !string.IsNullOrWhiteSpace(resultadoEmpleado.Direccion) &&
+                    !string.IsNullOrWhiteSpace(resultadoEmpleado.Telefono) &&
+                    !string.IsNullOrWhiteSpace(resultadoEmpleado.PuntoDeVenta.Nombre) &&
+                    !string.IsNullOrWhiteSpace(resultadoEmpleado.FechaDeContratacion.ToString()) &&
+                    !string.IsNullOrWhiteSpace(resultadoEmpleado.Cargo) &&
+                    !string.IsNullOrWhiteSpace(resultadoEmpleado.Salario) &&
+                    !string.IsNullOrWhiteSpace(resultadoEmpleado.Password) &&
                     !string.IsNullOrWhiteSpace(PasswordAgain))
                 {
-                    if (DbConnection.NuevoUsuario(Empleado: NuevoEmpleado))
+                    if (DbConnection.ActualizarUsuario(Empleado: resultadoEmpleado, CC: CedulaAntigua))
                     {
-                        VentanaPrincipal.ActivateItem(new NuevoUsuarioViewModel(VentanaPrincipal));
+                        resultadoEmpleado.Password = "";
+                        VentanaPrincipal.ActivateItem(new NuevoUsuarioResultadoBusquedaViewModel(VentanaPrincipal, resultadoEmpleado));
                     }
                     else
                     {
@@ -222,14 +233,17 @@ namespace Client.Main.ViewModels
             {
                 //Llamar metodo del servidor.
             }
-           
+
         }
-       
+
         public void BackButton()
         {
             Locales.Clear();
-            VentanaPrincipal.ActivateItem(new DC_AdministrativoViewModel(VentanaPrincipal));
+            VentanaPrincipal.ActivateItem(new BuscarUsuarioViewModel(VentanaPrincipal));
         }
+
+
+
 
         public string Error { get { return null; } }
         int flag = 0;
@@ -266,11 +280,11 @@ namespace Client.Main.ViewModels
 
                     else if (name == "Telefono")
                     {
-                        if (String.IsNullOrEmpty(Telefono) )
+                        if (String.IsNullOrEmpty(Telefono))
                         {
                             result = "Este campo no puede estar vacío.";
                         }
-                        if(Telefono.Length != 10)
+                        if (Telefono.Length != 10)
                         {
                             result = result + " Debe ser un número de 10 dígitos.";
 
@@ -301,18 +315,19 @@ namespace Client.Main.ViewModels
                         }
 
                     }
-                    else if (name == "PasswordAgain" )
+                    else if (name == "PasswordAgain")
                     {
-                        if (Password != null) { 
-                        if (Password != PasswordAgain)
+                        if (Password != null)
                         {
-                            result = "Las contraseñas no coinciden.";
+                            if (Password != PasswordAgain)
+                            {
+                                result = "Las contraseñas no coinciden.";
+                            }
+                            if (Password.Length < 10)
+                            {
+                                result = result + " Minimo 10 caracteres.";
+                            }
                         }
-                        if (Password.Length < 10)
-                        {
-                            result = result + " Minimo 10 caracteres.";
-                        }
-}
                     }
 
                 }

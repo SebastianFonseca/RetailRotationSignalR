@@ -525,7 +525,7 @@
 
             <!---->
             
-            <!--alwaysOpen combobox-->
+            <!--PopUp combobox-->
             <ControlTemplate x:Key="ComboBoxDesplegado" TargetType="{x:Type ComboBox}">
 
                 <Grid x:Name="templateRoot" SnapsToDevicePixels="true" >
@@ -534,7 +534,7 @@
                         <ColumnDefinition MinWidth="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}" Width="0"/>
                     </Grid.ColumnDefinitions>
 
-                    <Popup x:Name="PART_Popup"  AllowsTransparency="true" Grid.ColumnSpan="2"  IsOpen="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" Margin="1" Placement="Bottom" PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
+                    <Popup x:Name="PART_Popup"  AllowsTransparency="true" Grid.ColumnSpan="2" MaxHeight="130" IsOpen="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" Margin="1" Placement="Bottom" PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
                         <theme:SystemDropShadowChrome x:Name="shadow" Color="Transparent" MinWidth="{Binding ActualWidth, ElementName=templateRoot}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
                             <Border x:Name="dropDownBorder" Background="#F7EBD7"  BorderThickness="1 0 1 1" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" >
                                 <ScrollViewer x:Name="DropDownScrollViewer">

@@ -5,12 +5,17 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Input;
 
 namespace Client.Main.ViewModels
 {
-    class BuscarUsuarioViewModel: PropertyChangedBase, IDataErrorInfo
+    class BuscarUsuarioViewModel : PropertyChangedBase, IDataErrorInfo
     {
+	        
+		
+	
         MainWindowViewModel VentanaPrincipal;
         public BuscarUsuarioViewModel(MainWindowViewModel argVentana)
         {
@@ -23,98 +28,90 @@ namespace Client.Main.ViewModels
         public string BuscarTbx
         {
             get { return _buscarTbx; }
-            set 
-            {                 
+            set
+            {
+                if (value == null)
+                {
+                    MessageBox.Show("Buscar null");
+                }
                 _buscarTbx = value;
                 NotifyOfPropertyChange(() => BuscarTbx);
             }
         }
 
-        
-        private string _busquedasVisibiliad = "Hidden";
+        private EmpleadoModel _usuarioSeleccionado;
 
-        public string BusquedasVisibilidad
-        {
-            get {
-                if (String.IsNullOrEmpty(BuscarTbx) ) { return "Hidden"; }
-                return _busquedasVisibiliad; 
-            }
-            set { _busquedasVisibiliad = value;  NotifyOfPropertyChange(() => BusquedasVisibilidad); }
-        }
-
-        private PersonModel _usuarioSeleccionado;
-
-        public PersonModel UsuarioSeleccionado
+        public EmpleadoModel UsuarioSeleccionado
         {
             get { return _usuarioSeleccionado; }
             set
             {
-                
+               
+                //BusquedasVisibilidad = "Hidden";
+                if (value != null)
+                {
+                    seleccion = value;
+                    BuscarTbx = value.Cedula +"-" +value.FirstName + " " + value.LastName;
+                }
                 _usuarioSeleccionado = value;
-                BuscarTbx = UsuarioSeleccionado.Cedula+" - "+ UsuarioSeleccionado.FirstName+" "+UsuarioSeleccionado.LastName;
-                NotifyOfPropertyChange(() => UsuarioSeleccionado);
+                
+                NotifyOfPropertyChange(() => UsuarioSeleccionado);  
             }
         }
+        EmpleadoModel seleccion = new EmpleadoModel();
 
+        private BindableCollection<EmpleadoModel> _busquedas = new BindableCollection<EmpleadoModel>();
 
-
-        public void ItemSeleccionado()
+        public BindableCollection<EmpleadoModel> Busquedas
         {
-            BusquedasVisibilidad = "Hidden";
-            //_comboboxDesplegado = "false";
-         
-            //BuscarTbx = BuscarTbx + UsuarioSeleccionado.FirstName;
-            
-
-           
-        }
-
-        private string _comboboxDesplegado = "false";
-
-        public string ComboboxDesplegado
-        {
-            get { return _comboboxDesplegado; }
-            set { _comboboxDesplegado = value;
-                NotifyOfPropertyChange(() => ComboboxDesplegado);
-            }
-        }
-
-
-
-        private BindableCollection<PersonModel> _busquedas = new BindableCollection<PersonModel>();
-
-        public BindableCollection<PersonModel> Busquedas 
-        {
-            get 
-            { 
+            get
+            {
                 return _busquedas;
             }
             set
             {
-                    _busquedas = value;
-                    NotifyOfPropertyChange(() => Busquedas);                
+                _busquedas = value;
+                NotifyOfPropertyChange(() => Busquedas);
             }
         }
 
-        public void EscribiendoBusqueda()
-        {      
-            
-            Busquedas.Clear();           
-            Busquedas = DbConnection.getEmpleados(BuscarTbx);
-            if (Busquedas.Count == 0)
+
+
+
+        public void Buscar()
+        {
+            if (String.IsNullOrEmpty(BuscarTbx))
             {
-                BusquedasVisibilidad = "Hidden";
+                MessageBox.Show("Escriba un nombre o número de cédula");
             }
             else
             {
-                BusquedasVisibilidad = "Visible";
-                ComboboxDesplegado = "true";
+                BindableCollection<EmpleadoModel> resultado = DbConnection.getEmpleados(BuscarTbx.Split('-')[0]);               
+                if (resultado.Count == 0)
+                {
+                    MessageBox.Show("Número de cédula no resgistrado");
+                }
+                else
+                {
+                    //MessageBox.Show(resultado[0].FirstName);
+                    VentanaPrincipal.ActivateItem(new NuevoUsuarioResultadoBusquedaViewModel(VentanaPrincipal, resultado[0]));
 
+                }
             }
 
+
+            
+
+        
         }
 
-        public void Buscar() { } 
+        public void BackButton()
+        {
+
+            VentanaPrincipal.ActivateItem(new DC_AdministrativoViewModel(VentanaPrincipal));
+            Busquedas.Clear();
+        }
+
 
         public string Error { get { return null; } }
         int flag = 0;
@@ -123,7 +120,7 @@ namespace Client.Main.ViewModels
             get
             {
                 string result = null;
-                if (flag == 1)
+                if (flag == 2)
                 {
                     if (name == "BuscarTbx")
                     {
@@ -131,7 +128,7 @@ namespace Client.Main.ViewModels
                         {
                             result = "Rellene este campo.";
                         }
-                    }                    
+                    }
                 }
 
                 else { flag += 1; }
@@ -142,11 +139,76 @@ namespace Client.Main.ViewModels
             }
         }
 
-        public void BackButton()
+
+
+        private string _busquedasVisibiliad = "Hidden";
+
+        public string BusquedasVisibilidad
         {
-            
-            VentanaPrincipal.ActivateItem(new DC_AdministrativoViewModel(VentanaPrincipal));
-            Busquedas.Clear();
+            get
+            {
+                if (String.IsNullOrEmpty(BuscarTbx)) { return "Hidden"; }
+                return _busquedasVisibiliad;
+            }
+            set { _busquedasVisibiliad = value; NotifyOfPropertyChange(() => BusquedasVisibilidad); }
         }
+
+
+        private string _comboboxDesplegado = "false";
+
+        public string ComboboxDesplegado
+        {
+            get { return _comboboxDesplegado; }
+            set
+            {
+                _comboboxDesplegado = value;
+                NotifyOfPropertyChange(() => ComboboxDesplegado);
+            }
+        }
+
+        //public void ItemSeleccionado()
+        //{          
+        //    try
+        //    {
+        //        BusquedasVisibilidad = "Hidden";
+        //        if (BuscarTbx != null && UsuarioSeleccionado != null)
+        //        {
+        //            BuscarTbx = UsuarioSeleccionado.Cedula + UsuarioSeleccionado.FirstName + UsuarioSeleccionado.LastName;
+
+        //        }
+
+        //    }
+        //    catch (Exception e)
+        //    {
+
+        //        MessageBox.Show(e.Message);
+        //    }
+
+
+
+        //}
+
+        public void EscribiendoBusqueda()
+        {
+
+            //Busquedas.Clear();
+            Busquedas = DbConnection.getEmpleados(BuscarTbx);
+            if (Busquedas == null || Busquedas.Count == 0)
+            {
+                BusquedasVisibilidad = "Hidden";
+            }
+            else
+            {
+                BusquedasVisibilidad = "Visible";
+                ComboboxDesplegado = "true";
+                
+            }
+
+        }
+
+    
+  
+
     }
+
 }

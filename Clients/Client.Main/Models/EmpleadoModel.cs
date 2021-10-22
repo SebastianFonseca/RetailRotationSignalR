@@ -10,6 +10,6 @@ namespace Client.Main.Models
         public string Salario { get; set; }
         public string Password { get; set; } = null;
         public string Cargo { get; set; }
-        public LocalModel PuntoDeVenta { get; set; }
+        public LocalModel PuntoDeVenta { get; set; } = new LocalModel();
     }
 }
