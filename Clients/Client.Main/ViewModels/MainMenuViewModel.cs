@@ -40,7 +40,7 @@ namespace Client.Main.ViewModels
 
         public void Administrativo()
         {
-            if (MainWindowViewModel.Cargo == "Gerente General")
+            if (MainWindowViewModel.Cargo == " Gerente general")
             {
                 //if (MainWindowViewModel.Status == "Conectado al servidor")
                 //{               

@@ -145,7 +145,7 @@ namespace Client.Main.ViewModels
             }
         }
 
-        public string Salario
+        public decimal Salario
         {
             get { return NuevoEmpleado.Salario; }
             set
@@ -197,7 +197,7 @@ namespace Client.Main.ViewModels
                     !string.IsNullOrWhiteSpace(NuevoEmpleado.PuntoDeVenta.Nombre) &&
                     !string.IsNullOrWhiteSpace(NuevoEmpleado.FechaDeContratacion.ToString()) &&
                     !string.IsNullOrWhiteSpace(NuevoEmpleado.Cargo) &&
-                    !string.IsNullOrWhiteSpace(NuevoEmpleado.Salario) &&
+                    !string.IsNullOrWhiteSpace(NuevoEmpleado.Salario.ToString()) &&
                     !string.IsNullOrWhiteSpace(NuevoEmpleado.Password) &&
                     !string.IsNullOrWhiteSpace(PasswordAgain))
                 {

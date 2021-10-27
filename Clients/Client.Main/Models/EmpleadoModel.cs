@@ -7,7 +7,7 @@ namespace Client.Main.Models
     public class EmpleadoModel : PersonModel
     {
         public DateTime FechaDeContratacion { get; set; } = DateTime.Now;
-        public string Salario { get; set; }
+        public decimal Salario { get; set; }
         public string Password { get; set; } = null;
         public string Cargo { get; set; }
         public LocalModel PuntoDeVenta { get; set; } = new LocalModel();

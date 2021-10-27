@@ -211,7 +211,7 @@ namespace Client.Main.Utilities
                     cmd.Parameters.AddWithValue("@salario", Empleado.Salario);
                     cmd.Parameters.AddWithValue("@telefono", Empleado.Telefono);
                     cmd.Parameters.AddWithValue("@direccion", Empleado.Direccion);
-                    cmd.Parameters.AddWithValue("@cargo", Empleado.Cargo);
+                    cmd.Parameters.AddWithValue("@cargo", Empleado.Cargo.Substring(37));
                     cmd.Parameters.AddWithValue("@contraseña", Statics.Hash(Empleado.Password));
                     cmd.Parameters.AddWithValue("@AntiguoCedula", CC);
                     conn.Open();
@@ -267,7 +267,7 @@ namespace Client.Main.Utilities
                             persona.FirstName = reader["Nombres"].ToString();
                             persona.LastName = reader["Apellidos"].ToString();
                             persona.FechaDeContratacion = DateTime.Parse(reader["FechaContratacion"].ToString());
-                            persona.Salario = reader["Salario"].ToString();
+                            persona.Salario = Decimal.Parse(reader["Salario"].ToString());
                             persona.Telefono = reader["Telefono"].ToString();
                             persona.Cargo = reader["Cargo"].ToString();
                             persona.Direccion = reader["Direccion"].ToString();                                                                        
@@ -282,10 +282,31 @@ namespace Client.Main.Utilities
             {
                 MessageBox.Show(e.Message);
                 return null;
-            }
+            }               
         }
 
+        public static bool deleteEmpleado(string Cedula)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
 
+                    string cadena = $"delete from empleado Where CedulaEmpleado = '{Cedula}' ";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+                return false;
+            }
+
+        }
 
 
         public static BindableCollection<EmpleadoModel> empleados = new BindableCollection<EmpleadoModel>();

@@ -134,7 +134,7 @@ namespace Client.Main.ViewModels
                 //MessageBox.Show( value.Length.ToString());
                 if (resultadoEmpleado.Cargo != value)
                 {
-                    resultadoEmpleado.Cargo = value.Split(":")[1];
+                    resultadoEmpleado.Cargo = value;
                 }
                 NotifyOfPropertyChange(() => Cargo);
 
@@ -155,7 +155,7 @@ namespace Client.Main.ViewModels
             }
         }
 
-        public string Salario
+        public decimal Salario
         {
             get { return resultadoEmpleado.Salario; }
             set
@@ -207,7 +207,7 @@ namespace Client.Main.ViewModels
                     !string.IsNullOrWhiteSpace(resultadoEmpleado.PuntoDeVenta.Nombre) &&
                     !string.IsNullOrWhiteSpace(resultadoEmpleado.FechaDeContratacion.ToString()) &&
                     !string.IsNullOrWhiteSpace(resultadoEmpleado.Cargo) &&
-                    !string.IsNullOrWhiteSpace(resultadoEmpleado.Salario) &&
+                    !string.IsNullOrWhiteSpace(resultadoEmpleado.Salario.ToString()) &&
                     !string.IsNullOrWhiteSpace(resultadoEmpleado.Password) &&
                     !string.IsNullOrWhiteSpace(PasswordAgain))
                 {

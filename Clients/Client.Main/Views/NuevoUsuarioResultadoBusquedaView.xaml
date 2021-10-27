@@ -135,7 +135,10 @@
             </ScrollViewer>
 
             <!--Boton guardar-->
-            <Button Style="{StaticResource GeneralButton}"  Margin="11" Height="50" HorizontalAlignment="Center"  Width="250" Content="    EDITAR    "  x:Name="Editar" Grid.Column="1" Grid.Row="1" />
+            <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Grid.ColumnSpan="3">
+            <Button Style="{StaticResource GeneralButton}"  Margin="11" Height="50" HorizontalAlignment="Center"  Width="250" Content="    EDITAR    "  x:Name="Editar"  />
+            <Button Style="{StaticResource GeneralButton}"  Margin="11" Height="50" HorizontalAlignment="Center"  Width="250" Content="    ELIMINAR    "  x:Name="Eliminar" />
+            </StackPanel>
 
         </Grid>
     </Border>

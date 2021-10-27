@@ -151,7 +151,7 @@ namespace Client.Main.ViewModels
             }
         }
 
-        public string Salario
+        public decimal Salario
         {
             get { return resultadoEmpleado.Salario; }
             set
@@ -203,6 +203,19 @@ namespace Client.Main.ViewModels
             VentanaPrincipal.ActivateItem(new NuevoUsuarioEditarBusquedaViewModel(VentanaPrincipal, resultadoEmpleado));
         }
 
+        public void Eliminar()
+        {
+            MessageBoxResult result = MessageBox.Show($"Desea eliminar permanentemente de la base de datos al usuario {resultadoEmpleado.FirstName} {resultadoEmpleado.LastName}", "", MessageBoxButton.YesNo);
+            if (result == MessageBoxResult.Yes)
+            {
+                if (DbConnection.deleteEmpleado(resultadoEmpleado.Cedula))
+                {
+                    MessageBox.Show($"Se ha eliminado al usuario {resultadoEmpleado.FirstName} {resultadoEmpleado.LastName}");
+                    VentanaPrincipal.ActivateItem(new BuscarUsuarioViewModel(VentanaPrincipal));
 
+                }
+            }
+            
+        }
     }
 }

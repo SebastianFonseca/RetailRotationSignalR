@@ -86,17 +86,30 @@ namespace Client.Main.ViewModels
             }
             else
             {
-                BindableCollection<EmpleadoModel> resultado = DbConnection.getEmpleados(BuscarTbx.Split('-')[0]);               
+                BindableCollection<EmpleadoModel> resultado = DbConnection.getEmpleados(BuscarTbx.Split('-')[0]);
+
                 if (resultado.Count == 0)
                 {
-                    MessageBox.Show("Número de cédula no resgistrado");
+                    MessageBox.Show("Número de cédula, nombre o apellido no resgistrados");
                 }
                 else
                 {
-                    //MessageBox.Show(resultado[0].FirstName);
-                    VentanaPrincipal.ActivateItem(new NuevoUsuarioResultadoBusquedaViewModel(VentanaPrincipal, resultado[0]));
+                    IEnumerator<EmpleadoModel> e = resultado.GetEnumerator();
+                    e.Reset();
+                    while (e.MoveNext())
+                    {
+                        if (e.Current.Cedula == BuscarTbx.Split('-')[0])
+                        {
+                            VentanaPrincipal.ActivateItem(new NuevoUsuarioResultadoBusquedaViewModel(VentanaPrincipal, e.Current));
+                        }
 
+                        
+                    }
+  
+                    BusquedasVisibilidad = "Visible";
+                    ComboboxDesplegado = "True";
                 }
+
             }
 
 
