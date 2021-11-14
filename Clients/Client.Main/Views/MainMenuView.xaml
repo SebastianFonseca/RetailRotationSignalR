@@ -229,7 +229,7 @@
                             </Style>
                         </Button.Resources>
                     </Button>
-                    <Button Margin="0" Content="BUSCAR" FontSize="15"  HorizontalAlignment="Stretch" Grid.Row="3" Style="{StaticResource OptionsSubMenu}" >
+                    <Button Margin="0" Content="BUSCAR" FontSize="15"  HorizontalAlignment="Stretch" Grid.Row="3" Style="{StaticResource OptionsSubMenu}" x:Name="BuscarCliente" >
                         <Button.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="0 0 10 10"/>

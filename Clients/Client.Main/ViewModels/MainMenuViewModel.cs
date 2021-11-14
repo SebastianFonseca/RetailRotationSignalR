@@ -90,7 +90,7 @@ namespace Client.Main.ViewModels
 
         public void BuscarCliente()
         {
-
+            VentanaPrincipal.ActivateItem(new AddClientBuscarViewModel(VentanaPrincipal));
         }
         #endregion
 

@@ -96,10 +96,9 @@
 
             <!--Back Button-->
 
-            <Button x:Name="BackButton" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Margin="5" Style="{StaticResource GeneralButton}">
-                <fa:ImageAwesome Icon="ArrowLeft" Height="30"/>
+            <Button x:Name="BackButton" Grid.Column="0" Grid.Row="0" Margin="5" Style="{StaticResource GeneralButton}" VerticalAlignment="Top" Width="60" Grid.RowSpan="2">
+                <fa:ImageAwesome Icon="ArrowLeft" Height="25" HorizontalAlignment="Center"/>
             </Button>
-
 
         </Grid>
     </Border>
