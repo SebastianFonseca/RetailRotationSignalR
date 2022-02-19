@@ -156,6 +156,7 @@ namespace ServerConsole
         public async Task<BindableCollection<LocalModel>> ServidorGetIdLocales()
         {
             return DbConnection.getLocales();
+
         }
         #endregion
 
