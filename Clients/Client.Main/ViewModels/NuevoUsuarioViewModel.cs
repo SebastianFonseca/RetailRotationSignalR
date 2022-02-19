@@ -1,4 +1,5 @@
-﻿using Caliburn.Micro;
+﻿using Autofac;
+using Caliburn.Micro;
 using Client.Main.Models;
 using Client.Main.Utilities;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -14,6 +16,7 @@ namespace Client.Main.ViewModels
     class NuevoUsuarioViewModel : PropertyChangedBase, IDataErrorInfo
     {
         MainWindowViewModel VentanaPrincipal;
+        public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
 
 
         EmpleadoModel NuevoEmpleado = new EmpleadoModel();
@@ -21,27 +24,61 @@ namespace Client.Main.ViewModels
         public NuevoUsuarioViewModel(MainWindowViewModel argVentana)
         {
             VentanaPrincipal = argVentana;
+            getLocalesServidor();
         }
 
-        public BindableCollection<LocalModel> Locales
+        private BindableCollection<LocalModel> _locales = new BindableCollection<LocalModel>();
+        public  BindableCollection<LocalModel> Locales
         {
             get
             {
-                return DbConnection.getLocales();
+
+                return _locales;
+                //return DbConnection.getLocales();
+            }
+            set {
+                
+                _locales = value;
+                NotifyOfPropertyChange(() => Locales);
             }
 
         }
 
+        public async void getLocalesServidor()
+        {
 
+            if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+            {
+                try
+                {
+                    Task<object> re = conexion.CallServerMethod("ServidorGetIdLocales", Arguments: new object[] { });
+                    await re;
+
+                    LocalModel[] mn = System.Text.Json.JsonSerializer.Deserialize<LocalModel[]>(re.Result.ToString());
+                    BindableCollection<LocalModel> lcl = new BindableCollection<LocalModel>();
+                    foreach (LocalModel item in mn)
+                    {
+                        lcl.Add(item);
+                    }
+                    Locales = lcl;
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message);
+                }
+            }
+        }
+
+        
         public LocalModel Local 
         {
             get
             {
-                return NuevoEmpleado.PuntoDeVenta; 
+                return NuevoEmpleado.puntoDeVenta; 
             }
             set
             {
-                NuevoEmpleado.PuntoDeVenta = value;
+                NuevoEmpleado.puntoDeVenta = value;
                 NotifyOfPropertyChange(() => Local);
             }
         }
@@ -50,11 +87,11 @@ namespace Client.Main.ViewModels
 
         public string Nombre
         {
-            get { return NuevoEmpleado.FirstName; }
+            get { return NuevoEmpleado.firstName; }
             set { 
-            if(NuevoEmpleado.FirstName != value)
+            if(NuevoEmpleado.firstName != value)
                 {
-                    NuevoEmpleado.FirstName = value;
+                    NuevoEmpleado.firstName = value;
                 }
                 NotifyOfPropertyChange(() => Nombre);
             
@@ -62,12 +99,12 @@ namespace Client.Main.ViewModels
         }
         public string Apellidos
         {
-            get { return NuevoEmpleado.LastName; }
+            get { return NuevoEmpleado.lastName; }
             set
             {
-                if (NuevoEmpleado.LastName != value)
+                if (NuevoEmpleado.lastName != value)
                 {
-                    NuevoEmpleado.LastName = value;
+                    NuevoEmpleado.lastName = value;
                 }
                 NotifyOfPropertyChange(() => Apellidos);
 
@@ -76,12 +113,12 @@ namespace Client.Main.ViewModels
 
         public string CC
         {
-            get { return NuevoEmpleado.Cedula; }
+            get { return NuevoEmpleado.cedula; }
             set
             {
-                if (NuevoEmpleado.Cedula != value)
+                if (NuevoEmpleado.cedula != value)
                 {
-                    NuevoEmpleado.Cedula = value;
+                    NuevoEmpleado.cedula = value;
                 }
                 NotifyOfPropertyChange(() => CC);
 
@@ -90,12 +127,12 @@ namespace Client.Main.ViewModels
 
         public string Telefono
         {
-            get { return NuevoEmpleado.Telefono; }
+            get { return NuevoEmpleado.telefono; }
             set
             {
-                if (NuevoEmpleado.Telefono != value)
+                if (NuevoEmpleado.telefono != value)
                 {
-                    NuevoEmpleado.Telefono = value;
+                    NuevoEmpleado.telefono = value;
                 }
                 NotifyOfPropertyChange(() => Telefono);
 
@@ -105,12 +142,12 @@ namespace Client.Main.ViewModels
 
         public DateTime FechaContratacion
         {
-            get { return NuevoEmpleado.FechaDeContratacion; }
+            get { return NuevoEmpleado.fechaDeContratacion; }
             set
             {
-                if (NuevoEmpleado.FechaDeContratacion != value)
+                if (NuevoEmpleado.fechaDeContratacion != value)
                 {
-                    NuevoEmpleado.FechaDeContratacion = value;
+                    NuevoEmpleado.fechaDeContratacion = value;
                 }
                 NotifyOfPropertyChange(() => FechaContratacion);
 
@@ -119,12 +156,12 @@ namespace Client.Main.ViewModels
 
         public string Cargo
         {
-            get { return NuevoEmpleado.Cargo; }
+            get { return NuevoEmpleado.cargo; }
             set
             {
-                if (NuevoEmpleado.Cargo != value)
+                if (NuevoEmpleado.cargo != value)
                 {
-                    NuevoEmpleado.Cargo = value;
+                    NuevoEmpleado.cargo = value;
                 }
                 NotifyOfPropertyChange(() => Cargo);
 
@@ -133,12 +170,12 @@ namespace Client.Main.ViewModels
 
         public string Password
         {
-            get { return NuevoEmpleado.Password; }
+            get { return NuevoEmpleado.password; }
             set
             {
-                if (NuevoEmpleado.Password != value)
+                if (NuevoEmpleado.password != value)
                 {
-                    NuevoEmpleado.Password = value;
+                    NuevoEmpleado.password = value;
                 }
                 NotifyOfPropertyChange(() => Password);
 
@@ -147,12 +184,12 @@ namespace Client.Main.ViewModels
 
         public decimal Salario
         {
-            get { return NuevoEmpleado.Salario; }
+            get { return NuevoEmpleado.salario; }
             set
             {
-                if (NuevoEmpleado.Salario != value)
+                if (NuevoEmpleado.salario != value)
                 {
-                    NuevoEmpleado.Salario = value;
+                    NuevoEmpleado.salario = value;
                 }
                 NotifyOfPropertyChange(() => Salario);
 
@@ -161,12 +198,12 @@ namespace Client.Main.ViewModels
 
         public string Direccion
         {
-            get { return NuevoEmpleado.Direccion; }
+            get { return NuevoEmpleado.direccion; }
             set
             {
-                if (NuevoEmpleado.Direccion != value)
+                if (NuevoEmpleado.direccion != value)
                 {
-                    NuevoEmpleado.Direccion = value;
+                    NuevoEmpleado.direccion = value;
                 }
                 NotifyOfPropertyChange(() => Direccion);
 
@@ -185,43 +222,80 @@ namespace Client.Main.ViewModels
             }
         }
 
-        public void Guardar()
+        public async void Guardar()
         {
-            if (Statics.ClientStatus == "Trabajando localmente")
+            if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
             {
-                if (!string.IsNullOrWhiteSpace(NuevoEmpleado.FirstName) && 
-                    !string.IsNullOrWhiteSpace(NuevoEmpleado.LastName) && 
-                    !string.IsNullOrWhiteSpace(NuevoEmpleado.Cedula) &&
-                    !string.IsNullOrWhiteSpace(NuevoEmpleado.Direccion) &&
-                    !string.IsNullOrWhiteSpace(NuevoEmpleado.Telefono) &&
-                    !string.IsNullOrWhiteSpace(NuevoEmpleado.PuntoDeVenta.Nombre) &&
-                    !string.IsNullOrWhiteSpace(NuevoEmpleado.FechaDeContratacion.ToString()) &&
-                    !string.IsNullOrWhiteSpace(NuevoEmpleado.Cargo) &&
-                    !string.IsNullOrWhiteSpace(NuevoEmpleado.Salario.ToString()) &&
-                    !string.IsNullOrWhiteSpace(NuevoEmpleado.Password) &&
-                    !string.IsNullOrWhiteSpace(PasswordAgain))
+                if (Statics.ClientStatus == "Trabajando localmente")
                 {
-                    if (DbConnection.NuevoUsuario(Empleado: NuevoEmpleado))
-                    {
-                        VentanaPrincipal.ActivateItem(new NuevoUsuarioViewModel(VentanaPrincipal));
+                     if (!string.IsNullOrWhiteSpace(NuevoEmpleado.firstName) && 
+                         !string.IsNullOrWhiteSpace(NuevoEmpleado.lastName) && 
+                         !string.IsNullOrWhiteSpace(NuevoEmpleado.cedula) &&
+                         !string.IsNullOrWhiteSpace(NuevoEmpleado.direccion) &&
+                         !string.IsNullOrWhiteSpace(NuevoEmpleado.telefono) &&
+                         !string.IsNullOrWhiteSpace(NuevoEmpleado.puntoDeVenta.nombre) &&
+                         !string.IsNullOrWhiteSpace(NuevoEmpleado.fechaDeContratacion.ToString()) &&
+                         !string.IsNullOrWhiteSpace(NuevoEmpleado.cargo) &&
+                         !string.IsNullOrWhiteSpace(NuevoEmpleado.salario.ToString()) &&
+                         !string.IsNullOrWhiteSpace(NuevoEmpleado.password) &&
+                         !string.IsNullOrWhiteSpace(PasswordAgain))
+                        {
+
+                        try
+                        {
+                            Task<object> re = conexion.CallServerMethod("ServidorCreateNuevoUsuario", Arguments: new[] { NuevoEmpleado });
+                            await re;
+                            if (re.Result.ToString() == "Empleado ya registrado.")
+                            {
+                                MessageBox.Show("El número de cédula ya ha sido registrado.");
+                                CC = "";
+                                return;
+                            }
+                            else if (re.Result.ToString() == "Se ha registrado al nuevo usuario.")
+                            {
+                                MessageBox.Show("Se ha registrado al nuevo usuario.");
+                                Locales.Clear();
+                                VentanaPrincipal.ActivateItem(new NuevoUsuarioViewModel(VentanaPrincipal));
+                                return;
+                            }
+
+                            MessageBox.Show(re.Result.ToString());
+                        }
+                        catch (Exception e)
+                        {
+
+                            MessageBox.Show(e.Message);
+                        }
+
+  
+
+
+                        //if (DbConnection.NuevoUsuario(Empleado: NuevoEmpleado))
+                        //{
+                        //    VentanaPrincipal.ActivateItem(new NuevoUsuarioViewModel(VentanaPrincipal));
+                        //}
+                        //else
+                        //{
+                        //    CC = "";
+                        //}
                     }
-                    else
-                    {
-                        CC = "";
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("Primero debe rellenar los datos.");
+                        else
+                        {
+                            MessageBox.Show("Primero debe rellenar los datos.");
 
-                }
+                        }
 
 
+                 }
             }
             else
             {
-                //Llamar metodo del servidor.
+                MessageBox.Show("Para agregar un nuevo usuario debe estar conectado al servidor.");
             }
+
+
+
+
            
         }
        

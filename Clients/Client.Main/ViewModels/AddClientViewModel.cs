@@ -34,10 +34,10 @@ namespace Client.Main.ViewModels
        
         public string Name
         {
-            get { return NuevoCliente.FirstName; }
+            get { return NuevoCliente.firstName; }
             set{
-                if (NuevoCliente.FirstName != value)
-                    NuevoCliente.FirstName = value;
+                if (NuevoCliente.firstName != value)
+                    NuevoCliente.firstName = value;
                 NotifyOfPropertyChange(() => Name);
             }
         }
@@ -45,44 +45,44 @@ namespace Client.Main.ViewModels
 
         public string Apellidos
         {
-            get { return NuevoCliente.LastName; }
+            get { return NuevoCliente.lastName; }
             set
             {               
-                if (NuevoCliente.LastName != value)
-                    NuevoCliente.LastName = value;
+                if (NuevoCliente.lastName != value)
+                    NuevoCliente.lastName = value;
                 NotifyOfPropertyChange(() => Apellidos);
             }
         }
 
         public string CC
         {
-            get { return NuevoCliente.Cedula; }
+            get { return NuevoCliente.cedula; }
             set
             {     
-                if (NuevoCliente.Cedula != value)
-                    NuevoCliente.Cedula = value;
+                if (NuevoCliente.cedula != value)
+                    NuevoCliente.cedula = value;
                 NotifyOfPropertyChange(() => CC);
             }
         }
 
         public string Correo
         {
-            get { return NuevoCliente.Correo; }
+            get { return NuevoCliente.correo; }
             set
             {
-                if (NuevoCliente.Correo != value)
-                    NuevoCliente.Correo = value;
+                if (NuevoCliente.correo != value)
+                    NuevoCliente.correo = value;
                 NotifyOfPropertyChange(() => Correo);
             }
         }
 
         public string Telefono
         {
-            get { return NuevoCliente.Telefono; }
+            get { return NuevoCliente.telefono; }
             set
             {
-                if (NuevoCliente.Telefono != value)
-                    NuevoCliente.Telefono = value;
+                if (NuevoCliente.telefono != value)
+                    NuevoCliente.telefono = value;
                 NotifyOfPropertyChange(() => Telefono);
 
             }
@@ -95,15 +95,15 @@ namespace Client.Main.ViewModels
         {
 
             //DbConnection.SincronizarReplicacionMerge();
-            if (!string.IsNullOrWhiteSpace(NuevoCliente.FirstName) && !string.IsNullOrWhiteSpace(NuevoCliente.LastName) && !string.IsNullOrWhiteSpace(NuevoCliente.Cedula))
+            if (!string.IsNullOrWhiteSpace(NuevoCliente.firstName) && !string.IsNullOrWhiteSpace(NuevoCliente.lastName) && !string.IsNullOrWhiteSpace(NuevoCliente.cedula))
             {
-                if (string.IsNullOrEmpty(NuevoCliente.Correo))
+                if (string.IsNullOrEmpty(NuevoCliente.correo))
                 {
-                    NuevoCliente.Correo = null;
+                    NuevoCliente.correo = null;
                 }
-                if (string.IsNullOrEmpty(NuevoCliente.Telefono))
+                if (string.IsNullOrEmpty(NuevoCliente.telefono))
                 {
-                    NuevoCliente.Telefono = null;
+                    NuevoCliente.telefono = null;
                 }
 
                 try
@@ -114,13 +114,13 @@ namespace Client.Main.ViewModels
                         await re;
                         if (Convert.ToInt32(re.Result.ToString()) == 1)
                         {
-                            MessageBox.Show($"El cliente {NuevoCliente.FirstName} {NuevoCliente.LastName} se ha registrado en el servidor con 100 puntos.");
+                            MessageBox.Show($"El cliente {NuevoCliente.firstName} {NuevoCliente.lastName} se ha registrado en el servidor con 100 puntos.");
                             VentanaPrincipal.ActivateItem(new AddClientViewModel(VentanaPrincipal));
                             return;
                         }
                         if (Convert.ToInt32(re.Result.ToString()) == 0)
                         {
-                            MessageBox.Show($"El cliente {NuevoCliente.FirstName} {NuevoCliente.LastName} ya esta registrado.");
+                            MessageBox.Show($"El cliente {NuevoCliente.firstName} {NuevoCliente.lastName} ya esta registrado.");
                             CC = "";
                             return;
                         }
@@ -128,7 +128,7 @@ namespace Client.Main.ViewModels
 
                     if (DbConnection.AddClient(Cliente: NuevoCliente))
                     {
-                        MessageBox.Show($"El cliente {NuevoCliente.FirstName} {NuevoCliente.LastName} se ha registrado localmente con 100 puntos.");
+                        MessageBox.Show($"El cliente {NuevoCliente.firstName} {NuevoCliente.lastName} se ha registrado localmente con 100 puntos.");
                         VentanaPrincipal.ActivateItem(new AddClientViewModel(VentanaPrincipal));
                     }
                     else

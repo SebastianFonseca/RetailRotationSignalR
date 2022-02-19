@@ -69,11 +69,12 @@
             <TextBox Grid.Row="5" Grid.Column="2" Style="{StaticResource GeneralTextBox}" x:Name="Telefono" PreviewTextInput="NumberValidationTextBox" MaxLength="10"/>
 
             <!-- Recuadro puntos -->
-            <Border Background="#f6d3b4" BorderBrush="Beige" Margin="20" BorderThickness="1" CornerRadius="20" Grid.Row="1" Grid.Column="3" Grid.RowSpan="6"/>
-            <StackPanel Grid.Row="3" Grid.Column="3" Grid.RowSpan="2" VerticalAlignment="Center">
-                <TextBlock Margin="0" x:Name="Puntos">PUNTOS</TextBlock>
-                <TextBlock Margin="0">0</TextBlock>
-            </StackPanel>
+            <Border Background="#f6d3b4" BorderBrush="Beige" Margin="20 20 20 40" BorderThickness="1" CornerRadius="20" Grid.Row="1" Grid.Column="3" Grid.RowSpan="6">
+                <StackPanel Grid.Row="3" Grid.Column="3" Grid.RowSpan="2" VerticalAlignment="Center">
+                    <TextBlock Margin="0">PUNTOS</TextBlock>
+                    <TextBlock x:Name="Puntos"/>
+                </StackPanel>
+            </Border>
 
             <!-- linea 6 Boton Guardar-->
             <Button Style="{StaticResource GeneralButton}" Grid.RowSpan="3"  Grid.Column="2" Grid.Row="6" Margin="10" Height="50" Content="   ACTUALIZAR   "  x:Name="Editar" >

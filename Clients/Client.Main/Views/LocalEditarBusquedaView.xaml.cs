@@ -15,11 +15,11 @@ using System.Windows.Shapes;
 namespace Client.Main.Views
 {
     /// <summary>
-    /// Interaction logic for NuevoLocalView.xaml
+    /// Interaction logic for LocalEditarBusquedaView.xaml
     /// </summary>
-    public partial class NuevoLocalView : UserControl
+    public partial class LocalEditarBusquedaView : UserControl
     {
-        public NuevoLocalView()
+        public LocalEditarBusquedaView()
         {
             InitializeComponent();
         }

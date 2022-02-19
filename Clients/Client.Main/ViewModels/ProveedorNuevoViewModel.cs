@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Client.Main.ViewModels
 {
-    class NuevoProveedorViewModel
+    class ProveedorNuevoViewModel
     {
 
 

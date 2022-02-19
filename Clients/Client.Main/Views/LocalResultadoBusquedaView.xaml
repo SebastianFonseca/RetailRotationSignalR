@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Client.Main.Views.NuevoLocalView"
+﻿<UserControl x:Class="Client.Main.Views.LocalResultadoBusquedaView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -8,7 +8,7 @@
              xmlns:local="clr-namespace:Client.Main.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    
+
     <UserControl.Resources>
         <!--#region    -->
         <Style TargetType="TextBlock">
@@ -57,42 +57,36 @@
 
             <!--Linea 1-->
             <TextBlock Grid.Row="1" Grid.Column="1" >Nombre:</TextBlock>
-            <TextBox Grid.Row="1" Grid.Column="2" Style="{StaticResource GeneralTextBox}" x:Name="Nombre"/>
+            <TextBlock Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" FontWeight="Normal" x:Name="Nombre"/>
 
             <!--Linea 2-->
             <TextBlock Grid.Row="2" Grid.Column="1" >Dirección:</TextBlock>
-            <TextBox Grid.Row="2" Grid.Column="2"  Style="{StaticResource GeneralTextBox}" x:Name="Direccion"/>
+            <TextBlock Grid.Row="2" Grid.Column="2"  HorizontalAlignment="Left" FontWeight="Normal" x:Name="Direccion"/>
 
 
             <!--Linea 3-->
             <TextBlock Grid.Row="3" Grid.Column="1">Teléfono:</TextBlock>
-            <TextBox Grid.Row="3" Grid.Column="2" Style="{StaticResource GeneralTextBox}" PreviewTextInput="NumberValidationTextBox" x:Name="Telefono" MaxLength="10"/>
+            <TextBlock Grid.Row="3" Grid.Column="2" HorizontalAlignment="Left" FontWeight="Normal" x:Name="Telefono" />
 
             <!--Linea 4-->
             <TextBlock Grid.Row="4" Grid.Column="1" >Ciudad:</TextBlock>
-            <TextBox Grid.Row="4" Grid.Column="2" Style="{StaticResource GeneralTextBox}" x:Name="Ciudad"/>
+            <TextBlock Grid.Row="4" Grid.Column="2" HorizontalAlignment="Left" FontWeight="Normal" x:Name="Ciudad"/>
 
             <!--Linea 5-->
             <TextBlock Grid.Row="5" Grid.Column="1"  >N° de Canastillas:</TextBlock>
-            <TextBox Grid.Row="5" Grid.Column="2" Style="{StaticResource GeneralTextBox}" PreviewTextInput="NumberValidationTextBox" x:Name="NumeroDeCanastillas" MaxLength="10"/>
+            <TextBlock Grid.Row="5" Grid.Column="2" HorizontalAlignment="Left" FontWeight="Normal"  x:Name="NumeroDeCanastillas" />
 
             <!--Linea 6-->
             <TextBlock Grid.Row="6" Grid.Column="1"  >Fecha de Apertura:</TextBlock>
-            <DatePicker   Style="{DynamicResource date}" Grid.Row="6" Grid.Column="2"  x:Name="FechaDeApertura" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0 2 0 0" FontWeight="DemiBold" DisplayDate="{Binding FechaDeApertura}" />
+            <TextBlock  Grid.Row="6" Grid.Column="2"  x:Name="FechaDeApertura" HorizontalAlignment="Left" FontWeight="Normal" />
 
             <!-- linea 7 Guardar -->
-            <Button Style="{StaticResource GeneralButton}" Grid.RowSpan="3"  Grid.Column="2" Grid.Row="7" Margin="11" Height="50" Content="   GUARDAR   "  x:Name="Guardar">
-                <Button.IsEnabled>
-                    <MultiBinding Converter="{StaticResource Converter }" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
-                        <Binding ElementName="Nombre" Path="(Validation.HasError)" />
-                        <Binding ElementName="Direccion" Path="(Validation.HasError)" />
-                        <Binding ElementName="Telefono" Path="(Validation.HasError)" />
-                        <Binding ElementName="Ciudad" Path="(Validation.HasError)" />
-                        <Binding ElementName="NumeroDeCanastillas" Path="(Validation.HasError)" />
-                        <Binding ElementName="FechaDeApertura" Path="(Validation.HasError)" />
-                    </MultiBinding>
-                </Button.IsEnabled>
-            </Button>
+            <StackPanel Grid.Column="1" Grid.Row="7" Orientation="Horizontal" HorizontalAlignment="Center" Grid.ColumnSpan="3" Grid.RowSpan="2">
+                <Button Style="{StaticResource GeneralButton}"  Margin="11" Height="40" HorizontalAlignment="Center"  Width="250" Content="    EDITAR    "  x:Name="Editar"  />
+                <Button Style="{StaticResource GeneralButton}"  Margin="11" Height="40" HorizontalAlignment="Center"  Width="250" Content="    ELIMINAR    "  x:Name="Eliminar" />
+            </StackPanel>
+
+
 
             <!--Back Button-->
 

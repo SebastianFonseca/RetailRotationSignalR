@@ -1,6 +1,5 @@
 ﻿using Caliburn.Micro;
 using Client.Main.Models;
-using Client.Main.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,14 +8,16 @@ using System.Windows;
 
 namespace Client.Main.ViewModels
 {
-
-    class AddClientBuscarViewModel : PropertyChangedBase, IDataErrorInfo
+    class ProductoGestionViewModel : PropertyChangedBase, IDataErrorInfo
     {
         MainWindowViewModel VentanaPrincipal;
-        public AddClientBuscarViewModel(MainWindowViewModel argVentana)
+
+        public ProductoGestionViewModel(MainWindowViewModel argVentana)
         {
             VentanaPrincipal = argVentana;
+
         }
+
 
         private string _buscarTbx;
 
@@ -34,9 +35,9 @@ namespace Client.Main.ViewModels
             }
         }
 
-        private ClientesModel _usuarioSeleccionado;
+        private ProductoModel _usuarioSeleccionado;
 
-        public ClientesModel UsuarioSeleccionado
+        public ProductoModel UsuarioSeleccionado
         {
             get { return _usuarioSeleccionado; }
             set
@@ -45,18 +46,18 @@ namespace Client.Main.ViewModels
                 if (value != null)
                 {
                     seleccion = value;
-                    BuscarTbx = value.cedula + "-" + value.firstName + " " + value.lastName;
+                    BuscarTbx = value.CodigoProducto + "-" + value.Nombre;
                 }
                 _usuarioSeleccionado = value;
 
                 NotifyOfPropertyChange(() => UsuarioSeleccionado);
             }
         }
-        ClientesModel seleccion = new ClientesModel();
+        ProductoModel seleccion = new ProductoModel();
 
-        private BindableCollection<ClientesModel> _busquedas = new BindableCollection<ClientesModel>();
+        private BindableCollection<ProductoModel> _busquedas = new BindableCollection<ProductoModel>();
 
-        public BindableCollection<ClientesModel> Busquedas
+        public BindableCollection<ProductoModel> Busquedas
         {
             get
             {
@@ -74,43 +75,48 @@ namespace Client.Main.ViewModels
 
         public void Buscar()
         {
-            if (String.IsNullOrEmpty(BuscarTbx))
-            {
-                MessageBox.Show("Escriba un nombre o número de cédula");
-            }
-            else
-            {
-                BindableCollection<ClientesModel> resultado = DbConnection.getClientes(BuscarTbx.Split('-')[0]);
+            //if (String.IsNullOrEmpty(BuscarTbx))
+            //{
+            //    MessageBox.Show("Escriba un nombre o número de cédula");
+            //}
+            //else
+            //{
+            //    BindableCollection<ProductoModel> resultado /*= DbConnection.getEmpleados(BuscarTbx.Split('-')[0])*/;
 
-                if (resultado.Count == 0)
-                {
-                    MessageBox.Show("Número de cédula, nombre o apellido no resgistrados");
-                }
-                else
-                {
-                    IEnumerator<ClientesModel> e = resultado.GetEnumerator();
-                    e.Reset();
-                    while (e.MoveNext())
-                    {
-                        if (e.Current.cedula == BuscarTbx.Split('-')[0])
-                        {
-                            VentanaPrincipal.ActivateItem(new AddClientResultadoBusquedaViewModel(VentanaPrincipal, e.Current));
-                        }
-
-
-                    }
-
-                    BusquedasVisibilidad = "Visible";
-                    ComboboxDesplegado = "True";
-                }
-
-            }
+            //    if (resultado.Count == 0)
+            //    {
+            //        MessageBox.Show("Número de cédula, nombre o apellido no resgistrados");
+            //    }
+            //    else
+            //    {
+            //        IEnumerator<ProductoModel> e = resultado.GetEnumerator();
+            //        e.Reset();
+            //        while (e.MoveNext())
+            //        {
+            //            if (e.Current.CodigoProducto == BuscarTbx.Split('-')[0])
+            //            {
+            //                VentanaPrincipal.ActivateItem(new NuevoUsuarioResultadoBusquedaViewModel(VentanaPrincipal, e.Current));
+            //            }
 
 
+            //        }
 
+            //        BusquedasVisibilidad = "Visible";
+            //        ComboboxDesplegado = "True";
+            //    }
 
+            //}
 
         }
+
+        public void AgregarProducto()
+        {
+            VentanaPrincipal.ActivateItem(new ProductoNuevoViewModel(VentanaPrincipal));
+        }
+
+
+
+
 
         public string Error { get { return null; } }
         int flag = 0;
@@ -170,20 +176,24 @@ namespace Client.Main.ViewModels
         public void EscribiendoBusqueda()
         {
 
-            Busquedas = DbConnection.getClientes(BuscarTbx);
-            if (Busquedas == null || Busquedas.Count == 0)
-            {
-                BusquedasVisibilidad = "Hidden";
-            }
-            else
-            {
-                BusquedasVisibilidad = "Visible";
-                ComboboxDesplegado = "true";
+            //Busquedas = DbConnection.getEmpleados(BuscarTbx);
+            //if (Busquedas == null || Busquedas.Count == 0)
+            //{
+            //    BusquedasVisibilidad = "Hidden";
+            //}
+            //else
+            //{
+            //    BusquedasVisibilidad = "Visible";
+            //    ComboboxDesplegado = "true";
 
-            }
+            //}
 
         }
 
 
-    }
+
+
+    
+
+}
 }

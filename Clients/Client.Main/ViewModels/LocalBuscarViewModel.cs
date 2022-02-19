@@ -2,29 +2,29 @@
 using Caliburn.Micro;
 using Client.Main.Models;
 using Client.Main.Utilities;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+//using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
-using System.Text.RegularExpressions;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 
 namespace Client.Main.ViewModels
 {
-    class BuscarUsuarioViewModel : PropertyChangedBase, IDataErrorInfo
+    class LocalBuscarViewModel : PropertyChangedBase, IDataErrorInfo
     {
-	        
-
         MainWindowViewModel VentanaPrincipal;
         public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
 
-        public BuscarUsuarioViewModel(MainWindowViewModel argVentana)
+        public LocalBuscarViewModel(MainWindowViewModel argVentana)
         {
             VentanaPrincipal = argVentana;
-        }
 
+        }
 
         private string _buscarTbx;
 
@@ -42,30 +42,29 @@ namespace Client.Main.ViewModels
             }
         }
 
-        private EmpleadoModel _usuarioSeleccionado;
+        private LocalModel _localSeleccionado;
 
-        public EmpleadoModel UsuarioSeleccionado
+        public LocalModel UsuarioSeleccionado
         {
-            get { return _usuarioSeleccionado; }
+            get { return _localSeleccionado; }
             set
             {
-               
-                //BusquedasVisibilidad = "Hidden";
+
                 if (value != null)
                 {
                     seleccion = value;
-                    BuscarTbx = value.cedula +"-" +value.firstName + " " + value.lastName;
+                    BuscarTbx = value.codigo + " - " + value.nombre;
                 }
-                _usuarioSeleccionado = value;
-                
-                NotifyOfPropertyChange(() => UsuarioSeleccionado);  
+                _localSeleccionado = value;
+
+                NotifyOfPropertyChange(() => UsuarioSeleccionado);
             }
         }
-        EmpleadoModel seleccion = new EmpleadoModel();
+        LocalModel seleccion = new LocalModel();
 
-        private BindableCollection<EmpleadoModel> _busquedas = new BindableCollection<EmpleadoModel>();
+        private BindableCollection<LocalModel> _busquedas = new BindableCollection<LocalModel>();
 
-        public BindableCollection<EmpleadoModel> Busquedas
+        public BindableCollection<LocalModel> Busquedas
         {
             get
             {
@@ -85,72 +84,64 @@ namespace Client.Main.ViewModels
         {
             if (String.IsNullOrEmpty(BuscarTbx))
             {
-                MessageBox.Show("Escriba un nombre o número de cédula");
+                MessageBox.Show("Escriba un nombre o un código de local.");
             }
             else
             {
-                if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+                try
                 {
-                    try
+                    if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
                     {
-                        Task<object> re = conexion.CallServerMethod("ServidorGetUsuarios", Arguments: new[] { BuscarTbx.Split('-')[0].Trim() });
+
+                        Task<object> re = conexion.CallServerMethod("ServidorGetLocales", Arguments: new[] { BuscarTbx.Split('-')[0].Trim() });
                         await re;
-                        EmpleadoModel[] mn = System.Text.Json.JsonSerializer.Deserialize<EmpleadoModel[]>(re.Result.ToString());
-                        BindableCollection<EmpleadoModel> resultado = new BindableCollection<EmpleadoModel>();
+                        LocalModel[] mn = System.Text.Json.JsonSerializer.Deserialize<LocalModel[]>(re.Result.ToString());
+                        BindableCollection<LocalModel> resultado = new BindableCollection<LocalModel>();
                         resultado.Clear();
-                        foreach (EmpleadoModel item in mn)
+                        foreach (LocalModel item in mn)
                         {
                             resultado.Add(item);
                         }
 
-
-
-                        // BindableCollection<EmpleadoModel> resultado = DbConnection.getEmpleados(BuscarTbx.Split('-')[0]);
+                        //BindableCollection<LocalModel> resultado = DbConnection.getLocales(BuscarTbx.Split('-')[0].Trim());
 
                         if (resultado.Count == 0)
                         {
-                            MessageBox.Show("Número de cédula, nombre o apellido no resgistrados");
+                            MessageBox.Show("Nombre o código no registrados");
                         }
                         else
                         {
-                            IEnumerator<EmpleadoModel> e = resultado.GetEnumerator();
+                            IEnumerator<LocalModel> e = resultado.GetEnumerator();
                             e.Reset();
                             while (e.MoveNext())
                             {
-                                if (e.Current.cedula == BuscarTbx.Split('-')[0])
+                                if (e.Current.codigo == BuscarTbx.Split('-')[0].Trim())
                                 {
-                                    VentanaPrincipal.ActivateItem(new NuevoUsuarioResultadoBusquedaViewModel(VentanaPrincipal, e.Current));
+                                    VentanaPrincipal.ActivateItem(new LocalResultadoBusquedaViewModel(VentanaPrincipal, e.Current));
                                 }
 
-                        
+
                             }
-  
+
                             BusquedasVisibilidad = "Visible";
                             ComboboxDesplegado = "True";
                         }
+
+
                     }
-                    catch (Exception e)
+                    else
                     {
-
-                        MessageBox.Show(e.Message);
-
+                        MessageBox.Show("Para realizar una busqueda de locales debe estar conectado al servidor.");
                     }
                 }
-                else
+                catch(Exception e)
                 {
-                    MessageBox.Show("No es posible realizar la busqueda si no esta conectado al servidor.");
-
-                }
-
-
-
+                    MessageBox.Show(e.Message);
+                } 
 
             }
 
 
-            
-
-        
         }
 
         public void BackButton()
@@ -220,18 +211,18 @@ namespace Client.Main.ViewModels
         {
             try
             {
+
                 if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
                 {
-                    Task<object> re = conexion.CallServerMethod("ServidorGetUsuarios", Arguments: new[] { BuscarTbx });
+
+                    Task<object> re = conexion.CallServerMethod("ServidorGetLocales", Arguments: new[] { BuscarTbx });
                     await re;
-                    EmpleadoModel[] mn = System.Text.Json.JsonSerializer.Deserialize<EmpleadoModel[]>(re.Result.ToString());
+                    LocalModel[] mn = System.Text.Json.JsonSerializer.Deserialize<LocalModel[]>(re.Result.ToString());
                     Busquedas.Clear();
-                    foreach (EmpleadoModel item in mn)
+                    foreach (LocalModel item in mn)
                     {
                         Busquedas.Add(item);
                     }
-
-                    //Busquedas = DbConnection.getEmpleados(BuscarTbx);
                     if (Busquedas == null || Busquedas.Count == 0)
                     {
                         ComboboxDesplegado = "false";
@@ -241,16 +232,15 @@ namespace Client.Main.ViewModels
                     {
                         BusquedasVisibilidad = "Visible";
                         ComboboxDesplegado = "true";
-                
+
                     }
                 }
                 else
                 {
                     MessageBox.Show("No es posible realizar la busqueda si no esta conectado al servidor.");
                 }
-
             }
-            catch (Exception e)
+            catch (Exception e )
             {
 
                 MessageBox.Show(e.Message);
@@ -262,9 +252,5 @@ namespace Client.Main.ViewModels
 
         }
 
-    
-  
-
     }
-
 }

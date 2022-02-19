@@ -106,7 +106,7 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
 
-                    <Button Margin="0" Content="GESTION DE PRODUCTOS" FontSize="15" HorizontalAlignment="Stretch"  HorizontalContentAlignment="Center" Grid.Row="0" Style="{StaticResource OptionsSubMenu}">
+                    <Button Margin="0" Content="GESTION DE PRODUCTOS" FontSize="15" HorizontalAlignment="Stretch"  HorizontalContentAlignment="Center" Grid.Row="0" Style="{StaticResource OptionsSubMenu}" x:Name="GestionDeProductos">
                         <Button.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="10 10 0 0"/>

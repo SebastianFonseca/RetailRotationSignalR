@@ -21,7 +21,7 @@ namespace Client.Main.ViewModels
         {
             VentanaPrincipal = argVentana;
             resultadoEmpleado = resultadoBusqueda;
-            CedulaAntigua = resultadoEmpleado.Cedula;
+            CedulaAntigua = resultadoEmpleado.cedula;
         }
 
 
@@ -39,14 +39,14 @@ namespace Client.Main.ViewModels
         {
             get
             {
-                return resultadoEmpleado.PuntoDeVenta;
+                return resultadoEmpleado.puntoDeVenta;
             }
             set
                 
             {
                 if (value != null)
                 {
-                    resultadoEmpleado.PuntoDeVenta = value;
+                    resultadoEmpleado.puntoDeVenta = value;
                     NotifyOfPropertyChange(() => Local);
                 }
 
@@ -58,12 +58,12 @@ namespace Client.Main.ViewModels
 
         public string Nombre
         {
-            get { return resultadoEmpleado.FirstName; }
+            get { return resultadoEmpleado.firstName; }
             set
             {
-                if (resultadoEmpleado.FirstName != value)
+                if (resultadoEmpleado.firstName != value)
                 {
-                    resultadoEmpleado.FirstName = value;
+                    resultadoEmpleado.firstName = value;
                 }
                 NotifyOfPropertyChange(() => Nombre);
 
@@ -71,12 +71,12 @@ namespace Client.Main.ViewModels
         }
         public string Apellidos
         {
-            get { return resultadoEmpleado.LastName; }
+            get { return resultadoEmpleado.lastName; }
             set
             {
-                if (resultadoEmpleado.LastName != value)
+                if (resultadoEmpleado.lastName != value)
                 {
-                    resultadoEmpleado.LastName = value;
+                    resultadoEmpleado.lastName = value;
                 }
                 NotifyOfPropertyChange(() => Apellidos);
 
@@ -85,12 +85,12 @@ namespace Client.Main.ViewModels
 
         public string CC
         {
-            get { return resultadoEmpleado.Cedula; }
+            get { return resultadoEmpleado.cedula; }
             set
             {
-                if (resultadoEmpleado.Cedula != value)
+                if (resultadoEmpleado.cedula != value)
                 {
-                    resultadoEmpleado.Cedula = value;
+                    resultadoEmpleado.cedula = value;
                 }
                 NotifyOfPropertyChange(() => CC);
 
@@ -99,12 +99,12 @@ namespace Client.Main.ViewModels
 
         public string Telefono
         {
-            get { return resultadoEmpleado.Telefono; }
+            get { return resultadoEmpleado.telefono; }
             set
             {
-                if (resultadoEmpleado.Telefono != value)
+                if (resultadoEmpleado.telefono != value)
                 {
-                    resultadoEmpleado.Telefono = value;
+                    resultadoEmpleado.telefono = value;
                 }
                 NotifyOfPropertyChange(() => Telefono);
 
@@ -114,12 +114,12 @@ namespace Client.Main.ViewModels
 
         public DateTime FechaContratacion
         {
-            get { return resultadoEmpleado.FechaDeContratacion; }
+            get { return resultadoEmpleado.fechaDeContratacion; }
             set
             {
-                if (resultadoEmpleado.FechaDeContratacion != value)
+                if (resultadoEmpleado.fechaDeContratacion != value)
                 {
-                    resultadoEmpleado.FechaDeContratacion = value;
+                    resultadoEmpleado.fechaDeContratacion = value;
                 }
                 NotifyOfPropertyChange(() => FechaContratacion);
 
@@ -128,13 +128,13 @@ namespace Client.Main.ViewModels
 
         public string Cargo
         {
-            get { return resultadoEmpleado.Cargo; }
+            get { return resultadoEmpleado.cargo; }
             set
             {
                 //MessageBox.Show( value.Length.ToString());
-                if (resultadoEmpleado.Cargo != value)
+                if (resultadoEmpleado.cargo != value)
                 {
-                    resultadoEmpleado.Cargo = value;
+                    resultadoEmpleado.cargo = value;
                 }
                 NotifyOfPropertyChange(() => Cargo);
 
@@ -143,12 +143,12 @@ namespace Client.Main.ViewModels
 
         public string Password
         {
-            get { return resultadoEmpleado.Password; }
+            get { return resultadoEmpleado.password; }
             set
             {
-                if (resultadoEmpleado.Password != value)
+                if (resultadoEmpleado.password != value)
                 {
-                    resultadoEmpleado.Password = value;
+                    resultadoEmpleado.password = value;
                 }
                 NotifyOfPropertyChange(() => Password);
 
@@ -157,12 +157,12 @@ namespace Client.Main.ViewModels
 
         public decimal Salario
         {
-            get { return resultadoEmpleado.Salario; }
+            get { return resultadoEmpleado.salario; }
             set
            {
-                if (resultadoEmpleado.Salario != value)
+                if (resultadoEmpleado.salario != value)
                 {
-                    resultadoEmpleado.Salario = value;
+                    resultadoEmpleado.salario = value;
                 }
                 NotifyOfPropertyChange(() => Salario);
 
@@ -171,12 +171,12 @@ namespace Client.Main.ViewModels
 
         public string Direccion
         {
-            get { return resultadoEmpleado.Direccion; }
+            get { return resultadoEmpleado.direccion; }
             set
             {
-                if (resultadoEmpleado.Direccion != value)
+                if (resultadoEmpleado.direccion != value)
                 {
-                    resultadoEmpleado.Direccion = value;
+                    resultadoEmpleado.direccion = value;
                 }
                 NotifyOfPropertyChange(() => Direccion);
 
@@ -199,21 +199,21 @@ namespace Client.Main.ViewModels
         {
             if (Statics.ClientStatus == "Trabajando localmente")
             {
-                if (!string.IsNullOrWhiteSpace(resultadoEmpleado.FirstName) &&
-                    !string.IsNullOrWhiteSpace(resultadoEmpleado.LastName) &&
-                    !string.IsNullOrWhiteSpace(resultadoEmpleado.Cedula) &&
-                    !string.IsNullOrWhiteSpace(resultadoEmpleado.Direccion) &&
-                    !string.IsNullOrWhiteSpace(resultadoEmpleado.Telefono) &&
-                    !string.IsNullOrWhiteSpace(resultadoEmpleado.PuntoDeVenta.Nombre) &&
-                    !string.IsNullOrWhiteSpace(resultadoEmpleado.FechaDeContratacion.ToString()) &&
-                    !string.IsNullOrWhiteSpace(resultadoEmpleado.Cargo) &&
-                    !string.IsNullOrWhiteSpace(resultadoEmpleado.Salario.ToString()) &&
-                    !string.IsNullOrWhiteSpace(resultadoEmpleado.Password) &&
+                if (!string.IsNullOrWhiteSpace(resultadoEmpleado.firstName) &&
+                    !string.IsNullOrWhiteSpace(resultadoEmpleado.lastName) &&
+                    !string.IsNullOrWhiteSpace(resultadoEmpleado.cedula) &&
+                    !string.IsNullOrWhiteSpace(resultadoEmpleado.direccion) &&
+                    !string.IsNullOrWhiteSpace(resultadoEmpleado.telefono) &&
+                    !string.IsNullOrWhiteSpace(resultadoEmpleado.puntoDeVenta.nombre) &&
+                    !string.IsNullOrWhiteSpace(resultadoEmpleado.fechaDeContratacion.ToString()) &&
+                    !string.IsNullOrWhiteSpace(resultadoEmpleado.cargo) &&
+                    !string.IsNullOrWhiteSpace(resultadoEmpleado.salario.ToString()) &&
+                    !string.IsNullOrWhiteSpace(resultadoEmpleado.password) &&
                     !string.IsNullOrWhiteSpace(PasswordAgain))
                 {
                     if (DbConnection.ActualizarUsuario(Empleado: resultadoEmpleado, CC: CedulaAntigua))
                     {
-                        resultadoEmpleado.Password = "";
+                        resultadoEmpleado.password = "";
                         VentanaPrincipal.ActivateItem(new NuevoUsuarioResultadoBusquedaViewModel(VentanaPrincipal, resultadoEmpleado));
                     }
                     else

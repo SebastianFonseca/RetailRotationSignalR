@@ -8,14 +8,18 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text;
 using System.Windows;
+using Autofac;
+using System.Threading.Tasks;
 
 namespace Client.Main.ViewModels
 {
-    class NuevoLocalViewModel : Screen, IDataErrorInfo
+    class LocalNuevoViewModel : Screen, IDataErrorInfo
     {
         MainWindowViewModel VentanaPrincipal;
         LocalModel NuevoLocal = new LocalModel();
         EmpleadoModel Administrador = new EmpleadoModel();
+        public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
+
 
         public static BindableCollection<EmpleadoModel> _administradores = new BindableCollection<EmpleadoModel>();
         public BindableCollection<EmpleadoModel> Administradores
@@ -28,7 +32,7 @@ namespace Client.Main.ViewModels
             set { Administradores = value; }
         }
 
-        public NuevoLocalViewModel(MainWindowViewModel argVentana)
+        public LocalNuevoViewModel(MainWindowViewModel argVentana)
         {
             //NuevoLocal.Administrador = Administrador;
             VentanaPrincipal = argVentana;
@@ -38,12 +42,12 @@ namespace Client.Main.ViewModels
 
         public string Nombre
         {
-            get { return NuevoLocal.Nombre; }
+            get { return NuevoLocal.nombre; }
             set
                 {
-                if (NuevoLocal.Nombre != value)
+                if (NuevoLocal.nombre != value)
                 {
-                    NuevoLocal.Nombre = value;
+                    NuevoLocal.nombre = value;
                 }
                 NotifyOfPropertyChange(() => Nombre);
 
@@ -52,12 +56,12 @@ namespace Client.Main.ViewModels
 
         public string Direccion
         {
-            get { return NuevoLocal.Direccion; }
+            get { return NuevoLocal.direccion; }
             set
             {
-                if (NuevoLocal.Direccion != value)
+                if (NuevoLocal.direccion != value)
                 {
-                    NuevoLocal.Direccion = value;
+                    NuevoLocal.direccion = value;
                 }
                 NotifyOfPropertyChange(() => Direccion);
 
@@ -66,12 +70,12 @@ namespace Client.Main.ViewModels
 
         public string Telefono
         {
-            get { return NuevoLocal.Telefono; }
+            get { return NuevoLocal.telefono; }
             set
             {
-                if (NuevoLocal.Telefono != value)
+                if (NuevoLocal.telefono != value)
                 {
-                    NuevoLocal.Telefono = value;
+                    NuevoLocal.telefono = value;
                 }
                 NotifyOfPropertyChange(() => Telefono);
 
@@ -80,12 +84,12 @@ namespace Client.Main.ViewModels
 
         public string Ciudad
         {
-            get { return NuevoLocal.Ciudad; }
+            get { return NuevoLocal.ciudad; }
             set
             {
-                if (NuevoLocal.Ciudad != value)
+                if (NuevoLocal.ciudad != value)
                 {
-                    NuevoLocal.Ciudad = value;
+                    NuevoLocal.ciudad = value;
                 }
                 NotifyOfPropertyChange(() => Ciudad);
 
@@ -94,12 +98,12 @@ namespace Client.Main.ViewModels
 
         public int NumeroDeCanastillas
         {
-            get { return NuevoLocal.NumeroDeCanastillas; }
+            get { return NuevoLocal.numeroDeCanastillas; }
             set
             {
-                if (NuevoLocal.NumeroDeCanastillas != value)
+                if (NuevoLocal.numeroDeCanastillas != value)
                 {
-                    NuevoLocal.NumeroDeCanastillas = value;
+                    NuevoLocal.numeroDeCanastillas = value;
                 }
                 NotifyOfPropertyChange(() => NumeroDeCanastillas);
 
@@ -108,12 +112,12 @@ namespace Client.Main.ViewModels
 
         public DateTime FechaDeApertura
         {
-            get { return NuevoLocal.FechaDeApertura; }
+            get { return NuevoLocal.fechaDeApertura; }
             set
             {
-                if (NuevoLocal.FechaDeApertura != value)
+                if (NuevoLocal.fechaDeApertura != value)
                 {
-                    NuevoLocal.FechaDeApertura = value;
+                    NuevoLocal.fechaDeApertura = value;
                 }
                 NotifyOfPropertyChange(() => FechaDeApertura);
 
@@ -133,22 +137,44 @@ namespace Client.Main.ViewModels
         }
 
 
-        public void Guardar()
-        {
-            DbConnection.NuevoIdLocal();
-
-            if (MainWindowViewModel.Status == "Trabajando localmente")
+        public async void Guardar()
+        {           
+            if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
             {
-                if (!string.IsNullOrWhiteSpace(NuevoLocal.Nombre ) &&
-                    !string.IsNullOrWhiteSpace(NuevoLocal.Direccion) &&
-                    !string.IsNullOrWhiteSpace(NuevoLocal.Telefono) &&
-                    !string.IsNullOrWhiteSpace(NuevoLocal.Ciudad) &&
-                    !string.IsNullOrWhiteSpace(NuevoLocal.NumeroDeCanastillas.ToString()) &&
-                    !string.IsNullOrWhiteSpace(NuevoLocal.FechaDeApertura.ToString("DD-MM-YYYY")))// &&
-                    //!string.IsNullOrWhiteSpace(NuevoLocal.Administrador.Cedula))
+                
+                if (!string.IsNullOrWhiteSpace(NuevoLocal.nombre ) &&
+                    !string.IsNullOrWhiteSpace(NuevoLocal.direccion) &&
+                    !string.IsNullOrWhiteSpace(NuevoLocal.telefono) &&
+                    !string.IsNullOrWhiteSpace(NuevoLocal.ciudad) &&
+                    !string.IsNullOrWhiteSpace(NuevoLocal.numeroDeCanastillas.ToString()) &&
+                    !string.IsNullOrWhiteSpace(NuevoLocal.fechaDeApertura.ToString("DD-MM-YYYY")))
 
                 {
-                    DbConnection.NuevoLocal(NuevoLocal: NuevoLocal);
+                    try
+                    {
+                        Task<object> re = conexion.CallServerMethod("ServidorNuevoLocal", Arguments: new[] { NuevoLocal });
+                        await re;
+                        if ((re.Result.ToString()).Substring(0, 9) == "El nombre")
+                        {
+                            MessageBox.Show(re.Result.ToString());
+                            Nombre = "";
+                            return;
+                        }
+                        if ((re.Result.ToString()).Substring(0, 16) == "Se ha registrado")
+                        {
+                            MessageBox.Show(re.Result.ToString());
+                            VentanaPrincipal.ActivateItem(new LocalNuevoViewModel(VentanaPrincipal));
+                            return;
+                        }
+                        MessageBox.Show(re.Result.ToString());
+
+                        //DbConnection.NuevoLocal(NuevoLocal: NuevoLocal);
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(e.Message);
+                    }
+
                 }
                 else
                 {
@@ -160,7 +186,7 @@ namespace Client.Main.ViewModels
             }
             else
             {
-                //Llamar metodo del servidor.
+                MessageBox.Show("Para agregar un nuevo local debe estar conectado al servidor.");
             }
         }
 
@@ -235,7 +261,7 @@ namespace Client.Main.ViewModels
                     }
                     else if (name == "Administrador")
                     {
-                        if (String.IsNullOrEmpty(Admin.Cedula))
+                        if (String.IsNullOrEmpty(Admin.cedula))
                         {
                             result = "Elija una opción.";
                         }

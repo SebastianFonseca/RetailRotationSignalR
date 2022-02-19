@@ -69,8 +69,6 @@ namespace Client.Main
                      ).WithAutomaticReconnect().Build();
                     hubConnection.Closed += HubConnection_Closed;
                     hubConnection.Reconnected += HubConnection_Reconnected;
-
-
                     Task t = hubConnection.StartAsync();
                     await t;
                     return t;
@@ -121,6 +119,7 @@ namespace Client.Main
         {
            Connect conexion = ContainerConfig.scope.Resolve<Connect>();
            MainWindowViewModel.Status = "Trabajando localmente";
+            
            await  conexion.CallServerMethod("ClienteDesconectado", Arguments: new[] { Usuario });
             if (arg.Message.Substring(0, 61) == "Reconnect retries have been exhausted after 5 failed attempts")
             {

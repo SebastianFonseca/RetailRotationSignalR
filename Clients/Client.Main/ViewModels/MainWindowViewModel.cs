@@ -2,6 +2,7 @@
 using Caliburn.Micro;
 using Client.Main.Utilities;
 using Client.Main.Views;
+using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -70,6 +71,7 @@ namespace Client.Main.ViewModels
 
         public MainWindowViewModel(string argUsuario,  string argCargo)
         {
+
             _usuario = argUsuario;            
             _cargo = argCargo;
             //MessageBox.Show(_cargo);

@@ -1,9 +1,8 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Client.Main.Models
+namespace ServerConsole.Models
 {
     public class LocalModel
     {
@@ -12,9 +11,7 @@ namespace Client.Main.Models
         public string direccion { get; set; }
         public string telefono { get; set; }
         public string ciudad { get; set; }
-        public int numeroDeCanastillas { get; set; }
+        public int numeroDeCanastillas { get; set; } 
         public DateTime fechaDeApertura { get; set; } = DateTime.Now;
-
-
     }
 }

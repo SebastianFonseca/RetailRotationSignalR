@@ -46,33 +46,33 @@
 
             <!--Linea 1 Nombres-->
             <TextBlock Grid.Row="1" Grid.Column="1" >Nombres:</TextBlock>
-            <TextBlock  Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" FontWeight="Normal" x:Name="Name"/>
+            <TextBlock  Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" FontWeight="Normal" x:Name="Name" FontSize="28"/>
 
 
             <!--Linea 2 Apellidos-->
             <TextBlock Grid.Row="2" Grid.Column="1" >Apellidos:</TextBlock>
-            <TextBlock x:Name="Apellidos" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left" FontWeight="Normal"  />
+            <TextBlock x:Name="Apellidos" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left" FontWeight="Normal"  FontSize="28" />
 
 
             <!--Linea 3 Cedula-->
             <TextBlock Grid.Row="3" Grid.Column="1">Cedula:</TextBlock>
-            <TextBlock Grid.Row="3" Grid.Column="2"  HorizontalAlignment="Left" FontWeight="Normal" x:Name="CC"/>
+            <TextBlock Grid.Row="3" Grid.Column="2"  HorizontalAlignment="Left" FontWeight="Normal" x:Name="CC" FontSize="28" />
 
 
             <!--Linea 4 Correo-->
             <TextBlock Grid.Row="4" Grid.Column="1" >Correo:</TextBlock>
-            <TextBlock Grid.Row="4" Grid.Column="2" HorizontalAlignment="Left" FontWeight="Normal" x:Name="Correo" />
+            <TextBlock Grid.Row="4" Grid.Column="2" HorizontalAlignment="Left" FontWeight="Normal" x:Name="Correo" FontSize="28" />
 
 
             <!--Linea 5 telefono-->
             <TextBlock Grid.Row="5" Grid.Column="1" FontSize="23">Número celular:</TextBlock>
-            <TextBlock Grid.Row="5" Grid.Column="2"  HorizontalAlignment="Left" FontWeight="Normal" x:Name="Telefono" />
+            <TextBlock Grid.Row="5" Grid.Column="2"  HorizontalAlignment="Left" FontWeight="Normal" x:Name="Telefono"  FontSize="28"/>
 
             <!-- Recuadro puntos -->
             <Border Background="#f6d3b4" BorderBrush="Beige" Margin="20 20 20 40" BorderThickness="1" CornerRadius="20" Grid.Row="1" Grid.Column="3" Grid.RowSpan="6">
                 <StackPanel Grid.Row="3" Grid.Column="3" Grid.RowSpan="2" VerticalAlignment="Center">
                     <TextBlock Margin="0">PUNTOS</TextBlock>
-                    <TextBlock Margin="0" x:Name="Puntos">0</TextBlock>
+                    <TextBlock x:Name="Puntos"/>
                 </StackPanel>
             </Border>
 

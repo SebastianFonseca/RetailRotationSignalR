@@ -27,9 +27,17 @@ namespace ServerConsole
                 UseStartup<Startup>();
         static void Main(string[] args)
         {
-            CreateWebHostBuildder(args).Build().Run();        
+            
+            //AppDomain.CurrentDomain.ProcessExit += new EventHandler(OnProcessExit);
+            CreateWebHostBuildder(args).Build().Run();    
+            
         }
-
+        static async void OnProcessExit(object sender, EventArgs e)
+        {
+            RetailHUB rh = new RetailHUB();
+           await  rh.Desconectado("Desconectado del servidor");
+            Console.WriteLine("Bye :)");
+        }
 
 
     }

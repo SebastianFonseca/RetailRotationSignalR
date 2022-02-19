@@ -25,6 +25,7 @@ namespace Client.Main.ViewModels
         #region Gerencia
         public void GestionDeProductos()
         {
+            VentanaPrincipal.ActivateItem(new ProductoGestionViewModel(VentanaPrincipal));
 
         }
 
@@ -107,7 +108,7 @@ namespace Client.Main.ViewModels
         {
             window.ShowWindow(model);
             VentanaPrincipal.TryClose();
-            MessageBox.Show(MainWindowViewModel.Status);
+            //MessageBox.Show(MainWindowViewModel.Status);
         } 
         #endregion
 

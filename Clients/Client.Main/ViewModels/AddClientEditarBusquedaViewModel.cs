@@ -21,16 +21,16 @@ namespace Client.Main.ViewModels
         {
             VentanaPrincipal = argVentana;
             resultadoCliente = resultadoBusqueda;
-            CedulaAntigua = resultadoCliente.Cedula; 
+            CedulaAntigua = resultadoCliente.cedula; 
         }
 
         public string Name
         {
-            get { return resultadoCliente.FirstName; }
+            get { return resultadoCliente.firstName; }
             set
             {
-                if (resultadoCliente.FirstName != value)
-                    resultadoCliente.FirstName = value;
+                if (resultadoCliente.firstName != value)
+                    resultadoCliente.firstName = value;
                 NotifyOfPropertyChange(() => Name);
             }
         }
@@ -38,44 +38,44 @@ namespace Client.Main.ViewModels
 
         public string Apellidos
         {
-            get { return resultadoCliente.LastName; }
+            get { return resultadoCliente.lastName; }
             set
             {
-                if (resultadoCliente.LastName != value)
-                    resultadoCliente.LastName = value;
+                if (resultadoCliente.lastName != value)
+                    resultadoCliente.lastName = value;
                 NotifyOfPropertyChange(() => Apellidos);
             }
         }
 
         public string CC
         {
-            get { return resultadoCliente.Cedula; }
+            get { return resultadoCliente.cedula; }
             set
             {
-                if (resultadoCliente.Cedula != value)
-                    resultadoCliente.Cedula = value;
+                if (resultadoCliente.cedula != value)
+                    resultadoCliente.cedula = value;
                 NotifyOfPropertyChange(() => CC);
             }
         }
 
         public string Correo
         {
-            get { return resultadoCliente.Correo; }
+            get { return resultadoCliente.correo; }
             set
             {
-                if (resultadoCliente.Correo != value)
-                    resultadoCliente.Correo = value;
+                if (resultadoCliente.correo != value)
+                    resultadoCliente.correo = value;
                 NotifyOfPropertyChange(() => Correo);
             }
         }
 
         public string Telefono
         {
-            get { return resultadoCliente.Telefono; }
+            get { return resultadoCliente.telefono; }
             set
             {
-                if (resultadoCliente.Telefono != value)
-                    resultadoCliente.Telefono = value;
+                if (resultadoCliente.telefono != value)
+                    resultadoCliente.telefono = value;
                 NotifyOfPropertyChange(() => Telefono);
 
             }
@@ -101,15 +101,15 @@ namespace Client.Main.ViewModels
 
         public void Editar()
         {
-            if (!string.IsNullOrWhiteSpace(resultadoCliente.FirstName) && !string.IsNullOrWhiteSpace(resultadoCliente.LastName) && !string.IsNullOrWhiteSpace(resultadoCliente.Cedula))
+            if (!string.IsNullOrWhiteSpace(resultadoCliente.firstName) && !string.IsNullOrWhiteSpace(resultadoCliente.lastName) && !string.IsNullOrWhiteSpace(resultadoCliente.cedula))
             {
-                if (string.IsNullOrEmpty(resultadoCliente.Correo))
+                if (string.IsNullOrEmpty(resultadoCliente.correo))
                 {
-                    resultadoCliente.Correo = null;
+                    resultadoCliente.correo = null;
                 }
-                if (string.IsNullOrEmpty(resultadoCliente.Telefono))
+                if (string.IsNullOrEmpty(resultadoCliente.telefono))
                 {
-                    resultadoCliente.Telefono = null;
+                    resultadoCliente.telefono = null;
                 }
 
                 try
@@ -134,7 +134,7 @@ namespace Client.Main.ViewModels
 
                     if (DbConnection.ActualizarCliente(Cliente:resultadoCliente, CC:CedulaAntigua))
                     { 
-                        MessageBox.Show($"Se ha editado la informacion del cliente {resultadoCliente.FirstName} {resultadoCliente.LastName}. ");
+                        MessageBox.Show($"Se ha editado la informacion del cliente {resultadoCliente.firstName} {resultadoCliente.lastName}. ");
                         VentanaPrincipal.ActivateItem(new AddClientBuscarViewModel(VentanaPrincipal));
                     }
 

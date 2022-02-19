@@ -21,11 +21,11 @@ namespace Client.Main.ViewModels
 
         public string Name
         {
-            get { return resultadoCliente.FirstName; }
+            get { return resultadoCliente.firstName; }
             set
             {
-                if (resultadoCliente.FirstName != value)
-                    resultadoCliente.FirstName = value;
+                if (resultadoCliente.firstName != value)
+                    resultadoCliente.firstName = value;
                 NotifyOfPropertyChange(() => Name);
             }
         }
@@ -33,44 +33,44 @@ namespace Client.Main.ViewModels
 
         public string Apellidos
         {
-            get { return resultadoCliente.LastName; }
+            get { return resultadoCliente.lastName; }
             set
             {
-                if (resultadoCliente.LastName != value)
-                    resultadoCliente.LastName = value;
+                if (resultadoCliente.lastName != value)
+                    resultadoCliente.lastName = value;
                 NotifyOfPropertyChange(() => Apellidos);
             }
         }
 
         public string CC
         {
-            get { return resultadoCliente.Cedula; }
+            get { return resultadoCliente.cedula; }
             set
             {
-                if (resultadoCliente.Cedula != value)
-                    resultadoCliente.Cedula = value;
+                if (resultadoCliente.cedula != value)
+                    resultadoCliente.cedula = value;
                 NotifyOfPropertyChange(() => CC);
             }
         }
 
         public string Correo
         {
-            get { return resultadoCliente.Correo; }
+            get { return resultadoCliente.correo; }
             set
             {
-                if (resultadoCliente.Correo != value)
-                    resultadoCliente.Correo = value;
+                if (resultadoCliente.correo != value)
+                    resultadoCliente.correo = value;
                 NotifyOfPropertyChange(() => Correo);
             }
         }
 
         public string Telefono
         {
-            get { return resultadoCliente.Telefono; }
+            get { return resultadoCliente.telefono; }
             set
             {
-                if (resultadoCliente.Telefono != value)
-                    resultadoCliente.Telefono = value;
+                if (resultadoCliente.telefono != value)
+                    resultadoCliente.telefono = value;
                 NotifyOfPropertyChange(() => Telefono);
 
             }
@@ -103,12 +103,12 @@ namespace Client.Main.ViewModels
 
         public void Eliminar()
         {
-            MessageBoxResult result = MessageBox.Show($"Desea eliminar permanentemente de la base de datos al cliente {resultadoCliente.FirstName} {resultadoCliente.LastName}", "", MessageBoxButton.YesNo);
+            MessageBoxResult result = MessageBox.Show($"Desea eliminar permanentemente de la base de datos al cliente {resultadoCliente.firstName} {resultadoCliente.lastName}", "", MessageBoxButton.YesNo);
             if (result == MessageBoxResult.Yes)
             {
-                if (DbConnection.deleteCliente(resultadoCliente.Cedula))
+                if (DbConnection.deleteCliente(resultadoCliente.cedula))
                 {
-                    MessageBox.Show($"Se ha eliminado al cliente {resultadoCliente.FirstName} {resultadoCliente.LastName}");
+                    MessageBox.Show($"Se ha eliminado al cliente {resultadoCliente.firstName} {resultadoCliente.lastName}");
                     VentanaPrincipal.ActivateItem(new AddClientBuscarViewModel(VentanaPrincipal));
 
                 }

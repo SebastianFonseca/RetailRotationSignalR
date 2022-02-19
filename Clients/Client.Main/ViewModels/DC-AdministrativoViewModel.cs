@@ -18,7 +18,12 @@ namespace Client.Main.ViewModels
 
         public void NuevoLocal()
         {
-            VentanaPrincipal.ActivateItem(new NuevoLocalViewModel(VentanaPrincipal));
+            VentanaPrincipal.ActivateItem(new LocalNuevoViewModel(VentanaPrincipal));
+        }
+        public void BuscarLocal()
+        {
+            VentanaPrincipal.ActivateItem(new LocalBuscarViewModel(VentanaPrincipal));
+
         }
 
 
@@ -34,7 +39,7 @@ namespace Client.Main.ViewModels
 
         public void NuevoProveedor()
         {
-            VentanaPrincipal.ActivateItem(new NuevoProveedorViewModel());
+            VentanaPrincipal.ActivateItem(new ProveedorNuevoViewModel());
         }
 
     }

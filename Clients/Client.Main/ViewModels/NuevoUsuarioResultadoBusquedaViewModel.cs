@@ -7,6 +7,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
+using Autofac;
+using System.Threading.Tasks;
 
 namespace Client.Main.ViewModels
 {
@@ -14,31 +16,46 @@ namespace Client.Main.ViewModels
     {
 
         MainWindowViewModel VentanaPrincipal;
+        public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
 
         EmpleadoModel resultadoEmpleado = new EmpleadoModel();
 
         public NuevoUsuarioResultadoBusquedaViewModel(MainWindowViewModel argVentana, EmpleadoModel resultadoBusqueda)
         {
+
             VentanaPrincipal = argVentana;
             resultadoEmpleado = resultadoBusqueda;
+            getLocalesServidor();
+
         }
 
         public string Local
         {
             get
             {
-                IEnumerator<LocalModel> e = DbConnection.getLocales().GetEnumerator();
-                e.Reset();
-                while (e.MoveNext())
+  
+
+                foreach (LocalModel slocal in locales)
                 {
-                    if (e.Current.Codigo == resultadoEmpleado.PuntoDeVenta.Codigo)
+                    if (slocal.codigo == resultadoEmpleado.puntoDeVenta.codigo)
                     {
-                        resultadoEmpleado.PuntoDeVenta.Nombre = e.Current.Nombre;
-                        
-                        return e.Current.Nombre;
+                        resultadoEmpleado.puntoDeVenta.nombre = slocal.nombre;
+                        return slocal.nombre;
                     }
                 }
-                return "";
+
+                //IEnumerator<LocalModel> e = l.GetEnumerator();
+                //e.Reset();
+                //while (e.MoveNext())
+                //{
+                //    if (e.Current.codigo == resultadoEmpleado.puntoDeVenta.codigo)
+                //    {
+                //        resultadoEmpleado.puntoDeVenta.nombre = e.Current.nombre;
+                        
+                //        return e.Current.nombre;
+                //    }
+                //}
+                return "No coincidencias.";
                 
                 
             }
@@ -46,20 +63,45 @@ namespace Client.Main.ViewModels
             {
                 if (value == null)
                     MessageBox.Show("Local pasando a null");
-                resultadoEmpleado.PuntoDeVenta.Codigo = value;                
+                resultadoEmpleado.puntoDeVenta.codigo = value;                
                 NotifyOfPropertyChange(() => Local);
             }
         }
 
+        BindableCollection<LocalModel> locales = new BindableCollection<LocalModel>();
+        public async void getLocalesServidor()
+        {
+
+            if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+            {
+                try
+                {
+                    Task<object> re = conexion.CallServerMethod("ServidorGetIdLocales", Arguments: new object[] { });
+                    await re;
+
+                    LocalModel[] mn = System.Text.Json.JsonSerializer.Deserialize<LocalModel[]>(re.Result.ToString());
+                    BindableCollection<LocalModel> lcl = new BindableCollection<LocalModel>();
+                    foreach (LocalModel item in mn)
+                    {
+                        locales.Add(item);
+                    }
+                    //locales = lcl;
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message);
+                }
+            }
+        }
 
         public string Nombre
         {
-            get { return resultadoEmpleado.FirstName; }
+            get { return resultadoEmpleado.firstName; }
             set
             {
-                if (resultadoEmpleado.FirstName != value)
+                if (resultadoEmpleado.firstName != value)
                 {
-                    resultadoEmpleado.FirstName = value;
+                    resultadoEmpleado.firstName = value;
                 }
                 NotifyOfPropertyChange(() => Nombre);
 
@@ -67,12 +109,12 @@ namespace Client.Main.ViewModels
         }
         public string Apellidos
         {
-            get { return resultadoEmpleado.LastName; }
+            get { return resultadoEmpleado.lastName; }
             set
             {
-                if (resultadoEmpleado.LastName != value)
+                if (resultadoEmpleado.lastName != value)
                 {
-                    resultadoEmpleado.LastName = value;
+                    resultadoEmpleado.lastName = value;
                 }
                 NotifyOfPropertyChange(() => Apellidos);
 
@@ -81,12 +123,12 @@ namespace Client.Main.ViewModels
 
         public string CC
         {
-            get { return resultadoEmpleado.Cedula; }
+            get { return resultadoEmpleado.cedula; }
             set
             {
-                if (resultadoEmpleado.Cedula != value)
+                if (resultadoEmpleado.cedula != value)
                 {
-                    resultadoEmpleado.Cedula = value;
+                    resultadoEmpleado.cedula = value;
                 }
                 NotifyOfPropertyChange(() => CC);
 
@@ -96,12 +138,12 @@ namespace Client.Main.ViewModels
 
         public string Telefono
         {
-            get { return resultadoEmpleado.Telefono; }
+            get { return resultadoEmpleado.telefono; }
             set
             {
-                if (resultadoEmpleado.Telefono != value)
+                if (resultadoEmpleado.telefono != value)
                 {
-                    resultadoEmpleado.Telefono = value;
+                    resultadoEmpleado.telefono = value;
                 }
                 NotifyOfPropertyChange(() => Telefono);
 
@@ -111,12 +153,12 @@ namespace Client.Main.ViewModels
 
         public DateTime FechaContratacion
         {
-            get { return resultadoEmpleado.FechaDeContratacion; }
+            get { return resultadoEmpleado.fechaDeContratacion; }
             set
             {
-                if (resultadoEmpleado.FechaDeContratacion != value)
+                if (resultadoEmpleado.fechaDeContratacion != value)
                 {
-                    resultadoEmpleado.FechaDeContratacion = value;
+                    resultadoEmpleado.fechaDeContratacion = value;
                 }
                 NotifyOfPropertyChange(() => FechaContratacion);
 
@@ -125,12 +167,12 @@ namespace Client.Main.ViewModels
 
         public string Cargo
         {
-            get { return resultadoEmpleado.Cargo; }
+            get { return resultadoEmpleado.cargo; }
             set
             {
-                if (resultadoEmpleado.Cargo != value)
+                if (resultadoEmpleado.cargo != value)
                 {
-                    resultadoEmpleado.Cargo = value;
+                    resultadoEmpleado.cargo = value;
                 }
                 NotifyOfPropertyChange(() => Cargo);
 
@@ -139,12 +181,12 @@ namespace Client.Main.ViewModels
 
         public string Password
         {
-            get { return resultadoEmpleado.Password; }
+            get { return resultadoEmpleado.password; }
             set
             {
-                if (resultadoEmpleado.Password != value)
+                if (resultadoEmpleado.password != value)
                 {
-                    resultadoEmpleado.Password = value;
+                    resultadoEmpleado.password = value;
                 }
                 NotifyOfPropertyChange(() => Password);
 
@@ -153,12 +195,12 @@ namespace Client.Main.ViewModels
 
         public decimal Salario
         {
-            get { return resultadoEmpleado.Salario; }
+            get { return resultadoEmpleado.salario; }
             set
             {
-                if (resultadoEmpleado.Salario != value)
+                if (resultadoEmpleado.salario != value)
                 {
-                    resultadoEmpleado.Salario = value;
+                    resultadoEmpleado.salario = value;
                 }
                 NotifyOfPropertyChange(() => Salario);
 
@@ -167,12 +209,12 @@ namespace Client.Main.ViewModels
 
         public string Direccion
         {
-            get { return resultadoEmpleado.Direccion; }
+            get { return resultadoEmpleado.direccion; }
             set
             {
-                if (resultadoEmpleado.Direccion != value)
+                if (resultadoEmpleado.direccion != value)
                 {
-                    resultadoEmpleado.Direccion = value;
+                    resultadoEmpleado.direccion = value;
                 }
                 NotifyOfPropertyChange(() => Direccion);
 
@@ -205,12 +247,12 @@ namespace Client.Main.ViewModels
 
         public void Eliminar()
         {
-            MessageBoxResult result = MessageBox.Show($"Desea eliminar permanentemente de la base de datos al usuario {resultadoEmpleado.FirstName} {resultadoEmpleado.LastName}", "", MessageBoxButton.YesNo);
+            MessageBoxResult result = MessageBox.Show($"Desea eliminar permanentemente de la base de datos al usuario {resultadoEmpleado.firstName} {resultadoEmpleado.lastName}", "", MessageBoxButton.YesNo);
             if (result == MessageBoxResult.Yes)
             {
-                if (DbConnection.deleteEmpleado(resultadoEmpleado.Cedula))
+                if (DbConnection.deleteEmpleado(resultadoEmpleado.cedula))
                 {
-                    MessageBox.Show($"Se ha eliminado al usuario {resultadoEmpleado.FirstName} {resultadoEmpleado.LastName}");
+                    MessageBox.Show($"Se ha eliminado al usuario {resultadoEmpleado.firstName} {resultadoEmpleado.lastName}");
                     VentanaPrincipal.ActivateItem(new BuscarUsuarioViewModel(VentanaPrincipal));
 
                 }
