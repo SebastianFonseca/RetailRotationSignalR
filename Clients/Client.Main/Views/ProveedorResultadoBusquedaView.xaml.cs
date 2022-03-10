@@ -8,6 +8,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace Client.Main.Views
@@ -15,7 +16,7 @@ namespace Client.Main.Views
     /// <summary>
     /// Interaction logic for ProveedorResultadoBusquedaView.xaml
     /// </summary>
-    public partial class ProveedorResultadoBusquedaView : Window
+    public partial class ProveedorResultadoBusquedaView : UserControl
     {
         public ProveedorResultadoBusquedaView()
         {

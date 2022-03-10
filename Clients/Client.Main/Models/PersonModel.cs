@@ -12,33 +12,28 @@ namespace Client.Main.Models
 {
     public class PersonModel 
     {
-        private string _firstName;
-        public string firstName
-        {
-            get { return _firstName; }
-            set
-            {
-                _firstName = value; 
-            }
-        }
+        public string firstName { get; set; }
 
-        public string lastName { 
-            get; 
-            set; }
+        public string lastName { get; set; }
 
-        public string cedula { 
-            get; 
-            set; }
-
+        public string cedula { get; set; }
 
         public string telefono { get; set; } = null;
 
         public string  direccion { get; set; } = null;
 
-        public string correo { get;
-            set; } = null;
+        public string correo { get; set; } = null;
 
     }
  }
-        
 
+
+//private string _firstName;
+//public string firstName
+//{
+//    get { return _firstName; }
+//    set
+//    {
+//        _firstName = value; 
+//    }
+//}

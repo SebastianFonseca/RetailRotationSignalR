@@ -99,7 +99,7 @@ namespace Client.Main.ViewModels
 
         }
 
-        private EmpleadoModel _admin ;
+        private EmpleadoModel _admin;
 
         public EmpleadoModel Admin
         {
@@ -121,29 +121,52 @@ namespace Client.Main.ViewModels
         {
             if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
             {
-                MessageBoxResult result = MessageBox.Show($"Desea eliminar permanentemente de la base de datos el local {resultadoLocal.codigo} {resultadoLocal.nombre}", "", MessageBoxButton.YesNo);
-                if (result == MessageBoxResult.Yes)
+                try
                 {
-                    Task<object> re = conexion.CallServerMethod("ServidorEliminarLocal", Arguments: new[] { resultadoLocal.codigo });
-                    await re;
-
-                    if (re.Result.ToString() == "Local eliminado")
+                     MessageBoxResult result = MessageBox.Show($"Desea eliminar permanentemente de la base de datos el local {resultadoLocal.codigo} {resultadoLocal.nombre}", "", MessageBoxButton.YesNo);
+                    if (result == MessageBoxResult.Yes)
                     {
-                        MessageBox.Show($"Se ha eliminado al local {resultadoLocal.codigo} {resultadoLocal.nombre}");
-                        VentanaPrincipal.ActivateItem(new LocalBuscarViewModel(VentanaPrincipal));
+                         Task<object> re = conexion.CallServerMethod("ServidorEliminarLocal", Arguments: new[] { resultadoLocal.codigo, resultadoLocal.nombre });
+                         await re;
+                         object[] mn = System.Text.Json.JsonSerializer.Deserialize<object[]>(re.Result.ToString());
+
+                        if (mn[0].ToString() == "Local con empleados.")
+                        {
+                            BindableCollection<EmpleadoModel> empleados_local = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<EmpleadoModel>>(mn[1].ToString());
+                            string empleados = "Los siguientes empleados estan asignados a este local, debe eliminarlos o actualizar el local al que pertenecen antes de continuar con esta acción:\n";
+                            foreach (EmpleadoModel empleado in empleados_local)
+                            {
+                                empleados = empleados +" " + empleado.cedula + " - " + empleado.firstName + " " + empleado.lastName + ".\n";
+                            }
+                            MessageBox.Show(empleados);
+                            return;
+                        }
+
+                        else if (mn[0].ToString() == "Local eliminado")
+                        {
+                            MessageBox.Show($"Se ha eliminado al local {resultadoLocal.codigo} {resultadoLocal.nombre}");
+                            VentanaPrincipal.ActivateItem(new LocalBuscarViewModel(VentanaPrincipal));
+                            return;
+                        }
+                        else
+                        {
+                            MessageBox.Show(re.Result.ToString());
+                            return;
+                        }
+
+
+                        //if (DbConnection.deleteLocal(resultadoLocal.codigo))
+                        //{
+                        //    MessageBox.Show($"Se ha eliminado al usuario {resultadoLocal.codigo} {resultadoLocal.nombre}");
+                        //    VentanaPrincipal.ActivateItem(new LocalBuscarViewModel(VentanaPrincipal));
+
+                        //}
                     }
-                    else
-                    {
-                        MessageBox.Show(re.Result.ToString());
-                    }
+                }
+                catch (Exception e)
+                {
 
-
-                    //if (DbConnection.deleteLocal(resultadoLocal.codigo))
-                    //{
-                    //    MessageBox.Show($"Se ha eliminado al usuario {resultadoLocal.codigo} {resultadoLocal.nombre}");
-                    //    VentanaPrincipal.ActivateItem(new LocalBuscarViewModel(VentanaPrincipal));
-
-                    //}
+                    MessageBox.Show(e.Message);
                 }
             }
             else
@@ -155,7 +178,7 @@ namespace Client.Main.ViewModels
 
         public void BackButton()
         {
-            
+
             VentanaPrincipal.ActivateItem(new LocalBuscarViewModel(VentanaPrincipal));
 
         }

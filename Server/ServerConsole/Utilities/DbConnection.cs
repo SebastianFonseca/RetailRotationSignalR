@@ -47,7 +47,6 @@ namespace ServerConsole.Utilities
                         conn.Close();
                         return new[] { "Contraseña incorrecta." };
                     }
-
                 }
             }
             catch (Exception e)
@@ -55,11 +54,6 @@ namespace ServerConsole.Utilities
                 Console.WriteLine(e.Message); 
                 return new[] { "Exception" };
             }
-
-
-
-
-
 
             //try
             //{
@@ -97,24 +91,21 @@ namespace ServerConsole.Utilities
         /// <returns></returns>
         public static string AddClient(ClientesModel Cliente)
         {
-
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-
                     string cadena = "INSERT INTO Clientes(Nombres,Apellidos,CedulaCliente,Email,Telefono,Puntos) VALUES (@name,@lastname,@cedula,@correo,@telefono, 100 )";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
-                    cmd.Parameters.AddWithValue("@name", Statics.PrimeraAMayuscula(Cliente.FirstName));
-                    cmd.Parameters.AddWithValue("@lastname", Statics.PrimeraAMayuscula(Cliente.LastName));
-                    cmd.Parameters.AddWithValue("@cedula", Cliente.Cedula);
-                    cmd.Parameters.AddWithValue("@correo", string.IsNullOrEmpty(Cliente.Correo) ? (object)DBNull.Value : Cliente.Correo);
-                    cmd.Parameters.AddWithValue("@telefono", string.IsNullOrEmpty(Cliente.Telefono) ? (object)DBNull.Value : Cliente.Telefono);
+                    cmd.Parameters.AddWithValue("@name", Statics.PrimeraAMayuscula(Cliente.firstName));
+                    cmd.Parameters.AddWithValue("@lastname", Statics.PrimeraAMayuscula(Cliente.lastName));
+                    cmd.Parameters.AddWithValue("@cedula", Cliente.cedula);
+                    cmd.Parameters.AddWithValue("@correo", string.IsNullOrEmpty(Cliente.correo) ? (object)DBNull.Value : Cliente.correo);
+                    cmd.Parameters.AddWithValue("@telefono", string.IsNullOrEmpty(Cliente.telefono) ? (object)DBNull.Value : Cliente.telefono);
                     conn.Open();
                     cmd.ExecuteNonQuery();
                     conn.Close();
                     return "true";
-
                 }
             }
             catch (Exception e)
@@ -129,9 +120,9 @@ namespace ServerConsole.Utilities
                     return "false";
                 }
             }
-
         }
 
+        #region Producto
         /// <summary>
         /// Registra en la base de datos el nuevo producto.
         /// </summary>
@@ -139,12 +130,10 @@ namespace ServerConsole.Utilities
         /// <returns></returns>
         public static string NuevoProducto(ProductoModel Producto)
         {
-
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    
                     string cadena0 = "SELECT *  FROM Producto where [CodigoProducto]=@codigo";
                     SqlCommand cmd0 = new SqlCommand(cadena0, conn);
                     cmd0.Parameters.AddWithValue("@codigo", Producto.CodigoProducto);
@@ -157,7 +146,6 @@ namespace ServerConsole.Utilities
                             return "Codigo de producto ya registrado.";
                         }
                     }
-
                     string cadena1 = "SELECT *  FROM Producto where [codigoBarras]=@codigob";
                     SqlCommand cmd1 = new SqlCommand(cadena1, conn);
                     cmd1.Parameters.AddWithValue("@codigob", Producto.CodigoBarras);
@@ -169,10 +157,9 @@ namespace ServerConsole.Utilities
                             return "Codigo de barras ya registrado.";
                         }
                     }
-
                     string cadena = "SELECT *  FROM Producto where [Nombre]=@nombre";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
-                    cmd.Parameters.AddWithValue("@nombre", Producto.Nombre);                    
+                    cmd.Parameters.AddWithValue("@nombre", Producto.Nombre);
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         if (reader.HasRows)
@@ -180,7 +167,7 @@ namespace ServerConsole.Utilities
                             conn.Close();
                             return "Nombre de producto ya registrado.";
                         }
-                        else 
+                        else
                         {
                             reader.Close();
                             string cadena2 = "INSERT INTO Producto(CodigoProducto, Nombre, UnidadVenta,	UnidadCompra, PrecioVenta, Seccion, FechaVencimiento, IVA, CodigoBarras)" +
@@ -192,7 +179,7 @@ namespace ServerConsole.Utilities
                             cmd2.Parameters.AddWithValue("@unicompra", Statics.PrimeraAMayuscula(Producto.UnidadCompra));
                             cmd2.Parameters.AddWithValue("@precio", Producto.PrecioVenta.ToString());
                             cmd2.Parameters.AddWithValue("@seccion", Statics.PrimeraAMayuscula(Producto.Seccion));
-                            cmd2.Parameters.AddWithValue("@fv", Producto.FechaVencimiento == DateTime.Today ? (object)DBNull.Value : Producto.FechaVencimiento) ;
+                            cmd2.Parameters.AddWithValue("@fv", Producto.FechaVencimiento == DateTime.Today ? (object)DBNull.Value : Producto.FechaVencimiento);
                             cmd2.Parameters.AddWithValue("@iva", Producto.IVA);
                             cmd2.Parameters.AddWithValue("@cb", string.IsNullOrEmpty(Producto.CodigoBarras) ? (object)DBNull.Value : Producto.CodigoBarras);
                             cmd2.ExecuteNonQuery();
@@ -203,23 +190,214 @@ namespace ServerConsole.Utilities
                             Console.WriteLine($"El usuario {RetailHUB.usuarioConectado} registro un nuevo producto: {Producto.CodigoProducto} - {Producto.Nombre}.");
                             return $"El usuario {RetailHUB.usuarioConectado} registro un nuevo producto: {Producto.CodigoProducto}- {Producto.Nombre}.";
                         }
-                        
                     }
-
                 }
             }
-            
             catch (Exception e)
             {
                 Console.ForegroundColor = ConsoleColor.DarkCyan;
                 Console.Write("\n\t" + DateTime.Now + ": ");
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine(e.Message);
-                
                 return e.Message;
+            }
+        }
+
+        /// <summary>
+        /// Variable retornada por el metodo getProducots
+        /// </summary>
+        public static BindableCollection<ProductoModel> productos = new BindableCollection<ProductoModel>();
+
+        /// <summary>
+        /// Obtener Nombres y CodigoProducto de los productos en la base de datos.
+        /// </summary>
+        /// <returns></returns>
+        public static BindableCollection<ProductoModel> getProductos()
+        {
+
+            productos.Clear();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = "SELECT [CodigoProducto], [Nombre]  FROM Producto";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            ProductoModel producto = new ProductoModel();
+                            producto.CodigoProducto = reader["CodigoProducto"].ToString();
+                            producto.Nombre = reader["Nombre"].ToString();
+                            productos.Add(producto);
+                        }
+                    }
+                    conn.Close();
+                    //Console.WriteLine("Se consultaron los locales.");
+                    return productos;
+                }
+            }
+            catch (Exception)
+            {
+
+                return null;
             }
 
         }
+        #endregion
+
+
+        #region Proveedor
+
+        /// <summary>
+        ///     Metodo encargado de ejecutar el query insert del nuevo proveedor en la base de datos.
+        /// </summary>
+        /// <param name="proveedor"></param>
+        /// <returns></returns>
+        public static string NuevoProveedor(ProveedorModel proveedor)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = "INSERT INTO Proveedor(CedulaProveedor,Nombres,Apellidos,Telefono,Ciudad) VALUES " +
+                                                        "(@cedula,@nombre,@apellidos,@telefono,@ciudad);";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@cedula", proveedor.cedula);
+                    cmd.Parameters.AddWithValue("@nombre", proveedor.firstName);
+                    cmd.Parameters.AddWithValue("@apellidos", proveedor.lastName);
+                    cmd.Parameters.AddWithValue("@telefono", proveedor.telefono);
+                    cmd.Parameters.AddWithValue("@ciudad", proveedor.ciudad);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    string response = insertProductoProveedor(proveedor.cedula, proveedor.productos);
+                    if (response == "Y")
+                    {
+                        Console.ForegroundColor = ConsoleColor.DarkCyan;
+                        Console.Write("\n\t" + DateTime.Now + "--");
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo proveedor {proveedor.firstName} {proveedor.lastName}");
+                        conn.Close();
+                        return "Se ha registrado al nuevo proveedor.";
+                    }
+                    return response;
+                }
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Substring(0, 50) == $"Violation of PRIMARY KEY constraint 'PK_Proveedor'")
+                {
+                    return "Proveedor ya registrado.";
+                }
+                else
+                {
+                    return e.Message;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Insertar las parejas Proveedor-Producto en la respectiva tabla de la base de datos.
+        /// </summary>
+        /// <param name="idProveedor"></param>
+        /// <param name="productos"></param>
+        /// <returns></returns>
+        public static string insertProductoProveedor(string idProveedor, BindableCollection<ProductoModel> productos)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    conn.Open();
+                    foreach (ProductoModel producto in productos)
+                    {
+                        string cadena = "INSERT INTO ProveedorProducto(CedulaProveedor,CodigoProducto) VALUES (@prov,@prod);";
+                        SqlCommand cmd = new SqlCommand(cadena, conn);
+                        cmd.Parameters.AddWithValue("@prov", idProveedor);
+                        cmd.Parameters.AddWithValue("@prod", producto.CodigoProducto);                        
+                        cmd.ExecuteNonQuery();                        
+                    }
+                    conn.Close();
+                    return "Y";
+                }
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
+                {
+                    return "Ya registrado.";
+                }
+                else
+                {
+                    return "server " + e.Message;
+                }
+            }
+        }
+       
+        /// <summary>
+        /// Method that does a select query against the 'Proveedor' table at the database and get the result of searching the coincidences into the cedula, nombre or apellido of the given characters.
+        /// </summary>
+        /// <param name="Caracteres"></param>
+        /// <returns></returns>
+        public static BindableCollection<ProveedorModel> getProveedores(string Caracteres)
+        {
+
+            try
+            {
+                BindableCollection<ProveedorModel> proveedores = new BindableCollection<ProveedorModel>();
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"SELECT Distinct * FROM Proveedor WHERE ( CedulaProveedor like '%{Caracteres}%' ) or ( Nombres like '%{Caracteres}%' ) or ( Apellidos like '%{Caracteres}%' )  ";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        proveedores.Clear();
+                        while (reader.Read())
+                        {
+                            ProveedorModel proveedor = new ProveedorModel();
+                            proveedor.cedula = reader["CedulaProveedor"].ToString();
+                            proveedor.firstName = reader["Nombres"].ToString();
+                            proveedor.lastName = reader["Apellidos"].ToString();
+                            proveedor.telefono = reader["Telefono"].ToString();
+                            proveedor.ciudad = reader["Ciudad"].ToString();
+                            proveedores.Add(proveedor);
+                        }
+                    }
+                    proveedores.Add(new ProveedorModel() { cedula = "-", firstName = "-", lastName = "-prove", ciudad = "separador" });
+
+                    string cadena0 = $"SELECT Distinct Proveedor.CedulaProveedor,Proveedor.Nombres, Proveedor.Apellidos, Proveedor.Telefono, Proveedor.Ciudad FROM proveedor  JOIN ProveedorProducto ON ProveedorProducto.CedulaProveedor = Proveedor.CedulaProveedor JOIN Producto ON ProveedorProducto.CodigoProducto = Producto.CodigoProducto WHERE Producto.Nombre LIKE '%{Caracteres}%';";
+                    SqlCommand cmd0 = new SqlCommand(cadena0, conn);
+                    using (SqlDataReader reader0 = cmd0.ExecuteReader())
+                    {
+                        while (reader0.Read())
+                        {
+                            ProveedorModel proveedor = new ProveedorModel();
+                            proveedor.cedula = reader0["CedulaProveedor"].ToString();
+                            proveedor.firstName = reader0["Nombres"].ToString();
+                            proveedor.lastName = reader0["Apellidos"].ToString();
+                            proveedor.telefono = reader0["Telefono"].ToString();
+                            proveedor.ciudad = reader0["Ciudad"].ToString();
+                            proveedores.Add(proveedor);
+                        }
+                    }
+
+                    conn.Close();
+                    return proveedores;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+
+        #endregion
+
+
+
 
         #region Usuarios
 
@@ -234,34 +412,31 @@ namespace ServerConsole.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-
                     string cadena = "INSERT INTO Empleado(CedulaEmpleado,CodigoPuntoVenta,Nombres,Apellidos,FechaContratacion,Salario,Telefono,Cargo,Password,Direccion) VALUES " +
                                                         "(@cedula,@puntodeventa,@nombre,@apellidos,@fecha,@salario,@telefono,@cargo,@contraseña,@direccion);";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
-                    cmd.Parameters.AddWithValue("@cedula", Empleado.Cedula);
-                    cmd.Parameters.AddWithValue("@puntodeventa", Empleado.PuntoDeVenta.codigo);
-                    cmd.Parameters.AddWithValue("@nombre", Statics.PrimeraAMayuscula(Empleado.FirstName));
-                    cmd.Parameters.AddWithValue("@apellidos", Statics.PrimeraAMayuscula(Empleado.LastName));
-                    cmd.Parameters.AddWithValue("@fecha", Empleado.FechaDeContratacion.ToString("yyyy-MM-dd"));
-                    cmd.Parameters.AddWithValue("@salario", Empleado.Salario);
-                    cmd.Parameters.AddWithValue("@telefono", Empleado.Telefono);
-                    cmd.Parameters.AddWithValue("@direccion", Empleado.Direccion);
-                    cmd.Parameters.AddWithValue("@cargo", Empleado.Cargo.Substring(37));
-                    cmd.Parameters.AddWithValue("@contraseña", Statics.Hash(Empleado.Password));
+                    cmd.Parameters.AddWithValue("@cedula", Empleado.cedula);
+                    cmd.Parameters.AddWithValue("@puntodeventa", Empleado.puntoDeVenta.codigo);
+                    cmd.Parameters.AddWithValue("@nombre", Statics.PrimeraAMayuscula(Empleado.firstName));
+                    cmd.Parameters.AddWithValue("@apellidos", Statics.PrimeraAMayuscula(Empleado.lastName));
+                    cmd.Parameters.AddWithValue("@fecha", Empleado.fechaDeContratacion.ToString("yyyy-MM-dd"));
+                    cmd.Parameters.AddWithValue("@salario", Empleado.salario);
+                    cmd.Parameters.AddWithValue("@telefono", Empleado.telefono);
+                    cmd.Parameters.AddWithValue("@direccion", Empleado.direccion);
+                    cmd.Parameters.AddWithValue("@cargo", Empleado.cargo.Substring(37));
+                    cmd.Parameters.AddWithValue("@contraseña", Statics.Hash(Empleado.password));
                     conn.Open();
                     cmd.ExecuteNonQuery();
                     Console.ForegroundColor = ConsoleColor.DarkCyan;
                     Console.Write("\n\t" + DateTime.Now + "--");
                     Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo usuario {Empleado.FirstName} {Empleado.LastName}");
+                    Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo usuario {Empleado.firstName} {Empleado.lastName}");
                     conn.Close();
                     return "Se ha registrado al nuevo usuario.";
-
                 }
             }
             catch (Exception e)
             {
-
                 if (e.Message.Substring(0, 50) == $"Violation of PRIMARY KEY constraint 'PK_Empleado'.")
                 {
                     return "Empleado ya registrado.";
@@ -285,12 +460,10 @@ namespace ServerConsole.Utilities
         /// <returns></returns>
         public static BindableCollection<EmpleadoModel> getEmpleados(string Caracteres)
         {
-
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-
                     string cadena = $"SELECT * FROM EMPLEADO WHERE ( CedulaEmpleado like '%{Caracteres}%' ) or ( Nombres like '%{Caracteres}%' ) or ( Apellidos like '%{Caracteres}%' )  ";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
@@ -300,15 +473,15 @@ namespace ServerConsole.Utilities
                         while (reader.Read())
                         {
                             EmpleadoModel persona = new EmpleadoModel();
-                            persona.Cedula = reader["CedulaEmpleado"].ToString();
-                            persona.PuntoDeVenta.codigo = reader["CodigoPuntoVenta"].ToString();
-                            persona.FirstName = reader["Nombres"].ToString();
-                            persona.LastName = reader["Apellidos"].ToString();
-                            persona.FechaDeContratacion = DateTime.Parse(reader["FechaContratacion"].ToString());
-                            persona.Salario = Decimal.Parse(reader["Salario"].ToString());
-                            persona.Telefono = reader["Telefono"].ToString();
-                            persona.Cargo = reader["Cargo"].ToString();
-                            persona.Direccion = reader["Direccion"].ToString();
+                            persona.cedula = reader["CedulaEmpleado"].ToString();
+                            persona.puntoDeVenta.codigo = reader["CodigoPuntoVenta"].ToString();
+                            persona.firstName = reader["Nombres"].ToString();
+                            persona.lastName = reader["Apellidos"].ToString();
+                            persona.fechaDeContratacion = DateTime.Parse(reader["FechaContratacion"].ToString());
+                            persona.salario = Decimal.Parse(reader["Salario"].ToString());
+                            persona.telefono = reader["Telefono"].ToString();
+                            persona.cargo = reader["Cargo"].ToString();
+                            persona.direccion = reader["Direccion"].ToString();
                             emp.Add(persona);
                         }
                     }
@@ -323,8 +496,88 @@ namespace ServerConsole.Utilities
             }
         }
 
+        /// <summary>
+        /// Elimina al empleado del número de cedúla dado.
+        /// </summary>
+        /// <param name="Cedula">Número de cédula del empleado a eliminar. </param>
+        /// <returns></returns>
+        public static string DeleteEmpleado(string Cedula)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"delete from empleado Where CedulaEmpleado = '{Cedula}' ";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                    Console.ForegroundColor = ConsoleColor.DarkCyan;
+                    Console.Write("\n\t" + DateTime.Now + "--");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha eliminado al usuario {Cedula}");
+                    return "Se ha eliminado al usuario.";
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);   
+                return e.Message;
+            }
+        }
+
+        /// <summary>
+        /// Actualiza el empleado del numero de cedula dado.
+        /// </summary>
+        /// <param name="Empleado"></param>
+        /// <param name="CC"></param>
+        /// <returns></returns>
+        public static string ActualizarUsuario(EmpleadoModel Empleado, string CC)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
 
 
+                    string cadena = "UPDATE Empleado SET CedulaEmpleado = @NuevoCedula, CodigoPuntoVenta = @puntodeventa, Nombres = @nombre, Apellidos = @apellidos, FechaContratacion = @fecha, Salario =@salario, Telefono = @telefono, Cargo = @cargo," +
+                                    "Password = @contraseña, Direccion = @direccion WHERE CedulaEmpleado = @AntiguoCedula ";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@NuevoCedula", Empleado.cedula);
+                    cmd.Parameters.AddWithValue("@puntodeventa", Empleado.puntoDeVenta.codigo);
+                    cmd.Parameters.AddWithValue("@nombre", Statics.PrimeraAMayuscula(Empleado.firstName));
+                    cmd.Parameters.AddWithValue("@apellidos", Statics.PrimeraAMayuscula(Empleado.lastName));
+                    cmd.Parameters.AddWithValue("@fecha", Empleado.fechaDeContratacion.ToString("yyyy-MM-dd"));
+                    cmd.Parameters.AddWithValue("@salario", Empleado.salario);
+                    cmd.Parameters.AddWithValue("@telefono", Empleado.telefono);
+                    cmd.Parameters.AddWithValue("@direccion", Empleado.direccion);
+                    cmd.Parameters.AddWithValue("@cargo", Empleado.cargo.Substring(37));
+                    cmd.Parameters.AddWithValue("@contraseña", Statics.Hash(Empleado.password));
+                    cmd.Parameters.AddWithValue("@AntiguoCedula", CC);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    Console.ForegroundColor = ConsoleColor.DarkCyan;
+                    Console.Write("\n\t" + DateTime.Now + "--");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine($"{RetailHUB.usuarioConectado}: Ha Actualizado al usuario {Empleado.firstName} {Empleado.lastName}");
+                    conn.Close();
+                    return "Usuario actualizado";
+
+                }
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Substring(0, 50) == $"Violation of PRIMARY KEY constraint 'PK_Empleado'.")
+                {
+                    return "Cedula ya registrada.";
+                }
+                else
+                {
+                    return e.Message;
+                }
+            }
+        }
         #endregion
 
         #region Local
@@ -370,7 +623,10 @@ namespace ServerConsole.Utilities
                     cmd.Parameters.AddWithValue("@fechaapertura", Statics.PrimeraAMayuscula(NuevoLocal.fechaDeApertura.Date.ToString("yyyy-MM-dd")));
                     //conn.Open();
                     cmd.ExecuteNonQuery();
-                    Console.WriteLine($"Se ha registrado el nuevo local: {NuevoLocal.nombre }");
+                    Console.ForegroundColor = ConsoleColor.DarkCyan;
+                    Console.Write("\n\t" + DateTime.Now + "-- ");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine($"{RetailHUB.usuarioConectado} Ha registrado el nuevo local: {NuevoLocal.nombre }");
                     conn.Close();
                     return $"Se ha registrado el nuevo local: {NuevoLocal.nombre }";
 
@@ -446,19 +702,51 @@ namespace ServerConsole.Utilities
         /// </summary>
         /// <param name="Codigo"></param>
         /// <returns></returns>
-        public static string deleteLocal(string Codigo)
+        public static object deleteLocal(string Codigo, string nombre)
         {
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
-                {
-
-                    string cadena = $"delete from PuntoVenta Where CodigoPuntoVenta = '{Codigo}' ";
-                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                {                   
+                    string cadena0 = $"SELECT [CedulaEmpleado], [Nombres], [Apellidos]  FROM Empleado where CodigoPuntoVenta = {Codigo} ";
+                    SqlCommand cmd0 = new SqlCommand(cadena0, conn);
                     conn.Open();
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
-                    return "Local eliminado";
+                    using (SqlDataReader reader = cmd0.ExecuteReader())
+                    {                        
+                        if (reader.HasRows)
+                        {
+                            BindableCollection<EmpleadoModel> empleados = new BindableCollection<EmpleadoModel>();
+                            while (reader.Read())
+                            {
+                                EmpleadoModel empleado = new EmpleadoModel();
+                                empleado.cedula = reader["CedulaEmpleado"].ToString();
+                                empleado.firstName = reader["Nombres"].ToString();
+                                empleado.lastName = reader["Apellidos"].ToString();
+                                empleados.Add(empleado);
+                            }
+                            conn.Close();
+                            reader.Close();
+                            return new object[] { "Local con empleados.", empleados } ;
+                        }
+                        else
+                        {
+                            reader.Close();
+                            string cadena = $"delete from PuntoVenta Where CodigoPuntoVenta = '{Codigo}' ";
+                            SqlCommand cmd = new SqlCommand(cadena, conn);
+                            //conn.Open();
+                            cmd.ExecuteNonQuery();                            
+                            conn.Close();
+                            Console.ForegroundColor = ConsoleColor.DarkCyan;
+                            Console.Write("\n\t" + DateTime.Now + "-- ");
+                            Console.ForegroundColor = ConsoleColor.White;
+                            Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha eliminado al local {Codigo} - {nombre}. \n");
+                            return new object[] { "Local eliminado" };
+                        }
+  
+                    }
+
+
+
                 }
             }
             catch (Exception e)
@@ -543,11 +831,11 @@ namespace ServerConsole.Utilities
                         }
                     }
                     conn.Close();
-                    Console.WriteLine("Se consultaron los locales.");
+                    //Console.WriteLine("Se consultaron los locales.");
                     return locales;
                 }
             }
-            catch (Exception e)
+            catch (Exception )
             {
                 return null;
             }

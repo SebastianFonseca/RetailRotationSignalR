@@ -1,10 +1,12 @@
-﻿using Caliburn.Micro;
+﻿using Autofac;
+using Caliburn.Micro;
 using Client.Main.Models;
 using Client.Main.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 
 
@@ -15,6 +17,7 @@ namespace Client.Main.ViewModels
         MainWindowViewModel VentanaPrincipal;
 
         EmpleadoModel resultadoEmpleado = new EmpleadoModel();
+        public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
         string CedulaAntigua;
 
         public NuevoUsuarioEditarBusquedaViewModel(MainWindowViewModel argVentana, EmpleadoModel resultadoBusqueda)
@@ -22,40 +25,65 @@ namespace Client.Main.ViewModels
             VentanaPrincipal = argVentana;
             resultadoEmpleado = resultadoBusqueda;
             CedulaAntigua = resultadoEmpleado.cedula;
+            getLocalesServidor();
+        }
+        public async void getLocalesServidor()
+        {
+
+            if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+            {
+                try
+                {
+                    Task<object> re = conexion.CallServerMethod("ServidorGetIdLocales", Arguments: new object[] { });
+                    await re;
+
+                    LocalModel[] mn = System.Text.Json.JsonSerializer.Deserialize<LocalModel[]>(re.Result.ToString());
+                    BindableCollection<LocalModel> lcl = new BindableCollection<LocalModel>();
+                    foreach (LocalModel item in mn)
+                    {
+                        lcl.Add(item);
+                    }
+                    Locales = lcl;
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message);
+                }
+            }
         }
 
-
+        private BindableCollection<LocalModel> _locales = new BindableCollection<LocalModel>();
         public BindableCollection<LocalModel> Locales
         {
             get
             {
-                return DbConnection.getLocales();
+
+                return _locales;
+                //return DbConnection.getLocales();
+            }
+            set
+            {
+
+                _locales = value;
+                NotifyOfPropertyChange(() => Locales);
             }
 
         }
-
-
         public LocalModel Local
         {
             get
             {
                 return resultadoEmpleado.puntoDeVenta;
             }
-            set
-                
+            set                
             {
                 if (value != null)
                 {
                     resultadoEmpleado.puntoDeVenta = value;
                     NotifyOfPropertyChange(() => Local);
-                }
-
-                
+                }                
             }
         }
-
-
-
         public string Nombre
         {
             get { return resultadoEmpleado.firstName; }
@@ -82,7 +110,6 @@ namespace Client.Main.ViewModels
 
             }
         }
-
         public string CC
         {
             get { return resultadoEmpleado.cedula; }
@@ -96,7 +123,6 @@ namespace Client.Main.ViewModels
 
             }
         }
-
         public string Telefono
         {
             get { return resultadoEmpleado.telefono; }
@@ -110,8 +136,6 @@ namespace Client.Main.ViewModels
 
             }
         }
-
-
         public DateTime FechaContratacion
         {
             get { return resultadoEmpleado.fechaDeContratacion; }
@@ -125,7 +149,6 @@ namespace Client.Main.ViewModels
 
             }
         }
-
         public string Cargo
         {
             get { return resultadoEmpleado.cargo; }
@@ -134,13 +157,12 @@ namespace Client.Main.ViewModels
                 //MessageBox.Show( value.Length.ToString());
                 if (resultadoEmpleado.cargo != value)
                 {
-                    resultadoEmpleado.cargo = value;
+                    resultadoEmpleado.cargo = value; 
                 }
                 NotifyOfPropertyChange(() => Cargo);
 
             }
         }
-
         public string Password
         {
             get { return resultadoEmpleado.password; }
@@ -154,7 +176,6 @@ namespace Client.Main.ViewModels
 
             }
         }
-
         public decimal Salario
         {
             get { return resultadoEmpleado.salario; }
@@ -168,7 +189,6 @@ namespace Client.Main.ViewModels
 
             }
         }
-
         public string Direccion
         {
             get { return resultadoEmpleado.direccion; }
@@ -184,7 +204,6 @@ namespace Client.Main.ViewModels
         }
 
         private string _passwordAgain;
-
         public string PasswordAgain
         {
             get { return _passwordAgain; }
@@ -194,11 +213,9 @@ namespace Client.Main.ViewModels
                 NotifyOfPropertyChange(() => PasswordAgain);
             }
         }
-
-        public void Actualizar()
+        public async void Actualizar()
         {
-            if (Statics.ClientStatus == "Trabajando localmente")
-            {
+
                 if (!string.IsNullOrWhiteSpace(resultadoEmpleado.firstName) &&
                     !string.IsNullOrWhiteSpace(resultadoEmpleado.lastName) &&
                     !string.IsNullOrWhiteSpace(resultadoEmpleado.cedula) &&
@@ -211,28 +228,59 @@ namespace Client.Main.ViewModels
                     !string.IsNullOrWhiteSpace(resultadoEmpleado.password) &&
                     !string.IsNullOrWhiteSpace(PasswordAgain))
                 {
-                    if (DbConnection.ActualizarUsuario(Empleado: resultadoEmpleado, CC: CedulaAntigua))
+                try
+                {
+                    if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
                     {
-                        resultadoEmpleado.password = "";
-                        VentanaPrincipal.ActivateItem(new NuevoUsuarioResultadoBusquedaViewModel(VentanaPrincipal, resultadoEmpleado));
+                        MessageBoxResult result = MessageBox.Show($"Desea editar la informacion en la base de datos del usuario {resultadoEmpleado.cedula} - {resultadoEmpleado.firstName} {resultadoEmpleado.lastName}.", "", MessageBoxButton.YesNo);
+                        if (result == MessageBoxResult.Yes)
+                        {
+                            Task<object> re = conexion.CallServerMethod("ServidorUpdateUsuario", Arguments: new object[] { resultadoEmpleado, CedulaAntigua });
+                            await re;
+                            if (re.Result.ToString() == "Usuario actualizado")
+                            {
+                                resultadoEmpleado.password = "";
+                                resultadoEmpleado.cargo = Cargo;
+                                VentanaPrincipal.ActivateItem(new NuevoUsuarioResultadoBusquedaViewModel(VentanaPrincipal, resultadoEmpleado));
+                            }
+                            else
+                            {
+                                MessageBox.Show(re.Result.ToString());
+                            }
+                        }
                     }
                     else
                     {
-                        CC = "";
+                        MessageBox.Show("Para editar un usuario debe estar conectado al servidor.");
+
                     }
                 }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message);
+                }
+
+
+
+
+
+
+                //if (DbConnection.ActualizarUsuario(Empleado: resultadoEmpleado, CC: CedulaAntigua))
+                //{
+                //    resultadoEmpleado.password = "";
+                //    VentanaPrincipal.ActivateItem(new NuevoUsuarioResultadoBusquedaViewModel(VentanaPrincipal, resultadoEmpleado));
+                //}
+                //else
+                //{
+                //    CC = "";
+                //}
+            }
                 else
                 {
                     MessageBox.Show("Primero debe rellenar los datos.");
 
                 }
 
-
-            }
-            else
-            {
-                //Llamar metodo del servidor.
-            }
 
         }
 

@@ -39,8 +39,12 @@ namespace Client.Main.ViewModels
 
         public void NuevoProveedor()
         {
-            VentanaPrincipal.ActivateItem(new ProveedorNuevoViewModel());
+            VentanaPrincipal.ActivateItem(new ProveedorNuevoViewModel(VentanaPrincipal));
         }
+        public void BuscarProveedor()
+        {
+            VentanaPrincipal.ActivateItem(new ProveedorBuscarViewModel(VentanaPrincipal));
 
+        }
     }
 }

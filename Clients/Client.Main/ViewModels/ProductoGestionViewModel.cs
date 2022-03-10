@@ -46,7 +46,7 @@ namespace Client.Main.ViewModels
                 if (value != null)
                 {
                     seleccion = value;
-                    BuscarTbx = value.CodigoProducto + "-" + value.Nombre;
+                    BuscarTbx = value.codigoProducto + "-" + value.nombre;
                 }
                 _usuarioSeleccionado = value;
 

@@ -50,10 +50,10 @@ namespace Client.Main.ViewModels
 
         public string Nombre
         {
-            get { return Producto.Nombre; }
+            get { return Producto.nombre; }
             set
             { 
-                Producto.Nombre = value;
+                Producto.nombre = value;
                 NotifyOfPropertyChange(() => Nombre);
 
             }
@@ -61,10 +61,10 @@ namespace Client.Main.ViewModels
 
         public string UnidadVenta
         {
-            get { return Producto.UnidadVenta; }
+            get { return Producto.unidadVenta; }
             set
             {
-                Producto.UnidadVenta = value.Substring(38);
+                Producto.unidadVenta = value.Substring(38);
                 NotifyOfPropertyChange(() => UnidadVenta);
 
             }
@@ -72,10 +72,10 @@ namespace Client.Main.ViewModels
 
         public string Seccion
         {
-            get { return Producto.Seccion; }
+            get { return Producto.seccion; }
             set 
             { 
-                Producto.Seccion = value.Substring(38) ;
+                Producto.seccion = value.Substring(38) ;
                 NotifyOfPropertyChange(() => Seccion);
 
             }
@@ -83,27 +83,27 @@ namespace Client.Main.ViewModels
 
         public DateTime FechaVencimiento
         {
-            get { return Producto.FechaVencimiento; }
+            get { return Producto.fechaVencimiento; }
             set
             { 
-                Producto.FechaVencimiento = value;
+                Producto.fechaVencimiento = value;
                 NotifyOfPropertyChange(() => FechaVencimiento);
 
             }
         }
         public decimal IVA
         {
-            get { return Producto.IVA; }
+            get { return Producto.iVA; }
             set 
             { 
-                Producto.IVA = value;
+                Producto.iVA = value;
             }
         }
 
         public string CodigoBarras
         {
-            get { return Producto.CodigoBarras; }
-            set { Producto.CodigoBarras = value; }
+            get { return Producto.codigoBarras; }
+            set { Producto.codigoBarras = value; }
         }
 
         public void BackButton()
@@ -114,18 +114,18 @@ namespace Client.Main.ViewModels
 
         public async void Guardar()
         {
-            Producto.CodigoProducto = LetraCodigo + NumeroCodigo;
+            Producto.codigoProducto = LetraCodigo + NumeroCodigo;
             //DbConnection.SincronizarReplicacionMerge();
-            if (!string.IsNullOrWhiteSpace(LetraCodigo) && !string.IsNullOrWhiteSpace(NumeroCodigo) && !string.IsNullOrWhiteSpace(Producto.CodigoProducto) && !string.IsNullOrWhiteSpace(Producto.Nombre) &&
-                !string.IsNullOrWhiteSpace(Producto.UnidadVenta) && !string.IsNullOrWhiteSpace(Producto.Seccion))
+            if (!string.IsNullOrWhiteSpace(LetraCodigo) && !string.IsNullOrWhiteSpace(NumeroCodigo) && !string.IsNullOrWhiteSpace(Producto.codigoProducto) && !string.IsNullOrWhiteSpace(Producto.nombre) &&
+                !string.IsNullOrWhiteSpace(Producto.unidadVenta) && !string.IsNullOrWhiteSpace(Producto.seccion))
             {
-                if (string.IsNullOrEmpty(Producto.CodigoBarras))
+                if (string.IsNullOrEmpty(Producto.codigoBarras))
                 {
-                    Producto.CodigoBarras = "";
+                    Producto.codigoBarras = "";
                 }
-                if (string.IsNullOrEmpty(Producto.IVA.ToString()))
+                if (string.IsNullOrEmpty(Producto.iVA.ToString()))
                 {
-                    Producto.IVA = 0;
+                    Producto.iVA = 0;
                 }
                 try
                 {

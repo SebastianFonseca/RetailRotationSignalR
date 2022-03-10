@@ -6,10 +6,10 @@ namespace ServerConsole.Models
 {
     public class EmpleadoModel : PersonModel
     {
-        public DateTime FechaDeContratacion { get; set; } = DateTime.Now;
-        public decimal Salario { get; set; }
-        public string Password { get; set; } = null;
-        public string Cargo { get; set; }
-        public LocalModel PuntoDeVenta { get; set; } = new LocalModel();
+        public DateTime fechaDeContratacion { get; set; } = DateTime.Now;
+        public decimal salario { get; set; }
+        public string password { get; set; } = null;
+        public string cargo { get; set; }
+        public LocalModel puntoDeVenta { get; set; } = new LocalModel();
     }
 }

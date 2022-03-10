@@ -18,16 +18,16 @@ namespace Client.Main.ViewModels
         public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
         string CodigoAntiguo;
 
-        public static BindableCollection<EmpleadoModel> _administradores = new BindableCollection<EmpleadoModel>();
-        public BindableCollection<EmpleadoModel> Administradores
-        {
-            get
-            {
-                _administradores = DbConnection.getAdministradores();
-                return _administradores;
-            }
-            set { Administradores = value; }
-        }
+        //public static BindableCollection<EmpleadoModel> _administradores = new BindableCollection<EmpleadoModel>();
+        //public BindableCollection<EmpleadoModel> Administradores
+        //{
+        //    get
+        //    {
+        //        _administradores = DbConnection.getAdministradores();
+        //        return _administradores;
+        //    }
+        //    set { Administradores = value; }
+        //}
 
         public LocalEditarBusquedaViewModel(MainWindowViewModel argVentana, LocalModel local)
         {
@@ -126,20 +126,15 @@ namespace Client.Main.ViewModels
 
         public async void Editar()
         {
-
-
                 if (!string.IsNullOrWhiteSpace(resultadoLocal.nombre) &&
                     !string.IsNullOrWhiteSpace(resultadoLocal.direccion) &&
                     !string.IsNullOrWhiteSpace(resultadoLocal.telefono) &&
                     !string.IsNullOrWhiteSpace(resultadoLocal.ciudad) &&
                     !string.IsNullOrWhiteSpace(resultadoLocal.numeroDeCanastillas.ToString()) &&
                     !string.IsNullOrWhiteSpace(resultadoLocal.fechaDeApertura.ToString("DD-MM-YYYY")))
-
                 {
-
                     try
                     {
-
                         if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
                         {
                             MessageBoxResult result = MessageBox.Show($"Desea editar la informacion en la base de datos del local {resultadoLocal.codigo} {resultadoLocal.nombre}", "", MessageBoxButton.YesNo);
@@ -147,7 +142,6 @@ namespace Client.Main.ViewModels
                             {
                                 Task<object> re = conexion.CallServerMethod("ServidorActualizarLocal", Arguments: new object[] { resultadoLocal, CodigoAntiguo });
                                 await re;
-
                                 if (re.Result.ToString() == "El local se ha actualizado.")
                                 {
                                     MessageBox.Show($"Se ha editado la informacion del local {resultadoLocal.codigo} {resultadoLocal.nombre}");
@@ -157,12 +151,11 @@ namespace Client.Main.ViewModels
                                 {
                                     MessageBox.Show(re.Result.ToString());
                                 }
-
                             }
                         }
                         else
                         {
-                            MessageBox.Show("Para eliminar un local debe estar conectado al servidor.");
+                            MessageBox.Show("Para editar un local debe estar conectado al servidor.");
                         }
 
 
@@ -207,7 +200,7 @@ namespace Client.Main.ViewModels
 
         public void BackButton()
         {
-            _administradores.Clear();
+            //_administradores.Clear();
             VentanaPrincipal.ActivateItem(new LocalBuscarViewModel(VentanaPrincipal));
         }
 

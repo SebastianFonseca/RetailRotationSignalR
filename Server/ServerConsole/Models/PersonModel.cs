@@ -7,7 +7,7 @@ namespace ServerConsole.Models
     public class PersonModel
     {
         private string _firstName;
-        public string FirstName
+        public string firstName
         {
             get { return _firstName; }
             set
@@ -16,24 +16,24 @@ namespace ServerConsole.Models
             }
         }
 
-        public string LastName
+        public string lastName
         {
             get;
             set;
         }
 
-        public string Cedula
+        public string cedula
         {
             get;
             set;
         }
 
 
-        public string Telefono { get; set; } = null;
+        public string telefono { get; set; } = null;
 
-        public string Direccion { get; set; } = null;
+        public string direccion { get; set; } = null;
 
-        public string Correo
+        public string correo
         {
             get;
             set;

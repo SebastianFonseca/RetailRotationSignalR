@@ -30,7 +30,6 @@ namespace ServerConsole
         {
             await Clients.Caller.SendCoreAsync("SetStatus", args: new[] { a });
         }
-
         public async Task Desconectado(string a)
         {
             await Clients.Caller.SendCoreAsync("SetStatusDisconnected", args: new[] { "Desconectado del servidor." });
@@ -97,15 +96,26 @@ namespace ServerConsole
 
         }
 
+        #region Productos
         /// <summary>
         /// Cuando es llamado desde un 'cliente' registra un nuevo producto.
         /// </summary>
         /// <param name="Producto">Instancia de la clase ProductoModel</param>
         /// <returns></returns>
-        public async Task<string> ServidorNuevoProducto(ProductoModel Producto)
+        public string ServidorNuevoProducto(ProductoModel Producto)
         {
             return DbConnection.NuevoProducto(Producto);
         }
+
+        /// <summary>
+        /// Retorna el Id y el nombre de los productos en la base de datos.
+        /// </summary>
+        /// <returns></returns>
+        public BindableCollection<ProductoModel> ServidorgetIdProductos()
+        {
+            return DbConnection.getProductos();
+        } 
+        #endregion
 
         #region Locales
         /// <summary>
@@ -113,7 +123,7 @@ namespace ServerConsole
         /// </summary>
         /// <param name="Local">Instancia de la clase LocalModel.</param>
         /// <returns></returns>
-        public async Task<string> ServidorNuevoLocal(LocalModel Local)
+        public string ServidorNuevoLocal(LocalModel Local)
         {
             return DbConnection.NuevoLocal(Local);
         }
@@ -123,9 +133,9 @@ namespace ServerConsole
         /// </summary>
         /// <param name="codigo"></param>
         /// <returns></returns>
-        public string ServidorEliminarLocal(string codigo)
+        public object ServidorEliminarLocal(string codigo, string nombre)
         {
-            return DbConnection.deleteLocal(codigo);
+            return DbConnection.deleteLocal(codigo, nombre);
         }
 
         /// <summary>
@@ -144,7 +154,7 @@ namespace ServerConsole
         /// </summary>
         /// <param name="Caracteres"></param>
         /// <returns></returns>
-        public async Task<BindableCollection<LocalModel>> ServidorGetLocales(string Caracteres)
+        public BindableCollection<LocalModel> ServidorGetLocales(string Caracteres)
         {
             return DbConnection.getLocales(Caracteres);
         }
@@ -153,7 +163,7 @@ namespace ServerConsole
         /// Retorna una lista con el codigo y nombre de cada local en la base de datos.
         /// </summary>
         /// <returns></returns>
-        public async Task<BindableCollection<LocalModel>> ServidorGetIdLocales()
+        public BindableCollection<LocalModel> ServidorGetIdLocales()
         {
             return DbConnection.getLocales();
 
@@ -181,14 +191,54 @@ namespace ServerConsole
             return DbConnection.getEmpleados(caracteres);
         }
 
+        /// <summary>
+        /// Elimina al usuario con el numero de cedula dado.
+        /// </summary>
+        /// <param name="Cedula"></param>
+        /// <returns></returns>
+        public string ServidorDeleteUsuario(string Cedula)
+        {
+            return DbConnection.DeleteEmpleado(Cedula);
+        }
+
+        /// <summary>
+        /// Actualiza la informacion del usuario con el número de cedula dado como parametro.
+        /// </summary>
+        /// <param name="Empleado"></param>
+        /// <param name="CC"></param>
+        /// <returns></returns>
+        public string ServidorUpdateUsuario(EmpleadoModel Empleado, string CC)
+        {
+            return DbConnection.ActualizarUsuario(Empleado, CC);
+        }
         #endregion
+
+        /// <summary>
+        /// Metodo que al ser llamado desde un cliente agrega los datos de un nuevo proveedor.
+        /// </summary>
+        /// <param name="proveedor"></param>
+        /// <returns></returns>
+        public string ServidorNuevoProveedor(ProveedorModel proveedor)
+        {
+            return DbConnection.NuevoProveedor(proveedor);
+        }
+
+        /// <summary>
+        /// Retorna los Proveedores encontrados en la base de datos.
+        /// </summary>
+        /// <param name="caracteres"></param>
+        /// <returns></returns>
+        public BindableCollection<ProveedorModel> ServidorGetProveedores(string caracteres)
+        {
+            return DbConnection.getProveedores(caracteres);
+        }
 
         /// <summary>
         /// Cuando es llamado desde un 'cliente' registra un nuevo cliente.
         /// </summary>
         /// <param name="Cliente">Instancia de la claseCLientesModel</param>
         /// <returns></returns>
-        public async Task<int> ServidorAddClient(ClientesModel Cliente)
+        public int ServidorAddClient(ClientesModel Cliente)
         {
             Console.ForegroundColor = ConsoleColor.DarkCyan;
             Console.Write("\n\t" + DateTime.Now + "--");
@@ -202,7 +252,7 @@ namespace ServerConsole
             }
             if (atempt == "true")
             {
-                Console.Write($" Se registro un nuevo cliente. CC: {Cliente.Cedula} Nombre: {Cliente.FirstName} {Cliente.LastName} \n\n");
+                Console.Write($" Se registro un nuevo cliente. CC: {Cliente.cedula} Nombre: {Cliente.firstName} {Cliente.lastName} \n\n");
                 Console.ResetColor();
                 return 1;
             }

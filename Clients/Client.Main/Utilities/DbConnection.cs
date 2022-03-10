@@ -32,9 +32,7 @@ namespace Client.Main.Utilities
         /// <param name="Password"></param>
         /// <returns></returns>             
         public static string[] Login(string User, string Password)
-        {
-            
-          
+        {                      
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connString))

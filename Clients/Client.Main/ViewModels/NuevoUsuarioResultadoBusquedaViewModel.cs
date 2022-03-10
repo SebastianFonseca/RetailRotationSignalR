@@ -32,32 +32,8 @@ namespace Client.Main.ViewModels
         public string Local
         {
             get
-            {
-  
-
-                foreach (LocalModel slocal in locales)
-                {
-                    if (slocal.codigo == resultadoEmpleado.puntoDeVenta.codigo)
-                    {
-                        resultadoEmpleado.puntoDeVenta.nombre = slocal.nombre;
-                        return slocal.nombre;
-                    }
-                }
-
-                //IEnumerator<LocalModel> e = l.GetEnumerator();
-                //e.Reset();
-                //while (e.MoveNext())
-                //{
-                //    if (e.Current.codigo == resultadoEmpleado.puntoDeVenta.codigo)
-                //    {
-                //        resultadoEmpleado.puntoDeVenta.nombre = e.Current.nombre;
-                        
-                //        return e.Current.nombre;
-                //    }
-                //}
-                return "No coincidencias.";
-                
-                
+            { 
+                return resultadoEmpleado.puntoDeVenta.nombre;                               
             }
             set
             {
@@ -68,7 +44,6 @@ namespace Client.Main.ViewModels
             }
         }
 
-        BindableCollection<LocalModel> locales = new BindableCollection<LocalModel>();
         public async void getLocalesServidor()
         {
 
@@ -79,13 +54,15 @@ namespace Client.Main.ViewModels
                     Task<object> re = conexion.CallServerMethod("ServidorGetIdLocales", Arguments: new object[] { });
                     await re;
 
-                    LocalModel[] mn = System.Text.Json.JsonSerializer.Deserialize<LocalModel[]>(re.Result.ToString());
-                    BindableCollection<LocalModel> lcl = new BindableCollection<LocalModel>();
-                    foreach (LocalModel item in mn)
+                    foreach (LocalModel item in System.Text.Json.JsonSerializer.Deserialize<LocalModel[]>(re.Result.ToString()))
                     {
-                        locales.Add(item);
+                        if (item.codigo == resultadoEmpleado.puntoDeVenta.codigo)
+                        {
+                            resultadoEmpleado.puntoDeVenta.nombre = item.nombre;
+                            Local = item.nombre;
+                            return;
+                        }
                     }
-                    //locales = lcl;
                 }
                 catch (Exception e)
                 {
@@ -167,7 +144,16 @@ namespace Client.Main.ViewModels
 
         public string Cargo
         {
-            get { return resultadoEmpleado.cargo; }
+            get
+            {
+                //Cuando se edita un usaurio se muestra la nueva info, pero el cargo no funciona.
+                if (resultadoEmpleado.cargo.StartsWith("S"))
+                {
+                    return resultadoEmpleado.cargo.Substring(37);
+                }
+
+                return resultadoEmpleado.cargo;
+            }
             set
             {
                 if (resultadoEmpleado.cargo != value)
@@ -245,18 +231,52 @@ namespace Client.Main.ViewModels
             VentanaPrincipal.ActivateItem(new NuevoUsuarioEditarBusquedaViewModel(VentanaPrincipal, resultadoEmpleado));
         }
 
-        public void Eliminar()
+        public async void Eliminar()
         {
-            MessageBoxResult result = MessageBox.Show($"Desea eliminar permanentemente de la base de datos al usuario {resultadoEmpleado.firstName} {resultadoEmpleado.lastName}", "", MessageBoxButton.YesNo);
-            if (result == MessageBoxResult.Yes)
+            if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
             {
-                if (DbConnection.deleteEmpleado(resultadoEmpleado.cedula))
+                MessageBoxResult result = MessageBox.Show($"Desea eliminar permanentemente de la base de datos el usuario {resultadoEmpleado.cedula} - {resultadoEmpleado.firstName} {resultadoEmpleado.lastName}", "", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes)
                 {
-                    MessageBox.Show($"Se ha eliminado al usuario {resultadoEmpleado.firstName} {resultadoEmpleado.lastName}");
-                    VentanaPrincipal.ActivateItem(new BuscarUsuarioViewModel(VentanaPrincipal));
+                    Task<object> re = conexion.CallServerMethod("ServidorDeleteUsuario", Arguments: new[] { resultadoEmpleado.cedula });
+                    await re;
 
+                    if (re.Result.ToString() == "Se ha eliminado al usuario.")
+                    {
+                        MessageBox.Show($"Se ha eliminado al usuario {resultadoEmpleado.cedula} - {resultadoEmpleado.firstName} {resultadoEmpleado.lastName}");
+                        VentanaPrincipal.ActivateItem(new LocalBuscarViewModel(VentanaPrincipal));
+                    }
+                    else
+                    {
+                        MessageBox.Show(re.Result.ToString());
+                    }
+
+
+                    //if (DbConnection.deleteLocal(resultadoLocal.codigo))
+                    //{
+                    //    MessageBox.Show($"Se ha eliminado al usuario {resultadoLocal.codigo} {resultadoLocal.nombre}");
+                    //    VentanaPrincipal.ActivateItem(new LocalBuscarViewModel(VentanaPrincipal));
+
+                    //}
                 }
             }
+            else
+            {
+                MessageBox.Show("Para eliminar un usuario debe estar conectado al servidor.");
+
+            }
+
+
+            //MessageBoxResult result = MessageBox.Show($"Desea eliminar permanentemente de la base de datos al usuario {resultadoEmpleado.firstName} {resultadoEmpleado.lastName}", "", MessageBoxButton.YesNo);
+            //if (result == MessageBoxResult.Yes)
+            //{
+            //    if (DbConnection.deleteEmpleado(resultadoEmpleado.cedula))
+            //    {
+            //        MessageBox.Show($"Se ha eliminado al usuario {resultadoEmpleado.firstName} {resultadoEmpleado.lastName}");
+            //        VentanaPrincipal.ActivateItem(new BuscarUsuarioViewModel(VentanaPrincipal));
+
+            //    }
+            //}
             
         }
     }
