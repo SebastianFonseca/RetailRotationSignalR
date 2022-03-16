@@ -19,43 +19,24 @@
             <Setter Property="HorizontalAlignment" Value="Center"/>
             <Setter Property="Margin"   Value="0"/>
         </Style>
-            <Style TargetType="{x:Type ListBoxItem}">
+
+        <Style TargetType="{x:Type ListBoxItem}">
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                            <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
-                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <MultiTrigger>
-                                    <MultiTrigger.Conditions>
-                                        <Condition Property="Selector.IsSelectionActive"  Value="False" />
-                                        <Condition Property="IsSelected" Value="True" />
-                                        <Condition Property="IsMouseOver" Value="True"/>
-                                    </MultiTrigger.Conditions>
-                                    <Setter Property="Background" TargetName="Bd" Value="DarkOrange" />
-                                </MultiTrigger>
-                                <MultiTrigger>
-                                    <MultiTrigger.Conditions>
-                                        <Condition Property="Selector.IsSelectionActive" Value="True" />
-                                        <Condition Property="IsSelected"  Value="True" />
-                                        <Condition Property="IsMouseOver" Value="True"/>
-                                    </MultiTrigger.Conditions>
-                                    <Setter Property="Background"
-                                    TargetName="Bd"
-                                    Value="OrangeRed" />
-                                </MultiTrigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-
-
-
-
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                        <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#F3E0C2" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </UserControl.Resources>
 
     <Border Background="#F3E0C2" CornerRadius="10">
@@ -69,9 +50,9 @@
 
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="0.2*"/>
-                <RowDefinition Height="0.4*"/>
-                <RowDefinition Height="0.4*"/>
+                <RowDefinition Height="0.35*"/>
+                <RowDefinition Height="0.325*"/>
+                <RowDefinition Height="0.325*"/>
                 <RowDefinition Height="0.1*"/>
             </Grid.RowDefinitions>
 
@@ -79,7 +60,6 @@
             <Button x:Name="BackButton" Grid.Column="0" Grid.Row="0" Margin="5" Style="{StaticResource GeneralButton}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="80">
                 <fa:ImageAwesome Icon="ArrowLeft" Height="25"/>
             </Button>
-
 
             <!--Style="{StaticResource GeneralTextBox}"-->
             <StackPanel Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" >
@@ -128,31 +108,28 @@
 
                 <Border BorderThickness="1 0 1.5 1.5" BorderBrush="Black"  Visibility="{Binding Path=BusquedasVisibilidad}" Margin="10.5 0 10.5 2"  Background="#F7EBD7" >
 
-                <Grid  ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" Height="170" >
+                    <Grid  ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" MaxHeight="120" Margin="2 2 0 5" >
 
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition Height="1"/>
-                        <RowDefinition/>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition Height="1"/>
+                            <RowDefinition  />
                         </Grid.RowDefinitions>
 
-
-                        <ScrollViewer>
-                    <StackPanel Grid.Row="0" Margin="0" CanVerticallyScroll="True">
-                        
-                        <TextBox Background="Transparent" BorderThickness="0" Text=" Por cédula o nombre:"/>
-                        <ListBox  
-                             ScrollViewer.VerticalScrollBarVisibility="Visible"
-                            ScrollViewer.CanContentScroll="True"
-                           VerticalAlignment="Stretch"
-                                SelectedItem="{Binding Path=UsuarioSeleccionado}" 
+                        <DockPanel Grid.Row="0" Margin="0"     MaxHeight="85" >
+                            <TextBox DockPanel.Dock="Top" Background="Transparent" BorderThickness="0" Text=" Resultados con cédula o nombre:"/>
+                            <ListBox
                                 x:Name="Busquedas" 
+                                SelectedItem="{Binding Path=UsuarioSeleccionado}"                                 
                                 ItemsSource="{Binding Path=Busquedas}" 
-                                Background="Transparent"                                                                
-                                Grid.Row="1" 
+                                DockPanel.Dock="Bottom"                           
+                                ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                ScrollViewer.CanContentScroll="True"                          
+                                Background="Transparent"                                                                                                
                                 BorderThickness="0"
-                            MaxHeight="75"
-                               >
+                                MaxHeight="50"
+                                VerticalAlignment="Stretch"
+                                HorizontalAlignment="Stretch">
                                 <ListBox.ItemTemplate >
                                     <DataTemplate >
                                         <TextBlock>
@@ -165,28 +142,28 @@
                                             </TextBlock.Text>
                                         </TextBlock>
                                     </DataTemplate>
-
                                 </ListBox.ItemTemplate>
                             </ListBox>
-                            
-                        </StackPanel>
-                        </ScrollViewer>
+                        </DockPanel>
+
                         <Separator Background="Gray"  Grid.Row="1" Margin="5 0 5 0"/>
-                        <StackPanel Grid.Row="2" Margin="1" CanHorizontallyScroll="True">
-                            <TextBox Background="Transparent" BorderThickness="0" Text=" Por producto:"/>
-                            <ListBox
+
+                        <DockPanel Grid.Row="2" Margin="0"   VerticalAlignment="Stretch" Height="Auto" >
+
+                            <TextBox Background="Transparent" BorderThickness="0" Text=" Resultados con nombre de producto:" DockPanel.Dock="Top"/>
+                            <ListBox                              
                                 x:Name="BusquedasProducto"
-                                Background="Transparent"                                 
-                                ItemsSource="{Binding Path=BusquedasProducto}"                                 
-                                Grid.Row="0" 
+                                SelectedItem="{Binding Path=UsuarioSeleccionado}"                               
+                                ItemsSource="{Binding Path=BusquedasProducto}"
+                                DockPanel.Dock="Bottom"
+                                ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                ScrollViewer.CanContentScroll="True"                          
+                                Background="Transparent"                                                                
+                                Grid.Row="1" 
                                 BorderThickness="0"
-                                SelectedItem="{Binding Path=UsuarioSeleccionado}" 
-                                ScrollViewer.CanContentScroll="True"
-                                ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                MaxHeight="85"
-                                VerticalAlignment="Stretch"
-                                >
-                                <ListBox.ItemTemplate>
+                                MaxHeight="50"
+                                VerticalAlignment="Stretch">
+                                <ListBox.ItemTemplate >
                                     <DataTemplate >
                                         <TextBlock>
                                             <TextBlock.Text>
@@ -200,13 +177,9 @@
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                             </ListBox>
-                        </StackPanel>
-
-                    
-
-                </Grid>
+                        </DockPanel>
+                    </Grid>
                 </Border>
-                <!--</ScrollViewer>-->
             </StackPanel>
 
             <!--Boton BUSCAR-->

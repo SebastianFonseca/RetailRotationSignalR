@@ -4,6 +4,7 @@ using Client.Main.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,9 +21,7 @@ namespace Client.Main.ViewModels
 
         }
 
-
-    private string _buscarTbx;
-
+        private string _buscarTbx;
         public string BuscarTbx
         {
             get { return _buscarTbx; }
@@ -37,29 +36,7 @@ namespace Client.Main.ViewModels
             }
         }
 
-        private ProveedorModel _usuarioSeleccionado;
-
-        public ProveedorModel UsuarioSeleccionado
-        {
-            get { return _usuarioSeleccionado; }
-            set
-            {
-
-                //BusquedasVisibilidad = "Hidden";
-                if (value != null)
-                {
-                    seleccion = value;
-                    BuscarTbx = value.cedula + "-" + value.firstName + " " + value.lastName;
-                }
-                _usuarioSeleccionado = value;
-
-                NotifyOfPropertyChange(() => UsuarioSeleccionado);
-            }
-        }
-        ProveedorModel seleccion = new ProveedorModel();
-
         private BindableCollection<ProveedorModel> _busquedas = new BindableCollection<ProveedorModel>();
-
         public BindableCollection<ProveedorModel> Busquedas
         {
             get
@@ -74,7 +51,6 @@ namespace Client.Main.ViewModels
         }
 
         private BindableCollection<ProveedorModel> _busquedasProducto = new BindableCollection<ProveedorModel>();
-
         public BindableCollection<ProveedorModel> BusquedasProducto
         {
             get { return _busquedasProducto; }
@@ -85,7 +61,24 @@ namespace Client.Main.ViewModels
             }
         }
 
+        ProveedorModel seleccion = new ProveedorModel();
 
+        private ProveedorModel _usuarioSeleccionado;
+        public ProveedorModel UsuarioSeleccionado
+        {
+            get { return _usuarioSeleccionado; }
+            set
+            {
+                if (value != null)
+                {
+                    seleccion = value;
+                    BuscarTbx = value.cedula + "-" + value.firstName + " " + value.lastName;
+                }
+                _usuarioSeleccionado = value;
+
+                NotifyOfPropertyChange(() => UsuarioSeleccionado);
+            }
+        }
 
         public async void Buscar()
         {
@@ -99,74 +92,37 @@ namespace Client.Main.ViewModels
                 {
                     try
                     {
-                        Task<object> re = conexion.CallServerMethod("ServidorGetProveedores", Arguments: new[] { BuscarTbx.Split('-')[0].Trim() });
+                        Task<object> re = conexion.CallServerMethod("ServidorGetProveedor", Arguments: new[] { BuscarTbx.Split('-')[0].Trim() });
                         await re;
-                        ProveedorModel[] mn = System.Text.Json.JsonSerializer.Deserialize<ProveedorModel[]>(re.Result.ToString());
-                        BindableCollection<ProveedorModel> resultado = new BindableCollection<ProveedorModel>();
-                        resultado.Clear();
-                        foreach (ProveedorModel item in mn)
-                        {
-                            resultado.Add(item);
-                        }
-
-
-
-                        // BindableCollection<ProveedorModel> resultado = DbConnection.getEmpleados(BuscarTbx.Split('-')[0]);
-
-                        if (resultado.Count == 0)
+                        ProveedorModel proveedor = System.Text.Json.JsonSerializer.Deserialize<ProveedorModel>(re.Result.ToString());    
+                        if (proveedor.cedula == null)
                         {
                             MessageBox.Show("Número de cédula, nombre o apellido no resgistrados");
                         }
                         else
-                        {
-                            IEnumerator<ProveedorModel> e = resultado.GetEnumerator();
-                            e.Reset();
-                            while (e.MoveNext())
-                            {
-                                if (e.Current.cedula == BuscarTbx.Split('-')[0])
-                                {
-                                    VentanaPrincipal.ActivateItem(new ProveedorResultadoBusquedaViewModel(VentanaPrincipal, e.Current));
-                                }
-
-
-                            }
-
+                        {                                                        
+                            VentanaPrincipal.ActivateItem(new ProveedorResultadoBusquedaViewModel(VentanaPrincipal, proveedor));
                             BusquedasVisibilidad = "Visible";
-                            ComboboxDesplegado = "True";
+//                            ComboboxDesplegado = "True";
                         }
                     }
                     catch (Exception e)
                     {
-
                         MessageBox.Show(e.Message);
-
                     }
                 }
                 else
                 {
                     MessageBox.Show("No es posible realizar la busqueda si no esta conectado al servidor.");
-
                 }
-
-
-
-
             }
-
-
-
-
-
         }
-
-
 
         public void BackButton()
         {
             if(Busquedas.Count != 0) Busquedas.Clear();
             if(BusquedasProducto.Count != 0) BusquedasProducto.Clear();
             VentanaPrincipal.ActivateItem(new DC_AdministrativoViewModel(VentanaPrincipal));
-
         }
 
         public string Error { get { return null; } }
@@ -182,16 +138,12 @@ namespace Client.Main.ViewModels
                     {
                         if (String.IsNullOrEmpty(BuscarTbx))
                         {
-                            result = "Rellene este campo.";
+                            result = "Escriba algun valor.";
                         }
                     }
                 }
-
                 else { flag += 1; }
-
-
                 return result;
-
             }
         }
 
@@ -208,21 +160,6 @@ namespace Client.Main.ViewModels
             }
             set { _busquedasVisibiliad = value; NotifyOfPropertyChange(() => BusquedasVisibilidad); }
         }
-
-
-        private string _comboboxDesplegado = "false";
-
-        public string ComboboxDesplegado
-        {
-            get { return _comboboxDesplegado; }
-            set
-            {
-                _comboboxDesplegado = value;
-                NotifyOfPropertyChange(() => ComboboxDesplegado);
-            }
-        }
-
-
 
         public async void EscribiendoBusqueda()
         {
@@ -254,61 +191,38 @@ namespace Client.Main.ViewModels
                         }
                         else
                         {
-                            for (int i = 0; i < proveedores.Count; i++)
+                            for (int i = 0; i <= proveedores.Count; i++)
                             {
-                                if (proveedores[i+1].ciudad == "separador")
+                                if (proveedores[0].ciudad == "separador")
                                 {
-                                    proveedores.RemoveAt(i+1);
+                                    proveedores.RemoveAt(0);
                                     break;
                                 }
-                                Busquedas.Add(proveedores[i]);
-                                proveedores.Remove(proveedores[i]);
+                                Busquedas.Add(proveedores[0]);
+                                proveedores.RemoveAt(0);
 
                             }
                             BusquedasProducto = proveedores;
                         }
-                    }
-
-
-
-
-                    
-                    //foreach (ProveedorModel item in mn)
-                    //{
-                    //    Busquedas.Add(item);
-                    //}
-
-                    //Busquedas = DbConnection.getEmpleados(BuscarTbx);
+                    }                    
                     if ( Busquedas.Count == 0 & BusquedasProducto.Count == 0)
                     {
-                       // ComboboxDesplegado = "false";
                         BusquedasVisibilidad = "Hidden";
                     }
                     else
                     {
                         BusquedasVisibilidad = "Visible";
-                      //  ComboboxDesplegado = "true";
-
                     }
                 }
                 else
                 {
                     MessageBox.Show("No es posible realizar la busqueda si no esta conectado al servidor.");
                 }
-
             }
             catch (Exception e)
             {
-
                 MessageBox.Show(e.Message);
             }
-
-
-
-
-
         }
-
-
     }
 }

@@ -114,7 +114,7 @@ namespace ServerConsole
         public BindableCollection<ProductoModel> ServidorgetIdProductos()
         {
             return DbConnection.getProductos();
-        } 
+        }
         #endregion
 
         #region Locales
@@ -213,6 +213,7 @@ namespace ServerConsole
         }
         #endregion
 
+        #region Proveedores
         /// <summary>
         /// Metodo que al ser llamado desde un cliente agrega los datos de un nuevo proveedor.
         /// </summary>
@@ -232,6 +233,38 @@ namespace ServerConsole
         {
             return DbConnection.getProveedores(caracteres);
         }
+
+        /// <summary>
+        /// Retorna un proveedor especificamente daso su numero de cedula.
+        /// </summary>
+        /// <param name="CedulaProveedor"></param>
+        /// <returns></returns>
+        public ProveedorModel ServidorGetProveedor(string numeroDeCedula)
+        {
+            return DbConnection.getProveedor(numeroDeCedula);
+        }
+
+        /// <summary>
+        /// Metodo que se llama desde un cliente para eliminar un proveedor.
+        /// </summary>
+        /// <param name="cedula"></param>
+        /// <returns></returns>
+        public string ServidorDeleteProveedor(string cedula)
+        {
+            return DbConnection.deleteProveedor(cedula);
+        }
+
+        /// <summary>
+        /// Cuado es invocado desde un cliete actualiza en la base de datos la informacion de la instancia de proveedor dada.
+        /// </summary>
+        /// <param name="proveedor"></param>
+        /// <returns></returns>
+        public string ServidorActualizarProveedor(ProveedorModel proveedor)
+        {
+          return  DbConnection.actualizarProveedor(proveedor);
+        }
+        #endregion
+
 
         /// <summary>
         /// Cuando es llamado desde un 'cliente' registra un nuevo cliente.

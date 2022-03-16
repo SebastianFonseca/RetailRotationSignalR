@@ -287,7 +287,7 @@ namespace Client.Main.ViewModels
         public void BackButton()
         {
             Locales.Clear();
-            VentanaPrincipal.ActivateItem(new BuscarUsuarioViewModel(VentanaPrincipal));
+            VentanaPrincipal.ActivateItem(new NuevoUsuarioResultadoBusquedaViewModel(VentanaPrincipal, resultadoEmpleado));
         }
 
 

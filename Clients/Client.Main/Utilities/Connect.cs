@@ -102,7 +102,8 @@ namespace Client.Main
                     return result.Result;
                 }
             }
-            catch (Exception e)
+            
+                catch (Exception e)
             {
                 MessageBox.Show(e.Message);
                 return null;

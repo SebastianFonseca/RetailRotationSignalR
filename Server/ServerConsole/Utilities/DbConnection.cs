@@ -394,6 +394,137 @@ namespace ServerConsole.Utilities
             }
         }
 
+        /// <summary>
+        /// Retorna un proveedor especificamente daso su numero de cedula.
+        /// </summary>
+        /// <param name="Cedula"></param>
+        /// <returns></returns>
+        public static ProveedorModel getProveedor(string Cedula) 
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"SELECT * FROM Proveedor WHERE CedulaProveedor = '{Cedula}' ";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    ProveedorModel proveedor = new ProveedorModel();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            
+                            proveedor.cedula = reader["CedulaProveedor"].ToString();
+                            proveedor.firstName = reader["Nombres"].ToString();
+                            proveedor.lastName = reader["Apellidos"].ToString();
+                            proveedor.telefono = reader["Telefono"].ToString();
+                            proveedor.ciudad = reader["Ciudad"].ToString();
+                        }
+                    }
+
+                    string cadena0 = $"select distinct * from Producto join ProveedorProducto on ProveedorProducto.CodigoProducto = Producto.CodigoProducto where ProveedorProducto.CedulaProveedor = '{Cedula}';";
+                    SqlCommand cmd0 = new SqlCommand(cadena0, conn);
+                    BindableCollection<ProductoModel> productos = new BindableCollection<ProductoModel>();
+                    using (SqlDataReader reader0 = cmd0.ExecuteReader())
+                    {
+                        while (reader0.Read())
+                        {
+
+                            ProductoModel producto = new ProductoModel();
+                            producto.CodigoProducto = reader0["CodigoProducto"].ToString();
+                            producto.Nombre = reader0["Nombre"].ToString();
+                            productos.Add(producto);
+
+                        }
+                    }
+                    proveedor.productos = productos;
+                    conn.Close();
+                    return proveedor;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Elimina de la base de datos el proveedor con el número de cédula dado.
+        /// </summary>
+        /// <param name="cedula"></param>
+        /// <returns></returns>
+        public static string deleteProveedor(string Cedula)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"delete from Proveedor Where CedulaProveedor = '{Cedula}' ";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                    Console.ForegroundColor = ConsoleColor.DarkCyan;
+                    Console.Write("\n\t" + DateTime.Now + "--");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha eliminado al proveedor {Cedula}");
+                    return "Se ha eliminado al proveedor.";
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return e.Message;
+            }
+        }
+
+        /// <summary>
+        /// Actualiza en la base de datos la informacion relacionada con el proveedor proporcionado como parametro,
+        /// </summary>
+        /// <param name="proveedor"></param>
+        /// <returns></returns>
+        public static string actualizarProveedor(ProveedorModel proveedor)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = "UPDATE Proveedor SET Nombres=@nombre,Apellidos=@apellidos,Telefono=@telefono,Ciudad=@ciudad WHERE CedulaProveedor=@cedula;";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@cedula", proveedor.cedula);
+                    cmd.Parameters.AddWithValue("@nombre", proveedor.firstName);
+                    cmd.Parameters.AddWithValue("@apellidos", proveedor.lastName);
+                    cmd.Parameters.AddWithValue("@telefono", proveedor.telefono);
+                    cmd.Parameters.AddWithValue("@ciudad", proveedor.ciudad);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    string response = insertProductoProveedor(proveedor.cedula, proveedor.productos);
+                    if (response == "Y")
+                    {
+                        Console.ForegroundColor = ConsoleColor.DarkCyan;
+                        Console.Write("\n\t" + DateTime.Now + "--");
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha editado la información del proveedor {proveedor.firstName} {proveedor.lastName}");
+                        conn.Close();
+                        return "Se ha editado la informacion.";
+                    }
+                    return response;
+                }
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Substring(0, 50) == $"Violation of PRIMARY KEY constraint 'PK_Proveedor'")
+                {
+                    return "Proveedor ya registrado.";
+                }
+                else
+                {
+                    return e.Message;
+                }
+            }
+        }
+
         #endregion
 
 

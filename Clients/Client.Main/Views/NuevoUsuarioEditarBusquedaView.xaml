@@ -94,17 +94,19 @@
                     </Grid.RowDefinitions>
 
                     <!--Linea 1-->
-                    <TextBlock Grid.Row="1" Grid.Column="0" >Nombres:</TextBlock>
-                    <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource GeneralTextBox}" x:Name="Nombre" />
+                    <TextBlock Grid.Row="1" Grid.Column="0">Cedula:</TextBlock>
+                    <TextBlock Grid.Row="1" Grid.Column="1" x:Name="CC" HorizontalAlignment="Left" FontWeight="Normal"/>
+
+
 
                     <!--Linea 2-->
-                    <TextBlock Grid.Row="2" Grid.Column="0" >Apellidos:</TextBlock>
-                    <TextBox Grid.Row="2" Grid.Column="1"  Style="{StaticResource GeneralTextBox}" x:Name="Apellidos"/>
+                    <TextBlock Grid.Row="3" Grid.Column="0" >Apellidos:</TextBlock>
+                    <TextBox Grid.Row="3" Grid.Column="1"  Style="{StaticResource GeneralTextBox}" x:Name="Apellidos"/>
 
 
                     <!--Linea 3-->
-                    <TextBlock Grid.Row="3" Grid.Column="0">Cedula:</TextBlock>
-                    <TextBox Grid.Row="3" Grid.Column="1" Style="{StaticResource GeneralTextBox}"  x:Name="CC"  PreviewTextInput="NumberValidationTextBox"/>
+                    <TextBlock Grid.Row="2" Grid.Column="0" >Nombres:</TextBlock>
+                    <TextBox Grid.Row="2" Grid.Column="1" Style="{StaticResource GeneralTextBox}" x:Name="Nombre" />
 
 
 

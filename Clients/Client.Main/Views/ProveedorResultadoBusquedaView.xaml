@@ -3,10 +3,160 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Client.Main.Views"
+             xmlns:local="clr-namespace:Client.Main.Views"    
+            xmlns:c="clr-namespace:Client.Main.Utilities"
+            xmlns:fa="http://schemas.fontawesome.io/icons/"
              mc:Ignorable="d" 
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
+
+    <UserControl.Resources>
+
+        <!--#region    -->
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="22"/>
+            <Setter Property="FontWeight" Value="DemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="FontSize" Value="50"/>
+        </Style>
+        <!--#endregion-->
+
+    </UserControl.Resources>
+
+    <!--Color de fondo y borde curveado-->
+    <Border Background="#F3E0C2" CornerRadius="10" >
+
+        <!--Grid principal, botones atras y guardar-->
+        <Grid ShowGridLines="False">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.75*"/>
+                <RowDefinition Height="0.25*"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.1*"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="0.1*"/>
+            </Grid.ColumnDefinitions>
+
+            <!--Boton atras-->
+            <Button x:Name="BackButton" Grid.Column="0" Grid.Row="0" Margin="5" Style="{StaticResource GeneralButton}" VerticalAlignment="Top">
+                <fa:ImageAwesome Icon="ArrowLeft" Height="25"/>
+            </Button>
+
+            <!--Sombra superior-->
+            <!--<Border  Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" BorderBrush="#F3E0C2" BorderThickness="0 1 0 0" Height="50" VerticalAlignment="Top" Margin="10 8 10 0">
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="10" Color="#F3E0C2" BlurRadius="5"/>
+                </Border.Effect>
+            </Border>-->
+
+            <!--Sombra inferior-->
+            <Border  Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" BorderBrush="#F3E0C2" BorderThickness="0 0 0 1" Height="50" VerticalAlignment="Bottom" Margin="0 0 10 0">
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="10" Color="#F3E0C2" BlurRadius="5"/>
+                </Border.Effect>
+            </Border>
+
+            <!--Scroll del formulario-->
+            <ScrollViewer  Style="{StaticResource GeneralScrollViewer}" HorizontalScrollBarVisibility="Disabled" Background="Red" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" Margin="10 20 0 0">
+
+                <!--Formulario principal-->
+                <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9" c:KeyboardFocus.On="{Binding ElementName=Nombre}" HorizontalAlignment="Stretch" >
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.25*"/>
+                        <ColumnDefinition Width="0.75*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition Height="200"/>
+                    </Grid.RowDefinitions>
+
+                    <!--Linea 1-->
+                    <TextBlock Grid.Row="1" Grid.Column="0" >Nombres:</TextBlock>
+                    <TextBlock Grid.Row="1" Grid.Column="1"  x:Name="Nombre" HorizontalAlignment="Left" FontWeight="Normal" />
+
+                    <!--Linea 2-->
+                    <TextBlock Grid.Row="2" Grid.Column="0" >Apellidos:</TextBlock>
+                    <TextBlock Grid.Row="2" Grid.Column="1" x:Name="Apellidos" HorizontalAlignment="Left" FontWeight="Normal"/>
+
+                    <!--Linea 3-->
+                    <TextBlock Grid.Row="3" Grid.Column="0">Cedula:</TextBlock>
+                    <TextBlock Grid.Row="3" Grid.Column="1"  x:Name="CC" HorizontalAlignment="Left" FontWeight="Normal" />
+
+                    <!--linea 4-->
+                    <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Bottom">Direccion:</TextBlock>
+                    <TextBlock  Grid.Row="4" Grid.Column="1"   x:Name="Direccion" HorizontalAlignment="Left" FontWeight="Normal"/>
+
+                    <!--Linea 5-->
+                    <TextBlock Grid.Row="5" Grid.Column="0"  >Teléfono:</TextBlock>
+                    <TextBlock Grid.Row="5" Grid.Column="1"   x:Name="Telefono" HorizontalAlignment="Left" FontWeight="Normal" />
+
+                    <!--Linea 9-->
+                    <TextBlock Grid.Row="6" Grid.Column="0" VerticalAlignment="Bottom">Ciudad:</TextBlock>
+                    <TextBlock  Grid.Row="6" Grid.Column="1" x:Name="Ciudad" HorizontalAlignment="Left" FontWeight="Normal"/>
+
+                    <!--Linea 10-->
+                    <TextBlock Grid.Row="7" Grid.Column="0" VerticalAlignment="Top" FontSize="21" Margin="0 10 0 0" >Productos:</TextBlock>
+                    <ListBox ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True"  x:Name="Productos" Background="#F3E0D2" BorderThickness="0" Margin="0 10 0 0"  FlowDirection="LeftToRight" HorizontalAlignment="Stretch" Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="2">
+                        <ListBox.ItemTemplate >
+                            <DataTemplate >
+                                <Grid >
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="70" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Orientation="Horizontal" Grid.Column="0" HorizontalAlignment="Center">
+                                        <TextBlock Text="{Binding Path=codigoProducto}" Margin="0" FontSize="18" />
+                                        <TextBlock   VerticalAlignment="Top" FontSize="18" Text=" -"/>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding Path=nombre}" Grid.Column="2"  FontSize="18"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                                <Setter Property="IsSelected" Value="{Binding isSelected, Mode=TwoWay}" />
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+
+
+
+                    </ListBox>
+
+                </Grid>
+            </ScrollViewer>
+
+            <!--Boton guardar-->
+
+            <DockPanel Grid.Column="1" Grid.Row="1" >
+                <Button Style="{StaticResource GeneralButton}"  Margin="11" Height="50" HorizontalAlignment="Center"  Width="250" Content="    EDITAR    "  x:Name="Editar" />
+                <Button Style="{StaticResource GeneralButton}"  Margin="11" Height="50" HorizontalAlignment="Center"  Width="250" Content="    ELIMINAR    "  x:Name="Eliminar" />
+            </DockPanel>
             
-    </Grid>
+
+
+            
+
+        </Grid>
+    </Border>
+
+
+
+
 </UserControl>

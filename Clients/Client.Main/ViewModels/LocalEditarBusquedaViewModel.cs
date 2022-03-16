@@ -145,7 +145,7 @@ namespace Client.Main.ViewModels
                                 if (re.Result.ToString() == "El local se ha actualizado.")
                                 {
                                     MessageBox.Show($"Se ha editado la informacion del local {resultadoLocal.codigo} {resultadoLocal.nombre}");
-                                    VentanaPrincipal.ActivateItem(new LocalBuscarViewModel(VentanaPrincipal));
+                                    VentanaPrincipal.ActivateItem(new LocalResultadoBusquedaViewModel(VentanaPrincipal, resultadoLocal));
                                 }
                                 else
                                 {
@@ -201,7 +201,7 @@ namespace Client.Main.ViewModels
         public void BackButton()
         {
             //_administradores.Clear();
-            VentanaPrincipal.ActivateItem(new LocalBuscarViewModel(VentanaPrincipal));
+            VentanaPrincipal.ActivateItem(new LocalResultadoBusquedaViewModel(VentanaPrincipal, resultadoLocal));
         }
 
         public string Error { get { return null; } }

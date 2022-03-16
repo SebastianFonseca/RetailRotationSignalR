@@ -29,21 +29,6 @@ namespace Client.Main.ViewModels
 
         }
 
-        public string Local
-        {
-            get
-            { 
-                return resultadoEmpleado.puntoDeVenta.nombre;                               
-            }
-            set
-            {
-                if (value == null)
-                    MessageBox.Show("Local pasando a null");
-                resultadoEmpleado.puntoDeVenta.codigo = value;                
-                NotifyOfPropertyChange(() => Local);
-            }
-        }
-
         public async void getLocalesServidor()
         {
 
@@ -71,6 +56,20 @@ namespace Client.Main.ViewModels
             }
         }
 
+        public string Local
+        {
+            get
+            { 
+                return resultadoEmpleado.puntoDeVenta.nombre;                               
+            }
+            set
+            {
+                if (value == null)
+                    MessageBox.Show("Local pasando a null");
+                resultadoEmpleado.puntoDeVenta.codigo = value;                
+                NotifyOfPropertyChange(() => Local);
+            }
+        }
         public string Nombre
         {
             get { return resultadoEmpleado.firstName; }
@@ -97,7 +96,6 @@ namespace Client.Main.ViewModels
 
             }
         }
-
         public string CC
         {
             get { return resultadoEmpleado.cedula; }
@@ -111,8 +109,6 @@ namespace Client.Main.ViewModels
 
             }
         }
-
-
         public string Telefono
         {
             get { return resultadoEmpleado.telefono; }
@@ -126,8 +122,6 @@ namespace Client.Main.ViewModels
 
             }
         }
-
-
         public DateTime FechaContratacion
         {
             get { return resultadoEmpleado.fechaDeContratacion; }
@@ -138,29 +132,6 @@ namespace Client.Main.ViewModels
                     resultadoEmpleado.fechaDeContratacion = value;
                 }
                 NotifyOfPropertyChange(() => FechaContratacion);
-
-            }
-        }
-
-        public string Cargo
-        {
-            get
-            {
-                //Cuando se edita un usaurio se muestra la nueva info, pero el cargo no funciona.
-                if (resultadoEmpleado.cargo.StartsWith("S"))
-                {
-                    return resultadoEmpleado.cargo.Substring(37);
-                }
-
-                return resultadoEmpleado.cargo;
-            }
-            set
-            {
-                if (resultadoEmpleado.cargo != value)
-                {
-                    resultadoEmpleado.cargo = value;
-                }
-                NotifyOfPropertyChange(() => Cargo);
 
             }
         }
@@ -216,6 +187,29 @@ namespace Client.Main.ViewModels
             {
                 _passwordAgain = value;
                 NotifyOfPropertyChange(() => PasswordAgain);
+            }
+        }
+
+        public string Cargo
+        {
+            get
+            {
+                //Cuando se edita un usaurio se muestra la nueva info, pero el cargo no funciona.
+                if (resultadoEmpleado.cargo.StartsWith("S"))
+                {
+                    return resultadoEmpleado.cargo.Substring(37);
+                }
+
+                return resultadoEmpleado.cargo;
+            }
+            set
+            {
+                if (resultadoEmpleado.cargo != value)
+                {
+                    resultadoEmpleado.cargo = value;
+                }
+                NotifyOfPropertyChange(() => Cargo);
+
             }
         }
 
