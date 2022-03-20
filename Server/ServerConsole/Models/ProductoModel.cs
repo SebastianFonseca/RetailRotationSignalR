@@ -15,8 +15,8 @@ namespace ServerConsole.Models
         /// </summary>
         public decimal PrecioVenta { get; set; } = 0;
         public string Seccion { get; set; }
-        public DateTime FechaVencimiento { get; set; } = DateTime.Now;
-        public decimal IVA { get; set; }
+        public DateTime FechaVencimiento { get; set; } = DateTime.Today;
+        public decimal iva { get; set; }
         public string CodigoBarras { get; set; }
 
     }

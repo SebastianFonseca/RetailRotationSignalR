@@ -69,7 +69,7 @@ namespace ServerConsole
         }
 
         /// <summary>
-        /// Invocado cuendo un cliente se desconecta.
+        /// Invocado cuando un cliente se desconecta.
         /// </summary>
         /// <param name="a">Nombre del usuario que se desconecta.</param>
         public void ClienteDesconectado(string a)
@@ -115,6 +115,37 @@ namespace ServerConsole
         {
             return DbConnection.getProductos();
         }
+
+        /// <summary>
+        /// Invocado dede un cliente retorna los productos que coinciden con los caracteres dados.
+        /// </summary>
+        /// <param name="caracteres"></param>
+        /// <returns></returns>
+        public BindableCollection<ProductoModel> ServidorGetProductos(string caracteres)
+        {
+            return DbConnection.getProductos(caracteres);
+        }
+
+        /// <summary>
+        /// Metodo llamado desde un cliente para eliminar de la base de datos la informacion del producto con el ID dado como parametro.
+        /// </summary>
+        /// <param name="idProducto"></param>
+        /// <returns></returns>
+        public string ServidorDeleteProducto(string idProducto)
+        {
+            return DbConnection.deleteProducto(idProducto);
+        }
+
+        /// <summary>
+        /// Metodo llamado desde un cliente para actualizar la informacion de un producto.
+        /// </summary>
+        /// <param name="producto"></param>
+        /// <returns></returns>
+        public string ServidorActualizarProducto(ProductoModel producto)
+        {
+            return DbConnection.actualizarProducto(producto);
+        }
+
         #endregion
 
         #region Locales

@@ -180,7 +180,7 @@ namespace ServerConsole.Utilities
                             cmd2.Parameters.AddWithValue("@precio", Producto.PrecioVenta.ToString());
                             cmd2.Parameters.AddWithValue("@seccion", Statics.PrimeraAMayuscula(Producto.Seccion));
                             cmd2.Parameters.AddWithValue("@fv", Producto.FechaVencimiento == DateTime.Today ? (object)DBNull.Value : Producto.FechaVencimiento);
-                            cmd2.Parameters.AddWithValue("@iva", Producto.IVA);
+                            cmd2.Parameters.AddWithValue("@iva", Producto.iva);
                             cmd2.Parameters.AddWithValue("@cb", string.IsNullOrEmpty(Producto.CodigoBarras) ? (object)DBNull.Value : Producto.CodigoBarras);
                             cmd2.ExecuteNonQuery();
                             conn.Close();
@@ -209,7 +209,7 @@ namespace ServerConsole.Utilities
         public static BindableCollection<ProductoModel> productos = new BindableCollection<ProductoModel>();
 
         /// <summary>
-        /// Obtener Nombres y CodigoProducto de los productos en la base de datos.
+        /// Obtener Nombres y CodigoProducto de todos los productos en la base de datos.
         /// </summary>
         /// <returns></returns>
         public static BindableCollection<ProductoModel> getProductos()
@@ -220,7 +220,7 @@ namespace ServerConsole.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = "SELECT [CodigoProducto], [Nombre]  FROM Producto";
+                    string cadena = "SELECT [CodigoProducto], [Nombre]  FROM Producto ORDER BY Nombre";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -245,8 +245,156 @@ namespace ServerConsole.Utilities
             }
 
         }
-        #endregion
 
+        /// <summary>
+        /// Obtener datos de los productos en la base de datos que coincide con los caracteres dados.
+        /// </summary>
+        /// <returns></returns>
+        public static BindableCollection<ProductoModel> getProductos(string caracteres)
+        {
+
+            productos.Clear();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {                   
+                    string cadena = $"SELECT Distinct * FROM Producto WHERE (CodigoProducto LIKE '%{caracteres}%') OR (Nombre LIKE '%{caracteres}%') ORDER BY Nombre;";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            ProductoModel producto = new ProductoModel();
+                            producto.CodigoProducto = reader["CodigoProducto"].ToString();
+                            producto.Nombre = reader["Nombre"].ToString();
+                            producto.UnidadVenta = reader["UnidadVenta"].ToString();
+                            producto.UnidadCompra = reader["UnidadCompra"].ToString();
+                            producto.PrecioVenta = Convert.ToDecimal(reader["PrecioVenta"].ToString());
+                            producto.Seccion = reader["Seccion"].ToString();                             
+                            producto.iva =  Convert.ToDecimal(reader["IVA"].ToString());                           
+                            producto.CodigoBarras = reader["CodigoBarras"].ToString();
+                            if (reader["FechaVencimiento"].ToString() == "")
+                            {
+                                producto.FechaVencimiento = DateTime.MinValue;
+                            }
+                            else
+                            {
+                                producto.FechaVencimiento = DateTime.Parse(reader["FechaVencimiento"].ToString());
+                            }
+                            productos.Add(producto);
+                        }
+                    }
+                    conn.Close();
+                    return productos;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+
+        }
+
+        /// <summary>
+        /// Elimina de la base de datos la informacion del producto con el ID dado como parametro.
+        /// </summary>
+        /// <param name="idProducto"></param>
+        /// <returns></returns>
+        public static string deleteProducto(string idProducto)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"delete from Producto Where CodigoProducto = '{idProducto}' ";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                    Console.ForegroundColor = ConsoleColor.DarkCyan;
+                    Console.Write("\n\t" + DateTime.Now + "--");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha eliminado al producto con codigo: {idProducto}");
+                    return "Se ha eliminado al producto.";
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return e.Message;
+            }
+
+        }
+
+        /// <summary>
+        /// Actualiza en la base de datos la informacion relacionada al producto dado.
+        /// </summary>
+        /// <param name="Producto"></param>
+        /// <returns></returns>
+        public static string actualizarProducto(ProductoModel Producto)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena1 = "SELECT * FROM Producto where [codigoBarras]=@codigob";
+                    SqlCommand cmd1 = new SqlCommand(cadena1, conn);
+                    cmd1.Parameters.AddWithValue("@codigob", Producto.CodigoBarras);
+                    conn.Open();
+                    using (SqlDataReader reader1 = cmd1.ExecuteReader())
+                    {
+                        if (reader1.HasRows)
+                        {
+                            conn.Close();
+                            return "Codigo de barras ya registrado.";
+                        }
+                    }
+                    string cadena2 = "SELECT *  FROM Producto where [Nombre]=@nombre";
+                    SqlCommand cmd2 = new SqlCommand(cadena2, conn);
+                    cmd2.Parameters.AddWithValue("@nombre", Producto.Nombre);
+                    using (SqlDataReader reader = cmd2.ExecuteReader())
+                    {
+                        if (reader.HasRows)
+                        {
+                            conn.Close();
+                            return "Nombre de producto ya registrado.";
+                        }
+                        else
+                        {
+                            reader.Close();
+                            string cadena = $"UPDATE Producto SET  Nombre=@nombre, UnidadVenta=@univenta,	UnidadCompra=@unicompra, PrecioVenta=@precio, Seccion=@seccion, FechaVencimiento=@fv, IVA=@iva, CodigoBarras=@cb WHERE CodigoProducto = '{Producto.CodigoProducto}' ";
+                            SqlCommand cmd = new SqlCommand(cadena, conn);
+                            cmd.Parameters.AddWithValue("@codigo", Statics.PrimeraAMayuscula(Producto.CodigoProducto));
+                            cmd.Parameters.AddWithValue("@nombre", Statics.PrimeraAMayuscula(Producto.Nombre));
+                            cmd.Parameters.AddWithValue("@univenta", Statics.PrimeraAMayuscula(Producto.UnidadVenta));
+                            cmd.Parameters.AddWithValue("@unicompra", Statics.PrimeraAMayuscula(Producto.UnidadCompra));
+                            cmd.Parameters.AddWithValue("@precio", Producto.PrecioVenta.ToString());
+                            cmd.Parameters.AddWithValue("@seccion", Statics.PrimeraAMayuscula(Producto.Seccion));
+                            cmd.Parameters.AddWithValue("@fv", Producto.FechaVencimiento == DateTime.Today ? (object)DBNull.Value : Producto.FechaVencimiento);
+                            cmd.Parameters.AddWithValue("@iva", Producto.iva);
+                            cmd.Parameters.AddWithValue("@cb", string.IsNullOrEmpty(Producto.CodigoBarras) ? (object)DBNull.Value : Producto.CodigoBarras);                            
+                            cmd.ExecuteNonQuery();
+                            Console.ForegroundColor = ConsoleColor.DarkCyan;
+                            Console.Write("\n\t" + DateTime.Now + "--");
+                            Console.ForegroundColor = ConsoleColor.White;
+                            Console.WriteLine($"{RetailHUB.usuarioConectado}: Ha Actualizado al producto {Producto.CodigoProducto} - {Producto.Nombre}");
+                            conn.Close();
+                            return "Producto actualizado.";
+                        }
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return e.Message;                
+            }
+        }
+
+        #endregion
 
         #region Proveedor
 
@@ -261,14 +409,15 @@ namespace ServerConsole.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = "INSERT INTO Proveedor(CedulaProveedor,Nombres,Apellidos,Telefono,Ciudad) VALUES " +
-                                                        "(@cedula,@nombre,@apellidos,@telefono,@ciudad);";
+                    string cadena = "INSERT INTO Proveedor(CedulaProveedor,Nombres,Apellidos,Telefono,Ciudad,Direccion) VALUES " +
+                                                        "(@cedula,@nombre,@apellidos,@telefono,@ciudad,@direccion);";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     cmd.Parameters.AddWithValue("@cedula", proveedor.cedula);
                     cmd.Parameters.AddWithValue("@nombre", proveedor.firstName);
                     cmd.Parameters.AddWithValue("@apellidos", proveedor.lastName);
                     cmd.Parameters.AddWithValue("@telefono", proveedor.telefono);
                     cmd.Parameters.AddWithValue("@ciudad", proveedor.ciudad);
+                    cmd.Parameters.AddWithValue("@direccion", proveedor.direccion);
                     conn.Open();
                     cmd.ExecuteNonQuery();
                     string response = insertProductoProveedor(proveedor.cedula, proveedor.productos);
@@ -310,6 +459,10 @@ namespace ServerConsole.Utilities
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
                     conn.Open();
+
+                    string cadena0 = $"delete from ProveedorProducto where CedulaProveedor = '{idProveedor}';";
+                    SqlCommand cmd0 = new SqlCommand(cadena0, conn);
+                    cmd0.ExecuteNonQuery();
                     foreach (ProductoModel producto in productos)
                     {
                         string cadena = "INSERT INTO ProveedorProducto(CedulaProveedor,CodigoProducto) VALUES (@prov,@prod);";
@@ -348,7 +501,7 @@ namespace ServerConsole.Utilities
                 BindableCollection<ProveedorModel> proveedores = new BindableCollection<ProveedorModel>();
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = $"SELECT Distinct * FROM Proveedor WHERE ( CedulaProveedor like '%{Caracteres}%' ) or ( Nombres like '%{Caracteres}%' ) or ( Apellidos like '%{Caracteres}%' )  ";
+                    string cadena = $"SELECT Distinct * FROM Proveedor WHERE ( CedulaProveedor like '%{Caracteres}%' ) or ( Nombres like '%{Caracteres}%' ) or ( Apellidos like '%{Caracteres}%' ) ORDE BY Nombres ";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -362,12 +515,13 @@ namespace ServerConsole.Utilities
                             proveedor.lastName = reader["Apellidos"].ToString();
                             proveedor.telefono = reader["Telefono"].ToString();
                             proveedor.ciudad = reader["Ciudad"].ToString();
+                            proveedor.direccion = reader["Direccion"].ToString();
                             proveedores.Add(proveedor);
                         }
                     }
                     proveedores.Add(new ProveedorModel() { cedula = "-", firstName = "-", lastName = "-prove", ciudad = "separador" });
 
-                    string cadena0 = $"SELECT Distinct Proveedor.CedulaProveedor,Proveedor.Nombres, Proveedor.Apellidos, Proveedor.Telefono, Proveedor.Ciudad FROM proveedor  JOIN ProveedorProducto ON ProveedorProducto.CedulaProveedor = Proveedor.CedulaProveedor JOIN Producto ON ProveedorProducto.CodigoProducto = Producto.CodigoProducto WHERE Producto.Nombre LIKE '%{Caracteres}%';";
+                    string cadena0 = $"SELECT Distinct Proveedor.CedulaProveedor,Proveedor.Nombres, Proveedor.Apellidos, Proveedor.Telefono, Proveedor.Ciudad, Proveedor.Direccion FROM proveedor  JOIN ProveedorProducto ON ProveedorProducto.CedulaProveedor = Proveedor.CedulaProveedor JOIN Producto ON ProveedorProducto.CodigoProducto = Producto.CodigoProducto WHERE Producto.Nombre LIKE '%{Caracteres}%';";
                     SqlCommand cmd0 = new SqlCommand(cadena0, conn);
                     using (SqlDataReader reader0 = cmd0.ExecuteReader())
                     {
@@ -379,6 +533,7 @@ namespace ServerConsole.Utilities
                             proveedor.lastName = reader0["Apellidos"].ToString();
                             proveedor.telefono = reader0["Telefono"].ToString();
                             proveedor.ciudad = reader0["Ciudad"].ToString();
+                            proveedor.direccion = reader0["Direccion"].ToString();
                             proveedores.Add(proveedor);
                         }
                     }
@@ -405,7 +560,7 @@ namespace ServerConsole.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = $"SELECT * FROM Proveedor WHERE CedulaProveedor = '{Cedula}' ";
+                    string cadena = $"SELECT Distinct * FROM Proveedor WHERE CedulaProveedor = '{Cedula}' ORDER BY Nombres";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     ProveedorModel proveedor = new ProveedorModel();
@@ -419,6 +574,7 @@ namespace ServerConsole.Utilities
                             proveedor.lastName = reader["Apellidos"].ToString();
                             proveedor.telefono = reader["Telefono"].ToString();
                             proveedor.ciudad = reader["Ciudad"].ToString();
+                            proveedor.direccion = reader["Direccion"].ToString();
                         }
                     }
 
@@ -490,13 +646,14 @@ namespace ServerConsole.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = "UPDATE Proveedor SET Nombres=@nombre,Apellidos=@apellidos,Telefono=@telefono,Ciudad=@ciudad WHERE CedulaProveedor=@cedula;";
+                    string cadena = "UPDATE Proveedor SET Nombres=@nombre,Apellidos=@apellidos,Telefono=@telefono,Ciudad=@ciudad, Direccion=@direccion WHERE CedulaProveedor=@cedula;";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     cmd.Parameters.AddWithValue("@cedula", proveedor.cedula);
                     cmd.Parameters.AddWithValue("@nombre", proveedor.firstName);
                     cmd.Parameters.AddWithValue("@apellidos", proveedor.lastName);
                     cmd.Parameters.AddWithValue("@telefono", proveedor.telefono);
                     cmd.Parameters.AddWithValue("@ciudad", proveedor.ciudad);
+                    cmd.Parameters.AddWithValue("@direccion", proveedor.direccion);
                     conn.Open();
                     cmd.ExecuteNonQuery();
                     string response = insertProductoProveedor(proveedor.cedula, proveedor.productos);
@@ -526,9 +683,6 @@ namespace ServerConsole.Utilities
         }
 
         #endregion
-
-
-
 
         #region Usuarios
 
@@ -595,7 +749,7 @@ namespace ServerConsole.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = $"SELECT * FROM EMPLEADO WHERE ( CedulaEmpleado like '%{Caracteres}%' ) or ( Nombres like '%{Caracteres}%' ) or ( Apellidos like '%{Caracteres}%' )  ";
+                    string cadena = $"SELECT Distinct * FROM EMPLEADO WHERE ( CedulaEmpleado like '%{Caracteres}%' ) or ( Nombres like '%{Caracteres}%' ) or ( Apellidos like '%{Caracteres}%' ) ORDER BY Nombres  ";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -609,7 +763,7 @@ namespace ServerConsole.Utilities
                             persona.firstName = reader["Nombres"].ToString();
                             persona.lastName = reader["Apellidos"].ToString();
                             persona.fechaDeContratacion = DateTime.Parse(reader["FechaContratacion"].ToString());
-                            persona.salario = Decimal.Parse(reader["Salario"].ToString());
+                            persona.salario = Convert.ToDecimal(reader["Salario"].ToString());
                             persona.telefono = reader["Telefono"].ToString();
                             persona.cargo = reader["Cargo"].ToString();
                             persona.direccion = reader["Direccion"].ToString();
@@ -798,7 +952,7 @@ namespace ServerConsole.Utilities
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
 
-                    string cadena = $"SELECT * FROM PuntoVenta WHERE ( CodigoPuntoVenta like '%{Caracteres}%' ) or ( Nombres like '%{Caracteres}%' ) ";
+                    string cadena = $"SELECT Distinct * FROM PuntoVenta WHERE ( CodigoPuntoVenta like '%{Caracteres}%' ) or ( Nombres like '%{Caracteres}%' ) ORDER BY Nombres ";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -948,7 +1102,7 @@ namespace ServerConsole.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = "SELECT [CodigoPuntoVenta], [Nombres]  FROM PuntoVenta";
+                    string cadena = "SELECT Distinct [CodigoPuntoVenta], [Nombres]  FROM PuntoVenta ORDER BY Nombres";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())

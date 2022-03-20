@@ -1,0 +1,148 @@
+﻿<UserControl x:Class="Client.Main.Views.ProductoEditarBusquedaView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Client.Main.Views"    
+            xmlns:c="clr-namespace:Client.Main.Utilities"
+            xmlns:fa="http://schemas.fontawesome.io/icons/"
+             mc:Ignorable="d" 
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+
+        <!--#region    -->
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="22"/>
+            <Setter Property="FontWeight" Value="DemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="FontSize" Value="50"/>
+        </Style>
+        <!--#endregion-->
+
+    </UserControl.Resources>
+
+    <!--Color de fondo y borde curveado-->
+    <Border Background="#F3E0C2" CornerRadius="10" >
+
+        <!--Grid principal, botones atras y guardar-->
+        <Grid ShowGridLines="False">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.75*"/>
+                <RowDefinition Height="0.25*"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.1*"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="0.1*"/>
+            </Grid.ColumnDefinitions>
+
+            <!--Boton atras-->
+            <Button x:Name="BackButton" Grid.Column="0" Grid.Row="0" Margin="5" Style="{StaticResource GeneralButton}" VerticalAlignment="Top">
+                <fa:ImageAwesome Icon="ArrowLeft" Height="25"/>
+            </Button>
+
+            <!--Sombra inferior-->
+            <Border  Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" BorderBrush="#F3E0C2" BorderThickness="0 0 0 1" Height="50" VerticalAlignment="Bottom" Margin="0 0 10 0">
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="10" Color="#F3E0C2" BlurRadius="5"/>
+                </Border.Effect>
+            </Border>
+
+
+            <!--Formulario principal-->
+            <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9" c:KeyboardFocus.On="{Binding ElementName=LetraCodigo}" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="0">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.35*"/>
+                    <ColumnDefinition Width="0.65*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+
+                </Grid.RowDefinitions>
+
+                <!--Linea 1-->
+                <TextBlock Grid.Row="1" Grid.Column="0" Margin="0 0 0 0">Código:</TextBlock>
+                <TextBlock Grid.Row="1" Grid.Column="1"   x:Name="Codigo" Width="30" HorizontalAlignment="Left" />
+
+                <!--Linea 2-->
+                <TextBlock Grid.Row="2" Grid.Column="0" >Nombre:</TextBlock>
+                <TextBox Grid.Row="2" Grid.Column="1"  Style="{StaticResource GeneralTextBox}" x:Name="Nombre"/>
+
+                <!--Linea 3-->
+                <TextBlock Grid.Row="3" Grid.Column="0">Unidad de Venta:</TextBlock>
+                <ComboBox Template="{StaticResource GeneralComboBox}" Grid.Row="3" Grid.Column="1"  Margin="1" FontWeight="DemiBold" FontSize="12"   SelectedItem="{Binding Path=UnidadVenta}" x:Name="Unidadv">
+                    <ComboBoxItem>Kilogramo (Kg)</ComboBoxItem>
+                    <ComboBoxItem>Unidades (Und)</ComboBoxItem>
+                </ComboBox>
+
+
+
+                <!--linea 4-->
+                <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Bottom">Sección:</TextBlock>
+                <ComboBox Template="{StaticResource GeneralComboBox}" Grid.Row="4" Grid.Column="1" Margin="1" FontWeight="DemiBold" FontSize="12"  SelectedItem="{Binding Path=Seccion}"  x:Name="Section">
+                    <ComboBoxItem>Frutas y verduras</ComboBoxItem>
+                    <ComboBoxItem>Abarrotes</ComboBoxItem>
+                    <ComboBoxItem>Carnes</ComboBoxItem>
+                </ComboBox>
+
+                <!--Linea 5-->
+                <TextBlock Grid.Row="5" Grid.Column="0"  >Vencimiento:</TextBlock>
+                <DatePicker   Style="{DynamicResource date}" Grid.Row="5" Grid.Column="1"   x:Name="FechaVencimiento" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0 2 0 0" FontWeight="DemiBold" />
+
+                <!--Linea 9-->
+                <TextBlock Grid.Row="6" Grid.Column="0" VerticalAlignment="Bottom">I.V.A.:</TextBlock>
+                <StackPanel Grid.Row="6" Grid.Column="1" Orientation="Horizontal" >
+                    <TextBox   Style="{StaticResource GeneralTextBox}" x:Name="IVA" PreviewTextInput="NumberValidationTextBox" Width="40" HorizontalAlignment="Left" MaxLength="3" HorizontalContentAlignment="Center"/>
+                    <TextBlock   Text="%"/>
+                </StackPanel>
+                <!--Linea 10-->
+                <TextBlock Grid.Row="7" Grid.Column="0" VerticalAlignment="Bottom" FontSize="21">Código de barras:</TextBlock>
+                <TextBox  Grid.Row="7" Grid.Column="1" Style="{StaticResource GeneralTextBox}" x:Name="CodigoBarras" PreviewTextInput="NumberValidationTextBox" />
+
+
+
+            </Grid>
+
+            <!--Boton guardar-->
+            <Button Style="{StaticResource GeneralButton}"  Margin="11" Height="50" HorizontalAlignment="Center"  Width="250" Content="    GUARDAR    "  x:Name="Guardar" Grid.Column="1" Grid.Row="1" >
+                <Button.IsEnabled>
+                    <MultiBinding Converter="{StaticResource Converter }" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                        <Binding ElementName="LetraCodigo" Path="(Validation.HasError)" />
+                        <Binding ElementName="NumeroCodigo" Path="(Validation.HasError)" />
+                        <Binding ElementName="Nombre" Path="(Validation.HasError)" />
+                        <Binding ElementName="Unidadv" Path="(Validation.HasError)" />
+                        <Binding ElementName="Section" Path="(Validation.HasError)" />
+                        <Binding ElementName="FechaVencimiento" Path="(Validation.HasError)" />
+                        <Binding ElementName="IVA" Path="(Validation.HasError)" />
+                        <Binding ElementName="CodigoBarras" Path="(Validation.HasError)" />
+                    </MultiBinding>
+                </Button.IsEnabled>
+            </Button>
+
+        </Grid>
+    </Border>
+
+
+
+
+</UserControl>

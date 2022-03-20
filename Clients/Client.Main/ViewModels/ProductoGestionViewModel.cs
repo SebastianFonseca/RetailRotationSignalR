@@ -1,9 +1,11 @@
-﻿using Caliburn.Micro;
+﻿using Autofac;
+using Caliburn.Micro;
 using Client.Main.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace Client.Main.ViewModels
@@ -11,6 +13,7 @@ namespace Client.Main.ViewModels
     class ProductoGestionViewModel : PropertyChangedBase, IDataErrorInfo
     {
         MainWindowViewModel VentanaPrincipal;
+        public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
 
         public ProductoGestionViewModel(MainWindowViewModel argVentana)
         {
@@ -20,7 +23,6 @@ namespace Client.Main.ViewModels
 
 
         private string _buscarTbx;
-
         public string BuscarTbx
         {
             get { return _buscarTbx; }
@@ -35,28 +37,7 @@ namespace Client.Main.ViewModels
             }
         }
 
-        private ProductoModel _usuarioSeleccionado;
-
-        public ProductoModel UsuarioSeleccionado
-        {
-            get { return _usuarioSeleccionado; }
-            set
-            {
-
-                if (value != null)
-                {
-                    seleccion = value;
-                    BuscarTbx = value.codigoProducto + "-" + value.nombre;
-                }
-                _usuarioSeleccionado = value;
-
-                NotifyOfPropertyChange(() => UsuarioSeleccionado);
-            }
-        }
-        ProductoModel seleccion = new ProductoModel();
-
         private BindableCollection<ProductoModel> _busquedas = new BindableCollection<ProductoModel>();
-
         public BindableCollection<ProductoModel> Busquedas
         {
             get
@@ -72,51 +53,60 @@ namespace Client.Main.ViewModels
 
 
 
+        ProductoModel seleccion = new ProductoModel();
 
-        public void Buscar()
+        private ProductoModel _selectedBusquedas = new ProductoModel();
+        public ProductoModel SelectedBusquedas
         {
-            //if (String.IsNullOrEmpty(BuscarTbx))
-            //{
-            //    MessageBox.Show("Escriba un nombre o número de cédula");
-            //}
-            //else
-            //{
-            //    BindableCollection<ProductoModel> resultado /*= DbConnection.getEmpleados(BuscarTbx.Split('-')[0])*/;
+            get { return _selectedBusquedas; }
+            set
+            {
 
-            //    if (resultado.Count == 0)
-            //    {
-            //        MessageBox.Show("Número de cédula, nombre o apellido no resgistrados");
-            //    }
-            //    else
-            //    {
-            //        IEnumerator<ProductoModel> e = resultado.GetEnumerator();
-            //        e.Reset();
-            //        while (e.MoveNext())
-            //        {
-            //            if (e.Current.CodigoProducto == BuscarTbx.Split('-')[0])
-            //            {
-            //                VentanaPrincipal.ActivateItem(new NuevoUsuarioResultadoBusquedaViewModel(VentanaPrincipal, e.Current));
-            //            }
+                if (value != null)
+                {
+                    seleccion = value;
+                    BuscarTbx = value.codigoProducto + "-" + value.nombre;
+                }
+                _selectedBusquedas = value;
 
-
-            //        }
-
-            //        BusquedasVisibilidad = "Visible";
-            //        ComboboxDesplegado = "True";
-            //    }
-
-            //}
-
+                NotifyOfPropertyChange(() => SelectedBusquedas);
+            }
         }
+
 
         public void AgregarProducto()
         {
             VentanaPrincipal.ActivateItem(new ProductoNuevoViewModel(VentanaPrincipal));
         }
 
+        public  void Buscar()
+        {
+            if (String.IsNullOrEmpty( BuscarTbx))
+            {
+                MessageBox.Show("Escriba algun codigo o nombre de producto.");
+            }
+            else if (seleccion.codigoProducto == null)
+            {
+                MessageBox.Show("No se ha encontrado ningun producto.");
+            }
+            else
+            {
+                if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+                {                    
+                    VentanaPrincipal.ActivateItem(new ProductoResultadoBusquedaViewModel(VentanaPrincipal, seleccion));
+                }
+                else
+                {
+                    MessageBox.Show("No es posible realizar la busqueda si no esta conectado al servidor.");
+                }
+            }
+        }
 
-
-
+        public void BackButton()
+        {
+            if (Busquedas.Count != 0) Busquedas.Clear();
+            VentanaPrincipal.ActivateItem(new DC_AdministrativoViewModel(VentanaPrincipal));
+        }
 
         public string Error { get { return null; } }
         int flag = 0;
@@ -131,33 +121,14 @@ namespace Client.Main.ViewModels
                     {
                         if (String.IsNullOrEmpty(BuscarTbx))
                         {
-                            result = "Rellene este campo.";
+                            result = "Escriba algun valor.";
                         }
                     }
                 }
-
                 else { flag += 1; }
-
-
                 return result;
-
             }
         }
-
-
-
-        private string _busquedasVisibiliad = "Hidden";
-
-        public string BusquedasVisibilidad
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(BuscarTbx)) { return "Hidden"; }
-                return _busquedasVisibiliad;
-            }
-            set { _busquedasVisibiliad = value; NotifyOfPropertyChange(() => BusquedasVisibilidad); }
-        }
-
 
         private string _comboboxDesplegado = "false";
 
@@ -171,29 +142,48 @@ namespace Client.Main.ViewModels
             }
         }
 
-
-
-        public void EscribiendoBusqueda()
+        private string _busquedasVisibiliad = "Hidden";
+        public string BusquedasVisibilidad
         {
-
-            //Busquedas = DbConnection.getEmpleados(BuscarTbx);
-            //if (Busquedas == null || Busquedas.Count == 0)
-            //{
-            //    BusquedasVisibilidad = "Hidden";
-            //}
-            //else
-            //{
-            //    BusquedasVisibilidad = "Visible";
-            //    ComboboxDesplegado = "true";
-
-            //}
-
+            get
+            {
+                if (String.IsNullOrEmpty(BuscarTbx)) { return "Hidden"; }
+                return _busquedasVisibiliad;
+            }
+            set { _busquedasVisibiliad = value; NotifyOfPropertyChange(() => BusquedasVisibilidad); }
+        }
+        public async void EscribiendoBusqueda()
+        {
+            try
+            {
+                if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+                {
+                    Task<object> re = conexion.CallServerMethod("ServidorGetProductos", Arguments: new[] { BuscarTbx });
+                    await re;
+                    Busquedas = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ProductoModel>>(re.Result.ToString());                    
+                    if (Busquedas.Count == 0 )
+                    {
+                        ComboboxDesplegado = "false";
+                        BusquedasVisibilidad = "Hidden";
+                    }
+                    else
+                    {
+                        BusquedasVisibilidad = "Visible";
+                        ComboboxDesplegado = "true";
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("No es posible realizar la busqueda si no esta conectado al servidor.");
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
         }
 
 
 
-
-    
-
-}
+    }
 }

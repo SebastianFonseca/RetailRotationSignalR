@@ -1,0 +1,138 @@
+﻿<UserControl x:Class="Client.Main.Views.ProductoResultadoBusquedaView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Client.Main.Views"    
+             xmlns:c="clr-namespace:Client.Main.Utilities"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             mc:Ignorable="d" 
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+
+        <!--#region    -->
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="22"/>
+            <Setter Property="FontWeight" Value="DemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="FontSize" Value="50"/>
+        </Style>
+        <!--#endregion-->
+
+    </UserControl.Resources>
+
+    <!--Color de fondo y borde curveado-->
+    <Border Background="#F3E0C2" CornerRadius="10" >
+
+        <!--Grid principal, botones atras y guardar-->
+        <Grid ShowGridLines="False">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.75*"/>
+                <RowDefinition Height="0.25*"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.1*"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="0.1*"/>
+            </Grid.ColumnDefinitions>
+
+            <!--Boton atras-->
+            <Button x:Name="BackButton" Grid.Column="0" Grid.Row="0" Margin="5" Style="{StaticResource GeneralButton}" VerticalAlignment="Top">
+                <fa:ImageAwesome Icon="ArrowLeft" Height="25"/>
+            </Button>
+
+            <!--Sombra inferior-->
+            <Border  Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" BorderBrush="#F3E0C2" BorderThickness="0 0 0 1" Height="50" VerticalAlignment="Bottom" Margin="0 0 10 0">
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="10" Color="#F3E0C2" BlurRadius="5"/>
+                </Border.Effect>
+            </Border>
+
+
+            <!--Formulario principal-->
+            <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9" c:KeyboardFocus.On="{Binding ElementName=LetraCodigo}" HorizontalAlignment="Center" Grid.Column="1" Grid.Row="0">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.4*"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="0.55*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+
+                </Grid.RowDefinitions>
+
+                <!--Linea 1-->
+                <TextBlock Grid.Row="1" Grid.Column="0" Margin="0 0 0 -3">Código:</TextBlock>
+                <TextBlock  x:Name="Codigo" Width="60"  TextAlignment="Left" HorizontalAlignment="Left" FontWeight="Normal" Grid.Row="1" Grid.Column="2"/>
+                    
+               
+                <!--Linea 2-->
+                <TextBlock Grid.Row="2" Grid.Column="0" >Nombre:</TextBlock>
+                <TextBlock Grid.Row="2" Grid.Column="2"  x:Name="Nombre" HorizontalAlignment="Left" FontWeight="Normal"/>
+
+                <!--Linea 3-->
+                <TextBlock Grid.Row="3" Grid.Column="0">Unidad de Venta:</TextBlock>
+                <TextBlock x:Name="UnidadVenta" HorizontalAlignment="Left" FontWeight="Normal" Grid.Row="3" Grid.Column="2"  />
+
+                <!--linea 4-->
+                <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Bottom">Sección:</TextBlock>
+                <TextBlock x:Name="Seccion" HorizontalAlignment="Left" FontWeight="Normal" Grid.Row="4" Grid.Column="2"  />
+   
+                <!--Linea 5-->
+                <TextBlock Grid.Row="5" Grid.Column="0"  >Vencimiento:</TextBlock>
+                <TextBlock x:Name="FechaVencimiento" HorizontalAlignment="Left" FontWeight="Normal" Grid.Row="5" Grid.Column="2"  />
+                
+                <!--Linea 9-->
+                <TextBlock Grid.Row="6" Grid.Column="0" VerticalAlignment="Bottom">I.V.A.:</TextBlock>
+                <StackPanel Grid.Row="6" Grid.Column="2" Orientation="Horizontal" >
+                    <TextBlock    x:Name="iva" Width="40" HorizontalAlignment="Center"  FontWeight="Normal"/>
+                    <TextBlock   Text="%"/>
+                </StackPanel>
+                <!--Linea 10-->
+                <TextBlock Grid.Row="7" Grid.Column="0" VerticalAlignment="Bottom" FontSize="21">Código de barras:</TextBlock>
+                <TextBlock  Grid.Row="7" Grid.Column="2"  x:Name="CodigoBarras"  HorizontalAlignment="Left" FontWeight="Normal"/>
+
+
+
+            </Grid>
+
+            <!--Boton guardar-->
+            <Grid Grid.Column="1" Grid.Row="1" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.9*"/>
+                    <ColumnDefinition Width="1.4*"/>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0" Style="{StaticResource GeneralButton}"  Margin="11" Height="50" HorizontalAlignment="Stretch"   Content="EDITAR INFORMACION"  x:Name="EditarInformacion" />
+                <Button Grid.Column="1"  Style="{StaticResource GeneralButton}"  Margin="11" Height="50" HorizontalAlignment="Stretch"   Content="EDITAR PRECIO"  x:Name="EditarPrecio" />
+                <Button Grid.Column="2"  Style="{StaticResource GeneralButton}"  Margin="11" Height="50" HorizontalAlignment="Stretch"   Content="ELIMINAR"  x:Name="Eliminar" />
+          
+            </Grid>
+        </Grid>
+    </Border>
+
+
+
+
+</UserControl>

@@ -16,8 +16,8 @@ namespace Client.Main.Models
         /// </summary>
         public decimal precioVenta { get; set; } = 0;
         public string seccion { get; set; }
-        public DateTime fechaVencimiento { get; set; } = DateTime.Now;
-        public decimal  iVA { get; set; }
+        public DateTime fechaVencimiento { get; set; } = DateTime.Today;
+        public decimal  iva { get; set; }
         public string codigoBarras { get; set; }
 
         bool _isSelected;

@@ -147,10 +147,7 @@ namespace Client.Main.ViewModels
             }
         }
 
-
-
         private string _busquedasVisibiliad = "Hidden";
-
         public string BusquedasVisibilidad
         {
             get
@@ -160,7 +157,6 @@ namespace Client.Main.ViewModels
             }
             set { _busquedasVisibiliad = value; NotifyOfPropertyChange(() => BusquedasVisibilidad); }
         }
-
         public async void EscribiendoBusqueda()
         {
             try
@@ -191,17 +187,33 @@ namespace Client.Main.ViewModels
                         }
                         else
                         {
-                            for (int i = 0; i <= proveedores.Count; i++)
+                            //for (int i = 0; i <= proveedores.Count; i++)
+                            //{
+                            //    if (proveedores[0].ciudad == "separador")
+                            //    {
+                            //        proveedores.RemoveAt(0);
+                            //        break;
+                            //    }
+                            //    Busquedas.Add(proveedores[0]);
+                            //    proveedores.RemoveAt(0);
+
+                            //}
+                            //foreach (ProveedorModel proveedor in proveedores)
+                            //{
+                            //    if (proveedor.ciudad == "separador")
+                            //    {
+                            //        proveedores.RemoveAt(0);
+                            //        break;
+                            //    }
+                            //    Busquedas.Add(proveedores[0]);
+                            //    proveedores.RemoveAt(0);
+                            //}
+                            while (proveedores[0].ciudad != "separador")
                             {
-                                if (proveedores[0].ciudad == "separador")
-                                {
-                                    proveedores.RemoveAt(0);
-                                    break;
-                                }
                                 Busquedas.Add(proveedores[0]);
                                 proveedores.RemoveAt(0);
-
                             }
+                            proveedores.RemoveAt(0);
                             BusquedasProducto = proveedores;
                         }
                     }                    

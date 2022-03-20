@@ -3,56 +3,35 @@ using Caliburn.Micro;
 using Client.Main.Models;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
 namespace Client.Main.ViewModels
 {
-    class ProductoNuevoViewModel : Screen, IDataErrorInfo 
+    public class ProductoEditarBusquedaViewModel: Screen
     {
-        public MainWindowViewModel VentanaPrincipal;
-        ProductoModel Producto = new ProductoModel();
+        MainWindowViewModel VentanaPrincipal;
         public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
-
-        public ProductoNuevoViewModel(MainWindowViewModel argVentana)
+        ProductoModel Producto = new ProductoModel();
+        public ProductoEditarBusquedaViewModel(MainWindowViewModel argVentana, ProductoModel prod)
         {
             VentanaPrincipal = argVentana;
-            
+            Producto = prod;
+
         }
 
-
-        string _letraCodigo;
-        public string LetraCodigo
+       
+        public string Codigo
         {
-            get { return _letraCodigo; }
-            set 
-            { 
-                _letraCodigo = value;
-                NotifyOfPropertyChange(() => LetraCodigo);
-            }
+            get { return Producto.codigoProducto; }  
         }
-
-
-        string _numeroCodigo;
-        public string NumeroCodigo
-        {
-            get { return _numeroCodigo; }
-            set
-            { 
-                _numeroCodigo = value;
-                NotifyOfPropertyChange(() => NumeroCodigo);
-
-            }
-        }
-
 
         public string Nombre
         {
             get { return Producto.nombre; }
             set
-            { 
+            {
                 Producto.nombre = value;
                 NotifyOfPropertyChange(() => Nombre);
 
@@ -73,9 +52,9 @@ namespace Client.Main.ViewModels
         public string Seccion
         {
             get { return Producto.seccion; }
-            set 
-            { 
-                Producto.seccion = value.Substring(38) ;
+            set
+            {
+                Producto.seccion = value.Substring(38);
                 NotifyOfPropertyChange(() => Seccion);
 
             }
@@ -85,7 +64,7 @@ namespace Client.Main.ViewModels
         {
             get { return Producto.fechaVencimiento; }
             set
-            { 
+            {
                 Producto.fechaVencimiento = value;
                 NotifyOfPropertyChange(() => FechaVencimiento);
 
@@ -94,8 +73,8 @@ namespace Client.Main.ViewModels
         public decimal IVA
         {
             get { return Producto.iva; }
-            set 
-            { 
+            set
+            {
                 Producto.iva = value;
             }
         }
@@ -108,15 +87,13 @@ namespace Client.Main.ViewModels
 
         public void BackButton()
         {
-            VentanaPrincipal.ActivateItem(new ProductoGestionViewModel(VentanaPrincipal));
+            VentanaPrincipal.ActivateItem(new ProductoResultadoBusquedaViewModel(VentanaPrincipal, Producto));
         }
 
 
         public async void Guardar()
         {
-            Producto.codigoProducto = LetraCodigo + NumeroCodigo;
-            //DbConnection.SincronizarReplicacionMerge();
-            if (!string.IsNullOrWhiteSpace(LetraCodigo) && !string.IsNullOrWhiteSpace(NumeroCodigo) && !string.IsNullOrWhiteSpace(Producto.codigoProducto) && !string.IsNullOrWhiteSpace(Producto.nombre) &&
+            if ( !string.IsNullOrWhiteSpace(Producto.codigoProducto) && !string.IsNullOrWhiteSpace(Producto.nombre) &&
                 !string.IsNullOrWhiteSpace(Producto.unidadVenta) && !string.IsNullOrWhiteSpace(Producto.seccion))
             {
                 if (string.IsNullOrEmpty(Producto.codigoBarras))
@@ -131,39 +108,20 @@ namespace Client.Main.ViewModels
                 {
                     if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
                     {
-                        Task<object> re = conexion.CallServerMethod("ServidorNuevoProducto", Arguments: new[] { Producto });
+                        Task<object> re = conexion.CallServerMethod("ServidorActualizarProducto", Arguments: new[] { Producto });
                         await re;
-                        if ((re.Result.ToString()) == "Codigo de producto ya registrado.")
-                        {
-                            MessageBox.Show($"Codigo de producto ya registrado.");
-                            LetraCodigo = "";
-                            NumeroCodigo = "";
-                            return;
-                        }
-                        if ((re.Result.ToString()) == "Codigo de barras ya registrado.")
-                        {
-                            MessageBox.Show($"Codigo de barras ya registrado.");
-                            CodigoBarras = "";
-                            return;
-                        }
-                        if ((re.Result.ToString()) == "Nombre de producto ya registrado.")
-                        {
-                            MessageBox.Show($"Nombre de producto ya registrado.");
-                            Nombre = "";
-                            return;
-                        }
 
-                        if ((re.Result.ToString()).Substring(0,10) == "El usuario")
+                        if (re.Result.ToString() == "Producto actualizado.")
                         {
                             MessageBox.Show(re.Result.ToString());
-                            VentanaPrincipal.ActivateItem(new ProductoNuevoViewModel(VentanaPrincipal));
+                            VentanaPrincipal.ActivateItem(new ProductoResultadoBusquedaViewModel(VentanaPrincipal, Producto));
                             return;
                         }
                         MessageBox.Show(re.Result.ToString());
                     }
                     else
                     {
-                        MessageBox.Show("Para agregar un nuevo producto debe estar conectado al servidor.");
+                        MessageBox.Show("Para editar la informacion de un producto debe estar conectado al servidor.");
                     }
                 }
                 catch (Exception e)
@@ -184,23 +142,9 @@ namespace Client.Main.ViewModels
             get
             {
                 string result = null;
-                if (flag == 8)
+                if (flag == 6)
                 {
-                    if (name == "LetraCodigo")
-                    {
-                        if (String.IsNullOrEmpty(LetraCodigo))
-                        {
-                            result = "Este campo no puede estar vacío.";
-                        }
-                    }
-                    else if (name == "NumeroCodigo")
-                    {
-                        if (String.IsNullOrEmpty(NumeroCodigo))
-                        {
-                            result = "Este campo no puede estar vacío.";
-                        }
-                    }
-                    else if (name == "Nombre")
+                    if (name == "Nombre")
                     {
                         if (String.IsNullOrEmpty(Nombre))
                         {
@@ -223,14 +167,14 @@ namespace Client.Main.ViewModels
                     }
                     else if (name == "FechaVencimiento")
                     {
-                        if (String.IsNullOrEmpty(FechaVencimiento.ToString()) | (FechaVencimiento < DateTime.Today ))
+                        if (String.IsNullOrEmpty(FechaVencimiento.ToString()) | (FechaVencimiento < DateTime.Today))
                         {
                             result = "Verifique la fecha ingresada.";
                         }
                     }
                     else if (name == "IVA")
                     {
-                        if ( IVA > 100 )
+                        if (IVA > 100)
                         {
                             result = "Este valor no puede ser mayor a 100%.";
                         }
@@ -240,5 +184,10 @@ namespace Client.Main.ViewModels
                 return result;
             }
         }
+
+
+
+
+
     }
 }

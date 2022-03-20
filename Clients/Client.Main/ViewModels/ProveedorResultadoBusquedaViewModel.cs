@@ -116,7 +116,6 @@ namespace Client.Main.ViewModels
         public void Editar()
         {
             VentanaPrincipal.ActivateItem(new ProveedorEditarBusquedaViewModel(VentanaPrincipal, proveedorEncontrado));
-
         }
 
         public async void Eliminar()
@@ -156,9 +155,6 @@ namespace Client.Main.ViewModels
                 MessageBox.Show(e.Message);
             }
             
-
-
-
         }
 
         public void BackButton()
