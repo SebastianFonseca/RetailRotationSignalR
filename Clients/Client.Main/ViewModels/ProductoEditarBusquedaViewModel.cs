@@ -62,7 +62,13 @@ namespace Client.Main.ViewModels
 
         public DateTime FechaVencimiento
         {
-            get { return Producto.fechaVencimiento; }
+            get
+            {
+                if (Producto.fechaVencimiento == DateTime.MinValue)
+                    return DateTime.Now;
+
+                return Producto.fechaVencimiento; 
+            }
             set
             {
                 Producto.fechaVencimiento = value;
@@ -87,7 +93,7 @@ namespace Client.Main.ViewModels
 
         public void BackButton()
         {
-            VentanaPrincipal.ActivateItem(new ProductoResultadoBusquedaViewModel(VentanaPrincipal, Producto));
+            VentanaPrincipal.ActivateItem(new ProductoGestionViewModel(VentanaPrincipal));
         }
 
 
@@ -111,6 +117,18 @@ namespace Client.Main.ViewModels
                         Task<object> re = conexion.CallServerMethod("ServidorActualizarProducto", Arguments: new[] { Producto });
                         await re;
 
+                        if ((re.Result.ToString()) == "Codigo de barras ya registrado.")
+                        {
+                            MessageBox.Show($"Codigo de barras ya registrado.");
+                            CodigoBarras = "";
+                            return;
+                        }
+                        if ((re.Result.ToString()) == "Nombre de producto ya registrado.")
+                        {
+                            MessageBox.Show($"Nombre de producto ya registrado.");
+                            Nombre = "";
+                            return;
+                        }
                         if (re.Result.ToString() == "Producto actualizado.")
                         {
                             MessageBox.Show(re.Result.ToString());
@@ -167,7 +185,7 @@ namespace Client.Main.ViewModels
                     }
                     else if (name == "FechaVencimiento")
                     {
-                        if (String.IsNullOrEmpty(FechaVencimiento.ToString()) | (FechaVencimiento < DateTime.Today))
+                        if (FechaVencimiento < DateTime.Today)
                         {
                             result = "Verifique la fecha ingresada.";
                         }

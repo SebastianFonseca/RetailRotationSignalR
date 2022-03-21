@@ -45,7 +45,7 @@ namespace Client.Main.ViewModels
             {
                 //if (MainWindowViewModel.Status == "Conectado al servidor")
                 //{               
-                    VentanaPrincipal.ActivateItem(new DC_AdministrativoViewModel(VentanaPrincipal));
+                    VentanaPrincipal.ActivateItem(new GerenciaAdministrativoViewModel(VentanaPrincipal));
                 //}
                 //else
                 //{
@@ -79,6 +79,7 @@ namespace Client.Main.ViewModels
 
         public void Inventario()
         {
+            VentanaPrincipal.ActivateItem(new AdministracionInventarioViewModel(VentanaPrincipal));
 
         }
         #endregion

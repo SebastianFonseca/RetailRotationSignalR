@@ -14,18 +14,13 @@ using System.Windows.Shapes;
 namespace Client.Main.Views
 {
     /// <summary>
-    /// Interaction logic for DC_AdministrativoView.xaml
+    /// Interaction logic for AdministracionInventarioView.xaml
     /// </summary>
-    public partial class DC_AdministrativoView : UserControl
+    public partial class AdministracionInventarioView : UserControl
     {
-        public DC_AdministrativoView()
+        public AdministracionInventarioView()
         {
             InitializeComponent();
-        }
-
-        private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-
         }
     }
 }

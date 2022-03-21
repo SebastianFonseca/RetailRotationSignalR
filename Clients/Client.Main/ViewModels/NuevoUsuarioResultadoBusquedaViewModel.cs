@@ -216,7 +216,7 @@ namespace Client.Main.ViewModels
         public void BackButton()
         {
             
-            VentanaPrincipal.ActivateItem(new BuscarUsuarioViewModel(VentanaPrincipal));
+            VentanaPrincipal.ActivateItem(new NuevoUsuarioBusquedaViewModel(VentanaPrincipal));
         }
 
 

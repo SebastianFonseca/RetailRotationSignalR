@@ -339,26 +339,28 @@ namespace ServerConsole.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena1 = "SELECT * FROM Producto where [codigoBarras]=@codigob";
+                    string cadena1 = $"select * from Producto where CodigoBarras = @codigob except select * from Producto where CodigoProducto = '{Producto.CodigoProducto}'";
                     SqlCommand cmd1 = new SqlCommand(cadena1, conn);
                     cmd1.Parameters.AddWithValue("@codigob", Producto.CodigoBarras);
                     conn.Open();
                     using (SqlDataReader reader1 = cmd1.ExecuteReader())
-                    {
+                    {                        
                         if (reader1.HasRows)
                         {
                             conn.Close();
+                            reader1.Close();
                             return "Codigo de barras ya registrado.";
                         }
                     }
-                    string cadena2 = "SELECT *  FROM Producto where [Nombre]=@nombre";
+                    string cadena2 = $"select * from Producto where Nombre = @nombre except select * from Producto where CodigoProducto = '{Producto.CodigoProducto}'";
                     SqlCommand cmd2 = new SqlCommand(cadena2, conn);
                     cmd2.Parameters.AddWithValue("@nombre", Producto.Nombre);
                     using (SqlDataReader reader = cmd2.ExecuteReader())
-                    {
+                    {                      
                         if (reader.HasRows)
                         {
                             conn.Close();
+                            reader.Close();
                             return "Nombre de producto ya registrado.";
                         }
                         else

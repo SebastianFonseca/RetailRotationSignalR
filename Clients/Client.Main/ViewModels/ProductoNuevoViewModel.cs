@@ -223,7 +223,7 @@ namespace Client.Main.ViewModels
                     }
                     else if (name == "FechaVencimiento")
                     {
-                        if (String.IsNullOrEmpty(FechaVencimiento.ToString()) | (FechaVencimiento < DateTime.Today ))
+                        if (FechaVencimiento < DateTime.Today )
                         {
                             result = "Verifique la fecha ingresada.";
                         }

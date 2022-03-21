@@ -122,7 +122,7 @@ namespace Client.Main.ViewModels
         {
             if(Busquedas.Count != 0) Busquedas.Clear();
             if(BusquedasProducto.Count != 0) BusquedasProducto.Clear();
-            VentanaPrincipal.ActivateItem(new DC_AdministrativoViewModel(VentanaPrincipal));
+            VentanaPrincipal.ActivateItem(new GerenciaAdministrativoViewModel(VentanaPrincipal));
         }
 
         public string Error { get { return null; } }

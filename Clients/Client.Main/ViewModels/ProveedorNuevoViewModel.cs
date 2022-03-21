@@ -158,7 +158,7 @@ namespace Client.Main.ViewModels
         public void BackButton()
         {
             Productos.Clear();
-            VentanaPrincipal.ActivateItem(new DC_AdministrativoViewModel(VentanaPrincipal));
+            VentanaPrincipal.ActivateItem(new GerenciaAdministrativoViewModel(VentanaPrincipal));
         }
 
         public async void Guardar()

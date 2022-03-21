@@ -147,7 +147,7 @@ namespace Client.Main.ViewModels
         public void BackButton()
         {
 
-            VentanaPrincipal.ActivateItem(new DC_AdministrativoViewModel(VentanaPrincipal));
+            VentanaPrincipal.ActivateItem(new GerenciaAdministrativoViewModel(VentanaPrincipal));
             Busquedas.Clear();
         }
 

@@ -14,13 +14,18 @@ using System.Windows.Shapes;
 namespace Client.Main.Views
 {
     /// <summary>
-    /// Interaction logic for BuscarUsuarioView.xaml
+    /// Interaction logic for DC_AdministrativoView.xaml
     /// </summary>
-    public partial class BuscarUsuarioView : UserControl
+    public partial class GerenciaAdministrativoView : UserControl
     {
-        public BuscarUsuarioView()
+        public GerenciaAdministrativoView()
         {
             InitializeComponent();
+        }
+
+        private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+
         }
     }
 }

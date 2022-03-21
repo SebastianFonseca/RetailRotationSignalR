@@ -6,12 +6,12 @@ using System.Windows;
 
 namespace Client.Main.ViewModels
 {
-    class DC_AdministrativoViewModel : Screen
+    class GerenciaAdministrativoViewModel : Screen
     {
 
         MainWindowViewModel VentanaPrincipal;
 
-        public DC_AdministrativoViewModel(MainWindowViewModel argVentana)
+        public GerenciaAdministrativoViewModel(MainWindowViewModel argVentana)
         {
             VentanaPrincipal = argVentana;
         }
@@ -33,7 +33,7 @@ namespace Client.Main.ViewModels
         }
         public void BuscarUsuario()
         {
-            VentanaPrincipal.ActivateItem(new BuscarUsuarioViewModel(VentanaPrincipal));
+            VentanaPrincipal.ActivateItem(new NuevoUsuarioBusquedaViewModel(VentanaPrincipal));
 
         }
 

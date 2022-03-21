@@ -13,14 +13,14 @@ using System.Windows.Input;
 
 namespace Client.Main.ViewModels
 {
-    class BuscarUsuarioViewModel : PropertyChangedBase, IDataErrorInfo
+    class NuevoUsuarioBusquedaViewModel : PropertyChangedBase, IDataErrorInfo
     {
-	        
+
 
         MainWindowViewModel VentanaPrincipal;
         public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
 
-        public BuscarUsuarioViewModel(MainWindowViewModel argVentana)
+        public NuevoUsuarioBusquedaViewModel(MainWindowViewModel argVentana)
         {
             VentanaPrincipal = argVentana;
         }
@@ -49,16 +49,16 @@ namespace Client.Main.ViewModels
             get { return _usuarioSeleccionado; }
             set
             {
-               
+
                 //BusquedasVisibilidad = "Hidden";
                 if (value != null)
                 {
                     seleccion = value;
-                    BuscarTbx = value.cedula +"-" +value.firstName + " " + value.lastName;
+                    BuscarTbx = value.cedula + "-" + value.firstName + " " + value.lastName;
                 }
                 _usuarioSeleccionado = value;
-                
-                NotifyOfPropertyChange(() => UsuarioSeleccionado);  
+
+                NotifyOfPropertyChange(() => UsuarioSeleccionado);
             }
         }
         EmpleadoModel seleccion = new EmpleadoModel();
@@ -122,9 +122,9 @@ namespace Client.Main.ViewModels
                                     VentanaPrincipal.ActivateItem(new NuevoUsuarioResultadoBusquedaViewModel(VentanaPrincipal, e.Current));
                                 }
 
-                        
+
                             }
-  
+
                             BusquedasVisibilidad = "Visible";
                             ComboboxDesplegado = "True";
                         }
@@ -148,15 +148,15 @@ namespace Client.Main.ViewModels
             }
 
 
-            
 
-        
+
+
         }
 
         public void BackButton()
         {
 
-            VentanaPrincipal.ActivateItem(new DC_AdministrativoViewModel(VentanaPrincipal));
+            VentanaPrincipal.ActivateItem(new GerenciaAdministrativoViewModel(VentanaPrincipal));
             Busquedas.Clear();
         }
 
@@ -241,7 +241,7 @@ namespace Client.Main.ViewModels
                     {
                         BusquedasVisibilidad = "Visible";
                         ComboboxDesplegado = "true";
-                
+
                     }
                 }
                 else
@@ -262,8 +262,8 @@ namespace Client.Main.ViewModels
 
         }
 
-    
-  
+
+
 
     }
 

@@ -194,7 +194,7 @@ namespace Client.Main.ViewModels
         public void BackButton()
         {
             _administradores.Clear();
-            VentanaPrincipal.ActivateItem(new DC_AdministrativoViewModel(VentanaPrincipal));
+            VentanaPrincipal.ActivateItem(new GerenciaAdministrativoViewModel(VentanaPrincipal));
         }
 
         public string Error { get { return null; } }
