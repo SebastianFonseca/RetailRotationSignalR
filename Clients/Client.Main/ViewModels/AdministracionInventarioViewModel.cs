@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using Client.Main.Views;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,10 +14,11 @@ namespace Client.Main.ViewModels
             VentanaPrincipal = argVentana;
         }
 
-        public void NuevoLocal()
+        public void NuevaExistencia()
         {
-            VentanaPrincipal.ActivateItem(new LocalNuevoViewModel(VentanaPrincipal));
+            VentanaPrincipal.ActivateItem(new ExistenciasNuevoViewModel(VentanaPrincipal));
         }
+
 
 
     }

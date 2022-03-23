@@ -220,7 +220,7 @@ namespace ServerConsole.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = "SELECT [CodigoProducto], [Nombre]  FROM Producto ORDER BY Nombre";
+                    string cadena = "SELECT *  FROM Producto ORDER BY Nombre";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -229,7 +229,21 @@ namespace ServerConsole.Utilities
                         {
                             ProductoModel producto = new ProductoModel();
                             producto.CodigoProducto = reader["CodigoProducto"].ToString();
-                            producto.Nombre = reader["Nombre"].ToString();
+                            producto.Nombre = reader["Nombre"].ToString();                            
+                            producto.UnidadCompra = reader["UnidadCompra"].ToString();
+                            producto.UnidadCompra = reader["UnidadVenta"].ToString();
+                            producto.PrecioVenta = Convert.ToDecimal(reader["PrecioVenta"].ToString());
+                            producto.Seccion = reader["Seccion"].ToString();
+                            producto.iva = Convert.ToDecimal(reader["IVA"].ToString());
+                            producto.CodigoBarras = reader["CodigoBarras"].ToString();
+                            if (reader["FechaVencimiento"].ToString() == "")
+                            {
+                                producto.FechaVencimiento = DateTime.MinValue;
+                            }
+                            else
+                            {
+                                producto.FechaVencimiento = DateTime.Parse(reader["FechaVencimiento"].ToString());
+                            }
                             productos.Add(producto);
                         }
                     }
@@ -238,9 +252,9 @@ namespace ServerConsole.Utilities
                     return productos;
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
+                Console.WriteLine(e.Message);
                 return null;
             }
 

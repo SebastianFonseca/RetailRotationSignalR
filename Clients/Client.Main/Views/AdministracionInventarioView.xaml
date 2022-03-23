@@ -86,7 +86,7 @@
         <Border Style="{StaticResource MainOptions}" Grid.Column="0">
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Panel.ZIndex="0">
-                    <fa:ImageAwesome Icon="DotCircleOutline" Height="30" Grid.Row="0" VerticalAlignment="Bottom"/>
+                    <fa:ImageAwesome Icon="listul" Height="30" Grid.Row="0" VerticalAlignment="Bottom"/>
                     <TextBlock Margin="5"  Text="Existencias" FontSize="29" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center"/>
                 </StackPanel>
                 <Grid Panel.ZIndex="1"  Style="{StaticResource Submenu}" Opacity="0">
@@ -101,7 +101,7 @@
                             </Style>
                         </Button.Resources>
                     </Button>
-                    <Button Margin="0" Content="Buscar" FontSize="15"  HorizontalAlignment="Stretch" Grid.Row="1" Style="{StaticResource OptionsSubMenu}" x:Name="BuscarExistencia" >
+                    <Button Margin="0" Content="Anteriores" FontSize="15"  HorizontalAlignment="Stretch" Grid.Row="1" Style="{StaticResource OptionsSubMenu}" x:Name="BuscarExistencia" >
                         <Button.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="0 0 20 20"/>
@@ -118,19 +118,26 @@
         <Border Style="{StaticResource MainOptions}" Grid.Column="1">
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Panel.ZIndex="0">
-                    <fa:ImageAwesome Icon="ListUl" Height="30" Grid.Row="0" VerticalAlignment="Bottom"/>
+                    <fa:ImageAwesome Icon="CartPlus" Height="30" Grid.Row="0" VerticalAlignment="Bottom"/>
                     <TextBlock Margin="5"  Text="Pedido" FontSize="29" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center"/>
 
                 </StackPanel>
                 <Grid Panel.ZIndex="1"  Style="{StaticResource Submenu}" Opacity="0">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
-                     
+                        <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Button Margin="0" Content="Nuevo" FontSize="15" HorizontalAlignment="Stretch"  HorizontalContentAlignment="Center" Grid.Row="0" Style="{StaticResource OptionsSubMenu}" x:Name="NuevoPedido">
                         <Button.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="20 20 0 0"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                    <Button Margin="0" Content="Anteriores" FontSize="15"  HorizontalAlignment="Stretch" Grid.Row="1" Style="{StaticResource OptionsSubMenu}" x:Name="BuscarPedido" >
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="0 0 20 20"/>
                             </Style>
                         </Button.Resources>
                     </Button>
@@ -144,12 +151,13 @@
         <Border Style="{StaticResource MainOptions}" Grid.Column="2">
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Panel.ZIndex="0">
-                    <fa:ImageAwesome Icon="ArrowCircleDown" Height="30"/>
+                    <fa:ImageAwesome Icon="CheckSquareOutline" Height="30"/>
                     <TextBlock Margin="5"  Text="Recibido" FontSize="24"/>
 
                 </StackPanel>
                 <Grid Panel.ZIndex="1"  Style="{StaticResource Submenu}" Opacity="0">
                     <Grid.RowDefinitions>
+                        <RowDefinition/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Button Margin="0" Content="Nuevo" FontSize="15" HorizontalAlignment="Stretch"  HorizontalContentAlignment="Center" Grid.Row="0" Style="{StaticResource OptionsSubMenu}" x:Name="NuevoRecibido">
@@ -159,6 +167,14 @@
                             </Style>
                         </Button.Resources>
                     </Button>
+                    <Button Margin="0" Content="Anteriores" FontSize="15"  HorizontalAlignment="Stretch" Grid.Row="1" Style="{StaticResource OptionsSubMenu}" x:Name="BuscarRecibido" >
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="0 0 20 20"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                    
                 </Grid>
 
             </Grid>

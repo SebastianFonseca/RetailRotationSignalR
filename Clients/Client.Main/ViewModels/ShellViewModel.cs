@@ -23,8 +23,10 @@ namespace Client.Main.ViewModels
     {
         ///Objeto responsable de la administracion de las ventanas.
         private readonly IWindowManager window = new WindowManager();
+
         ///Clase responsable de la conexion al servidor obteniendo la instanca unica (Autofac) 
         public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
+
         ///Propiedades enlazadas con el textbox y el passwordbox  de la vista.
         private static string _user;
         public  string User
@@ -185,14 +187,14 @@ namespace Client.Main.ViewModels
                     {
                         if (String.IsNullOrEmpty(User))
                         {
-                            result = "Este campo no puede estar vacío.";
+                            result = "Escriba un usuario.";
                         }
                     }
                     else if (name == "UserPassword")
                     {
                         if (String.IsNullOrEmpty(UserPassword))
                         {
-                            result = "Este campo no puede estar vacío.";
+                            result = "Escriba una contaseña.";
                         }
                     }
                  
