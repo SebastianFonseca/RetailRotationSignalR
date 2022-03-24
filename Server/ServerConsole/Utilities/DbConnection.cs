@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Configuration;
-using System.Collections.Specialized;
-using System.Data;
-using System.Data.SqlClient;
-using Dapper;
+﻿using Caliburn.Micro;
 using ServerConsole.Models;
-using Caliburn.Micro;
+using System;
+using System.Configuration;
+using System.Data.SqlClient;
 
 namespace ServerConsole.Utilities
 {
@@ -24,7 +19,7 @@ namespace ServerConsole.Utilities
         /// <param name="User">Usuario</param>
         /// <param name="Password">Contraseña</param>
         /// <returns></returns>
-        public static String[] Login(string User, string Password)
+        public static object[] Login(string User, string Password)
         {
             try
             {
@@ -41,7 +36,18 @@ namespace ServerConsole.Utilities
                         {
                             if (Statics.Verify(Password, reader["Password"].ToString()))
                             {
-                                return new[] {"Registrado", reader["Cargo"].ToString() };
+                                EmpleadoModel persona = new EmpleadoModel();
+                                persona.cedula = reader["CedulaEmpleado"].ToString();
+                                persona.puntoDeVenta.codigo = reader["CodigoPuntoVenta"].ToString();
+                                persona.firstName = reader["Nombres"].ToString();
+                                persona.lastName = reader["Apellidos"].ToString();
+                                persona.fechaDeContratacion = DateTime.Parse(reader["FechaContratacion"].ToString());
+                                persona.salario = Convert.ToDecimal(reader["Salario"].ToString());
+                                persona.telefono = reader["Telefono"].ToString();
+                                persona.cargo = reader["Cargo"].ToString();
+                                persona.direccion = reader["Direccion"].ToString();
+
+                                return new object[] { "Registrado", persona };
                             }
                         }
                         conn.Close();
@@ -51,7 +57,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message); 
+                Console.WriteLine(e.Message);
                 return new[] { "Exception" };
             }
 
@@ -229,7 +235,7 @@ namespace ServerConsole.Utilities
                         {
                             ProductoModel producto = new ProductoModel();
                             producto.CodigoProducto = reader["CodigoProducto"].ToString();
-                            producto.Nombre = reader["Nombre"].ToString();                            
+                            producto.Nombre = reader["Nombre"].ToString();
                             producto.UnidadCompra = reader["UnidadCompra"].ToString();
                             producto.UnidadCompra = reader["UnidadVenta"].ToString();
                             producto.PrecioVenta = Convert.ToDecimal(reader["PrecioVenta"].ToString());
@@ -271,7 +277,7 @@ namespace ServerConsole.Utilities
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
-                {                   
+                {
                     string cadena = $"SELECT Distinct * FROM Producto WHERE (CodigoProducto LIKE '%{caracteres}%') OR (Nombre LIKE '%{caracteres}%') ORDER BY Nombre;";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
@@ -285,8 +291,8 @@ namespace ServerConsole.Utilities
                             producto.UnidadVenta = reader["UnidadVenta"].ToString();
                             producto.UnidadCompra = reader["UnidadCompra"].ToString();
                             producto.PrecioVenta = Convert.ToDecimal(reader["PrecioVenta"].ToString());
-                            producto.Seccion = reader["Seccion"].ToString();                             
-                            producto.iva =  Convert.ToDecimal(reader["IVA"].ToString());                           
+                            producto.Seccion = reader["Seccion"].ToString();
+                            producto.iva = Convert.ToDecimal(reader["IVA"].ToString());
                             producto.CodigoBarras = reader["CodigoBarras"].ToString();
                             if (reader["FechaVencimiento"].ToString() == "")
                             {
@@ -358,7 +364,7 @@ namespace ServerConsole.Utilities
                     cmd1.Parameters.AddWithValue("@codigob", Producto.CodigoBarras);
                     conn.Open();
                     using (SqlDataReader reader1 = cmd1.ExecuteReader())
-                    {                        
+                    {
                         if (reader1.HasRows)
                         {
                             conn.Close();
@@ -370,7 +376,7 @@ namespace ServerConsole.Utilities
                     SqlCommand cmd2 = new SqlCommand(cadena2, conn);
                     cmd2.Parameters.AddWithValue("@nombre", Producto.Nombre);
                     using (SqlDataReader reader = cmd2.ExecuteReader())
-                    {                      
+                    {
                         if (reader.HasRows)
                         {
                             conn.Close();
@@ -390,7 +396,7 @@ namespace ServerConsole.Utilities
                             cmd.Parameters.AddWithValue("@seccion", Statics.PrimeraAMayuscula(Producto.Seccion));
                             cmd.Parameters.AddWithValue("@fv", Producto.FechaVencimiento == DateTime.Today ? (object)DBNull.Value : Producto.FechaVencimiento);
                             cmd.Parameters.AddWithValue("@iva", Producto.iva);
-                            cmd.Parameters.AddWithValue("@cb", string.IsNullOrEmpty(Producto.CodigoBarras) ? (object)DBNull.Value : Producto.CodigoBarras);                            
+                            cmd.Parameters.AddWithValue("@cb", string.IsNullOrEmpty(Producto.CodigoBarras) ? (object)DBNull.Value : Producto.CodigoBarras);
                             cmd.ExecuteNonQuery();
                             Console.ForegroundColor = ConsoleColor.DarkCyan;
                             Console.Write("\n\t" + DateTime.Now + "--");
@@ -406,7 +412,7 @@ namespace ServerConsole.Utilities
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                return e.Message;                
+                return e.Message;
             }
         }
 
@@ -484,8 +490,8 @@ namespace ServerConsole.Utilities
                         string cadena = "INSERT INTO ProveedorProducto(CedulaProveedor,CodigoProducto) VALUES (@prov,@prod);";
                         SqlCommand cmd = new SqlCommand(cadena, conn);
                         cmd.Parameters.AddWithValue("@prov", idProveedor);
-                        cmd.Parameters.AddWithValue("@prod", producto.CodigoProducto);                        
-                        cmd.ExecuteNonQuery();                        
+                        cmd.Parameters.AddWithValue("@prod", producto.CodigoProducto);
+                        cmd.ExecuteNonQuery();
                     }
                     conn.Close();
                     return "Y";
@@ -503,7 +509,7 @@ namespace ServerConsole.Utilities
                 }
             }
         }
-       
+
         /// <summary>
         /// Method that does a select query against the 'Proveedor' table at the database and get the result of searching the coincidences into the cedula, nombre or apellido of the given characters.
         /// </summary>
@@ -517,7 +523,7 @@ namespace ServerConsole.Utilities
                 BindableCollection<ProveedorModel> proveedores = new BindableCollection<ProveedorModel>();
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = $"SELECT Distinct * FROM Proveedor WHERE ( CedulaProveedor like '%{Caracteres}%' ) or ( Nombres like '%{Caracteres}%' ) or ( Apellidos like '%{Caracteres}%' ) ORDE BY Nombres ";
+                    string cadena = $"SELECT Distinct * FROM Proveedor WHERE ( CedulaProveedor like '%{Caracteres}%' ) or ( Nombres like '%{Caracteres}%' ) or ( Apellidos like '%{Caracteres}%' ) ORDER BY Nombres ";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -570,7 +576,7 @@ namespace ServerConsole.Utilities
         /// </summary>
         /// <param name="Cedula"></param>
         /// <returns></returns>
-        public static ProveedorModel getProveedor(string Cedula) 
+        public static ProveedorModel getProveedor(string Cedula)
         {
             try
             {
@@ -584,7 +590,7 @@ namespace ServerConsole.Utilities
                     {
                         while (reader.Read())
                         {
-                            
+
                             proveedor.cedula = reader["CedulaProveedor"].ToString();
                             proveedor.firstName = reader["Nombres"].ToString();
                             proveedor.lastName = reader["Apellidos"].ToString();
@@ -765,7 +771,7 @@ namespace ServerConsole.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = $"SELECT Distinct * FROM EMPLEADO WHERE ( CedulaEmpleado like '%{Caracteres}%' ) or ( Nombres like '%{Caracteres}%' ) or ( Apellidos like '%{Caracteres}%' ) ORDER BY Nombres  ";
+                    string cadena = $"SELECT Distinct * FROM EMPLEADO WHERE ( CedulaEmpleado like '%{Caracteres}%' ) or ( Nombres like '%{Caracteres}%' ) or ( Apellidos like '%{Caracteres}%' ) ORDER BY Nombres;";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -822,7 +828,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);   
+                Console.WriteLine(e.Message);
                 return e.Message;
             }
         }
@@ -1008,12 +1014,12 @@ namespace ServerConsole.Utilities
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
-                {                   
+                {
                     string cadena0 = $"SELECT [CedulaEmpleado], [Nombres], [Apellidos]  FROM Empleado where CodigoPuntoVenta = {Codigo} ";
                     SqlCommand cmd0 = new SqlCommand(cadena0, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd0.ExecuteReader())
-                    {                        
+                    {
                         if (reader.HasRows)
                         {
                             BindableCollection<EmpleadoModel> empleados = new BindableCollection<EmpleadoModel>();
@@ -1027,7 +1033,7 @@ namespace ServerConsole.Utilities
                             }
                             conn.Close();
                             reader.Close();
-                            return new object[] { "Local con empleados.", empleados } ;
+                            return new object[] { "Local con empleados.", empleados };
                         }
                         else
                         {
@@ -1035,7 +1041,7 @@ namespace ServerConsole.Utilities
                             string cadena = $"delete from PuntoVenta Where CodigoPuntoVenta = '{Codigo}' ";
                             SqlCommand cmd = new SqlCommand(cadena, conn);
                             //conn.Open();
-                            cmd.ExecuteNonQuery();                            
+                            cmd.ExecuteNonQuery();
                             conn.Close();
                             Console.ForegroundColor = ConsoleColor.DarkCyan;
                             Console.Write("\n\t" + DateTime.Now + "-- ");
@@ -1043,7 +1049,7 @@ namespace ServerConsole.Utilities
                             Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha eliminado al local {Codigo} - {nombre}. \n");
                             return new object[] { "Local eliminado" };
                         }
-  
+
                     }
 
 
@@ -1136,7 +1142,7 @@ namespace ServerConsole.Utilities
                     return locales;
                 }
             }
-            catch (Exception )
+            catch (Exception)
             {
                 return null;
             }

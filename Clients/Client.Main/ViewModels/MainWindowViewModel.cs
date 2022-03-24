@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Caliburn.Micro;
+using Client.Main.Models;
 using Client.Main.Utilities;
 using Client.Main.Views;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -23,14 +24,12 @@ namespace Client.Main.ViewModels
         }
 
 
-        private string _usuario;
-
         public string Usuario
         {
-            get { return _usuario; }
+            get { return usuario.cedula +" - " + usuario.firstName + " " + usuario.lastName; }
             set 
             { 
-                _usuario = value;
+                usuario.cedula = value;
                 NotifyOfPropertyChange(() => Usuario);
             }
         }
@@ -55,25 +54,24 @@ namespace Client.Main.ViewModels
             StaticPropertyChanged?.Invoke(null, new PropertyChangedEventArgs(propertyName));
         }
 
-        private static string _cargo;
+        //private static string _cargo;
 
-        public static string Cargo
+        public  string Cargo
         {
-            get { return _cargo; }
+            get { return usuario.cargo ; }
             set
             { 
-                _cargo = value;
+                usuario.cargo = value;
                 NotifyPropertyChange(() => Cargo);
             }
             
         }
+        public EmpleadoModel usuario = new EmpleadoModel();
 
-
-        public MainWindowViewModel(string argUsuario,  string argCargo)
+        public MainWindowViewModel(EmpleadoModel usuario)
         {
 
-            _usuario = argUsuario;            
-            _cargo = argCargo;
+            this.usuario = usuario;
             //MessageBox.Show(_cargo);
             ActivateItem(new MainMenuViewModel(this));
             base.OnActivate();

@@ -1,19 +1,10 @@
 ﻿using Autofac;
-using Autofac.Core;
-using Autofac.Core.Lifetime;
 using Caliburn.Micro;
 using Client.Main.Models;
 using Client.Main.Utilities;
-using Client.Main.Views;
 using Microsoft.AspNetCore.SignalR.Client;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Composition;
-using System.Linq.Expressions;
-using System.Net.NetworkInformation;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -27,27 +18,27 @@ namespace Client.Main.ViewModels
         ///Clase responsable de la conexion al servidor obteniendo la instanca unica (Autofac) 
         public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
 
-        ///Propiedades enlazadas con el textbox y el passwordbox  de la vista.
-        private static string _user;
-        public  string User
-        { 
-            get=> _user;
+        ///Instancia de la clase usuario usada para obtener la informacion del usuario logueado.
+        public EmpleadoModel usuario = new EmpleadoModel();
+
+        ///Propiedades enlazadas con el textbox y el passwordbox  de la vista.        
+        public string User
+        {
+            get => usuario.cedula;
             set
             {
-                _user = value;
+                usuario.cedula = value;
                 NotifyOfPropertyChange(() => User);
             }
         }
 
 
-
-        private string _password;
         public string UserPassword
         {
-            get => _password;
+            get => usuario.password;
             set
             {
-                _password = value;
+                usuario.password = value;
                 NotifyOfPropertyChange(() => UserPassword);
             }
         }
@@ -56,7 +47,8 @@ namespace Client.Main.ViewModels
         public string StackVisibility
         {
             get { return _stackVisibility; }
-            set {
+            set
+            {
                 _stackVisibility = value;
                 NotifyOfPropertyChange(() => StackVisibility);
             }
@@ -79,12 +71,12 @@ namespace Client.Main.ViewModels
         /// </summary>
 
         //public MainWindowViewModel VentanaPricipal = ContainerConfig.scope.Resolve<MainWindowViewModel>();
-       // public MainWindowViewModel VentanaPricipal = ContainerConfig.scope.Resolve<MainWindowViewModel>();
+        // public MainWindowViewModel VentanaPricipal = ContainerConfig.scope.Resolve<MainWindowViewModel>();
 
 
         public async void Entrar()
         {
-            
+
             try
             {
                 StackVisibility = "Visible";
@@ -97,11 +89,16 @@ namespace Client.Main.ViewModels
                     {
                         if (conexion.Connection != null)
                         {
-                            Task<object> re = conexion.CallServerMethod("ServidorValidarUsuario", Arguments: new[] { User, UserPassword });
+                            Task<object> re = conexion.CallServerMethod("ServidorValidarUsuario", Arguments: new[] { usuario.cedula, usuario.password });
                             await re;
-                            if (re.Result.ToString().Substring(2, 10) == "Registrado")
+
+
+                            object[] respuesta = System.Text.Json.JsonSerializer.Deserialize<object[]>(re.Result.ToString());
+
+
+                            if ((string)respuesta[0] == "Registrado")
                             {
-                                window.ShowWindow(new MainWindowViewModel(User, re.Result.ToString().Substring(15, re.Result.ToString().Length - 17)));
+                                window.ShowWindow(new MainWindowViewModel((EmpleadoModel)respuesta[1]));
                                 this.TryClose();
                                 return;
                             }
@@ -111,10 +108,10 @@ namespace Client.Main.ViewModels
                             }
                         }
                     }
-                    
-                    
+
+
                     ///Para intentar loguarse por primera vez y conectarse al servidor.
-                    await Connect.ConnectToServer(User, "Admin") ;
+                    await Connect.ConnectToServer(User, "Admin");
                     if (flag2)
                     {
                         conexion.Connection.On("SetStatus", handler: (string a) =>
@@ -125,7 +122,7 @@ namespace Client.Main.ViewModels
                         });
                         conexion.Connection.On("SetStatusDisconnected", handler: (string a) =>
                         {
-                            
+
                             MainWindowViewModel.Status = "Trabajando localmente";
                             MessageBox.Show(a);
                         });
@@ -133,14 +130,18 @@ namespace Client.Main.ViewModels
                     }
 
 
-                    await conexion.CallServerMethod("TestMethod", Arguments: new[] { "Conectado al sevidor." });                                                                      
+                    await conexion.CallServerMethod("TestMethod", Arguments: new[] { "Conectado al sevidor." });
                     if (MainWindowViewModel.Status == "Conectado al servidor" & conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected)
                     {
                         Task<object> re = conexion.CallServerMethod("ServidorValidarUsuario", Arguments: new[] { User, UserPassword });
-                        await re;                        
-                        if (re.Result.ToString().Substring(2, 10) == "Registrado")
+                        await re;
+
+                        object[] respuesta = System.Text.Json.JsonSerializer.Deserialize<object[]>(re.Result.ToString());
+                        EmpleadoModel usuario = System.Text.Json.JsonSerializer.Deserialize<EmpleadoModel>(respuesta[1].ToString());
+
+                        if ((string)respuesta[0].ToString() == "Registrado")
                         {
-                            window.ShowWindow(new MainWindowViewModel(User, re.Result.ToString().Substring(15, re.Result.ToString().Length - 17))); 
+                            window.ShowWindow(new MainWindowViewModel(usuario));
                             this.TryClose();
                             return;
                         }
@@ -151,10 +152,10 @@ namespace Client.Main.ViewModels
                     }
 
                     StackVisibility = "Collapsed";
-                    string[] verificar = DbConnection.Login(User: User, Password: UserPassword);
-                    if (verificar[0] == "Registrado")
+                    object[] verificar = DbConnection.Login(User: User, Password: UserPassword);
+                    if ((string)verificar[0] == "Registrado")
                     {
-                        window.ShowWindow(new MainWindowViewModel(User, verificar[1]));
+                        window.ShowWindow(new MainWindowViewModel((EmpleadoModel)verificar[1]));
                         this.TryClose();
                     }
                     else
@@ -197,7 +198,7 @@ namespace Client.Main.ViewModels
                             result = "Escriba una contaseña.";
                         }
                     }
-                 
+
                 }
                 else { flag += 1; }
                 return result;

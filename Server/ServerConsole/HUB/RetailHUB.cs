@@ -41,16 +41,16 @@ namespace ServerConsole
         /// <param name="Usuario"></param>
         /// <param name="Password"></param>
         /// <returns></returns>
-        public string[] ServidorValidarUsuario(string Usuario, string Password)
+        public object[] ServidorValidarUsuario(string Usuario, string Password)
         {
             Console.ForegroundColor = ConsoleColor.DarkCyan;
             Console.Write("\n\t" + DateTime.Now + "--");
             Console.ForegroundColor = ConsoleColor.White;
-            string[] resultado = DbConnection.Login(User: Usuario, Password: Password);
-            if (resultado[0] == "Registrado")
+            object[] resultado = DbConnection.Login(User: Usuario, Password: Password);
+            if ((string)resultado[0] == "Registrado")
             {
-                usuarioConectado = Usuario;
-                Console.Write(" El usuario " + Usuario + " se ha conectado.");
+                usuarioConectado = ((PersonModel)resultado[1]).cedula+ "-" + ((PersonModel)resultado[1]).firstName + " " +((PersonModel)resultado[1]).lastName;
+                Console.Write(" El usuario " + usuarioConectado + " se ha conectado.");
                 Console.ResetColor();
                 Console.WriteLine("\n");
                 //return resultado;

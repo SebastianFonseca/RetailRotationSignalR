@@ -10,7 +10,7 @@ using Caliburn.Micro;
 
 namespace Client.Main.Models
 {
-    public class PersonModel 
+    public abstract class PersonModel 
     {
         public string firstName { get; set; }
 
@@ -27,13 +27,3 @@ namespace Client.Main.Models
     }
  }
 
-
-//private string _firstName;
-//public string firstName
-//{
-//    get { return _firstName; }
-//    set
-//    {
-//        _firstName = value; 
-//    }
-//}

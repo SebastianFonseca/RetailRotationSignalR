@@ -31,7 +31,7 @@ namespace Client.Main.Utilities
         /// <param name="User"></param>
         /// <param name="Password"></param>
         /// <returns></returns>             
-        public static string[] Login(string User, string Password)
+        public static object[] Login(string User, string Password)
         {                      
             try
             {
@@ -48,8 +48,21 @@ namespace Client.Main.Utilities
                         {
                             if (Statics.Verify(Password, reader["Password"].ToString()))
                             {
-                                return new[] { "Registrado", reader["Cargo"].ToString() };
+                                EmpleadoModel persona = new EmpleadoModel();
+                                persona.cedula = reader["CedulaEmpleado"].ToString();
+                                persona.puntoDeVenta.codigo = reader["CodigoPuntoVenta"].ToString();
+                                persona.firstName = reader["Nombres"].ToString();
+                                persona.lastName = reader["Apellidos"].ToString();
+                                persona.fechaDeContratacion = DateTime.Parse(reader["FechaContratacion"].ToString());
+                                persona.salario = Convert.ToDecimal(reader["Salario"].ToString());
+                                persona.telefono = reader["Telefono"].ToString();
+                                persona.cargo = reader["Cargo"].ToString();
+                                persona.direccion = reader["Direccion"].ToString();
+
+
+                                return new object[] { "Registrado", persona };
                             }
+
                         }
                         conn.Close();
                         return new[] { "Contraseña incorrecta." };

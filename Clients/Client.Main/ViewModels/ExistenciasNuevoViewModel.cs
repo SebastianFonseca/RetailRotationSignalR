@@ -14,45 +14,13 @@ namespace Client.Main.Views
     {
         MainWindowViewModel VentanaPrincipal;
         public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
+
+        public ExistenciasModel existencias = new ExistenciasModel();
         public ExistenciasNuevoViewModel(MainWindowViewModel argVentana)
         {
             VentanaPrincipal = argVentana;
             getprod();
         }
-
-        public BindableCollection<ProductoModel> _productos;
-        public BindableCollection<ProductoModel> Productos
-        {
-            get
-            {
-                return _productos;
-            }
-            set
-            {
-                _productos = value;
-                NotifyOfPropertyChange(() => Productos);
-
-            }
-
-        }
-
-
-        public string Codigo
-        {
-            get return 
-        }
-        
-
-        public string Fecha
-        {
-            get { return DateTime.Today.ToShortDateString(); }
-        }
-
-        public string Responsable
-        {
-            get { return VentanaPrincipal.Usuario; }
-        }
-
 
         public async void getprod()
         {
@@ -60,16 +28,73 @@ namespace Client.Main.Views
             {
                 Task<object> re = conexion.CallServerMethod("ServidorgetIdProductos", Arguments: new object[] { });
                 await re;
-                Productos =  System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ProductoModel>>(re.Result.ToString());
+                Productos = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ProductoModel>>(re.Result.ToString());
 
             }
             catch (Exception e)
             {
-            MessageBox.Show(e.Message);
+                MessageBox.Show(e.Message);
             }
 
         }
-             
+
+        public BindableCollection<ProductoModel> Productos
+        {
+            get
+            {
+                return existencias.productos;
+            }
+            set
+            {
+                existencias.productos = value;
+                NotifyOfPropertyChange(() => Productos);
+
+            }
+
+        }
+
+        public string Codigo
+        {
+            get { return DateTime.Now.ToString("dd''MM''yyyy''HH''mm''ss") + VentanaPrincipal.usuario.puntoDeVenta.codigo;  }
+            set
+            {
+                existencias.codigo = value;
+                NotifyOfPropertyChange(() => Codigo);
+            }
+        }
+
+
+        public DateTime Fecha
+        {
+            get { return DateTime.Today.Date; }
+            set 
+            { 
+                existencias.fecha = value;
+                NotifyOfPropertyChange(() => Fecha);
+
+            }
+        }
+
+        public EmpleadoModel Responsable
+        {
+            get { return VentanaPrincipal.usuario; }
+            set
+            {
+                existencias.responsable = value;
+                NotifyOfPropertyChange(() => Responsable);
+
+            }
+        }
+
+        public void BackButton()
+        {
+            Productos.Clear();
+            VentanaPrincipal.ActivateItem(new AdministracionInventarioViewModel(VentanaPrincipal));
+        }
+        public void Guardar()
+        {
+           
+        }
 
     }
 }

@@ -59,71 +59,69 @@
             </Border>
 
 
-                <!--Formulario principal-->
+            <!--Formulario principal-->
             <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9" c:KeyboardFocus.On="{Binding ElementName=LetraCodigo}" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="0">
 
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="0.35*"/>
-                        <ColumnDefinition Width="0.65*"/>
-                    </Grid.ColumnDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.35*"/>
+                    <ColumnDefinition Width="0.65*"/>
+                </Grid.ColumnDefinitions>
 
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        
-                    </Grid.RowDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
 
-                    <!--Linea 1-->
-                    <TextBlock Grid.Row="1" Grid.Column="0" Margin="0 0 0 -3">Código:</TextBlock>
-                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
-                        <TextBox Margin="0 0 10 0" Style="{StaticResource GeneralTextBox}" x:Name="LetraCodigo" Width="30" PreviewTextInput="LetterValidationTextBox" MaxLength="1"  TextAlignment="Center" CharacterCasing="Upper" />
-                        <TextBox  Style="{StaticResource GeneralTextBox}" x:Name="NumeroCodigo" Width="100" PreviewTextInput="NumberValidationTextBox"/>
-                    </StackPanel>
-                    <!--Linea 2-->
-                    <TextBlock Grid.Row="2" Grid.Column="0" >Nombre:</TextBlock>
+                </Grid.RowDefinitions>
+
+                <!--Linea 1-->
+                <TextBlock Grid.Row="1" Grid.Column="0" Margin="0 0 0 -3">Código:</TextBlock>
+                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
+                    <TextBox Margin="0 0 10 0" Style="{StaticResource GeneralTextBox}" x:Name="LetraCodigo" Width="30" PreviewTextInput="LetterValidationTextBox" MaxLength="1"  TextAlignment="Center" CharacterCasing="Upper" />
+                    <TextBox  Style="{StaticResource GeneralTextBox}" x:Name="NumeroCodigo" Width="100" PreviewTextInput="NumberValidationTextBox"/>
+                </StackPanel>
+                <!--Linea 2-->
+                <TextBlock Grid.Row="2" Grid.Column="0" >Nombre:</TextBlock>
                 <TextBox Grid.Row="2" Grid.Column="1"  Style="{StaticResource GeneralTextBox}" x:Name="Nombre"/>
 
                 <!--Linea 3-->
-                    <TextBlock Grid.Row="3" Grid.Column="0">Unidad de Venta:</TextBlock>
+                <TextBlock Grid.Row="3" Grid.Column="0">Unidad de Venta:</TextBlock>
                 <ComboBox Template="{StaticResource GeneralComboBox}" Grid.Row="3" Grid.Column="1"  Margin="1" FontWeight="DemiBold" FontSize="12"   SelectedItem="{Binding Path=UnidadVenta}" x:Name="Unidadv">
-                        <ComboBoxItem>Kilogramo (Kg)</ComboBoxItem>
-                        <ComboBoxItem>Unidades (Und)</ComboBoxItem>
-                    </ComboBox>
+                    <ComboBoxItem>Bulto (B)</ComboBoxItem>
+                    <ComboBoxItem>Canastilla (C)</ComboBoxItem>
+                    <ComboBoxItem>Kilogramo (K)</ComboBoxItem>
+                    <ComboBoxItem>Unidades (U)</ComboBoxItem>
+                </ComboBox>
 
+                <!--linea 4-->
+                <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Bottom">Sección:</TextBlock>
+                <ComboBox Template="{StaticResource GeneralComboBox}" Grid.Row="4" Grid.Column="1" Margin="1" FontWeight="DemiBold" FontSize="12"  SelectedItem="{Binding Path=Seccion}"  x:Name="Section">
+                    <ComboBoxItem>Frutas y verduras</ComboBoxItem>
+                    <ComboBoxItem>Abarrotes</ComboBoxItem>
+                    <ComboBoxItem>Carnes</ComboBoxItem>
+                </ComboBox>
 
+                <!--Linea 5-->
+                <TextBlock Grid.Row="5" Grid.Column="0"  >Vencimiento:</TextBlock>
+                <DatePicker   Style="{DynamicResource date}" Grid.Row="5" Grid.Column="1"   x:Name="FechaVencimiento" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0 2 0 0" FontWeight="DemiBold" />
 
-                    <!--linea 4-->
-                    <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Bottom">Sección:</TextBlock>
-                    <ComboBox Template="{StaticResource GeneralComboBox}" Grid.Row="4" Grid.Column="1" Margin="1" FontWeight="DemiBold" FontSize="12"  SelectedItem="{Binding Path=Seccion}"  x:Name="Section">
-                        <ComboBoxItem>Frutas y verduras</ComboBoxItem>
-                        <ComboBoxItem>Abarrotes</ComboBoxItem>
-                        <ComboBoxItem>Carnes</ComboBoxItem>
-                    </ComboBox>
-
-                    <!--Linea 5-->
-                    <TextBlock Grid.Row="5" Grid.Column="0"  >Vencimiento:</TextBlock>
-                    <DatePicker   Style="{DynamicResource date}" Grid.Row="5" Grid.Column="1"   x:Name="FechaVencimiento" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0 2 0 0" FontWeight="DemiBold" />
-
-                    <!--Linea 9-->
-                    <TextBlock Grid.Row="6" Grid.Column="0" VerticalAlignment="Bottom">I.V.A.:</TextBlock>
+                <!--Linea 9-->
+                <TextBlock Grid.Row="6" Grid.Column="0" VerticalAlignment="Bottom">I.V.A.:</TextBlock>
                 <StackPanel Grid.Row="6" Grid.Column="1" Orientation="Horizontal" >
                     <TextBox   Style="{StaticResource GeneralTextBox}" x:Name="IVA" PreviewTextInput="NumberValidationTextBox" Width="40" HorizontalAlignment="Left" MaxLength="3" HorizontalContentAlignment="Center"/>
                     <TextBlock   Text="%"/>
                 </StackPanel>
+
                 <!--Linea 10-->
-                    <TextBlock Grid.Row="7" Grid.Column="0" VerticalAlignment="Bottom" FontSize="21">Código de barras:</TextBlock>
+                <TextBlock Grid.Row="7" Grid.Column="0" VerticalAlignment="Bottom" FontSize="21">Código de barras:</TextBlock>
                 <TextBox  Grid.Row="7" Grid.Column="1" Style="{StaticResource GeneralTextBox}" x:Name="CodigoBarras" PreviewTextInput="NumberValidationTextBox" />
-
-                   
-
-                </Grid>
+            </Grid>
 
             <!--Boton guardar-->
             <Button Style="{StaticResource GeneralButton}"  Margin="11" Height="50" HorizontalAlignment="Center"  Width="250" Content="    GUARDAR    "  x:Name="Guardar" Grid.Column="1" Grid.Row="1" >
@@ -140,12 +138,7 @@
                     </MultiBinding>
                 </Button.IsEnabled>
             </Button>
-
         </Grid>
     </Border>
-
-
-
-
 </UserControl>
 
