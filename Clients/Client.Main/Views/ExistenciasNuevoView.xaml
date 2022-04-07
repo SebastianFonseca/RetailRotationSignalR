@@ -81,9 +81,9 @@
             <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9"   Grid.Column="1"  Grid.Row="0" Margin="10" Grid.ColumnSpan="2" >
 
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="0.22*"/>
-                    <RowDefinition Height="0.11*"/>
-                    <RowDefinition Height="0.47*"/>
+                    <RowDefinition Height="0.24*"/>
+                    <RowDefinition Height="0.12*"/>
+                    <RowDefinition Height="0.44*"/>
                 </Grid.RowDefinitions>
                  
                 <!--Parte superior, informacion general del documento de existencias-->
@@ -98,9 +98,19 @@
                         <RowDefinition/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
+                    
                     <!--Linea 0-->
                     <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center">Fecha:</TextBlock>
-                    <TextBlock Grid.Row="1" Grid.Column="1" x:Name="Fecha" FontWeight="Normal" HorizontalAlignment="Left" />
+                    <StackPanel Grid.Row="1" Grid.Column="1"  x:Name="Fecha" Orientation="Horizontal" Margin="3">
+                        <TextBox Style="{StaticResource GeneralTextBox}" MaxLength="2" Width="30" x:Name="Dia"/>
+                        <TextBlock Text=" / " FontWeight="Normal"/>
+                        <TextBox Style="{StaticResource GeneralTextBox}" MaxLength="2" Width="30" x:Name="Mes"/>
+                        <TextBlock Text=" / " FontWeight="Normal"/>
+                        <TextBox Style="{StaticResource GeneralTextBox}" MaxLength="4" Width="50" x:Name="Año"/>
+                    </StackPanel>
+                    
+                    <!--<DatePicker   Style="{DynamicResource date}"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0 2 0 0" FontWeight="DemiBold" DisplayDate="{Binding FechaDeApertura}" />-->
+
                     <!--linea 0-->
                     <TextBlock Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center">Responsable:</TextBlock>
                     <TextBlock Grid.Row="1" Grid.Column="3" x:Name="Responsable" HorizontalAlignment="Left" FontWeight="Normal" >
@@ -146,7 +156,7 @@
 
                                 <TextBlock Text="{Binding Path=codigoProducto}" Margin="0" FontSize="18" HorizontalAlignment="Center"/>
                                 <TextBlock Text="{Binding Path=nombre}" Grid.Column="1"  FontSize="18" HorizontalAlignment="Center"/>
-                                <TextBox Style="{StaticResource GeneralTextBox}" Grid.Column="2"  Width="60" MaxLength="5" Text="{Binding Path=existencia}" HorizontalAlignment="Center" TextAlignment="Center"/>
+                                <TextBox Style="{StaticResource GeneralTextBox}" Grid.Column="2"  Width="60" MaxLength="5" Text="{Binding Path=existencia}" HorizontalAlignment="Center" TextAlignment="Center" PreviewTextInput="NumberValidationTextBox"/>
                                 <TextBlock Text="{Binding Path=unidadCompra}" Grid.Column="3"  FontSize="18" HorizontalAlignment="Center"/>
                             </Grid>
                             

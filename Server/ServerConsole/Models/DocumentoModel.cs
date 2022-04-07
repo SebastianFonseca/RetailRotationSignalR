@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Client.Main.Models
+namespace ServerConsole.Models
 {
-    public abstract class ListadoModel : Screen
+    public class DocumentoModel: Screen
     {
         public string codigo { get; set; }
         public DateTime fecha { get; set; }

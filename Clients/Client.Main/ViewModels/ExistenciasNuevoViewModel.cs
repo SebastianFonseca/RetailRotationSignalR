@@ -5,22 +5,35 @@ using Client.Main.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 
 namespace Client.Main.Views
 {
-    public class ExistenciasNuevoViewModel: Screen
+    public class ExistenciasNuevoViewModel : Screen
     {
         MainWindowViewModel VentanaPrincipal;
         public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
 
-        public ExistenciasModel existencias = new ExistenciasModel();
+        public ExistenciasModel existencias;
+
         public ExistenciasNuevoViewModel(MainWindowViewModel argVentana)
         {
             VentanaPrincipal = argVentana;
-            getprod();
+            existencias = new ExistenciasModel()
+            {
+                codigo = DateTime.Now.ToString("dd''MM''yyyy''HH''mm''ss") + VentanaPrincipal.usuario.puntoDeVenta.codigo,
+                responsable = VentanaPrincipal.usuario,
+                puntoVenta = VentanaPrincipal.usuario.puntoDeVenta,
+            };
+            //getprod();           
+
         }
+
+
+
+
 
         public async void getprod()
         {
@@ -40,22 +53,18 @@ namespace Client.Main.Views
 
         public BindableCollection<ProductoModel> Productos
         {
-            get
-            {
-                return existencias.productos;
-            }
+            get => existencias.productos;
             set
             {
                 existencias.productos = value;
                 NotifyOfPropertyChange(() => Productos);
-
             }
 
         }
 
         public string Codigo
         {
-            get { return DateTime.Now.ToString("dd''MM''yyyy''HH''mm''ss") + VentanaPrincipal.usuario.puntoDeVenta.codigo;  }
+            get => existencias.codigo;
             set
             {
                 existencias.codigo = value;
@@ -63,21 +72,76 @@ namespace Client.Main.Views
             }
         }
 
+        private string _dia;
 
-        public DateTime Fecha
+        public string Dia
         {
-            get { return DateTime.Today.Date; }
+            
+            get { return _dia; }
             set 
-            { 
-                existencias.fecha = value;
-                NotifyOfPropertyChange(() => Fecha);
+            {
+                short a;
+                if (Int16.TryParse(value,out a))
+                {
+                    if (Int16.Parse(value) < DateTime.Now.Day)
+                    {
+                    _dia = value;
+                    NotifyOfPropertyChange(() => Dia);
+                    }
+
+
+                }
+            }
+        }
+
+        private string _mes;
+
+        public string Mes
+        {
+            get { return _mes; }
+            set 
+            {
+                short a;
+                if (Int16.TryParse(value, out a))
+                {
+                    if (Int16.Parse(value) <= DateTime.Now.Month)
+                    {
+                        _mes = value;
+                        NotifyOfPropertyChange(() => Mes);
+                    }
+                }
+                
+            }
+        }
+        private string _año;
+
+        public string Año
+        {
+            get { return _año; }
+            set
+            {
+                short a;
+                if (Int16.TryParse(value, out a))
+                {
+                    if (Int16.Parse(value) < DateTime.Now.Year)
+                    { 
+                      _año = value;
+                      NotifyOfPropertyChange(() => Año);
+
+                    }
+                }
 
             }
         }
 
+
+
+
+
+
         public EmpleadoModel Responsable
         {
-            get { return VentanaPrincipal.usuario; }
+            get => existencias.responsable;
             set
             {
                 existencias.responsable = value;
@@ -91,9 +155,60 @@ namespace Client.Main.Views
             Productos.Clear();
             VentanaPrincipal.ActivateItem(new AdministracionInventarioViewModel(VentanaPrincipal));
         }
-        public void Guardar()
+        public async void Guardar()
         {
-           
+            try
+            {
+                existencias.fecha = new DateTime(Int16.Parse(Dia), Int16.Parse(Mes), Int16.Parse(Año));
+
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+            //DbConnection.SincronizarReplicacionMerge();
+            foreach (ProductoModel producto in Productos)
+            {
+                if (producto.existencia == null)
+                {
+                    MessageBox.Show($"Registre el valor corespondiente a {producto.nombre}");
+                    return;
+                }
+            }
+
+            if (string.IsNullOrEmpty(Dia) || string.IsNullOrEmpty(Mes) || string.IsNullOrEmpty(Año))
+            {
+                MessageBox.Show("Ingrese una fecha");
+            }
+
+            try
+            {
+                if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+                {
+
+                    Task<object> re = conexion.CallServerMethod("ServidorNuevaExistencia", Arguments: new[] { existencias });
+                    await re;
+                    if (re.Result.ToString() == "Registrado")
+                    {
+                        MessageBox.Show("Nuevo documento" + re.Result.ToString());
+                        VentanaPrincipal.ActivateItem(new AdministracionInventarioViewModel(VentanaPrincipal));
+                        return;
+                    }
+                    MessageBox.Show(re.Result.ToString());
+                }
+                else
+                {
+                    if (MainWindowViewModel.Status == "Trabajando localmente")
+                    {
+                        MessageBox.Show(Utilities.DbConnection.NuevaExistencia(existencias));
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+
         }
 
     }

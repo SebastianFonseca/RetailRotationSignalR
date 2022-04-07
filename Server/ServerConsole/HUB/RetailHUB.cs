@@ -296,6 +296,27 @@ namespace ServerConsole
         }
         #endregion
 
+        #region Existencias
+        /// <summary>
+        /// Metodo que al ser llamado desde un cliente agrega los datos de un nuevo docuemento de existencias.
+        /// </summary>
+        /// <param name="existencias"></param>
+        /// <returns></returns>
+        public string ServidorNuevaExistencia(ExistenciasModel existencias)
+        {
+            return DbConnection.NuevaExistencia(existencias);
+        } 
+        #endregion
+
+        /// <summary>
+        /// Cuando es llamado desde un cliente retorna los registros de cambios guardados en la tabla que consigna dicha informacion en la base de datos
+        /// </summary>
+        /// <returns></returns>
+        public BindableCollection<string[]> ServidorNuevosRegistros(int a)
+        {
+            return DbConnection.registroCambios(a); 
+        }
+
 
         /// <summary>
         /// Cuando es llamado desde un 'cliente' registra un nuevo cliente.

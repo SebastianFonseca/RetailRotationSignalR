@@ -1,4 +1,5 @@
-﻿using Caliburn.Micro;
+﻿using Autofac;
+using Caliburn.Micro;
 using Client.Main.ViewModels;
 using Client.Main.Views;
 using System;
@@ -11,14 +12,37 @@ namespace Client.Main.ViewModels
 
     class MainMenuViewModel : Conductor<object>
     {
+        public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
+
 
         private readonly IWindowManager window = new WindowManager();
 
         MainWindowViewModel VentanaPrincipal;
         public MainMenuViewModel(MainWindowViewModel argVentana)
         {
+            
             VentanaPrincipal = argVentana;
-        }        
+            act();
+        }
+
+        public async void act()
+        
+        {
+            if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+            {
+                try
+                {
+                    await Utilities.Sincronizar.SincronizarRegistro();
+                }
+                catch (Exception e)
+                {
+
+                    MessageBox.Show(e.Message);
+                }
+            }
+        }
+
+
         ShellViewModel model = new ShellViewModel();
 
 

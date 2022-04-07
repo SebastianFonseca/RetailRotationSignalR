@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Client.Main.Models
+namespace ServerConsole.Models
 {
-    public class ExistenciasModel: DocumentoModel
+    public class ExistenciasModel:DocumentoModel
     {
         public int numeroCanastillas { get; set; }
     }
