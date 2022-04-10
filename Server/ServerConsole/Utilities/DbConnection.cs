@@ -189,7 +189,7 @@ namespace ServerConsole.Utilities
                             cmd2.Parameters.AddWithValue("@iva", Producto.iva);
                             cmd2.Parameters.AddWithValue("@cb", string.IsNullOrEmpty(Producto.codigoBarras) ? (object)DBNull.Value : Producto.codigoBarras);
                             cmd2.ExecuteNonQuery();
-                            Registrar("Insert", "ServidorGetProductos", Producto.codigoProducto, "ProductoModel[]", "NuevoProducto");
+                            Registrar("Insert", "ServidorGetProductos", Producto.codigoProducto, "ProductoModel[]", "NuevoProducto", "codigoProducto");
                             conn.Close();
                             Console.ForegroundColor = ConsoleColor.DarkCyan;
                             Console.Write("\n\t" + DateTime.Now + ": ");
@@ -406,7 +406,7 @@ namespace ServerConsole.Utilities
                             Console.ForegroundColor = ConsoleColor.White;
                             Console.WriteLine($"{RetailHUB.usuarioConectado}: Ha Actualizado al producto {Producto.codigoProducto} - {Producto.nombre}");
                             conn.Close();
-                            Registrar("Update", "ServidorGetProductos", Producto.codigoProducto, "ProductoModel[]", "actualizarProducto");
+                            Registrar("Update", "ServidorGetProductos", Producto.codigoProducto, "ProductoModel[]", "actualizarProducto", "codigoProducto");
                             return "Producto actualizado.";
                         }
                     }
@@ -453,7 +453,7 @@ namespace ServerConsole.Utilities
                         Console.Write("\n\t" + DateTime.Now + "--");
                         Console.ForegroundColor = ConsoleColor.White;
                         Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo proveedor {proveedor.firstName} {proveedor.lastName}");
-                        Registrar("Insert", "ServidorGetProveedores", proveedor.cedula , "ProveedorModel[]", "NuevoProveedor");
+                        Registrar("Insert", "ServidorGetProveedor", proveedor.cedula , "ProveedorModel[]", "NuevoProveedor", "cedula");
                         conn.Close();
                         return "Se ha registrado al nuevo proveedor.";
                     }
@@ -586,7 +586,7 @@ namespace ServerConsole.Utilities
         /// </summary>
         /// <param name="Cedula"></param>
         /// <returns></returns>
-        public static ProveedorModel getProveedor(string Cedula)
+        public static BindableCollection<ProveedorModel> getProveedor(string Cedula)
         {
             try
             {
@@ -627,7 +627,7 @@ namespace ServerConsole.Utilities
                     }
                     proveedor.productos = productos;
                     conn.Close();
-                    return proveedor;
+                    return new BindableCollection<ProveedorModel>() {proveedor};
                 }
             }
             catch (Exception e)
@@ -696,7 +696,7 @@ namespace ServerConsole.Utilities
                         Console.ForegroundColor = ConsoleColor.White;
                         Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha editado la información del proveedor {proveedor.firstName} {proveedor.lastName}");
                         conn.Close();
-                        Registrar("Update", "ServidorGetProveedores", proveedor.cedula, "ProveedorModel[]", "actualizarProveedor");
+                        Registrar("Update", "ServidorGetProveedor", proveedor.cedula, "ProveedorModel[]", "actualizarProveedor", "cedula");
                         return "Se ha editado la informacion.";
                     }
                     return response;
@@ -750,7 +750,7 @@ namespace ServerConsole.Utilities
                     Console.ForegroundColor = ConsoleColor.White;
                     Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo usuario {Empleado.firstName} {Empleado.lastName}");
                     conn.Close();
-                    Registrar("Insert", "ServidorGetUsuarios", Empleado.cedula, "EmpleadoModel[]", "NuevoUsuario");
+                    Registrar("Insert", "ServidorGetUsuarios", Empleado.cedula, "EmpleadoModel[]", "NuevoUsuario", "cedula");
                     return "Se ha registrado al nuevo usuario.";
                 }
             }
@@ -881,7 +881,7 @@ namespace ServerConsole.Utilities
                     Console.ForegroundColor = ConsoleColor.White;
                     Console.WriteLine($"{RetailHUB.usuarioConectado}: Ha Actualizado al usuario {Empleado.firstName} {Empleado.lastName}");
                     conn.Close();
-                    Registrar("Update", "ServidorGetUsuarios", CC, "EmpleadoModel[]", "ActualizarUsuario");
+                    Registrar("Update", "ServidorGetUsuarios", CC, "EmpleadoModel[]", "ActualizarUsuario", "cedula");
                     return "Usuario actualizado";
 
                 }
@@ -944,7 +944,7 @@ namespace ServerConsole.Utilities
                     Console.ForegroundColor = ConsoleColor.White;
                     Console.WriteLine($"{RetailHUB.usuarioConectado} Ha registrado el nuevo local: {NuevoLocal.nombre }");
                     conn.Close();
-                    Registrar("Insert", "ServidorGetLocales", LocalId(NuevoLocal.nombre), "LocalModel[]", "NuevoLocal");
+                    Registrar("Insert", "ServidorGetLocales", LocalId(NuevoLocal.nombre), "LocalModel[]", "NuevoLocal", "codigo");
 
                     return $"Se ha registrado el nuevo local: {NuevoLocal.nombre }";
 
@@ -1138,7 +1138,7 @@ namespace ServerConsole.Utilities
                     cmd.ExecuteNonQuery();
                     Console.WriteLine($"Se ha editado la informacion del local: {Local.nombre }");
                     conn.Close();
-                    Registrar("Update", "ServidorGetLocales", IdAnterior , "LocalModel[]", "ActualizarLocal");
+                    Registrar("Update", "ServidorGetLocales", Local.codigo , "LocalModel[]", "ActualizarLocal", "codigo");
                     return "El local se ha actualizado.";
 
                 }
@@ -1292,10 +1292,10 @@ namespace ServerConsole.Utilities
                     return "Server " + e.Message;
                 }
             }
-        } 
+        }
         #endregion
 
-
+        
         /// <summary>
         /// Crea los registros en la base de datos local de los cambios realizados para que los clientes puedan despues replicarlos.
         /// </summary>
@@ -1305,13 +1305,13 @@ namespace ServerConsole.Utilities
         /// <param name="TipoRetornoMetodoServidor"></param>
         /// <param name="NombreMetodoCliente"></param>
         /// <returns></returns>
-        public static bool Registrar(string Tipo, string NombreMetodoServidor, string ClavePrimaria, string TipoRetornoMetodoServidor, string NombreMetodoCliente)
+        public static bool Registrar(string Tipo, string NombreMetodoServidor, string ClavePrimaria, string TipoRetornoMetodoServidor, string NombreMetodoCliente, string NombrePK)
         {
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = $"INSERT INTO Registros(Tipo,NombreMetodoServidor,ClavePrimaria,TipoRetornoMetodoServidor,NombreMetodoCliente) VALUES ('{Tipo}','{NombreMetodoServidor}','{ClavePrimaria}','{TipoRetornoMetodoServidor}','{NombreMetodoCliente}');";
+                    string cadena = $"INSERT INTO Registros(Tipo,NombreMetodoServidor,ClavePrimaria,TipoRetornoMetodoServidor,NombreMetodoCliente, NombrePK) VALUES ('{Tipo}','{NombreMetodoServidor}','{ClavePrimaria}','{TipoRetornoMetodoServidor}','{NombreMetodoCliente}', '{NombrePK}');";
                     SqlCommand cmd = new SqlCommand(cadena, conn);        
                     conn.Open();
                     cmd.ExecuteNonQuery();
@@ -1348,7 +1348,7 @@ namespace ServerConsole.Utilities
                     {
                         while (reader.Read())
                         {
-                            string[] reg = new string[6]
+                            string[] reg = new string[7]
                             { 
                                 reader["Id"].ToString(), 
                                 reader["Tipo"].ToString(), 
@@ -1356,6 +1356,7 @@ namespace ServerConsole.Utilities
                                 reader["ClavePrimaria"].ToString(), 
                                 reader["TipoRetornoMetodoServidor"].ToString(),
                                 reader["NombreMetodoCliente"].ToString(),
+                                reader["NombrePK"].ToString()
 
                             };
 

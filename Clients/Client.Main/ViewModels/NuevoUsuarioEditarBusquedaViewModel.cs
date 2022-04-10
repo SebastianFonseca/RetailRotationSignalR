@@ -163,13 +163,16 @@ namespace Client.Main.ViewModels
 
             }
         }
+        
+        private string _password;
         public string Password
         {
-            get { return resultadoEmpleado.password; }
+            get { return _password; }
             set
             {
                 if (resultadoEmpleado.password != value)
                 {
+                    _password = value;
                     resultadoEmpleado.password = value;
                 }
                 NotifyOfPropertyChange(() => Password);

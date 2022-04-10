@@ -82,7 +82,7 @@
 
                 <!--Linea 1-->
                 <TextBlock Grid.Row="1" Grid.Column="0" Margin="0 0 0 0">Código:</TextBlock>
-                <TextBlock Grid.Row="1" Grid.Column="1"   x:Name="Codigo" Width="30" HorizontalAlignment="Left" />
+                <TextBlock Grid.Row="1" Grid.Column="1"   x:Name="Codigo" Width="60" HorizontalAlignment="Left" />
 
                 <!--Linea 2-->
                 <TextBlock Grid.Row="2" Grid.Column="0" >Nombre:</TextBlock>

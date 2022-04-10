@@ -94,14 +94,14 @@ namespace Client.Main.ViewModels
                     {
                         Task<object> re = conexion.CallServerMethod("ServidorGetProveedor", Arguments: new[] { BuscarTbx.Split('-')[0].Trim() });
                         await re;
-                        ProveedorModel proveedor = System.Text.Json.JsonSerializer.Deserialize<ProveedorModel>(re.Result.ToString());    
-                        if (proveedor.cedula == null)
+                        ProveedorModel[] proveedor = System.Text.Json.JsonSerializer.Deserialize<ProveedorModel[]>(re.Result.ToString());    
+                        if (proveedor[0].cedula == null)
                         {
                             MessageBox.Show("Número de cédula, nombre o apellido no resgistrados");
                         }
                         else
                         {                                                        
-                            VentanaPrincipal.ActivateItem(new ProveedorResultadoBusquedaViewModel(VentanaPrincipal, proveedor));
+                            VentanaPrincipal.ActivateItem(new ProveedorResultadoBusquedaViewModel(VentanaPrincipal, proveedor[0]));
                             BusquedasVisibilidad = "Visible";
 //                            ComboboxDesplegado = "True";
                         }

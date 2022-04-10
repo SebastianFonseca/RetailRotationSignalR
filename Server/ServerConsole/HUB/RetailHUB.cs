@@ -251,7 +251,7 @@ namespace ServerConsole
         /// <param name="proveedor"></param>
         /// <returns></returns>
         public string ServidorNuevoProveedor(ProveedorModel proveedor)
-        {
+        {           
             return DbConnection.NuevoProveedor(proveedor);
         }
 
@@ -270,7 +270,7 @@ namespace ServerConsole
         /// </summary>
         /// <param name="CedulaProveedor"></param>
         /// <returns></returns>
-        public ProveedorModel ServidorGetProveedor(string numeroDeCedula)
+        public BindableCollection<ProveedorModel> ServidorGetProveedor(string numeroDeCedula)
         {
             return DbConnection.getProveedor(numeroDeCedula);
         }

@@ -12,11 +12,11 @@ namespace Client.Main.Models
 {
     public abstract class PersonModel 
     {
+        public string cedula { get; set; }
+
         public string firstName { get; set; }
 
         public string lastName { get; set; }
-
-        public string cedula { get; set; }
 
         public string telefono { get; set; } = null;
 

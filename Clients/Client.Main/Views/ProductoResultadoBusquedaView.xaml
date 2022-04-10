@@ -60,7 +60,7 @@
 
 
             <!--Formulario principal-->
-            <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9" c:KeyboardFocus.On="{Binding ElementName=LetraCodigo}" HorizontalAlignment="Center" Grid.Column="1" Grid.Row="0">
+            <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9" c:KeyboardFocus.On="{Binding ElementName=Nombre}" HorizontalAlignment="Center" Grid.Column="1" Grid.Row="0">
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0.4*"/>

@@ -34,10 +34,12 @@ namespace Client.Main.ViewModels
                 {
                     await Utilities.Sincronizar.SincronizarRegistro();
                 }
+                
                 catch (Exception e)
                 {
 
                     MessageBox.Show(e.Message);
+                
                 }
             }
         }
