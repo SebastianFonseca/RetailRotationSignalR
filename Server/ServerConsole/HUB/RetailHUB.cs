@@ -148,6 +148,101 @@ namespace ServerConsole
 
         #endregion
 
+        #region Proveedores
+        /// <summary>
+        /// Metodo que al ser llamado desde un cliente agrega los datos de un nuevo proveedor.
+        /// </summary>
+        /// <param name="proveedor"></param>
+        /// <returns></returns>
+        public string ServidorNuevoProveedor(ProveedorModel proveedor)
+        {
+            return DbConnection.NuevoProveedor(proveedor);
+        }
+
+        /// <summary>
+        /// Retorna los Proveedores encontrados en la base de datos.
+        /// </summary>
+        /// <param name="caracteres"></param>
+        /// <returns></returns>
+        public BindableCollection<ProveedorModel> ServidorGetProveedores(string caracteres)
+        {
+            return DbConnection.getProveedores(caracteres);
+        }
+
+        /// <summary>
+        /// Retorna un proveedor especificamente daso su numero de cedula.
+        /// </summary>
+        /// <param name="CedulaProveedor"></param>
+        /// <returns></returns>
+        public BindableCollection<ProveedorModel> ServidorGetProveedor(string numeroDeCedula)
+        {
+            return DbConnection.getProveedor(numeroDeCedula);
+        }
+
+        /// <summary>
+        /// Metodo que se llama desde un cliente para eliminar un proveedor.
+        /// </summary>
+        /// <param name="cedula"></param>
+        /// <returns></returns>
+        public string ServidorDeleteProveedor(string cedula)
+        {
+            return DbConnection.deleteProveedor(cedula);
+        }
+
+        /// <summary>
+        /// Cuado es invocado desde un cliete actualiza en la base de datos la informacion de la instancia de proveedor dada.
+        /// </summary>
+        /// <param name="proveedor"></param>
+        /// <returns></returns>
+        public string ServidorActualizarProveedor(ProveedorModel proveedor)
+        {
+            return DbConnection.actualizarProveedor(proveedor);
+        }
+        #endregion
+
+        #region Usuarios
+        /// <summary>
+        /// Registra en la base de datos el nuevo empleado.
+        /// </summary>
+        /// <param name="empleado"></param>
+        /// <returns></returns>
+        public string ServidorCreateNuevoUsuario(EmpleadoModel empleado)
+        {
+            return DbConnection.NuevoUsuario(empleado);
+        }
+
+        /// <summary>
+        /// Busca en la tabla empleados las coincidencias de cedula, nombre o apellidos de los catacteres dados.
+        /// </summary>
+        /// <param name="caracteres"></param>
+        /// <returns></returns>
+        public BindableCollection<EmpleadoModel> ServidorGetUsuarios(string caracteres)
+        {
+            return DbConnection.getEmpleados(caracteres);
+        }
+
+        /// <summary>
+        /// Elimina al usuario con el numero de cedula dado.
+        /// </summary>
+        /// <param name="Cedula"></param>
+        /// <returns></returns>
+        public string ServidorDeleteUsuario(string Cedula)
+        {
+            return DbConnection.DeleteEmpleado(Cedula);
+        }
+
+        /// <summary>
+        /// Actualiza la informacion del usuario con el número de cedula dado como parametro.
+        /// </summary>
+        /// <param name="Empleado"></param>
+        /// <param name="CC"></param>
+        /// <returns></returns>
+        public string ServidorUpdateUsuario(EmpleadoModel Empleado, string CC)
+        {
+            return DbConnection.ActualizarUsuario(Empleado, CC);
+        }
+        #endregion
+
         #region Locales
         /// <summary>
         ///  Cuando es llamado desde un 'cliente' registra un nuevo Local.
@@ -201,101 +296,6 @@ namespace ServerConsole
         }
         #endregion
 
-        #region Usuarios
-        /// <summary>
-        /// Registra en la base de datos el nuevo empleado.
-        /// </summary>
-        /// <param name="empleado"></param>
-        /// <returns></returns>
-        public string ServidorCreateNuevoUsuario(EmpleadoModel empleado)
-        {
-            return DbConnection.NuevoUsuario(empleado);
-        }
-
-        /// <summary>
-        /// Busca en la tabla empleados las coincidencias de cedula, nombre o apellidos de los catacteres dados.
-        /// </summary>
-        /// <param name="caracteres"></param>
-        /// <returns></returns>
-        public BindableCollection<EmpleadoModel> ServidorGetUsuarios(string caracteres)
-        {
-            return DbConnection.getEmpleados(caracteres);
-        }
-
-        /// <summary>
-        /// Elimina al usuario con el numero de cedula dado.
-        /// </summary>
-        /// <param name="Cedula"></param>
-        /// <returns></returns>
-        public string ServidorDeleteUsuario(string Cedula)
-        {
-            return DbConnection.DeleteEmpleado(Cedula);
-        }
-
-        /// <summary>
-        /// Actualiza la informacion del usuario con el número de cedula dado como parametro.
-        /// </summary>
-        /// <param name="Empleado"></param>
-        /// <param name="CC"></param>
-        /// <returns></returns>
-        public string ServidorUpdateUsuario(EmpleadoModel Empleado, string CC)
-        {
-            return DbConnection.ActualizarUsuario(Empleado, CC);
-        }
-        #endregion
-
-        #region Proveedores
-        /// <summary>
-        /// Metodo que al ser llamado desde un cliente agrega los datos de un nuevo proveedor.
-        /// </summary>
-        /// <param name="proveedor"></param>
-        /// <returns></returns>
-        public string ServidorNuevoProveedor(ProveedorModel proveedor)
-        {           
-            return DbConnection.NuevoProveedor(proveedor);
-        }
-
-        /// <summary>
-        /// Retorna los Proveedores encontrados en la base de datos.
-        /// </summary>
-        /// <param name="caracteres"></param>
-        /// <returns></returns>
-        public BindableCollection<ProveedorModel> ServidorGetProveedores(string caracteres)
-        {
-            return DbConnection.getProveedores(caracteres);
-        }
-
-        /// <summary>
-        /// Retorna un proveedor especificamente daso su numero de cedula.
-        /// </summary>
-        /// <param name="CedulaProveedor"></param>
-        /// <returns></returns>
-        public BindableCollection<ProveedorModel> ServidorGetProveedor(string numeroDeCedula)
-        {
-            return DbConnection.getProveedor(numeroDeCedula);
-        }
-
-        /// <summary>
-        /// Metodo que se llama desde un cliente para eliminar un proveedor.
-        /// </summary>
-        /// <param name="cedula"></param>
-        /// <returns></returns>
-        public string ServidorDeleteProveedor(string cedula)
-        {
-            return DbConnection.deleteProveedor(cedula);
-        }
-
-        /// <summary>
-        /// Cuado es invocado desde un cliete actualiza en la base de datos la informacion de la instancia de proveedor dada.
-        /// </summary>
-        /// <param name="proveedor"></param>
-        /// <returns></returns>
-        public string ServidorActualizarProveedor(ProveedorModel proveedor)
-        {
-          return  DbConnection.actualizarProveedor(proveedor);
-        }
-        #endregion
-
         #region Existencias
         /// <summary>
         /// Metodo que al ser llamado desde un cliente agrega los datos de un nuevo docuemento de existencias.
@@ -305,19 +305,10 @@ namespace ServerConsole
         public string ServidorNuevaExistencia(ExistenciasModel existencias)
         {
             return DbConnection.NuevaExistencia(existencias);
-        } 
+        }
         #endregion
 
-        /// <summary>
-        /// Cuando es llamado desde un cliente retorna los registros de cambios guardados en la tabla que consigna dicha informacion en la base de datos
-        /// </summary>
-        /// <returns></returns>
-        public BindableCollection<string[]> ServidorNuevosRegistros(int a)
-        {
-            return DbConnection.registroCambios(a); 
-        }
-
-
+        #region Clientes
         /// <summary>
         /// Cuando es llamado desde un 'cliente' registra un nuevo cliente.
         /// </summary>
@@ -348,6 +339,22 @@ namespace ServerConsole
             }
 
         }
+
+        #endregion
+
+
+        /// <summary>
+        /// Cuando es llamado desde un cliente retorna los registros de cambios guardados en la tabla que consigna dicha informacion en la base de datos
+        /// </summary>
+        /// <returns></returns>
+        public BindableCollection<string[]> ServidorNuevosRegistros(int a)
+        {
+            return DbConnection.registroCambios(a); 
+        }
+
+
+
+
 
 
 

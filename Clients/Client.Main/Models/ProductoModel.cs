@@ -20,7 +20,9 @@ namespace Client.Main.Models
         public decimal  iva { get; set; }
         public string codigoBarras { get; set; }
 
-        public int? existencia { get; set; } 
+        public int? existencia { get; set; }
+
+        public string estado { get; set; }
 
         /// <summary>
         ///Propiedad necesaria para el binding de datos en las listbox con el productoseleccionado.

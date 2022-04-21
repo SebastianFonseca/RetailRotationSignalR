@@ -18,7 +18,8 @@ namespace ServerConsole.Models
         public DateTime fechaVencimiento { get; set; } = DateTime.Today;
         public decimal iva { get; set; }
         public string codigoBarras { get; set; }
-
         public int? existencia { get; set; } = null;
+        public string estado { get; set; }
+
     }
 }

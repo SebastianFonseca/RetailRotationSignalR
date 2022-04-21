@@ -90,43 +90,7 @@ namespace ServerConsole.Utilities
 
         }
 
-        /// <summary>
-        /// Metodo encargado de ejecutar el query insert del nuevo cliente en la base de datos local.
-        /// </summary>
-        /// <param name="Cliente">Instancia de la clase ClientesModel.</param>
-        /// <returns></returns>
-        public static string AddClient(ClientesModel Cliente)
-        {
-            try
-            {
-                using (SqlConnection conn = new SqlConnection(_connString))
-                {
-                    string cadena = "INSERT INTO Clientes(Nombres,Apellidos,CedulaCliente,Email,Telefono,Puntos) VALUES (@name,@lastname,@cedula,@correo,@telefono, 100 )";
-                    SqlCommand cmd = new SqlCommand(cadena, conn);
-                    cmd.Parameters.AddWithValue("@name", Statics.PrimeraAMayuscula(Cliente.firstName));
-                    cmd.Parameters.AddWithValue("@lastname", Statics.PrimeraAMayuscula(Cliente.lastName));
-                    cmd.Parameters.AddWithValue("@cedula", Cliente.cedula);
-                    cmd.Parameters.AddWithValue("@correo", string.IsNullOrEmpty(Cliente.correo) ? (object)DBNull.Value : Cliente.correo);
-                    cmd.Parameters.AddWithValue("@telefono", string.IsNullOrEmpty(Cliente.telefono) ? (object)DBNull.Value : Cliente.telefono);
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
-                    return "true";
-                }
-            }
-            catch (Exception e)
-            {
-                if (e.Message.Substring(0, 50) == $"Violation of PRIMARY KEY constraint 'PK_Clientes'.")
-                {
-                    return "Cliente ya existe";
-                }
-                else
-                {
-                    Console.WriteLine(e.Message);
-                    return "false";
-                }
-            }
-        }
+
 
         #region Producto
         /// <summary>
@@ -176,8 +140,8 @@ namespace ServerConsole.Utilities
                         else
                         {
                             reader.Close();
-                            string cadena2 = "INSERT INTO Producto(CodigoProducto, Nombre, UnidadVenta,	UnidadCompra, PrecioVenta, Seccion, FechaVencimiento, IVA, CodigoBarras)" +
-                                " VALUES (@codigo,@nombre,@univenta,@unicompra,@precio,@seccion,@fv,@iva,@cb)";
+                            string cadena2 = "INSERT INTO Producto(CodigoProducto, Nombre, UnidadVenta,	UnidadCompra, PrecioVenta, Seccion, FechaVencimiento, IVA, CodigoBarras, Estado)" +
+                                " VALUES (@codigo,@nombre,@univenta,@unicompra,@precio,@seccion,@fv,@iva,@cb,'Activo')";
                             SqlCommand cmd2 = new SqlCommand(cadena2, conn);
                             cmd2.Parameters.AddWithValue("@codigo", Statics.PrimeraAMayuscula(Producto.codigoProducto));
                             cmd2.Parameters.AddWithValue("@nombre", Statics.PrimeraAMayuscula(Producto.nombre));
@@ -227,7 +191,7 @@ namespace ServerConsole.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = "SELECT *  FROM Producto ORDER BY Nombre";
+                    string cadena = "SELECT *  FROM Producto where Estado = 'Activo' ORDER BY Nombre ";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -279,7 +243,7 @@ namespace ServerConsole.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = $"SELECT Distinct * FROM Producto WHERE (CodigoProducto LIKE '%{caracteres}%') OR (Nombre LIKE '%{caracteres}%') ORDER BY Nombre;";
+                    string cadena = $"SELECT Distinct * FROM Producto WHERE ((CodigoProducto LIKE '%{caracteres}%') OR (Nombre LIKE '%{caracteres}%')) AND Estado = 'Activo' ORDER BY Nombre ;";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -331,7 +295,7 @@ namespace ServerConsole.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = $"delete from Producto Where CodigoProducto = '{idProducto}' ";
+                    string cadena = $"UPDATE Producto SET Estado = 'Inactivo' Where CodigoProducto = '{idProducto}' ";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     cmd.ExecuteNonQuery();
@@ -340,6 +304,8 @@ namespace ServerConsole.Utilities
                     Console.Write("\n\t" + DateTime.Now + "--");
                     Console.ForegroundColor = ConsoleColor.White;
                     Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha eliminado al producto con codigo: {idProducto}");
+
+                    Registrar("Delete", "", idProducto, "", "deleteProducto", "codigoProducto");
                     return "Se ha eliminado al producto.";
                 }
             }
@@ -435,8 +401,8 @@ namespace ServerConsole.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = "INSERT INTO Proveedor(CedulaProveedor,Nombres,Apellidos,Telefono,Ciudad,Direccion) VALUES " +
-                                                        "(@cedula,@nombre,@apellidos,@telefono,@ciudad,@direccion);";
+                    string cadena = "INSERT INTO Proveedor(CedulaProveedor,Nombres,Apellidos,Telefono,Ciudad,Direccion, Estado) VALUES " +
+                                                        "(@cedula,@nombre,@apellidos,@telefono,@ciudad,@direccion,'Activo');";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     cmd.Parameters.AddWithValue("@cedula", proveedor.cedula);
                     cmd.Parameters.AddWithValue("@nombre", Statics.PrimeraAMayuscula( proveedor.firstName));
@@ -533,7 +499,7 @@ namespace ServerConsole.Utilities
                 BindableCollection<ProveedorModel> proveedores = new BindableCollection<ProveedorModel>();
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = $"SELECT Distinct * FROM Proveedor WHERE ( CedulaProveedor like '%{Caracteres}%' ) or ( Nombres like '%{Caracteres}%' ) or ( Apellidos like '%{Caracteres}%' ) ORDER BY Nombres ";
+                    string cadena = $"SELECT Distinct * FROM Proveedor WHERE (( CedulaProveedor like '%{Caracteres}%' ) or ( Nombres like '%{Caracteres}%' ) or ( Apellidos like '%{Caracteres}%' )) and Estado = 'Activo' ORDER BY Nombres ";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -553,7 +519,7 @@ namespace ServerConsole.Utilities
                     }
                     proveedores.Add(new ProveedorModel() { cedula = "-", firstName = "-", lastName = "-prove", ciudad = "separador" });
 
-                    string cadena0 = $"SELECT Distinct Proveedor.CedulaProveedor,Proveedor.Nombres, Proveedor.Apellidos, Proveedor.Telefono, Proveedor.Ciudad, Proveedor.Direccion FROM proveedor  JOIN ProveedorProducto ON ProveedorProducto.CedulaProveedor = Proveedor.CedulaProveedor JOIN Producto ON ProveedorProducto.CodigoProducto = Producto.CodigoProducto WHERE Producto.Nombre LIKE '%{Caracteres}%';";
+                    string cadena0 = $"SELECT Distinct Proveedor.CedulaProveedor,Proveedor.Nombres, Proveedor.Apellidos, Proveedor.Telefono, Proveedor.Ciudad, Proveedor.Direccion FROM proveedor  JOIN ProveedorProducto ON ProveedorProducto.CedulaProveedor = Proveedor.CedulaProveedor JOIN Producto ON ProveedorProducto.CodigoProducto = Producto.CodigoProducto WHERE Producto.Nombre LIKE '%{Caracteres}%' AND Proveedor.Estado = 'Activo';";
                     SqlCommand cmd0 = new SqlCommand(cadena0, conn);
                     using (SqlDataReader reader0 = cmd0.ExecuteReader())
                     {
@@ -592,7 +558,7 @@ namespace ServerConsole.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = $"SELECT Distinct * FROM Proveedor WHERE CedulaProveedor = '{Cedula}' ORDER BY Nombres";
+                    string cadena = $"SELECT Distinct * FROM Proveedor WHERE CedulaProveedor = '{Cedula}' AND Estado = 'Activo' ORDER BY Nombres";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     ProveedorModel proveedor = new ProveedorModel();
@@ -648,7 +614,7 @@ namespace ServerConsole.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = $"delete from Proveedor Where CedulaProveedor = '{Cedula}' ";
+                    string cadena = $"UPDATE Proveedor SET Estado ='Inactivo' Where CedulaProveedor = '{Cedula}' ";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     cmd.ExecuteNonQuery();
@@ -657,6 +623,7 @@ namespace ServerConsole.Utilities
                     Console.Write("\n\t" + DateTime.Now + "--");
                     Console.ForegroundColor = ConsoleColor.White;
                     Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha eliminado al proveedor {Cedula}");
+                    Registrar("Delete", "", Cedula, "", "deleteProveedor", "cedula");
                     return "Se ha eliminado al proveedor.";
                 }
             }
@@ -730,8 +697,8 @@ namespace ServerConsole.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = "INSERT INTO Empleado(CedulaEmpleado,CodigoPuntoVenta,Nombres,Apellidos,FechaContratacion,Salario,Telefono,Cargo,Password,Direccion) VALUES " +
-                                                        "(@cedula,@puntodeventa,@nombre,@apellidos,@fecha,@salario,@telefono,@cargo,@contraseña,@direccion);";
+                    string cadena = "INSERT INTO Empleado(CedulaEmpleado,CodigoPuntoVenta,Nombres,Apellidos,FechaContratacion,Salario,Telefono,Cargo,Password,Direccion,Estado) VALUES " +
+                                                        "(@cedula,@puntodeventa,@nombre,@apellidos,@fecha,@salario,@telefono,@cargo,@contraseña,@direccion,'Activo');";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     cmd.Parameters.AddWithValue("@cedula", Empleado.cedula);
                     cmd.Parameters.AddWithValue("@puntodeventa", Empleado.puntoDeVenta.codigo);
@@ -783,7 +750,7 @@ namespace ServerConsole.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = $"SELECT Distinct * FROM EMPLEADO WHERE ( CedulaEmpleado like '%{Caracteres}%' ) or ( Nombres like '%{Caracteres}%' ) or ( Apellidos like '%{Caracteres}%' ) ORDER BY Nombres;";
+                    string cadena = $"SELECT Distinct * FROM EMPLEADO WHERE (( CedulaEmpleado like '%{Caracteres}%' ) or ( Nombres like '%{Caracteres}%' ) or ( Apellidos like '%{Caracteres}%' )) AND Estado = 'Activo' ORDER BY Nombres;";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -827,7 +794,7 @@ namespace ServerConsole.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = $"delete from empleado Where CedulaEmpleado = '{Cedula}' ";
+                    string cadena = $"UPDATE empleado set Estado = 'Inactivo' Where CedulaEmpleado = '{Cedula}' ";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     cmd.ExecuteNonQuery();
@@ -836,6 +803,7 @@ namespace ServerConsole.Utilities
                     Console.Write("\n\t" + DateTime.Now + "--");
                     Console.ForegroundColor = ConsoleColor.White;
                     Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha eliminado al usuario {Cedula}");
+                    Registrar("Delete", "", Cedula, "", "deleteEmpleado", "cedula");
                     return "Se ha eliminado al usuario.";
                 }
             }
@@ -927,8 +895,8 @@ namespace ServerConsole.Utilities
                             return "El nombre ya registrado.";
                         }
                     }
-                    string cadena = "INSERT INTO PuntoVenta(Nombres,Direccion,Telefono,Ciudad,NumeroCanastillas,FechaDeApertura) " +
-                                    "VALUES (@nombre,@direccion,@telefono,@ciudad,@nrocanastillas,@fechaapertura)";
+                    string cadena = "INSERT INTO PuntoVenta(Nombres,Direccion,Telefono,Ciudad,NumeroCanastillas,FechaDeApertura,Estado) " +
+                                    "VALUES (@nombre,@direccion,@telefono,@ciudad,@nrocanastillas,@fechaapertura,'Activo')";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     //cmd.Parameters.AddWithValue("@codigo", NuevoIdLocal());
                     cmd.Parameters.AddWithValue("@nombre", Statics.PrimeraAMayuscula(NuevoLocal.nombre));
@@ -980,7 +948,7 @@ namespace ServerConsole.Utilities
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
 
-                    string cadena = $"SELECT codigoPuntoVenta FROM PuntoVenta WHERE Nombres = '{Caracteres}' ";
+                    string cadena = $"SELECT codigoPuntoVenta FROM PuntoVenta WHERE Nombres = '{Caracteres}' ANd Estado = 'Activo' ";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     string rta;
@@ -1020,7 +988,7 @@ namespace ServerConsole.Utilities
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
 
-                    string cadena = $"SELECT Distinct * FROM PuntoVenta WHERE ( CodigoPuntoVenta like '%{Caracteres}%' ) or ( Nombres like '%{Caracteres}%' ) ORDER BY Nombres ";
+                    string cadena = $"SELECT Distinct * FROM PuntoVenta WHERE (( CodigoPuntoVenta like '%{Caracteres}%' ) or ( Nombres like '%{Caracteres}%' )) AND Estado = 'Activo' ORDER BY codigoPuntoVenta ";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -1084,7 +1052,7 @@ namespace ServerConsole.Utilities
                         else
                         {
                             reader.Close();
-                            string cadena = $"delete from PuntoVenta Where CodigoPuntoVenta = '{Codigo}' ";
+                            string cadena = $"Update PuntoVenta SET Estado = 'Inactivo' Where CodigoPuntoVenta = '{Codigo}' ";
                             SqlCommand cmd = new SqlCommand(cadena, conn);
                             //conn.Open();
                             cmd.ExecuteNonQuery();
@@ -1093,6 +1061,7 @@ namespace ServerConsole.Utilities
                             Console.Write("\n\t" + DateTime.Now + "-- ");
                             Console.ForegroundColor = ConsoleColor.White;
                             Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha eliminado al local {Codigo} - {nombre}. \n");
+                            Registrar("Delete", "", Codigo, "", "deleteLocal", "codigo");
                             return new object[] { "Local eliminado" };
                         }
 
@@ -1295,7 +1264,49 @@ namespace ServerConsole.Utilities
         }
         #endregion
 
-        
+        #region Clientes
+        /// <summary>
+        /// Metodo encargado de ejecutar el query insert del nuevo cliente en la base de datos local.
+        /// </summary>
+        /// <param name="Cliente">Instancia de la clase ClientesModel.</param>
+        /// <returns></returns>
+        public static string AddClient(ClientesModel Cliente)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = "INSERT INTO Clientes(Nombres,Apellidos,CedulaCliente,Email,Telefono,Puntos) VALUES (@name,@lastname,@cedula,@correo,@telefono, 100 )";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@name", Statics.PrimeraAMayuscula(Cliente.firstName));
+                    cmd.Parameters.AddWithValue("@lastname", Statics.PrimeraAMayuscula(Cliente.lastName));
+                    cmd.Parameters.AddWithValue("@cedula", Cliente.cedula);
+                    cmd.Parameters.AddWithValue("@correo", string.IsNullOrEmpty(Cliente.correo) ? (object)DBNull.Value : Cliente.correo);
+                    cmd.Parameters.AddWithValue("@telefono", string.IsNullOrEmpty(Cliente.telefono) ? (object)DBNull.Value : Cliente.telefono);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                    return "true";
+                }
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Substring(0, 50) == $"Violation of PRIMARY KEY constraint 'PK_Clientes'.")
+                {
+                    return "Cliente ya existe";
+                }
+                else
+                {
+                    Console.WriteLine(e.Message);
+                    return "false";
+                }
+            }
+        } 
+        #endregion
+
+
+
+
         /// <summary>
         /// Crea los registros en la base de datos local de los cambios realizados para que los clientes puedan despues replicarlos.
         /// </summary>
