@@ -272,7 +272,7 @@ namespace ServerConsole.Utilities
                         }
                     }
                     conn.Close();
-                    
+
                     return productos;
                 }
             }
@@ -405,8 +405,8 @@ namespace ServerConsole.Utilities
                                                         "(@cedula,@nombre,@apellidos,@telefono,@ciudad,@direccion,'Activo');";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     cmd.Parameters.AddWithValue("@cedula", proveedor.cedula);
-                    cmd.Parameters.AddWithValue("@nombre", Statics.PrimeraAMayuscula( proveedor.firstName));
-                    cmd.Parameters.AddWithValue("@apellidos", Statics.PrimeraAMayuscula( proveedor.lastName));
+                    cmd.Parameters.AddWithValue("@nombre", Statics.PrimeraAMayuscula(proveedor.firstName));
+                    cmd.Parameters.AddWithValue("@apellidos", Statics.PrimeraAMayuscula(proveedor.lastName));
                     cmd.Parameters.AddWithValue("@telefono", proveedor.telefono);
                     cmd.Parameters.AddWithValue("@ciudad", proveedor.ciudad);
                     cmd.Parameters.AddWithValue("@direccion", proveedor.direccion);
@@ -419,13 +419,13 @@ namespace ServerConsole.Utilities
                         Console.Write("\n\t" + DateTime.Now + "--");
                         Console.ForegroundColor = ConsoleColor.White;
                         Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo proveedor {proveedor.firstName} {proveedor.lastName}");
-                        Registrar("Insert", "ServidorGetProveedor", proveedor.cedula , "ProveedorModel[]", "NuevoProveedor", "cedula");
+                        Registrar("Insert", "ServidorGetProveedor", proveedor.cedula, "ProveedorModel[]", "NuevoProveedor", "cedula");
                         conn.Close();
                         return "Se ha registrado al nuevo proveedor.";
                     }
                     ///Si fallo la incersion de los productos se borra el registro del proveedor para que en un siguiente intento de registro no se repita la clave primaria.
                     string cadena0 = $"delete from Proveedor Where CedulaProveedor = '{proveedor.cedula}' ";
-                    SqlCommand cmd0 = new SqlCommand(cadena0, conn);                    
+                    SqlCommand cmd0 = new SqlCommand(cadena0, conn);
                     cmd.ExecuteNonQuery();
                     conn.Close();
                     return response;
@@ -593,7 +593,7 @@ namespace ServerConsole.Utilities
                     }
                     proveedor.productos = productos;
                     conn.Close();
-                    return new BindableCollection<ProveedorModel>() {proveedor};
+                    return new BindableCollection<ProveedorModel>() { proveedor };
                 }
             }
             catch (Exception e)
@@ -954,9 +954,9 @@ namespace ServerConsole.Utilities
                     string rta;
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
-                        reader.Read();                        
-                        rta =  reader["codigoPuntoVenta"].ToString();
- 
+                        reader.Read();
+                        rta = reader["codigoPuntoVenta"].ToString();
+
                     }
                     conn.Close();
                     return rta;
@@ -1107,7 +1107,7 @@ namespace ServerConsole.Utilities
                     cmd.ExecuteNonQuery();
                     Console.WriteLine($"Se ha editado la informacion del local: {Local.nombre }");
                     conn.Close();
-                    Registrar("Update", "ServidorGetLocales", Local.codigo , "LocalModel[]", "ActualizarLocal", "codigo");
+                    Registrar("Update", "ServidorGetLocales", Local.codigo, "LocalModel[]", "ActualizarLocal", "codigo");
                     return "El local se ha actualizado.";
 
                 }
@@ -1262,6 +1262,7 @@ namespace ServerConsole.Utilities
                 }
             }
         }
+
         #endregion
 
         #region Clientes
@@ -1301,7 +1302,7 @@ namespace ServerConsole.Utilities
                     return "false";
                 }
             }
-        } 
+        }
         #endregion
 
 
@@ -1323,7 +1324,7 @@ namespace ServerConsole.Utilities
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
                     string cadena = $"INSERT INTO Registros(Tipo,NombreMetodoServidor,ClavePrimaria,TipoRetornoMetodoServidor,NombreMetodoCliente, NombrePK) VALUES ('{Tipo}','{NombreMetodoServidor}','{ClavePrimaria}','{TipoRetornoMetodoServidor}','{NombreMetodoCliente}', '{NombrePK}');";
-                    SqlCommand cmd = new SqlCommand(cadena, conn);        
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     cmd.ExecuteNonQuery();
                     conn.Close();
@@ -1332,10 +1333,10 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-    
-                    Console.WriteLine(e.Message);
-                    return false;
-                
+
+                Console.WriteLine(e.Message);
+                return false;
+
             }
 
         }
@@ -1360,11 +1361,11 @@ namespace ServerConsole.Utilities
                         while (reader.Read())
                         {
                             string[] reg = new string[7]
-                            { 
-                                reader["Id"].ToString(), 
-                                reader["Tipo"].ToString(), 
-                                reader["NombreMetodoServidor"].ToString(), 
-                                reader["ClavePrimaria"].ToString(), 
+                            {
+                                reader["Id"].ToString(),
+                                reader["Tipo"].ToString(),
+                                reader["NombreMetodoServidor"].ToString(),
+                                reader["ClavePrimaria"].ToString(),
                                 reader["TipoRetornoMetodoServidor"].ToString(),
                                 reader["NombreMetodoCliente"].ToString(),
                                 reader["NombrePK"].ToString()

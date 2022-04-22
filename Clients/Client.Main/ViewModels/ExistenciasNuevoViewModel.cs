@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Caliburn.Micro;
 using Client.Main.Models;
+using Client.Main.Utilities;
 using Client.Main.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -27,21 +28,28 @@ namespace Client.Main.Views
                 responsable = VentanaPrincipal.usuario,
                 puntoVenta = VentanaPrincipal.usuario.puntoDeVenta,
             };
-            //getprod();           
+            getprod();           
 
         }
-
-
-
-
 
         public async void getprod()
         {
             try
             {
-                Task<object> re = conexion.CallServerMethod("ServidorgetIdProductos", Arguments: new object[] { });
-                await re;
-                Productos = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ProductoModel>>(re.Result.ToString());
+                if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+                {
+                    Task<object> re = conexion.CallServerMethod("ServidorgetIdProductos", Arguments: new object[] { });
+                    await re;
+                    Productos = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ProductoModel>>(re.Result.ToString());
+                }
+                else
+                {
+                    if (MainWindowViewModel.Status == "Trabajando localmente")
+                    {
+                        Productos = DbConnection.getProductos();
+                    }
+                }
+
 
             }
             catch (Exception e)
@@ -72,7 +80,7 @@ namespace Client.Main.Views
             }
         }
 
-        private string _dia;
+        private string _dia = DateTime.Today.Day.ToString();
 
         public string Dia
         {
@@ -94,7 +102,7 @@ namespace Client.Main.Views
             }
         }
 
-        private string _mes;
+        private string _mes = DateTime.Today.Month.ToString();
 
         public string Mes
         {
@@ -113,7 +121,9 @@ namespace Client.Main.Views
                 
             }
         }
-        private string _año;
+        private string _año = DateTime.Today.Year.ToString();
+
+        
 
         public string Año
         {
@@ -134,11 +144,6 @@ namespace Client.Main.Views
             }
         }
 
-
-
-
-
-
         public EmpleadoModel Responsable
         {
             get => existencias.responsable;
@@ -153,18 +158,19 @@ namespace Client.Main.Views
         public void BackButton()
         {
             Productos.Clear();
-            VentanaPrincipal.ActivateItem(new AdministracionInventarioViewModel(VentanaPrincipal));
+            VentanaPrincipal.ActivateItem(new AdministracionInventarioViewModel(VentanaPrincipal));            
         }
         public async void Guardar()
         {
             try
             {
-                existencias.fecha = new DateTime(Int16.Parse(Dia), Int16.Parse(Mes), Int16.Parse(Año));
+                existencias.fecha = new DateTime(Int16.Parse(Año), Int16.Parse(Mes), Int16.Parse(Dia));
 
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
+                MessageBox.Show("Verifique la fecha ingresada \n" + e.Message);
+                return;
             }
             //DbConnection.SincronizarReplicacionMerge();
             foreach (ProductoModel producto in Productos)
@@ -179,6 +185,7 @@ namespace Client.Main.Views
             if (string.IsNullOrEmpty(Dia) || string.IsNullOrEmpty(Mes) || string.IsNullOrEmpty(Año))
             {
                 MessageBox.Show("Ingrese una fecha");
+                return;
             }
 
             try
@@ -201,6 +208,8 @@ namespace Client.Main.Views
                     if (MainWindowViewModel.Status == "Trabajando localmente")
                     {
                         MessageBox.Show(Utilities.DbConnection.NuevaExistencia(existencias));
+                        VentanaPrincipal.ActivateItem(new AdministracionInventarioViewModel(VentanaPrincipal));
+                        return;
                     }
                 }
             }

@@ -102,11 +102,11 @@
                     <!--Linea 0-->
                     <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center">Fecha:</TextBlock>
                     <StackPanel Grid.Row="1" Grid.Column="1"  x:Name="Fecha" Orientation="Horizontal" Margin="3">
-                        <TextBox Style="{StaticResource GeneralTextBox}" MaxLength="2" Width="30" x:Name="Dia"/>
+                        <TextBox Style="{StaticResource GeneralTextBox}" MaxLength="2" Width="30" x:Name="Dia" HorizontalContentAlignment="Center" />
                         <TextBlock Text=" / " FontWeight="Normal"/>
-                        <TextBox Style="{StaticResource GeneralTextBox}" MaxLength="2" Width="30" x:Name="Mes"/>
+                        <TextBox Style="{StaticResource GeneralTextBox}" MaxLength="2" Width="30" x:Name="Mes" HorizontalContentAlignment="Center" />
                         <TextBlock Text=" / " FontWeight="Normal"/>
-                        <TextBox Style="{StaticResource GeneralTextBox}" MaxLength="4" Width="50" x:Name="Año"/>
+                        <TextBox Style="{StaticResource GeneralTextBox}" MaxLength="4" Width="50" x:Name="Año" HorizontalContentAlignment="Center" />
                     </StackPanel>
                     
                     <!--<DatePicker   Style="{DynamicResource date}"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0 2 0 0" FontWeight="DemiBold" DisplayDate="{Binding FechaDeApertura}" />-->

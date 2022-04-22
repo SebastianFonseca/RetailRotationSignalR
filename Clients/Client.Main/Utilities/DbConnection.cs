@@ -1,20 +1,20 @@
-﻿using System;
+﻿using Caliburn.Micro;
+using Client.Main.Models;
+using Dapper;
+using Dotmim.Sync;
+using Dotmim.Sync.SqlServer;
+using Microsoft.SqlServer.Management.Common;
+using Microsoft.SqlServer.Replication;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
-using Dapper;
 using System.Text;
-using System.Windows;
-using Client.Main.Models;
-using static Client.Main.ViewModels.AddClientViewModel;
-using System.Collections.ObjectModel;
-using Caliburn.Micro;
-using Microsoft.SqlServer.Management.Common;
-using Microsoft.SqlServer.Replication;
 using System.Threading.Tasks;
-using Dotmim.Sync.SqlServer;
-using Dotmim.Sync;
+using System.Windows;
+using static Client.Main.ViewModels.AddClientViewModel;
 
 namespace Client.Main.Utilities
 {
@@ -32,7 +32,7 @@ namespace Client.Main.Utilities
         /// <param name="Password"></param>
         /// <returns></returns>             
         public static object[] Login(string User, string Password)
-        {                      
+        {
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
@@ -67,7 +67,7 @@ namespace Client.Main.Utilities
                         conn.Close();
                         return new[] { "Contraseña incorrecta." };
                     }
-                    
+
                 }
             }
             catch (Exception e)
@@ -156,7 +156,7 @@ namespace Client.Main.Utilities
                         {
                             conn.Close();
                             return false;
-                           // return "Nombre de producto ya registrado.";
+                            // return "Nombre de producto ya registrado.";
                         }
                         else
                         {
@@ -282,6 +282,64 @@ namespace Client.Main.Utilities
             }
 
         }
+
+        /// <summary>
+        /// Variable retornada por el metodo getProducots
+        /// </summary>
+        public static BindableCollection<ProductoModel> productos = new BindableCollection<ProductoModel>();
+
+        /// <summary>
+        /// Obtener Nombres y CodigoProducto de todos los productos en la base de datos.
+        /// </summary>
+        /// <returns></returns>
+        public static BindableCollection<ProductoModel> getProductos()
+        {
+
+            productos.Clear();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = "SELECT *  FROM Producto where Estado = 'Activo' ORDER BY Nombre ";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            ProductoModel producto = new ProductoModel();
+                            producto.codigoProducto = reader["CodigoProducto"].ToString();
+                            producto.nombre = reader["Nombre"].ToString();
+                            producto.unidadCompra = reader["UnidadCompra"].ToString();
+                            producto.unidadCompra = reader["UnidadVenta"].ToString();
+                            producto.precioVenta = Convert.ToDecimal(reader["PrecioVenta"].ToString());
+                            producto.seccion = reader["Seccion"].ToString();
+                            producto.iva = Convert.ToDecimal(reader["IVA"].ToString());
+                            producto.codigoBarras = reader["CodigoBarras"].ToString();
+                            if (reader["FechaVencimiento"].ToString() == "")
+                            {
+                                producto.fechaVencimiento = DateTime.MinValue;
+                            }
+                            else
+                            {
+                                producto.fechaVencimiento = DateTime.Parse(reader["FechaVencimiento"].ToString());
+                            }
+                            productos.Add(producto);
+                        }
+                    }
+                    conn.Close();
+                    return productos;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+
+        }
+
+
 
         #endregion
 
@@ -555,7 +613,7 @@ namespace Client.Main.Utilities
                     {
                         conn.Close();
                         return true;
-                       // return "Se ha editado la informacion.";
+                        // return "Se ha editado la informacion.";
                     }
                     return false;
                     //return response;
@@ -579,7 +637,7 @@ namespace Client.Main.Utilities
         #endregion
 
         #region Usuario
-                    
+
         /// <summary>
         /// Metodo encargado de ejecutar el query insert del nuevo empleado en la base de datos local.
         /// </summary>
@@ -1294,7 +1352,7 @@ namespace Client.Main.Utilities
                         conn.Close();
                         return respuesta;
                     }
-                    
+
                 }
             }
             catch (Exception e)
@@ -1314,9 +1372,10 @@ namespace Client.Main.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-
-                    string cadena = $"INSERT INTO UltimoRegistro(IDUltimoRegistro) VALUES ({a});";
+                    
+                    string cadena = $"INSERT INTO UltimoRegistro(IDUltimoRegistro,Fecha) VALUES ({a}, @fecha);";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@fecha", DateTime.Now);
                     conn.Open();
                     cmd.ExecuteNonQuery();
                     conn.Close();
@@ -1324,9 +1383,10 @@ namespace Client.Main.Utilities
 
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return false;               
+                MessageBox.Show(e.Message);
+                return false;
             }
         }
 
@@ -1336,9 +1396,9 @@ namespace Client.Main.Utilities
         /// <param name="name"></param>
         /// <returns></returns>
         static string ConnectionString(string name)
-            {
-                return ConfigurationManager.ConnectionStrings[name].ConnectionString;
-            }
+        {
+            return ConfigurationManager.ConnectionStrings[name].ConnectionString;
+        }
 
 
 
