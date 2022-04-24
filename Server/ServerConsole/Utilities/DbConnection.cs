@@ -90,8 +90,6 @@ namespace ServerConsole.Utilities
 
         }
 
-
-
         #region Producto
         /// <summary>
         /// Registra en la base de datos el nuevo producto.
@@ -1262,6 +1260,87 @@ namespace ServerConsole.Utilities
                 }
             }
         }
+
+        /// <summary>
+        /// Retorna las coincidencias en las existencias de los caracteres dados comparados con los codigos de las existencias y los codigos de los locales.
+        /// </summary>
+        /// <param name="Caracteres"></param>
+        /// <returns></returns>
+        public static BindableCollection<ExistenciasModel> getExistencias(string Caracteres)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<ExistenciasModel> cExistencias = new BindableCollection<ExistenciasModel>();
+                    DateTime fecha = new DateTime();
+                    if (!DateTime.TryParse(Caracteres, out fecha))
+                        fecha = DateTime.MinValue;
+                    string cadena = $" select * from ExistenciasFisicas where FechaExistencia = '{fecha.ToString("yyyy-MM-dd")}' or CodigoExistencia like '%{Caracteres}%'  or CodigoExistencia like '______________{Caracteres}' ORDER BY CodigoExistencia;";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        cExistencias.Clear();
+                        while (reader.Read())
+                        {
+                            ExistenciasModel exist = new ExistenciasModel();
+                            exist.codigo = reader["CodigoExistencia"].ToString();
+                            exist.responsable.cedula = reader["CedulaEmpleado"].ToString();
+                            exist.fecha = DateTime.Parse(reader["FechaExistencia"].ToString());
+                            exist.puntoVenta.codigo = reader["CodigoPuntoVenta"].ToString();
+                            cExistencias.Add(exist);
+                        }
+                    }
+                    conn.Close();
+                    return cExistencias;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+
+        //public BindableCollection<ProductoModel> getProductoExistencia(string codigoExistencia)                 
+        //{
+        //    try
+        //    {
+        //        using (SqlConnection conn = new SqlConnection(_connString))
+        //        {
+        //            BindableCollection<ExistenciasModel> cExistencias = new BindableCollection<ExistenciasModel>();
+        //           // string cadena = $" select * from ExistenciasFisicas where FechaExistencia = '{Caracteres}' or CodigoExistencia like '%{Caracteres}%'  or CodigoExistencia like '______________{Caracteres}' ORDER BY CodigoExistencia;";
+        //            SqlCommand cmd = new SqlCommand(cadena, conn);
+        //            conn.Open();
+        //            using (SqlDataReader reader = cmd.ExecuteReader())
+        //            {
+        //                cExistencias.Clear();
+        //                while (reader.Read())
+        //                {
+        //                    ExistenciasModel exist = new ExistenciasModel();
+        //                    exist.codigo = reader["CodigoExistencia"].ToString();
+        //                    exist.responsable.cedula = reader["CedulaEmpleado"].ToString();
+        //                    exist.fecha = DateTime.Parse(reader["FechaExistencia"].ToString());
+        //                    exist.puntoVenta.codigo = reader["CodigoPuntoVenta"].ToString();
+
+        //                    emp.Add(persona);
+        //                }
+        //            }
+        //            conn.Close();
+        //            return emp;
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Console.WriteLine(e.Message);
+        //        return null;
+        //    }
+
+        //}
+
+
+
 
         #endregion
 

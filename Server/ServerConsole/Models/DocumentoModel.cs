@@ -9,8 +9,8 @@ namespace ServerConsole.Models
     {
         public string codigo { get; set; }
         public DateTime fecha { get; set; }
-        public EmpleadoModel responsable { get; set; }
-        public LocalModel puntoVenta { get; set; }
+        public EmpleadoModel responsable { get; set; } = new EmpleadoModel();
+        public LocalModel puntoVenta { get; set; } = new LocalModel();
         public BindableCollection<ProductoModel> productos { get; set; }
 
     }

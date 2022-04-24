@@ -42,13 +42,11 @@ namespace Client.Main.Views
                     await re;
                     Productos = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ProductoModel>>(re.Result.ToString());
                 }
-                else
+                if (MainWindowViewModel.Status == "Trabajando localmente")
                 {
-                    if (MainWindowViewModel.Status == "Trabajando localmente")
-                    {
-                        Productos = DbConnection.getProductos();
-                    }
+                    Productos = DbConnection.getProductos();
                 }
+                
 
 
             }
@@ -172,7 +170,6 @@ namespace Client.Main.Views
                 MessageBox.Show("Verifique la fecha ingresada \n" + e.Message);
                 return;
             }
-            //DbConnection.SincronizarReplicacionMerge();
             foreach (ProductoModel producto in Productos)
             {
                 if (producto.existencia == null)
@@ -195,11 +192,15 @@ namespace Client.Main.Views
 
                     Task<object> re = conexion.CallServerMethod("ServidorNuevaExistencia", Arguments: new[] { existencias });
                     await re;
-                    if (re.Result.ToString() == "Registrado")
+                    if (re.Result.ToString() == "Se ha registrado el nuevo documento.")
                     {
-                        MessageBox.Show("Nuevo documento" + re.Result.ToString());
+                        MessageBox.Show(re.Result.ToString());
                         VentanaPrincipal.ActivateItem(new AdministracionInventarioViewModel(VentanaPrincipal));
                         return;
+                    }
+                    if (re.Result.ToString() == "Existencia ya registrada.")
+                    {
+                        MessageBox.Show("Existencia ya registrada");
                     }
                     MessageBox.Show(re.Result.ToString());
                 }

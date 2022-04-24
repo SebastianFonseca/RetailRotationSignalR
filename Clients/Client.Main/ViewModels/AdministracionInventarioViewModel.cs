@@ -19,6 +19,31 @@ namespace Client.Main.ViewModels
             VentanaPrincipal.ActivateItem(new ExistenciasNuevoViewModel(VentanaPrincipal));
         }
 
+       public void BuscarExistencia()
+        {
+            VentanaPrincipal.ActivateItem(new ExistenciasBuscarViewModel(VentanaPrincipal));
+        }
+
+        public void NuevoPedido()
+        {
+
+        }
+
+        public void BuscarPedido()
+        {
+
+        }
+
+        public void NuevoRecibido()
+        {
+
+        }
+
+
+        public void BuscarRecibido()
+        {
+
+        }
 
 
     }

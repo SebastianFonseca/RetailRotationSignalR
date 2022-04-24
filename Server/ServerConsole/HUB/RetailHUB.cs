@@ -306,6 +306,17 @@ namespace ServerConsole
         {
             return DbConnection.NuevaExistencia(existencias);
         }
+
+        /// <summary>
+        /// Retorna las coincidencias en las existencias de los caracteres dados comparados con los codigos de las existencias y los codigos de los locales.
+        /// </summary>
+        /// <param name="Caracteres"></param>
+        /// <returns></returns>
+        public BindableCollection<ExistenciasModel> servidorGetExistencias(string caracteres)
+        {
+            return DbConnection.getExistencias(caracteres);
+        }
+        
         #endregion
 
         #region Clientes
@@ -348,6 +359,7 @@ namespace ServerConsole
         /// </summary>
         /// <returns></returns>
         public BindableCollection<string[]> ServidorNuevosRegistros(int a)
+        
         {
             return DbConnection.registroCambios(a); 
         }
