@@ -43,10 +43,10 @@
         <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9" Focusable="False" >
             <Grid.ColumnDefinitions>
 
-                <ColumnDefinition Width="1.5*"/>
-                <ColumnDefinition Width="4*" />
+                <ColumnDefinition Width="1.25*"/>
+                <ColumnDefinition Width="4.5*" />
                 <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="0.75*"/>
 
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
@@ -69,7 +69,7 @@
                         <ColumnDefinition Width="0.7*"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBox   x:Name="BuscarTbxFecha" Height="50"   cal:Message.Attach="[Event TextChanged] = [Action EscribiendoBusqueda]"  VerticalAlignment="Center"  Margin="1 0 1 0"  BorderThickness="0" Grid.Column="0" MaxLength="10">
+                    <TextBox   x:Name="BuscarTbxFecha" Height="50"   cal:Message.Attach="[Event TextChanged] = [Action EscribiendoBusqueda]"  VerticalAlignment="Center"  Margin="1 0 1 0"  BorderThickness="0" Grid.Column="0" MaxLength="10" HorizontalContentAlignment="Center" IsEnabled="{Binding Path=Buscartbxfechab}">
                     <TextBox.Style>
                         <Style TargetType="TextBox" BasedOn="{StaticResource GeneralTextBox}">
                             <Style.Triggers>
@@ -115,8 +115,8 @@
                             <RotateTransform Angle="90" />
                         </Separator.LayoutTransform>
                     </Separator>
-                    
-                <TextBox   x:Name="BuscarTbx" Height="50"  BorderThickness="0" cal:Message.Attach="[Event TextChanged] = [Action EscribiendoBusqueda]"  VerticalAlignment="Center" Margin="5 0 1 0 " Grid.Column="1" >
+
+                    <TextBox   x:Name="BuscarTbx" Height="50"  BorderThickness="0" cal:Message.Attach="[Event TextChanged] = [Action EscribiendoBusqueda]"  VerticalAlignment="Center" Margin="5 0 1 0 " Grid.Column="1" InputScope="Number" IsEnabled="{Binding Path=Buscartbxb}">
                     <TextBox.Style>
                         <Style TargetType="TextBox" BasedOn="{StaticResource GeneralTextBox}">
                             <Style.Triggers>
@@ -161,47 +161,32 @@
             </Border>
 
             <!--PopUp que se despliega cuando se realizan las busquedas-->
-            <Border BorderThickness="1 0 1.5 1.5" BorderBrush="Black"  Visibility="{Binding Path=BusquedasVisibilidad}" Margin="5 -10 5 5"  Background="#F7EBD7" Grid.Column="1" Grid.Row="2">
-                    <Grid  ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto"  Margin="2 2 0 5" >
-
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition Height="1"/>
-                            <RowDefinition  />
-                        </Grid.RowDefinitions>
-
-                        <DockPanel Grid.Row="0" Margin="0"  >
-                            <ListBox
-                                x:Name="Busquedas" 
-                                SelectedItem="{Binding Path=ExistenciaSeleccionada}"                                 
-                                ItemsSource="{Binding Path=Busquedas}" 
-                                DockPanel.Dock="Bottom"                           
-                                ScrollViewer.VerticalScrollBarVisibility="Visible"
-                                ScrollViewer.CanContentScroll="True"                          
-                                Background="Transparent"                                                                                                
-                                BorderThickness="0"
-                                MaxHeight="50"
-                                VerticalAlignment="Stretch"
-                                HorizontalAlignment="Stretch">
-                                <ListBox.ItemTemplate >
-                                    <DataTemplate >
-                                        <TextBlock>
-                                            <TextBlock.Text>
-                                                <MultiBinding StringFormat=" {0} - {1} Local: {2}">
-                                                    <Binding Path="codigo"/>
-                                                    <Binding Path="fecha"/>
-                                                    <Binding Path="puntoVenta.codigo"/>
-                                                </MultiBinding>
-                                            </TextBlock.Text>
-                                        </TextBlock>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                        </DockPanel>
-
-
-                    </Grid>
-                </Border>
+            <Border BorderThickness="1 0 1.5 1.5" BorderBrush="Black"  Visibility="{Binding Path=BusquedasVisibilidad}" Margin="5 -10 5 5"  Background="#F7EBD7"  Grid.Column="1" Grid.Row="2">
+                <ListBox
+                    x:Name="Busquedas" 
+                    SelectedItem="{Binding Path=ExistenciaSeleccionada}"                                 
+                    ItemsSource="{Binding Path=Busquedas}" 
+                    DockPanel.Dock="Bottom"                           
+                    ScrollViewer.VerticalScrollBarVisibility="Visible"
+                    ScrollViewer.CanContentScroll="True"                          
+                    Background="Transparent"                                       
+                    BorderThickness="0"
+                    HorizontalAlignment="Stretch">
+                    <ListBox.ItemTemplate >
+                        <DataTemplate >
+                            <TextBlock>
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat=" {0}  {1:dd - MMMM / yyyy} Local: {2}">
+                                        <Binding Path="codigo"/>
+                                        <Binding Path="fecha"/>
+                                        <Binding Path="puntoVenta.codigo"/>
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Border>
 
 
             <!--Boton BUSCAR-->

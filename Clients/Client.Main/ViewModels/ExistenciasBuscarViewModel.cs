@@ -22,18 +22,52 @@ namespace Client.Main.ViewModels
 
         }
 
+        private bool _buscartbxb = true;
+
+        public bool Buscartbxb
+        {
+            get { return _buscartbxb; }
+            set
+            {
+                _buscartbxb = value;
+                NotifyOfPropertyChange(() => Buscartbxb);
+            }
+        }
+
+
+
         private string _buscarTbx;
         public string BuscarTbx
         {
             get => _buscarTbx;
             set
             {
-                if (!string.IsNullOrEmpty(BuscarTbxFecha))
+                if (!string.IsNullOrEmpty(value))
                 {
-                    return;
+                    Buscartbxfechab = false;
+                    if (!string.IsNullOrEmpty(BuscarTbxFecha))
+                        Buscartbxb = true;
+                }
+                else
+                {
+                    Buscartbxfechab = true;
+
                 }
                 _buscarTbx = value;
                 NotifyOfPropertyChange(() => BuscarTbx);
+            }
+        }
+
+
+        private bool _buscartbxfechab = true;
+
+        public bool Buscartbxfechab
+        {
+            get { return _buscartbxfechab; }
+            set 
+            { 
+                _buscartbxfechab = value;
+                NotifyOfPropertyChange(() => Buscartbxfechab);
             }
         }
 
@@ -44,10 +78,17 @@ namespace Client.Main.ViewModels
             get { return _buscarTbxFecha; }
             set 
             {
-                if (!string.IsNullOrEmpty(BuscarTbx))
+                if (!string.IsNullOrEmpty(value))
                 {
-                    return;
+                    Buscartbxb = false;
                 }
+                else
+                
+                {
+                    Buscartbxb = true;
+
+                }
+
                 _buscarTbxFecha = value;
                 NotifyOfPropertyChange(() => BuscarTbxFecha);
 
@@ -79,7 +120,8 @@ namespace Client.Main.ViewModels
                 if (value != null)
                 {
                     Seleccionada = value;
-                    BuscarTbx = value.codigo + "-" + value.fecha ;
+                    BuscarTbx = value.codigo + " " + value.fecha.ToString("yyyy-MM-dd") ;
+                    BusquedasVisibilidad = "Hidden";
                 }
                 _existenciaSeleccionada = value;
 
@@ -169,6 +211,10 @@ namespace Client.Main.ViewModels
         }
         public async void EscribiendoBusqueda()
         {
+            if (string.IsNullOrEmpty(BuscarTbx) & string.IsNullOrEmpty(BuscarTbxFecha))
+            {
+                BusquedasVisibilidad = "Hidden";
+            }
             Busquedas.Clear();
             if (!string.IsNullOrEmpty(BuscarTbx))
             {
@@ -199,7 +245,7 @@ namespace Client.Main.ViewModels
                 }
             }
             else { 
-            if (BuscarTbxFecha.Length == 10)
+            if (BuscarTbxFecha != null && BuscarTbxFecha.Length == 10 )
             {
                 try
                 {
@@ -211,14 +257,14 @@ namespace Client.Main.ViewModels
 
                         Busquedas = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ExistenciasModel>>(re.Result.ToString());
 
-                        if (Busquedas.Count == 0)
-                        {
-                            BusquedasVisibilidad = "Hidden";
-                        }
-                        else
-                        {                               
-                                BusquedasVisibilidad = "Visible";
-                        }
+                        //if (Busquedas.Count == 0)
+                        //{
+                        //    BusquedasVisibilidad = "Hidden";
+                        //}
+                        //else
+                        //{                               
+                        //    BusquedasVisibilidad = "Visible";
+                        //}
                     }
 
                 }
@@ -226,6 +272,14 @@ namespace Client.Main.ViewModels
                 {
                     MessageBox.Show(e.Message);
                 }
+            }
+            if (Busquedas.Count == 0)
+            {
+                BusquedasVisibilidad = "Hidden";
+            }
+            else
+            {
+                BusquedasVisibilidad = "Visible";
             }
 
 
