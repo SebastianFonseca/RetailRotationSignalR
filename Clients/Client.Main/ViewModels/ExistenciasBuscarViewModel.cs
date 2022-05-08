@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Caliburn.Micro;
 using Client.Main.Models;
+using Client.Main.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -147,19 +148,26 @@ namespace Client.Main.ViewModels
                 {
                     try
                     {
+                        Task<object> re = conexion.CallServerMethod("servidorGetProductoExistencia", Arguments: new[] { Seleccionada.codigo });
+                        await re;
 
-                            VentanaPrincipal.ActivateItem(new ExistenciaResultadoBusquedaViewModel(VentanaPrincipal, Seleccionada));
+                        Seleccionada.productos = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ProductoModel>>(re.Result.ToString());
 
+
+                        VentanaPrincipal.ActivateItem(new ExistenciaResultadoBusquedaViewModel(VentanaPrincipal, Seleccionada));
                     }
                     catch (Exception e)
                     {
                         MessageBox.Show(e.Message);
                     }
                 }
-                else
+                else if ((MainWindowViewModel.Status == "Trabajando localmente"))
                 {
-//                    MessageBox.Show("No es posible realizar la busqueda si no esta conectado al servidor.");
+                    Seleccionada.productos = DbConnection.getProductoExistencia(Seleccionada.codigo);
+                    VentanaPrincipal.ActivateItem(new ExistenciaResultadoBusquedaViewModel(VentanaPrincipal, Seleccionada));
+
                 }
+
             }
         }
 
@@ -228,43 +236,19 @@ namespace Client.Main.ViewModels
 
                         Busquedas = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ExistenciasModel>>(re.Result.ToString());
 
-                        if (Busquedas.Count == 0)
-                        {
-                            BusquedasVisibilidad = "Hidden";
-                        }
-                        else
-                        {
-                            BusquedasVisibilidad = "Visible";
-                        }
                     }
-
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show(e.Message);
-                }
-            }
-            else { 
-            if (BuscarTbxFecha != null && BuscarTbxFecha.Length == 10 )
-            {
-                try
-                {
-                    if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+                    else if((MainWindowViewModel.Status == "Trabajando localmente"))
                     {
-                        BindableCollection<ExistenciasModel> existencias = new BindableCollection<ExistenciasModel>();
-                        Task<object> re = conexion.CallServerMethod("servidorGetExistencias", Arguments: new[] { BuscarTbxFecha });
-                        await re;
+                        Busquedas = DbConnection.getExistencias(BuscarTbx);
+                    }
 
-                        Busquedas = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ExistenciasModel>>(re.Result.ToString());
-
-                        //if (Busquedas.Count == 0)
-                        //{
-                        //    BusquedasVisibilidad = "Hidden";
-                        //}
-                        //else
-                        //{                               
-                        //    BusquedasVisibilidad = "Visible";
-                        //}
+                    if (Busquedas.Count == 0)
+                    {
+                        BusquedasVisibilidad = "Hidden";
+                    }
+                    else
+                    {
+                        BusquedasVisibilidad = "Visible";
                     }
 
                 }
@@ -272,33 +256,42 @@ namespace Client.Main.ViewModels
                 {
                     MessageBox.Show(e.Message);
                 }
-            }
-            if (Busquedas.Count == 0)
-            {
-                BusquedasVisibilidad = "Hidden";
             }
             else
-            {
-                BusquedasVisibilidad = "Visible";
+            { 
+                if (BuscarTbxFecha != null && BuscarTbxFecha.Length == 10 )
+                {
+                    try
+                    {
+                        if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+                        {
+                            BindableCollection<ExistenciasModel> existencias = new BindableCollection<ExistenciasModel>();
+                            Task<object> re = conexion.CallServerMethod("servidorGetExistencias", Arguments: new[] { BuscarTbxFecha });
+                            await re;
+
+                            Busquedas = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ExistenciasModel>>(re.Result.ToString());
+
+                        }
+                        else if ((MainWindowViewModel.Status == "Trabajando localmente"))
+                        {
+                            Busquedas = DbConnection.getExistencias(BuscarTbxFecha);
+                        }
+
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(e.Message);
+                    }
+                }
+                if (Busquedas.Count == 0)
+                {
+                    BusquedasVisibilidad = "Hidden";
+                }
+                else
+                {
+                    BusquedasVisibilidad = "Visible";
+                }
             }
-
-
-            }
-
-
-
-
-
-
-
         }
-
-
-
-
-
-
-
-
     }
 }

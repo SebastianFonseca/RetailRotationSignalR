@@ -28,7 +28,7 @@ namespace Client.Main.Views
                 responsable = VentanaPrincipal.usuario,
                 puntoVenta = VentanaPrincipal.usuario.puntoDeVenta,
             };
-            getprod();           
+            getprod();
 
         }
 
@@ -46,9 +46,6 @@ namespace Client.Main.Views
                 {
                     Productos = DbConnection.getProductos();
                 }
-                
-
-
             }
             catch (Exception e)
             {
@@ -82,17 +79,17 @@ namespace Client.Main.Views
 
         public string Dia
         {
-            
-            get { return _dia; }
-            set 
+
+            get => _dia;
+            set
             {
                 short a;
-                if (Int16.TryParse(value,out a))
+                if (Int16.TryParse(value, out a))
                 {
                     if (Int16.Parse(value) < DateTime.Now.Day)
                     {
-                    _dia = value;
-                    NotifyOfPropertyChange(() => Dia);
+                        _dia = value;
+                        NotifyOfPropertyChange(() => Dia);
                     }
 
 
@@ -104,8 +101,8 @@ namespace Client.Main.Views
 
         public string Mes
         {
-            get { return _mes; }
-            set 
+            get => _mes;
+            set
             {
                 short a;
                 if (Int16.TryParse(value, out a))
@@ -116,25 +113,23 @@ namespace Client.Main.Views
                         NotifyOfPropertyChange(() => Mes);
                     }
                 }
-                
+
             }
         }
         private string _año = DateTime.Today.Year.ToString();
 
-        
-
         public string Año
         {
-            get { return _año; }
+            get => _año;
             set
             {
                 short a;
                 if (Int16.TryParse(value, out a))
                 {
                     if (Int16.Parse(value) < DateTime.Now.Year)
-                    { 
-                      _año = value;
-                      NotifyOfPropertyChange(() => Año);
+                    {
+                        _año = value;
+                        NotifyOfPropertyChange(() => Año);
 
                     }
                 }
@@ -156,7 +151,7 @@ namespace Client.Main.Views
         public void BackButton()
         {
             Productos.Clear();
-            VentanaPrincipal.ActivateItem(new AdministracionInventarioViewModel(VentanaPrincipal));            
+            VentanaPrincipal.ActivateItem(new AdministracionInventarioViewModel(VentanaPrincipal));
         }
         public async void Guardar()
         {

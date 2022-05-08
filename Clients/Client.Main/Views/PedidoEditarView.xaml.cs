@@ -11,21 +11,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Client.Main.Utilities
+namespace Client.Main.Views
 {
     /// <summary>
-    /// Interaction logic for LineTextBox.xaml
+    /// Interaction logic for PedidoEditarView.xaml
     /// </summary>
-    public partial class LineTextBox : UserControl
+    public partial class PedidoEditarView : UserControl
     {
-        public LineTextBox()
+        public PedidoEditarView()
         {
             InitializeComponent();
-        }
-
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
         }
     }
 }

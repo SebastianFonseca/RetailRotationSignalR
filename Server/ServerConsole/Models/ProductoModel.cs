@@ -19,6 +19,9 @@ namespace ServerConsole.Models
         public decimal iva { get; set; }
         public string codigoBarras { get; set; }
         public int? existencia { get; set; } = null;
+
+        public int? pedido { get; set; }
+
         public string estado { get; set; }
 
     }

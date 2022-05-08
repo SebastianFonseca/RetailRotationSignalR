@@ -33,6 +33,7 @@ namespace Client.Main.ViewModels
                 try
                 {
                     await Utilities.Sincronizar.SincronizarRegistro();
+                    await Utilities.Sincronizar.actualizarRegistrosLocales();
                 }
                 
                 catch (Exception e)

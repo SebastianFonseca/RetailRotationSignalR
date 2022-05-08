@@ -316,7 +316,37 @@ namespace ServerConsole
         {
             return DbConnection.getExistencias(caracteres);
         }
-        
+
+        /// <summary>
+        /// Devuelve el nombre, codigo y existencia de los productos relacionados con el codigo de existencia dado como parametro.
+        /// </summary>
+        /// <param name="codigoExistencia"></param>
+        /// <returns></returns>
+        public BindableCollection<ProductoModel> servidorGetProductoExistencia(string codigoExistencia)
+        {
+            return DbConnection.getProductoExistencia(codigoExistencia);
+        }
+
+        /// <summary>
+        /// Devuelve la instancia de las existencias junto con los productos relacionados con el codigo de existencia dado como parametro.
+        /// </summary>
+        /// <param name="codigoExistencia"></param>
+        /// <returns></returns>
+        public BindableCollection<ExistenciasModel> getExistenciasConProductos(string codigoExistencia)
+        {
+            return DbConnection.getExistenciasConProductos(codigoExistencia);
+        }
+
+        /// <summary>
+        /// Retorna todos los documemtos de existencia sregistrados
+        /// </summary>
+        /// <returns></returns>
+        public BindableCollection<ExistenciasModel> servidorGetTodasLasExistencias()
+        {
+            return DbConnection.getTodasLasExistencias();
+        }
+
+
         #endregion
 
         #region Clientes

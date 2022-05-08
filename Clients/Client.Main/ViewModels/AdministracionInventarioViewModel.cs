@@ -26,6 +26,7 @@ namespace Client.Main.ViewModels
 
         public void NuevoPedido()
         {
+            VentanaPrincipal.ActivateItem(new PedidoNuevoViewModel(VentanaPrincipal));
 
         }
 

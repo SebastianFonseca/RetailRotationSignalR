@@ -161,12 +161,12 @@
             </Border>
 
             <!--PopUp que se despliega cuando se realizan las busquedas-->
-            <Border BorderThickness="1 0 1.5 1.5" BorderBrush="Black"  Visibility="{Binding Path=BusquedasVisibilidad}" Margin="5 -10 5 5"  Background="#F7EBD7"  Grid.Column="1" Grid.Row="2">
+            <Border BorderThickness="1 0 1.5 1.5" BorderBrush="Black"  Visibility="{Binding Path=BusquedasVisibilidad}" Margin="5 -10 5 5"  Background="#F7EBD7"  Grid.Column="1" Grid.Row="2" MaxHeight="150">
                 <ListBox
                     x:Name="Busquedas" 
+                    VerticalAlignment="Stretch"
                     SelectedItem="{Binding Path=ExistenciaSeleccionada}"                                 
                     ItemsSource="{Binding Path=Busquedas}" 
-                    DockPanel.Dock="Bottom"                           
                     ScrollViewer.VerticalScrollBarVisibility="Visible"
                     ScrollViewer.CanContentScroll="True"                          
                     Background="Transparent"                                       

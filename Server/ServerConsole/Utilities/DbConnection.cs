@@ -1186,7 +1186,8 @@ namespace ServerConsole.Utilities
                     cmd.Parameters.AddWithValue("@fecha", existencia.fecha.Date);
                     conn.Open();
                     cmd.ExecuteNonQuery();
-                    string response = InsertarExistenciaProducto(existencia.codigo, existencia.productos);
+                    Registrar("Insert", "getExistenciasConProductos", existencia.codigo, "ExistenciasModel[]", "NuevaExistenciaBool", "codigo");
+                    string response = InsertarExistenciaProducto(existencia);
                     if (response == "Y")
                     {
                         Console.ForegroundColor = ConsoleColor.DarkCyan;
@@ -1224,7 +1225,7 @@ namespace ServerConsole.Utilities
         /// <param name="codigo"></param>
         /// <param name="productos"></param>
         /// <returns></returns>
-        public static string InsertarExistenciaProducto(string codigo, BindableCollection<ProductoModel> productos)
+        public static string InsertarExistenciaProducto(ExistenciasModel existencia)
         {
             try
             {
@@ -1232,14 +1233,14 @@ namespace ServerConsole.Utilities
                 {
                     conn.Open();
                     ///Si la operacion no termino exitosamente en un intento anterior, la realiza desde cero borrando los registros insertados en el anterior intento.
-                    string cadena0 = $"delete from ExistenciaProducto where CodigoExistencia = '{codigo}';";
+                    string cadena0 = $"delete from ExistenciaProducto where CodigoExistencia = '{existencia.codigo}';";
                     SqlCommand cmd0 = new SqlCommand(cadena0, conn);
                     cmd0.ExecuteNonQuery();
-                    foreach (ProductoModel producto in productos)
+                    foreach (ProductoModel producto in existencia.productos)
                     {
                         string cadena = "INSERT INTO ExistenciaProducto(CodigoExistencia,CodigoProducto, Cantidad) VALUES (@cod,@codProd,@existencia);";
                         SqlCommand cmd = new SqlCommand(cadena, conn);
-                        cmd.Parameters.AddWithValue("@cod", codigo);
+                        cmd.Parameters.AddWithValue("@cod", existencia.codigo);
                         cmd.Parameters.AddWithValue("@codProd", producto.codigoProducto);
                         cmd.Parameters.AddWithValue("@existencia", producto.existencia);
                         cmd.ExecuteNonQuery();
@@ -1303,44 +1304,128 @@ namespace ServerConsole.Utilities
             }
         }
 
-        //public BindableCollection<ProductoModel> getProductoExistencia(string codigoExistencia)                 
-        //{
-        //    try
-        //    {
-        //        using (SqlConnection conn = new SqlConnection(_connString))
-        //        {
-        //            BindableCollection<ExistenciasModel> cExistencias = new BindableCollection<ExistenciasModel>();
-        //           // string cadena = $" select * from ExistenciasFisicas where FechaExistencia = '{Caracteres}' or CodigoExistencia like '%{Caracteres}%'  or CodigoExistencia like '______________{Caracteres}' ORDER BY CodigoExistencia;";
-        //            SqlCommand cmd = new SqlCommand(cadena, conn);
-        //            conn.Open();
-        //            using (SqlDataReader reader = cmd.ExecuteReader())
-        //            {
-        //                cExistencias.Clear();
-        //                while (reader.Read())
-        //                {
-        //                    ExistenciasModel exist = new ExistenciasModel();
-        //                    exist.codigo = reader["CodigoExistencia"].ToString();
-        //                    exist.responsable.cedula = reader["CedulaEmpleado"].ToString();
-        //                    exist.fecha = DateTime.Parse(reader["FechaExistencia"].ToString());
-        //                    exist.puntoVenta.codigo = reader["CodigoPuntoVenta"].ToString();
+        /// <summary>
+        /// Devuelve la instancia de las existencias junto con los productos relacionados con el codigo de existencia dado como parametro.
+        /// </summary>
+        /// <param name="Caracteres"></param>
+        /// <returns></returns>
+        public static BindableCollection<ExistenciasModel> getExistenciasConProductos(string Caracteres)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<ExistenciasModel> cExistencias = new BindableCollection<ExistenciasModel>();
+                    string cadena = $" select * from ExistenciasFisicas where CodigoExistencia = '{Caracteres}' ORDER BY CodigoExistencia;";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        cExistencias.Clear();
+                        while (reader.Read())
+                        {
+                            ExistenciasModel exist = new ExistenciasModel();
+                            exist.codigo = reader["CodigoExistencia"].ToString();
+                            exist.responsable.cedula = reader["CedulaEmpleado"].ToString();
+                            exist.fecha = DateTime.Parse(reader["FechaExistencia"].ToString());
+                            exist.puntoVenta.codigo = reader["CodigoPuntoVenta"].ToString();
+                            exist.productos = getProductoExistencia(exist.codigo);
+                            cExistencias.Add(exist);
+                        }
+                    }
+                    conn.Close();
+                    return cExistencias;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
 
-        //                    emp.Add(persona);
-        //                }
-        //            }
-        //            conn.Close();
-        //            return emp;
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Console.WriteLine(e.Message);
-        //        return null;
-        //    }
+        /// <summary>
+        /// Devuelve el nombre, codigo y existencia de los productos relacionados con el codigo de existencia dado como parametro.
+        /// </summary>
+        /// <param name="codigoExistencia"></param>
+        /// <returns></returns>
+        public static BindableCollection<ProductoModel> getProductoExistencia(string codigoExistencia)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<ProductoModel> productos = new BindableCollection<ProductoModel>();
+                    string cadena = $"select distinct producto.codigoproducto, producto.Nombre, producto.unidadventa, ExistenciaProducto.Cantidad from  producto join existenciaproducto on producto.codigoproducto = existenciaproducto.codigoproducto where existenciaproducto.codigoexistencia = '{codigoExistencia}'; ";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        productos.Clear();
+                        while (reader.Read())
+                        {
+                            ProductoModel producto = new ProductoModel();
+                            producto.codigoProducto = reader["codigoproducto"].ToString();
+                            producto.nombre = reader["nombre"].ToString();
+                            producto.unidadVenta = reader["unidadventa"].ToString();
+                            producto.existencia = Int16.Parse( reader["cantidad"].ToString());
 
-        //}
 
+                            productos.Add(producto);
+                        }
+                    }
+                    conn.Close();
+                    return productos;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
 
+        }
 
+        /// <summary>
+        /// Retorna todos los registros de documentos de existencias en la base de datos.
+        /// </summary>
+        /// <param name="Caracteres"></param>
+        /// <returns></returns>
+        public static BindableCollection<ExistenciasModel> getTodasLasExistencias()
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<ExistenciasModel> cExistencias = new BindableCollection<ExistenciasModel>();
+                    string cadena = $"select CodigoExistencia,existenciasfisicas.CedulaEmpleado,existenciasfisicas.CodigoPuntoVenta,FechaExistencia,Nombres,Apellidos from ExistenciasFisicas join Empleado on ExistenciasFisicas.CedulaEmpleado = Empleado.CedulaEmpleado";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        cExistencias.Clear();
+                        while (reader.Read())
+                        {
+                            ExistenciasModel exist = new ExistenciasModel();
+                            exist.codigo = reader["CodigoExistencia"].ToString();
+                            exist.responsable.cedula = reader["CedulaEmpleado"].ToString();
+                            exist.responsable.firstName = reader["Nombres"].ToString();
+                            exist.responsable.lastName = reader["Apellidos"].ToString();
+                            exist.fecha = DateTime.Parse(reader["FechaExistencia"].ToString());
+                            exist.puntoVenta.codigo = reader["CodigoPuntoVenta"].ToString();
+                            cExistencias.Add(exist);
+                        }
+                    }
+                    conn.Close();
+                    return cExistencias;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
 
         #endregion
 

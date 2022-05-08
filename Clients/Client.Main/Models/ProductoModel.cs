@@ -22,6 +22,8 @@ namespace Client.Main.Models
 
         public int? existencia { get; set; }
 
+        public int? pedido { get; set; }
+
         public string estado { get; set; }
 
         /// <summary>
