@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Client.Main.Views.PedidoEditarView"
+﻿<UserControl x:Class="Client.Main.Views.CompraView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -27,7 +27,6 @@
         </Style>
 
         <Style TargetType="{x:Type ListViewItem}">
-            <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="IsTabStop" Value="False"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -54,10 +53,7 @@
         <!--Grid principal, botones atras y guardar-->
         <Grid ShowGridLines="False">
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="0.75*"/>
-                <RowDefinition Height="0.25*"/>
-            </Grid.RowDefinitions>
+
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0.1*"/>
@@ -70,20 +66,15 @@
                 <fa:ImageAwesome Icon="ArrowLeft" Height="25"/>
             </Button>
 
-            <!--Sombra inferior-->
-            <Border  Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" BorderBrush="#F3E0C2" BorderThickness="0 0 0 1" Height="50" VerticalAlignment="Bottom" Margin="0 0 10 0">
-                <Border.Effect>
-                    <DropShadowEffect ShadowDepth="10" Color="#F3E0C2" BlurRadius="5"/>
-                </Border.Effect>
-            </Border>
+
 
             <!--Formulario principal-->
-            <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9"   Grid.Column="1"  Grid.Row="0" Margin="10" Grid.ColumnSpan="2" HorizontalAlignment="Center">
+            <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9"   Grid.Column="1"  Grid.Row="0" Margin="10 10 30 30" Grid.ColumnSpan="2"  >
 
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="0.24*"/>
+                    <RowDefinition Height="0.2*"/>
                     <RowDefinition Height="0.12*"/>
-                    <RowDefinition Height="0.44*"/>
+                    <RowDefinition Height="0.48*"/>
                 </Grid.RowDefinitions>
 
                 <!--Parte superior, informacion general del documento de existencias-->
@@ -102,70 +93,68 @@
                     <!--Linea 0-->
                     <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center">Fecha:</TextBlock>
                     <StackPanel Grid.Row="1" Grid.Column="1"  x:Name="Fecha" Orientation="Horizontal" Margin="3">
-                        <TextBlock  Width="30" x:Name="Dia" FontWeight="Normal" HorizontalAlignment="Center" />
+                        <TextBlock  Width="30" x:Name="Dia" FontWeight="Normal"/>
+                        <TextBlock Text=" / " FontWeight="Normal" />
+                        <TextBlock Width="30" x:Name="Mes"  FontWeight="Normal" HorizontalAlignment="Center"/>
                         <TextBlock Text=" / " FontWeight="Normal"/>
-                        <TextBlock  Width="30" x:Name="Mes" FontWeight="Normal" HorizontalAlignment="Center" />
-                        <TextBlock Text=" / " FontWeight="Normal"/>
-                        <TextBlock  Width="50" x:Name="Año" FontWeight="Normal" HorizontalAlignment="Center" />
+                        <TextBlock Width="50" x:Name="Año" FontWeight="Normal" />
                     </StackPanel>
-
-                    <!--<DatePicker   Style="{DynamicResource date}"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0 2 0 0" FontWeight="DemiBold" DisplayDate="{Binding FechaDeApertura}" />-->
 
                     <!--linea 0-->
                     <TextBlock Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center">Responsable:</TextBlock>
-                    <TextBlock Grid.Row="1" Grid.Column="3" x:Name="Responsable" HorizontalAlignment="Left" FontWeight="Normal" >
-                        <TextBlock.Text>
-                            <MultiBinding StringFormat=" {0}">
-                                <Binding Path="Responsable.cedula" />
-                            </MultiBinding>
-                        </TextBlock.Text>
-                    </TextBlock>
+                    <TextBlock Grid.Row="1" Grid.Column="3" x:Name="Responsable" HorizontalAlignment="Left" FontWeight="Normal"/>
+
                     <!--linea 1-->
                     <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center">Código:</TextBlock>
                     <TextBlock Grid.Row="0" Grid.Column="1" x:Name="Codigo" FontWeight="Normal" Grid.ColumnSpan="2" HorizontalAlignment="Left"/>
 
                 </Grid>
 
-                <Separator Grid.Row="0" VerticalAlignment="Bottom" Foreground="Beige" Margin="0"/>
+                <Separator Grid.Row="0" VerticalAlignment="Bottom" Foreground="Beige" Margin="0 10 0 0"/>
 
                 <!--Encabezado de la tabla con el nombre de las columnas-->
                 <StackPanel Grid.Row="1" Orientation="Horizontal" Background="#F3E0D2">
-                    <TextBlock Text="Código" Margin="15 0 10 0" VerticalAlignment="Center"/>
-                    <TextBlock Text="Producto" Margin="45 0 10 0"/>
-                    <TextBlock Text="Existencia" Margin="20 0 10 0"/>
-                    <TextBlock Text="Pedido" Margin="10 0 10 0"/>
+                    <TextBlock Text="Código" Margin="25 0 10 0" VerticalAlignment="Center"/>
+                    <TextBlock Text="Producto" Margin="58 0 10 0"/>
+                    <TextBlock Text="Suma Pedido" Margin="20 0 10 0"/>
                     <TextBlock Text="Unidades" Margin="25 0 10 0"/>
                 </StackPanel>
 
                 <Separator Grid.Row="1" VerticalAlignment="Bottom" Foreground="Beige" Margin="0"/>
 
-                <ListView  KeyboardNavigation.TabNavigation="Cycle" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True" ScrollViewer.HorizontalScrollBarVisibility="Hidden" x:Name="Productos" Background="#F3E0D2" BorderThickness="0"  FlowDirection="LeftToRight" HorizontalAlignment="Stretch" Grid.Row="2" ItemsSource="{Binding Path=Productos}" Margin="0 3 0 0">
+                <ListView  KeyboardNavigation.TabNavigation="Cycle" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True" x:Name="Productos" Background="#F3E0D2" BorderThickness="0"  FlowDirection="LeftToRight" HorizontalAlignment="Stretch" Grid.Row="2" ItemsSource="{Binding Path=Productos}" Margin="0 3 0 3">
                     <ListBox.ItemTemplate  >
                         <DataTemplate >
                             <Grid Focusable="False">
 
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="90"/>
-                                    <ColumnDefinition Width="190"/>
-                                    <ColumnDefinition Width="50" />
-                                    <ColumnDefinition Width="130"/>
-                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="200"/>
                                 </Grid.ColumnDefinitions>
 
                                 <TextBlock Text="{Binding Path=codigoProducto}" Margin="0" FontSize="18" HorizontalAlignment="Center"/>
                                 <TextBlock Text="{Binding Path=nombre}" Grid.Column="1"  FontSize="18" HorizontalAlignment="Center"/>
-                                <TextBlock Text="{Binding Path=existencia}" Grid.Column="2"  FontSize="18" HorizontalAlignment="Center"/>
-                                <TextBox Style="{StaticResource GeneralTextBox}" Grid.Column="3"  Width="60" MaxLength="5" Text="{Binding Path=pedido}" HorizontalAlignment="Center" TextAlignment="Center" Margin="35 0 0 0"/>
-                                <TextBlock Text="{Binding Path=unidadVenta}" Grid.Column="4"  FontSize="18" HorizontalAlignment="Center"/>
+                                <TextBlock  Grid.Column="2"  Width="60" Text="{Binding Path=sumaPedido}" HorizontalAlignment="Center" TextAlignment="Center" FontSize="18" />
+                                <TextBlock Text="{Binding Path=unidadVenta}" Grid.Column="3"  FontSize="18" HorizontalAlignment="Center"/>
                             </Grid>
 
                         </DataTemplate>
                     </ListBox.ItemTemplate>
+
                 </ListView>
+                <Separator Grid.Row="2" VerticalAlignment="Bottom" Foreground="Beige" />
+
+
             </Grid>
 
-            <!--Boton guardar-->
-            <Button Style="{StaticResource GeneralButton}"  Margin="11" Height="50" HorizontalAlignment="Center"  Width="250" Content="    GUARDAR    "  x:Name="Guardar" Grid.Column="1" Grid.Row="1"  />
+
+
         </Grid>
     </Border>
+
+
+
+
 </UserControl>

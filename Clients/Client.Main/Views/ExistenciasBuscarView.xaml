@@ -51,8 +51,7 @@
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="0.35*"/>
-                <RowDefinition Height="0.25*"/>
-                <RowDefinition Height="0.325*"/>
+                <RowDefinition Height="0.75*"/>
                 <RowDefinition Height="0.1*"/>
             </Grid.RowDefinitions>
 
@@ -62,8 +61,10 @@
             </Button>
 
             <!--TextBox principal para realizar las busquedas-->
-            <Border Grid.Column="1" Grid.Row="1"  Margin="5 10 5 10"  BorderThickness="1 1 1 1" BorderBrush="Gray">
-                <Grid >
+            <StackPanel Grid.Column="1" Grid.Row="1" >
+            <Border  Margin="5 10 5 10"  BorderThickness="1 1 1 1" BorderBrush="Gray" Height="50">
+                
+                <Grid ShowGridLines="False" VerticalAlignment="Top">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="0.3*"/>
                         <ColumnDefinition Width="0.7*"/>
@@ -158,11 +159,15 @@
                 </TextBox>
 
                 </Grid>
+
+       
+
             </Border>
 
-            <!--PopUp que se despliega cuando se realizan las busquedas-->
-            <Border BorderThickness="1 0 1.5 1.5" BorderBrush="Black"  Visibility="{Binding Path=BusquedasVisibilidad}" Margin="5 -10 5 5"  Background="#F7EBD7"  Grid.Column="1" Grid.Row="2" MaxHeight="150">
-                <ListBox
+
+                <!--PopUp que se despliega cuando se realizan las busquedas-->
+                <Border BorderThickness="1 0 1.5 1.5" BorderBrush="Black"  Visibility="{Binding Path=BusquedasVisibilidad}" Margin="5 -10 5 5"  VerticalAlignment="Bottom" Background="#F7EBD7"  Grid.Column="1" Grid.Row="2" MaxHeight="135">
+                    <ListBox
                     x:Name="Busquedas" 
                     VerticalAlignment="Stretch"
                     SelectedItem="{Binding Path=ExistenciaSeleccionada}"                                 
@@ -172,21 +177,23 @@
                     Background="Transparent"                                       
                     BorderThickness="0"
                     HorizontalAlignment="Stretch">
-                    <ListBox.ItemTemplate >
-                        <DataTemplate >
-                            <TextBlock>
-                                <TextBlock.Text>
-                                    <MultiBinding StringFormat=" {0}  {1:dd - MMMM / yyyy} Local: {2}">
-                                        <Binding Path="codigo"/>
-                                        <Binding Path="fecha"/>
-                                        <Binding Path="puntoVenta.codigo"/>
-                                    </MultiBinding>
-                                </TextBlock.Text>
-                            </TextBlock>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </Border>
+                        <ListBox.ItemTemplate >
+                            <DataTemplate >
+                                <TextBlock>
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat=" {0}  {1:dd - MMMM / yyyy} Local: {2}">
+                                            <Binding Path="codigo"/>
+                                            <Binding Path="fecha"/>
+                                            <Binding Path="puntoVenta.codigo"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Border>
+            </StackPanel>
+
 
 
             <!--Boton BUSCAR-->

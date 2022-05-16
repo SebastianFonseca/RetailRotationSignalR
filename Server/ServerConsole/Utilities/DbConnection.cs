@@ -1429,6 +1429,236 @@ namespace ServerConsole.Utilities
 
         #endregion
 
+        #region Pedido
+        /// <summary>
+        /// Inserta el registro del nuevo documento de pedido.
+        /// </summary>
+        /// <param name="pedido"></param>
+        /// <returns></returns>
+        public static string NuevoPedido(PedidoModel pedido)
+        {
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"INSERT INTO Pedido(CodigoPedido,CedulaEmpleado,CodigoPuntoVenta,FechaPedido) VALUES (@codigo,@empleado,@pv,@fecha);";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codigo", Statics.PrimeraAMayuscula(pedido.codigo));
+                    cmd.Parameters.AddWithValue("@empleado", Statics.PrimeraAMayuscula(pedido.responsable.cedula));
+                    cmd.Parameters.AddWithValue("@pv", Statics.PrimeraAMayuscula(pedido.puntoVenta.codigo));
+                    cmd.Parameters.AddWithValue("@fecha", pedido.fecha.Date);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    Registrar("Insert", "ServidorGetPedidoConProductos", pedido.codigo, "PedidoModel[]", "NuevoPedidoBool", "codigo");
+                    string response = InsertarPedidoProducto(pedido);
+                    if (response == "Y")
+                    {
+                        conn.Close();
+                        //registrarCambioLocal(NombreMetodoLocal: "getExistenciasConProductos", PK: $"{pedido.codigo}", NombreMetodoServidor: "ServidorNuevaExistencia", RespuestaExitosaServidor: "Se ha registrado el nuevo documento.", Tipo: "Insert");
+                        Console.ForegroundColor = ConsoleColor.DarkCyan;
+                        Console.Write("\n\t" + DateTime.Now + "--");
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo documento: Pedido con fecha {pedido.fecha.ToString("dd'/'MM'/'yyyy")}.");
+
+                        return "Se ha registrado el nuevo documento.";
+                    }
+                    /// Si algo fallo en la insercion de los productos y las cantidades se borra el registro del documento de existencias para que pueda ser exitoso en proximos intentos.
+                    string cadena0 = $"delete from Pedido where CodigoPedido = '{pedido.codigo}';";
+                    SqlCommand cmd0 = new SqlCommand(cadena0, conn);
+                    cmd0.ExecuteNonQuery();
+                    return response;
+                }
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
+                {
+                    return "Pedido ya registrado.";
+                }
+                else
+                {
+                    return e.Message;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Inserta en la base de datos, en la tabla PedidoProducto los datos de dichos objetos.
+        /// </summary>
+        /// <param name="codigo"></param>
+        /// <param name="productos"></param>
+        /// <returns></returns>
+        public static string InsertarPedidoProducto(PedidoModel pedido)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    conn.Open();
+                    ///Si la operacion no termino exitosamente en un intento anterior, la realiza desde cero borrando los registros insertados en el anterior intento.
+                    string cadena0 = $"delete from PedidoProducto where CodigoPedido = '{pedido.codigo}';";
+                    SqlCommand cmd0 = new SqlCommand(cadena0, conn);
+                    cmd0.ExecuteNonQuery();
+                    foreach (ProductoModel producto in pedido.productos)
+                    {
+                        string cadena = "INSERT INTO PedidoProducto(CodigoPedido,CodigoProducto, Cantidad) VALUES (@cod,@codProd,@pedido);";
+                        SqlCommand cmd = new SqlCommand(cadena, conn);
+                        cmd.Parameters.AddWithValue("@cod", pedido.codigo);
+                        cmd.Parameters.AddWithValue("@codProd", producto.codigoProducto);
+                        cmd.Parameters.AddWithValue("@pedido", producto.pedido);
+                        cmd.ExecuteNonQuery();
+                    }
+                    conn.Close();
+                    return "Y";
+                }
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
+                {
+                    return "Ya registrado.";
+                }
+                else
+                {
+                    return "Server " + e.Message;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Retorna las coincidencias en los pedidos con de los caracteres dados comparados con los codigos de los pedidos y los codigos de los locales.
+        /// </summary>
+        /// <param name="Caracteres"></param>
+        /// <returns></returns>
+        public static BindableCollection<PedidoModel> getPedidos(string Caracteres)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<PedidoModel> cPedidos = new BindableCollection<PedidoModel>();
+                    DateTime fecha = new DateTime();
+                    if (!DateTime.TryParse(Caracteres, out fecha))
+                    {
+                        fecha = DateTime.MinValue;
+                    }
+
+                    string cadena = $" select * from Pedido where FechaPedido = '{fecha.ToString("yyyy-MM-dd")}' or CodigoPedido like '%{Caracteres}%'  or CodigoPedido like '______________{Caracteres}' ORDER BY CodigoPedido;";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        cPedidos.Clear();
+                        while (reader.Read())
+                        {
+                            PedidoModel ped = new PedidoModel();
+                            ped.codigo = reader["CodigoPedido"].ToString();
+                            ped.responsable.cedula = reader["CedulaEmpleado"].ToString();
+                            ped.fecha = DateTime.Parse(reader["FechaPedido"].ToString());
+                            ped.puntoVenta.codigo = reader["CodigoPuntoVenta"].ToString();
+                            cPedidos.Add(ped);
+                        }
+                    }
+                    conn.Close();
+                    return cPedidos;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Devuelve el nombre, codigo y pedido de los productos relacionados con el codigo del pedido dado como parametro.
+        /// </summary>
+        /// <param name="codigoPedido"></param>
+        /// <returns></returns>
+        public static BindableCollection<ProductoModel> getProductoPedido(string codigoPedido)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<ProductoModel> productos = new BindableCollection<ProductoModel>();
+                    string cadena = $"select  producto.codigoproducto, producto.Nombre, producto.unidadventa, PedidoProducto.Cantidad, ExistenciaProducto.Cantidad as ExistenciaCantidad from  producto join pedidoproducto on producto.codigoproducto = PedidoProducto.CodigoProducto join ExistenciaProducto on ExistenciaProducto.CodigoProducto = Producto.CodigoProducto where pedidoproducto.codigopedido = '{codigoPedido}' and CodigoExistencia = '{codigoPedido.Split(':')[0]}' order by ExistenciaProducto.CodigoProducto; ";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        productos.Clear();
+                        while (reader.Read())
+                        {
+                            ProductoModel producto = new ProductoModel();
+                            producto.codigoProducto = reader["codigoproducto"].ToString();
+                            producto.nombre = reader["nombre"].ToString();
+                            producto.unidadVenta = reader["unidadventa"].ToString();
+                            producto.existencia = Int32.Parse(reader["ExistenciaCantidad"].ToString());
+                            producto.pedido = Int32.Parse(reader["cantidad"].ToString());
+
+                            productos.Add(producto);
+                        }
+                    }
+                    conn.Close();
+                    return productos;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+
+        }
+
+        /// <summary>
+        /// Devuelve la instancia de las existencias junto con los productos relacionados con el codigo de existencia dado como parametro.
+        /// </summary>
+        /// <param name="Caracteres"></param>
+        /// <returns></returns>
+        public static BindableCollection<PedidoModel> getPedidoConProductos(string Caracteres)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<PedidoModel> cPedido = new BindableCollection<PedidoModel>();
+                    string cadena = $" select * from Pedido where CodigoPedido = '{Caracteres}' ORDER BY CodigoPedido;";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        cPedido.Clear();
+                        while (reader.Read())
+                        {
+                            PedidoModel ped = new PedidoModel();
+                            ped.codigo = reader["CodigoPedido"].ToString();
+                            ped.responsable.cedula = reader["CedulaEmpleado"].ToString();
+                            ped.fecha = DateTime.Parse(reader["FechaPedido"].ToString());
+                            ped.puntoVenta.codigo = reader["CodigoPuntoVenta"].ToString();
+                            ped.productos = getProductoPedido(ped.codigo);
+                            cPedido.Add(ped);
+                        }
+                    }
+                    conn.Close();
+                    return cPedido;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+
+        #endregion
+
+
+
+
         #region Clientes
         /// <summary>
         /// Metodo encargado de ejecutar el query insert del nuevo cliente en la base de datos local.

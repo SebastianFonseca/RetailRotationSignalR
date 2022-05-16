@@ -70,40 +70,40 @@
             <Button x:Name="BackButton" Grid.Column="0" Grid.Row="0" Margin="5" Style="{StaticResource GeneralButton}" VerticalAlignment="Center">
                 <fa:ImageAwesome Icon="ArrowLeft" Height="25"/>
             </Button>
+ 
+            <TextBlock Grid.Row="0" Grid.Column="1" FontWeight="Normal">Elija un documento de existencias</TextBlock>
 
-
-
-            <!--Formulario principal-->
+            <!--LisView con las existencias-->
             <Grid Grid.Row="1" Grid.Column="1" >
                 <ListView KeyboardNavigation.TabNavigation="Cycle" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.CanContentScroll="True" x:Name="Existencias" 
-                           Background="#F3E0D2" BorderThickness="0"  FlowDirection="LeftToRight"  ItemsSource="{Binding Path=Existencias}" SelectedItem="{Binding Path=Existencia}"  cal:Message.Attach="[Event SelectionChanged] = [Action ItemSeleccionado]" >
+                          Background="#F3E0D2" BorderThickness="0"  FlowDirection="LeftToRight"  ItemsSource="{Binding Path=Existencias}" SelectedItem="{Binding Path=Existencia}"  
+                          cal:Message.Attach="[Event SelectionChanged] = [Action ItemSeleccionado]" HorizontalAlignment="Center">
                     <ListBox.ItemTemplate  >
                         <DataTemplate >
                             <Grid Focusable="False" >
-
                                 <Separator VerticalAlignment="Top" Foreground="Gray"/>
 
-                                <WrapPanel Width="550" Margin=" 0 10 0 10">
+                                <WrapPanel Width="550" Margin=" 0 10 0 10" >
+                                    
+                                    <TextBlock Margin="5 0 5 0"  Text="Código:"  FontSize="18" HorizontalAlignment="Center"/>
+                                    <TextBlock Margin="5 0 5 0"  Text="{Binding Path=codigo}"  FontSize="18" HorizontalAlignment="Center" FontWeight="Normal"/>
 
-                                <TextBlock Margin="5 0 5 0"  Text="Código:"  FontSize="18" HorizontalAlignment="Center"/>
-                                <TextBlock Margin="5 0 5 0"  Text="{Binding Path=codigo}"  FontSize="18" HorizontalAlignment="Center" FontWeight="Normal"/>
-
-                                <TextBlock Margin="5 0 5 0"  Text="Fecha:"  FontSize="18" HorizontalAlignment="Center"/>
+                                    <TextBlock Margin="5 0 5 0"  Text="Fecha:"  FontSize="18" HorizontalAlignment="Center"/>
                                     <TextBlock Margin="5 0 5 0"  Text="{Binding Path=fecha, StringFormat=dd - MM - yyyy}"  FontSize="18" HorizontalAlignment="Center" FontWeight="Normal" />
 
-                                <TextBlock Margin="5 0 5 0"  Text="Cod. local:"  FontSize="18" HorizontalAlignment="Center"/>
+                                    <TextBlock Margin="5 0 5 0"  Text="Cod. local:"  FontSize="18" HorizontalAlignment="Center"/>
                                     <TextBlock Margin="5 0 5 0"  Text="{Binding Path=puntoVenta.codigo}" HorizontalAlignment="Center" TextAlignment="Center" FontSize="18" FontWeight="Normal" />
 
-                                <TextBlock Margin="5 0 5 0"  Text="Responsable:"  FontSize="18" HorizontalAlignment="Center" />
+                                    <TextBlock Margin="5 0 5 0"  Text="Responsable:"  FontSize="18" HorizontalAlignment="Center" />
                                     <TextBlock Margin="5 0 5 0"  HorizontalAlignment="Center" TextAlignment="Center" FontSize="18" FontWeight="Normal" >
-                                    <TextBlock.Text>
-                                        <MultiBinding StringFormat=" {0} {1} ">
-                                            <Binding Path="responsable.firstName"/>
-                                            <Binding Path="responsable.lastName"/>
-                                        </MultiBinding>
-                                    </TextBlock.Text>
-                                </TextBlock>
-
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat=" {0} {1} ">
+                                                <Binding Path="responsable.firstName"/>
+                                                <Binding Path="responsable.lastName"/>
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                    
                                 </WrapPanel>
                                 <Separator VerticalAlignment="Bottom" Foreground="Gray"/>
 

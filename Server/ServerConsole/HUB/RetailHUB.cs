@@ -49,7 +49,7 @@ namespace ServerConsole
             object[] resultado = DbConnection.Login(User: Usuario, Password: Password);
             if ((string)resultado[0] == "Registrado")
             {
-                usuarioConectado = ((PersonModel)resultado[1]).cedula+ "-" + ((PersonModel)resultado[1]).firstName + " " +((PersonModel)resultado[1]).lastName;
+                usuarioConectado = ((PersonModel)resultado[1]).cedula + "-" + ((PersonModel)resultado[1]).firstName + " " + ((PersonModel)resultado[1]).lastName;
                 Console.Write(" El usuario " + usuarioConectado + " se ha conectado.");
                 Console.ResetColor();
                 Console.WriteLine("\n");
@@ -349,6 +349,50 @@ namespace ServerConsole
 
         #endregion
 
+        #region Pedido
+
+        /// <summary>
+        /// Inserta en la base de datos el nuevo documeto de pedido
+        /// </summary>
+        /// <param name="pedido"></param>
+        /// <returns></returns>
+        public string ServidorNuevoPedido(PedidoModel pedido)
+        {
+            return DbConnection.NuevoPedido(pedido);
+        } 
+        #endregion
+
+        /// <summary>
+        /// Al ser llamado desde un cliente retorna los pedidoc que coinciden con el numero d elocal, la fecha o el codigo dado en los caracteres
+        /// </summary>
+        /// <param name="caracteres"></param>
+        /// <returns></returns>
+        public BindableCollection<PedidoModel> ServidorGetPedidos(string caracteres) 
+        {
+            return DbConnection.getPedidos(caracteres);
+        }
+
+        /// <summary>
+        /// Retorna los productos del pedido del codigo dado
+        /// </summary>
+        /// <param name="codigo"></param>
+        /// <returns></returns>
+        public BindableCollection<ProductoModel> ServidorgetProductoPedido(String codigo)
+        {
+            return DbConnection.getProductoPedido(codigo);
+        }
+
+        /// <summary>
+        /// Devuelve el pedido con el codigo dado junto con los productos.
+        /// </summary>
+        /// <param name="caracteres"></param>
+        /// <returns></returns>
+        public BindableCollection<PedidoModel> ServidorGetPedidoConProductos(string caracteres)
+        {
+            return DbConnection.getPedidoConProductos(caracteres);
+        }
+
+
         #region Clientes
         /// <summary>
         /// Cuando es llamado desde un 'cliente' registra un nuevo cliente.
@@ -382,6 +426,9 @@ namespace ServerConsole
         }
 
         #endregion
+
+
+
 
 
         /// <summary>

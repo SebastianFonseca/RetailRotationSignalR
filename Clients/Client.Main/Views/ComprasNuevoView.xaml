@@ -1,0 +1,143 @@
+﻿<UserControl x:Class="Client.Main.Views.ComprasNuevoView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Client.Main.Views"    
+             xmlns:c="clr-namespace:Client.Main.Utilities"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             mc:Ignorable="d" 
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+
+        <!--#region    -->
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="22"/>
+            <Setter Property="FontWeight" Value="DemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="FontSize" Value="50"/>
+        </Style>
+
+        <Style TargetType="{x:Type ListViewItem}">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="Margin" Value="0 2 0 2"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                        <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#FAF2E6" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="#F3E0C2" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+        </Style>
+        <!--#endregion-->
+
+    </UserControl.Resources>
+
+    <!--Color de fondo y borde curveado-->
+    <Border Background="#F3E0C2" CornerRadius="10" >
+
+        <!--Grid principal, botones atras y guardar-->
+        <Grid ShowGridLines="False">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.20*"/>
+                <RowDefinition Height="0.65*"/>
+                <RowDefinition Height="0.25*"/>
+                <RowDefinition Height="0*"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.1*"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="0.1*"/>
+            </Grid.ColumnDefinitions>
+
+            
+            <!--Linea 0-->
+                        
+                <!--Textblock titulo-->
+                <TextBlock Grid.Row="0" Grid.Column="1" FontWeight="Normal">Elija los documentos de pedido</TextBlock>
+
+            <!--Linea 1-->
+            
+                <!--LisView con las existencias-->
+                <Grid Grid.Row="1" Grid.Column="1" >
+                    
+                    <ListView KeyboardNavigation.TabNavigation="Cycle" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.CanContentScroll="True" x:Name="Pedidos" 
+                              Background="#F3E0D2" BorderThickness="0"  FlowDirection="LeftToRight"  ItemsSource="{Binding Path=Pedidos}"  
+                              cal:Message.Attach="[Event SelectionChanged] = [Action ItemSeleccionado]" HorizontalAlignment="Center" SelectionMode="Multiple" >
+                        <ListBox.ItemTemplate  >
+                            <DataTemplate >
+                                
+                                <Grid Focusable="False" >
+                                    <Separator VerticalAlignment="Top" Foreground="Gray"/>
+
+                                    <WrapPanel Width="550" Margin=" 0 10 0 10" >
+
+                                        <TextBlock Margin="5 0 5 0"  Text="Código:"  FontSize="18" HorizontalAlignment="Center"/>
+                                        <TextBlock Margin="5 0 5 0"  Text="{Binding Path=codigo}"  FontSize="18" HorizontalAlignment="Center" FontWeight="Normal"/>
+
+                                        <TextBlock Margin="5 0 5 0"  Text="Fecha:"  FontSize="18" HorizontalAlignment="Center"/>
+                                        <TextBlock Margin="5 0 5 0"  Text="{Binding Path=fecha, StringFormat=dd - MM - yyyy}"  FontSize="18" HorizontalAlignment="Center" FontWeight="Normal" />
+
+                                        <TextBlock Margin="5 0 5 0"  Text="Local:"  FontSize="18" HorizontalAlignment="Center"/>
+                                        <TextBlock Margin="5 0 5 0"  Text="{Binding Path=puntoVenta.nombre}" HorizontalAlignment="Center" TextAlignment="Center" FontSize="18" FontWeight="Normal" />
+
+                                        <TextBlock Margin="5 0 5 0"  Text="Responsable:"  FontSize="18" HorizontalAlignment="Center" />
+                                        <TextBlock Margin="5 0 5 0"  HorizontalAlignment="Center" TextAlignment="Center" FontSize="18" FontWeight="Normal" >
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat=" {0} {1} ">
+                                                    <Binding Path="responsable.firstName"/>
+                                                    <Binding Path="responsable.lastName"/>
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                        
+                                    </WrapPanel>
+                                    <Separator VerticalAlignment="Bottom" Foreground="Gray"/>
+
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                                <Setter Property="IsSelected" Value="{Binding isSelected, Mode=TwoWay}" />
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+
+                </ListView>
+                </Grid>
+
+            <!--Linea 2-->
+            
+            <Button Style="{StaticResource GeneralButton}"  Margin="11" Height="50" HorizontalAlignment="Center"  Width="250" Content="CREAR LISTA"  x:Name="Crear" Grid.Column="1" Grid.Row="2"/>
+
+
+        </Grid>
+    </Border>
+
+
+
+
+</UserControl>

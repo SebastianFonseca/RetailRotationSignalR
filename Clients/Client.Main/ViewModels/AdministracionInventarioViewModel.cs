@@ -32,6 +32,7 @@ namespace Client.Main.ViewModels
 
         public void BuscarPedido()
         {
+            VentanaPrincipal.ActivateItem(new PedidoBuscarViewModel(VentanaPrincipal));
 
         }
 

@@ -20,7 +20,7 @@ namespace Client.Main.ViewModels
         public PedidoEditarViewModel(MainWindowViewModel argVentana, ExistenciasModel existencia)
         {
             VentanaPrincipal = argVentana;
-            pedido = existencia;
+            pedido = (PedidoModel)existencia;
         }
 
         public BindableCollection<ProductoModel> Productos
@@ -79,7 +79,52 @@ namespace Client.Main.ViewModels
             VentanaPrincipal.ActivateItem(new PedidoNuevoViewModel(VentanaPrincipal));
         }
 
+        public async void Guardar()
+        {
 
+            foreach (ProductoModel producto in Productos)
+            {
+                if (producto.pedido == null)
+                {
+                    MessageBox.Show($"Registre el valor corespondiente a {producto.nombre}");
+                    return;
+                }
+            }
+
+            try
+            {
+                if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+                {
+
+                    Task<object> re = conexion.CallServerMethod("ServidorNuevoPedido", Arguments: new[] { pedido });
+                    await re;
+                    if (re.Result.ToString() == "Se ha registrado el nuevo documento.")
+                    {
+                        MessageBox.Show(re.Result.ToString());
+                        VentanaPrincipal.ActivateItem(new AdministracionInventarioViewModel(VentanaPrincipal));
+                        return;
+                    }
+                    if (re.Result.ToString() == "Pedido ya registrado.")
+                    {
+                        MessageBox.Show("Pedido ya registrado anteriormente.");
+                    }
+                    MessageBox.Show(re.Result.ToString());
+                }
+                else
+                {
+                    if (MainWindowViewModel.Status == "Trabajando localmente")
+                    {
+                        MessageBox.Show(Utilities.DbConnection.NuevoPedido(pedido));
+                        VentanaPrincipal.ActivateItem(new AdministracionInventarioViewModel(VentanaPrincipal));
+                        return;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+        }
 
 
 
