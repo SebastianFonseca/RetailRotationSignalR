@@ -58,64 +58,73 @@
                 </Border.Effect>
             </Border>
 
+            <ScrollViewer  Style="{StaticResource GeneralScrollViewer}" HorizontalScrollBarVisibility="Disabled" Grid.Column="1" Grid.Row="0" Margin="10 10 -50 10">
 
-            <!--Formulario principal-->
-            <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9" c:KeyboardFocus.On="{Binding ElementName=Nombre}" HorizontalAlignment="Center" Grid.Column="1" Grid.Row="0">
+                <!--Formulario principal-->
+                <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9" c:KeyboardFocus.On="{Binding ElementName=Nombre}" HorizontalAlignment="Center" >
 
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0.4*"/>
-                    <ColumnDefinition Width="10"/>
-                    <ColumnDefinition Width="0.55*"/>
-                </Grid.ColumnDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.4*"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="0.55*"/>
+                    </Grid.ColumnDefinitions>
 
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
 
-                </Grid.RowDefinitions>
+                    </Grid.RowDefinitions>
 
-                <!--Linea 1-->
-                <TextBlock Grid.Row="1" Grid.Column="0" Margin="0 0 0 -3">Código:</TextBlock>
-                <TextBlock  x:Name="Codigo" Width="60"  TextAlignment="Left" HorizontalAlignment="Left" FontWeight="Normal" Grid.Row="1" Grid.Column="2"/>
-                    
-               
-                <!--Linea 2-->
-                <TextBlock Grid.Row="2" Grid.Column="0" >Nombre:</TextBlock>
-                <TextBlock Grid.Row="2" Grid.Column="2"  x:Name="Nombre" HorizontalAlignment="Left" FontWeight="Normal"/>
-
-                <!--Linea 3-->
-                <TextBlock Grid.Row="3" Grid.Column="0">Unidad de Venta:</TextBlock>
-                <TextBlock x:Name="UnidadVenta" HorizontalAlignment="Left" FontWeight="Normal" Grid.Row="3" Grid.Column="2"  />
-
-                <!--linea 4-->
-                <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Bottom">Sección:</TextBlock>
-                <TextBlock x:Name="Seccion" HorizontalAlignment="Left" FontWeight="Normal" Grid.Row="4" Grid.Column="2"  />
-   
-                <!--Linea 5-->
-                <TextBlock Grid.Row="5" Grid.Column="0"  >Vencimiento:</TextBlock>
-                <TextBlock x:Name="FechaVencimiento" HorizontalAlignment="Left" FontWeight="Normal" Grid.Row="5" Grid.Column="2"  />
-                
-                <!--Linea 9-->
-                <TextBlock Grid.Row="6" Grid.Column="0" VerticalAlignment="Bottom">I.V.A.:</TextBlock>
-                <StackPanel Grid.Row="6" Grid.Column="2" Orientation="Horizontal" >
-                    <TextBlock    x:Name="iva" Width="40" HorizontalAlignment="Center"  FontWeight="Normal"/>
-                    <TextBlock   Text="%"/>
-                </StackPanel>
-                <!--Linea 10-->
-                <TextBlock Grid.Row="7" Grid.Column="0" VerticalAlignment="Bottom" FontSize="21">Código de barras:</TextBlock>
-                <TextBlock  Grid.Row="7" Grid.Column="2"  x:Name="CodigoBarras"  HorizontalAlignment="Left" FontWeight="Normal"/>
+                    <!--Linea 1-->
+                    <TextBlock Grid.Row="1" Grid.Column="0" Margin="0 0 0 -3">Código:</TextBlock>
+                    <TextBlock  x:Name="Codigo" Width="60"  TextAlignment="Left" HorizontalAlignment="Left" FontWeight="Normal" Grid.Row="1" Grid.Column="2"/>
 
 
+                    <!--Linea 2-->
+                    <TextBlock Grid.Row="2" Grid.Column="0" >Nombre:</TextBlock>
+                    <TextBlock Grid.Row="2" Grid.Column="2"  x:Name="Nombre" HorizontalAlignment="Left" FontWeight="Normal"/>
 
-            </Grid>
+                    <!--Linea 3-->
+                    <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Bottom" FontSize="21">Código de barras:</TextBlock>
+                    <TextBlock  Grid.Row="3" Grid.Column="2"  x:Name="CodigoBarras"  HorizontalAlignment="Left" FontWeight="Normal"/>
 
+
+                    <!--linea 4-->
+                    <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Bottom">Sección:</TextBlock>
+                    <TextBlock x:Name="Seccion" HorizontalAlignment="Left" FontWeight="Normal" Grid.Row="4" Grid.Column="2"  />
+
+                    <!--Linea 5-->
+                    <TextBlock Grid.Row="5" Grid.Column="0"  >Vencimiento:</TextBlock>
+                    <TextBlock x:Name="FechaVencimiento" HorizontalAlignment="Left" FontWeight="Normal" Grid.Row="5" Grid.Column="2"  />
+
+                    <!--Linea 6-->
+                    <TextBlock Grid.Row="6" Grid.Column="0" VerticalAlignment="Bottom">I.V.A.:</TextBlock>
+                    <StackPanel Grid.Row="6" Grid.Column="2" Orientation="Horizontal" >
+                        <TextBlock    x:Name="iva" Width="40" HorizontalAlignment="Center"  FontWeight="Normal"/>
+                        <TextBlock   Text="%"/>
+                    </StackPanel>
+                    <!--Linea 7-->
+                    <TextBlock Grid.Row="7" Grid.Column="0">Unidad de Venta:</TextBlock>
+                    <TextBlock x:Name="UnidadVenta" HorizontalAlignment="Left" FontWeight="Normal" Grid.Row="7" Grid.Column="2"  />
+                    <!--Linea 7-->
+                    <TextBlock Grid.Row="8" Grid.Column="0">Unidad de Compra:</TextBlock>
+                    <TextBlock x:Name="UnidadCompra" HorizontalAlignment="Left" FontWeight="Normal" Grid.Row="8" Grid.Column="2"  />
+                    <!--Linea 7-->
+                    <TextBlock Grid.Row="9" Grid.Column="0">Factor Conversión:</TextBlock>
+                    <TextBlock x:Name="FactorConversion" HorizontalAlignment="Left" FontWeight="Normal" Grid.Row="9" Grid.Column="2"  />
+
+
+                </Grid>
+            </ScrollViewer>
             <!--Boton guardar-->
             <Grid Grid.Column="1" Grid.Row="1" >
                 <Grid.ColumnDefinitions>

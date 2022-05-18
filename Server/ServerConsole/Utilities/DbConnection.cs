@@ -138,8 +138,8 @@ namespace ServerConsole.Utilities
                         else
                         {
                             reader.Close();
-                            string cadena2 = "INSERT INTO Producto(CodigoProducto, Nombre, UnidadVenta,	UnidadCompra, PrecioVenta, Seccion, FechaVencimiento, IVA, CodigoBarras, Estado)" +
-                                " VALUES (@codigo,@nombre,@univenta,@unicompra,@precio,@seccion,@fv,@iva,@cb,'Activo')";
+                            string cadena2 = "INSERT INTO Producto(CodigoProducto, Nombre, UnidadVenta,	UnidadCompra, PrecioVenta, Seccion, FechaVencimiento, IVA, CodigoBarras, Estado, FactorConversion )" +
+                                " VALUES (@codigo,@nombre,@univenta,@unicompra,@precio,@seccion,@fv,@iva,@cb,'Activo', @fc)";
                             SqlCommand cmd2 = new SqlCommand(cadena2, conn);
                             cmd2.Parameters.AddWithValue("@codigo", Statics.PrimeraAMayuscula(Producto.codigoProducto));
                             cmd2.Parameters.AddWithValue("@nombre", Statics.PrimeraAMayuscula(Producto.nombre));
@@ -150,6 +150,7 @@ namespace ServerConsole.Utilities
                             cmd2.Parameters.AddWithValue("@fv", Producto.fechaVencimiento == DateTime.Today ? (object)DBNull.Value : Producto.fechaVencimiento);
                             cmd2.Parameters.AddWithValue("@iva", Producto.iva);
                             cmd2.Parameters.AddWithValue("@cb", string.IsNullOrEmpty(Producto.codigoBarras) ? (object)DBNull.Value : Producto.codigoBarras);
+                            cmd2.Parameters.AddWithValue("@fc", Producto.factorConversion);
                             cmd2.ExecuteNonQuery();
                             Registrar("Insert", "ServidorGetProductos", Producto.codigoProducto, "ProductoModel[]", "NuevoProducto", "codigoProducto");
                             conn.Close();
@@ -200,11 +201,12 @@ namespace ServerConsole.Utilities
                             producto.codigoProducto = reader["CodigoProducto"].ToString();
                             producto.nombre = reader["Nombre"].ToString();
                             producto.unidadCompra = reader["UnidadCompra"].ToString();
-                            producto.unidadCompra = reader["UnidadVenta"].ToString();
+                            producto.unidadVenta = reader["UnidadVenta"].ToString();
                             producto.precioVenta = Convert.ToDecimal(reader["PrecioVenta"].ToString());
                             producto.seccion = reader["Seccion"].ToString();
                             producto.iva = Convert.ToDecimal(reader["IVA"].ToString());
                             producto.codigoBarras = reader["CodigoBarras"].ToString();
+                            producto.factorConversion = decimal.Parse(reader["FactorConversion"].ToString());
                             if (reader["FechaVencimiento"].ToString() == "")
                             {
                                 producto.fechaVencimiento = DateTime.MinValue;
@@ -217,7 +219,7 @@ namespace ServerConsole.Utilities
                         }
                     }
                     conn.Close();
-                    Console.WriteLine("Se consultaron los productos.");
+                   // Console.WriteLine("Se consultaron los productos.");
                     return productos;
                 }
             }
@@ -257,6 +259,7 @@ namespace ServerConsole.Utilities
                             producto.seccion = reader["Seccion"].ToString();
                             producto.iva = Convert.ToDecimal(reader["IVA"].ToString());
                             producto.codigoBarras = reader["CodigoBarras"].ToString();
+                            producto.factorConversion = decimal.Parse(reader["FactorConversion"].ToString());
                             if (reader["FechaVencimiento"].ToString() == "")
                             {
                                 producto.fechaVencimiento = DateTime.MinValue;
@@ -353,7 +356,7 @@ namespace ServerConsole.Utilities
                         else
                         {
                             reader.Close();
-                            string cadena = $"UPDATE Producto SET  Nombre=@nombre, UnidadVenta=@univenta,	UnidadCompra=@unicompra, PrecioVenta=@precio, Seccion=@seccion, FechaVencimiento=@fv, IVA=@iva, CodigoBarras=@cb WHERE CodigoProducto = '{Producto.codigoProducto}' ";
+                            string cadena = $"UPDATE Producto SET  Nombre=@nombre, UnidadVenta=@univenta,	UnidadCompra=@unicompra, PrecioVenta=@precio, Seccion=@seccion, FechaVencimiento=@fv, IVA=@iva, CodigoBarras=@cb, FactorConversion = @fc WHERE CodigoProducto = '{Producto.codigoProducto}' ";
                             SqlCommand cmd = new SqlCommand(cadena, conn);
                             cmd.Parameters.AddWithValue("@codigo", Statics.PrimeraAMayuscula(Producto.codigoProducto));
                             cmd.Parameters.AddWithValue("@nombre", Statics.PrimeraAMayuscula(Producto.nombre));
@@ -364,6 +367,7 @@ namespace ServerConsole.Utilities
                             cmd.Parameters.AddWithValue("@fv", Producto.fechaVencimiento == DateTime.Today ? (object)DBNull.Value : Producto.fechaVencimiento);
                             cmd.Parameters.AddWithValue("@iva", Producto.iva);
                             cmd.Parameters.AddWithValue("@cb", string.IsNullOrEmpty(Producto.codigoBarras) ? (object)DBNull.Value : Producto.codigoBarras);
+                            cmd.Parameters.AddWithValue("@fc", Producto.factorConversion);
                             cmd.ExecuteNonQuery();
                             Console.ForegroundColor = ConsoleColor.DarkCyan;
                             Console.Write("\n\t" + DateTime.Now + "--");
@@ -1655,8 +1659,6 @@ namespace ServerConsole.Utilities
         }
 
         #endregion
-
-
 
 
         #region Clientes

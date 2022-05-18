@@ -161,8 +161,8 @@ namespace Client.Main.Utilities
                         else
                         {
                             reader.Close();
-                            string cadena2 = "INSERT INTO Producto(CodigoProducto, Nombre, UnidadVenta,	UnidadCompra, PrecioVenta, Seccion, FechaVencimiento, IVA, CodigoBarras, Estado)" +
-                                " VALUES (@codigo,@nombre,@univenta,@unicompra,@precio,@seccion,@fv,@iva,@cb, 'Activo')";
+                            string cadena2 = "INSERT INTO Producto(CodigoProducto, Nombre, UnidadVenta,	UnidadCompra, PrecioVenta, Seccion, FechaVencimiento, IVA, CodigoBarras, Estado, FactorConversion )" +
+                                " VALUES (@codigo,@nombre,@univenta,@unicompra,@precio,@seccion,@fv,@iva,@cb,'Activo', @fc)";
                             SqlCommand cmd2 = new SqlCommand(cadena2, conn);
                             cmd2.Parameters.AddWithValue("@codigo", Statics.PrimeraAMayuscula(Producto.codigoProducto));
                             cmd2.Parameters.AddWithValue("@nombre", Statics.PrimeraAMayuscula(Producto.nombre));
@@ -173,6 +173,7 @@ namespace Client.Main.Utilities
                             cmd2.Parameters.AddWithValue("@fv", Producto.fechaVencimiento == DateTime.MinValue ? (object)DBNull.Value : Producto.fechaVencimiento);
                             cmd2.Parameters.AddWithValue("@iva", Producto.iva);
                             cmd2.Parameters.AddWithValue("@cb", string.IsNullOrEmpty(Producto.codigoBarras) ? (object)DBNull.Value : Producto.codigoBarras);
+                            cmd2.Parameters.AddWithValue("@fc", Producto.factorConversion);
                             cmd2.ExecuteNonQuery();
                             conn.Close();
                             return true;
@@ -223,12 +224,12 @@ namespace Client.Main.Utilities
                             conn.Close();
                             reader.Close();
                             return false;
-                            //return "Nombre de producto ya registrado.";
+                            //return "Nombre de producto ya registrado."; 
                         }
                         else
                         {
                             reader.Close();
-                            string cadena = $"UPDATE Producto SET  Nombre=@nombre, UnidadVenta=@univenta,	UnidadCompra=@unicompra, PrecioVenta=@precio, Seccion=@seccion, FechaVencimiento=@fv, IVA=@iva, CodigoBarras=@cb WHERE CodigoProducto = '{Producto.codigoProducto}' ";
+                            string cadena = $"UPDATE Producto SET  Nombre=@nombre, UnidadVenta=@univenta,	UnidadCompra=@unicompra, PrecioVenta=@precio, Seccion=@seccion, FechaVencimiento=@fv, IVA=@iva, CodigoBarras=@cb, FactorConversion = @fc WHERE CodigoProducto = '{Producto.codigoProducto}' ";
                             SqlCommand cmd = new SqlCommand(cadena, conn);
                             cmd.Parameters.AddWithValue("@codigo", Statics.PrimeraAMayuscula(Producto.codigoProducto));
                             cmd.Parameters.AddWithValue("@nombre", Statics.PrimeraAMayuscula(Producto.nombre));
@@ -239,6 +240,7 @@ namespace Client.Main.Utilities
                             cmd.Parameters.AddWithValue("@fv", Producto.fechaVencimiento == DateTime.MinValue ? (object)DBNull.Value : Producto.fechaVencimiento);
                             cmd.Parameters.AddWithValue("@iva", Producto.iva);
                             cmd.Parameters.AddWithValue("@cb", string.IsNullOrEmpty(Producto.codigoBarras) ? (object)DBNull.Value : Producto.codigoBarras);
+                            cmd.Parameters.AddWithValue("@fc", Producto.factorConversion);
                             cmd.ExecuteNonQuery();
                             conn.Close();
                             return true;
@@ -311,11 +313,12 @@ namespace Client.Main.Utilities
                             producto.codigoProducto = reader["CodigoProducto"].ToString();
                             producto.nombre = reader["Nombre"].ToString();
                             producto.unidadCompra = reader["UnidadCompra"].ToString();
-                            producto.unidadCompra = reader["UnidadVenta"].ToString();
+                            producto.unidadVenta = reader["UnidadVenta"].ToString();
                             producto.precioVenta = Convert.ToDecimal(reader["PrecioVenta"].ToString());
                             producto.seccion = reader["Seccion"].ToString();
                             producto.iva = Convert.ToDecimal(reader["IVA"].ToString());
                             producto.codigoBarras = reader["CodigoBarras"].ToString();
+                            producto.factorConversion = decimal.Parse(reader["FactorConversion"].ToString());
                             if (reader["FechaVencimiento"].ToString() == "")
                             {
                                 producto.fechaVencimiento = DateTime.MinValue;
@@ -1267,7 +1270,7 @@ namespace Client.Main.Utilities
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
                     BindableCollection<ProductoModel> productos = new BindableCollection<ProductoModel>();
-                    string cadena = $"select distinct producto.codigoproducto, producto.Nombre, producto.unidadventa, ExistenciaProducto.Cantidad from  producto join existenciaproducto on producto.codigoproducto = existenciaproducto.codigoproducto where existenciaproducto.codigoexistencia = '{codigoExistencia}'; ";
+                    string cadena = $"select distinct producto.codigoproducto, producto.Nombre, producto.unidadventa, ExistenciaProducto.Cantidad from  producto join existenciaproducto on producto.codigoproducto = existenciaproducto.codigoproducto where existenciaproducto.codigoexistencia = '{codigoExistencia}' and producto.estado = 'Activo'; ";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -1575,7 +1578,7 @@ namespace Client.Main.Utilities
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
                     BindableCollection<ProductoModel> productos = new BindableCollection<ProductoModel>();
-                    string cadena = $"select  producto.codigoproducto, producto.Nombre, producto.unidadventa, PedidoProducto.Cantidad, ExistenciaProducto.Cantidad as ExistenciaCantidad from  producto join pedidoproducto on producto.codigoproducto = PedidoProducto.CodigoProducto join ExistenciaProducto on ExistenciaProducto.CodigoProducto = Producto.CodigoProducto where pedidoproducto.codigopedido = '{codigoPedido}' and CodigoExistencia = '{codigoPedido.Split(':')[0]}' order by ExistenciaProducto.CodigoProducto; ";
+                    string cadena = $"select  producto.codigoproducto, producto.Nombre, producto.unidadventa, producto.unidadcompra, PedidoProducto.Cantidad, producto.factorconversion,ExistenciaProducto.Cantidad as ExistenciaCantidad from  producto join pedidoproducto on producto.codigoproducto = PedidoProducto.CodigoProducto join ExistenciaProducto on ExistenciaProducto.CodigoProducto = Producto.CodigoProducto where pedidoproducto.codigopedido = '{codigoPedido}' and CodigoExistencia = '{codigoPedido.Split(':')[0]}' and estado = 'Activo' order by ExistenciaProducto.CodigoProducto; ";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -1587,6 +1590,8 @@ namespace Client.Main.Utilities
                             producto.codigoProducto = reader["codigoproducto"].ToString();
                             producto.nombre = reader["nombre"].ToString();
                             producto.unidadVenta = reader["unidadventa"].ToString();
+                            producto.unidadCompra = reader["unidadcompra"].ToString();
+                            producto.factorConversion = decimal.Parse(reader["factorconversion"].ToString());
                             producto.existencia = Int32.Parse(reader["ExistenciaCantidad"].ToString());
                             producto.pedido = Int32.Parse(reader["cantidad"].ToString());
 

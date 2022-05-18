@@ -38,13 +38,54 @@ namespace Client.Main.ViewModels
             }
         }
 
+        public BindableCollection<string> UnidadesC
+        {
+            get { return Utilities.Statics.Unidades; }
+        }
+
+        public string UnidadCompra
+        {
+            get { return Producto.unidadCompra; }
+            set
+            {
+                Producto.unidadCompra = value;
+                NotifyOfPropertyChange(() => UnidadCompra);
+
+            }
+        }
+
+        public BindableCollection<string> UnidadesV
+        {
+            get { return Utilities.Statics.Unidades; }
+        }
+
         public string UnidadVenta
         {
             get { return Producto.unidadVenta; }
             set
             {
-                Producto.unidadVenta = value.Substring(38);
+                Producto.unidadVenta = value;
                 NotifyOfPropertyChange(() => UnidadVenta);
+
+            }
+        }
+
+
+        public string FactorConversion
+        {
+            get { return Producto.factorConversion.ToString(); }
+            set
+            {
+                decimal a;
+                if (decimal.TryParse(value, out a))
+                {
+                    Producto.factorConversion = a;
+                    NotifyOfPropertyChange(() => FactorConversion);
+                }
+                if (string.IsNullOrEmpty(value))
+                {
+
+                }
 
             }
         }

@@ -53,10 +53,32 @@ namespace Client.Main.ViewModels
             get { return Producto.nombre; }
             set
             { 
-                Producto.nombre = value;
+                Producto.nombre = Utilities.Statics.PrimeraAMayuscula(value);
                 NotifyOfPropertyChange(() => Nombre);
 
             }
+        }
+
+        
+        public BindableCollection<string> UnidadesC
+        {
+            get { return Utilities.Statics.Unidades; }
+        }
+
+        public string UnidadCompra
+        {
+            get { return Producto.unidadCompra; }
+            set
+            {
+                Producto.unidadCompra = value;
+                NotifyOfPropertyChange(() => UnidadCompra);
+
+            }
+        }
+
+        public BindableCollection<string> UnidadesV
+        {
+            get { return Utilities.Statics.Unidades; }
         }
 
         public string UnidadVenta
@@ -64,11 +86,33 @@ namespace Client.Main.ViewModels
             get { return Producto.unidadVenta; }
             set
             {
-                Producto.unidadVenta = value.Substring(38);
+                Producto.unidadVenta = value;
                 NotifyOfPropertyChange(() => UnidadVenta);
 
             }
         }
+
+
+        public string FactorConversion
+        {
+            get { return Producto.factorConversion.ToString() ; }
+            set 
+            {
+                decimal a;
+                if (decimal.TryParse(value,out a))
+                {
+                    Producto.factorConversion = a;
+                    NotifyOfPropertyChange(() => FactorConversion);
+                }
+                if (string.IsNullOrEmpty(value))
+                {
+
+                }
+
+            }
+        }
+
+
 
         public string Seccion
         {
@@ -117,7 +161,8 @@ namespace Client.Main.ViewModels
             Producto.codigoProducto = LetraCodigo + NumeroCodigo;
             //DbConnection.SincronizarReplicacionMerge();
             if (!string.IsNullOrWhiteSpace(LetraCodigo) && !string.IsNullOrWhiteSpace(NumeroCodigo) && !string.IsNullOrWhiteSpace(Producto.codigoProducto) && !string.IsNullOrWhiteSpace(Producto.nombre) &&
-                !string.IsNullOrWhiteSpace(Producto.unidadVenta) && !string.IsNullOrWhiteSpace(Producto.seccion))
+                !string.IsNullOrWhiteSpace(Producto.unidadVenta) && !string.IsNullOrWhiteSpace(Producto.seccion) && !string.IsNullOrWhiteSpace(Producto.unidadVenta) && !string.IsNullOrWhiteSpace(Producto.unidadCompra)
+                && !string.IsNullOrWhiteSpace(Producto.factorConversion.ToString()))
             {
                 if (string.IsNullOrEmpty(Producto.codigoBarras))
                 {
@@ -184,7 +229,7 @@ namespace Client.Main.ViewModels
             get
             {
                 string result = null;
-                if (flag == 8)
+                if (flag == 10)
                 {
                     if (name == "LetraCodigo")
                     {
@@ -207,9 +252,23 @@ namespace Client.Main.ViewModels
                             result = "Este campo no puede estar vacío.";
                         }
                     }
+                    else if (name == "UnidadCompra")
+                    {
+                        if (String.IsNullOrEmpty(UnidadCompra))
+                        {
+                            result = "Este campo no puede estar vacío.";
+                        }
+                    }
                     else if (name == "UnidadVenta")
                     {
                         if (String.IsNullOrEmpty(UnidadVenta))
+                        {
+                            result = "Este campo no puede estar vacío.";
+                        }
+                    }
+                    else if (name == "FactorConversion")
+                    {
+                        if (String.IsNullOrEmpty(FactorConversion))
                         {
                             result = "Este campo no puede estar vacío.";
                         }

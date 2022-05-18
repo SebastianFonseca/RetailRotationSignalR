@@ -33,10 +33,10 @@ namespace Client.Main.ViewModels
 
         public BindableCollection<ProductoModel> Productos
         {
-            get => compra.sumaProductosPedidos;
+            get => compra.sumaProductosPedidosTransformadoUnidadCompra;
             set
             {
-                compra.sumaProductosPedidos = value;
+                compra.sumaProductosPedidosTransformadoUnidadCompra = value;
                 NotifyOfPropertyChange(() => Productos);
             }
 

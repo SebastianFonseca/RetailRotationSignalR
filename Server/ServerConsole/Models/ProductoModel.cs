@@ -10,6 +10,7 @@ namespace ServerConsole.Models
         public string nombre { get; set; }
         public string unidadVenta { get; set; }
         public string unidadCompra { get; set; }
+        public decimal factorConversion { get; set; } = 1;
         /// <summary>
         /// warning si el precio de venta es cero en una venta
         /// </summary>

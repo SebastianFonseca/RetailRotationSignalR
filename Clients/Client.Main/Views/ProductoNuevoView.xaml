@@ -58,79 +58,106 @@
                 </Border.Effect>
             </Border>
 
+            <ScrollViewer  Style="{StaticResource GeneralScrollViewer}" HorizontalScrollBarVisibility="Disabled" Background="Red" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" Margin="10 20 0 0">
 
-            <!--Formulario principal-->
-            <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9" c:KeyboardFocus.On="{Binding ElementName=LetraCodigo}" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="0">
+                    <!--Formulario principal-->
+                <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9" c:KeyboardFocus.On="{Binding ElementName=LetraCodigo}" HorizontalAlignment="Stretch" Grid.Column="1" Grid.Row="0">
 
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0.35*"/>
-                    <ColumnDefinition Width="0.65*"/>
-                </Grid.ColumnDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.35*"/>
+                        <ColumnDefinition Width="0.65*"/>
+                    </Grid.ColumnDefinitions>
 
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
 
-                </Grid.RowDefinitions>
+                    </Grid.RowDefinitions>
 
-                <!--Linea 1-->
-                <TextBlock Grid.Row="1" Grid.Column="0" Margin="0 0 0 -3">Código:</TextBlock>
-                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
-                    <TextBox Margin="0 0 10 0" Style="{StaticResource GeneralTextBox}" x:Name="LetraCodigo" Width="30" PreviewTextInput="LetterValidationTextBox" MaxLength="1"  TextAlignment="Center" CharacterCasing="Upper" />
-                    <TextBox  Style="{StaticResource GeneralTextBox}" x:Name="NumeroCodigo" Width="100" PreviewTextInput="NumberValidationTextBox"/>
-                </StackPanel>
-                <!--Linea 2-->
-                <TextBlock Grid.Row="2" Grid.Column="0" >Nombre:</TextBlock>
-                <TextBox Grid.Row="2" Grid.Column="1"  Style="{StaticResource GeneralTextBox}" x:Name="Nombre"/>
+                    <!--Linea 1-->
+                    <TextBlock Grid.Row="1" Grid.Column="0" Margin="0 0 0 -3">Código:</TextBlock>
+                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
+                        <TextBox Margin="0 0 10 0" Style="{StaticResource GeneralTextBox}" x:Name="LetraCodigo" Width="30" PreviewTextInput="LetterValidationTextBox" MaxLength="1"  TextAlignment="Center" CharacterCasing="Upper" />
+                        <TextBox  Style="{StaticResource GeneralTextBox}" x:Name="NumeroCodigo" Width="100" PreviewTextInput="NumberValidationTextBox"/>
+                    </StackPanel>
+                    
+                    <!--Linea 2-->
+                    <TextBlock Grid.Row="2" Grid.Column="0" >Nombre:</TextBlock>
+                    <TextBox Grid.Row="2" Grid.Column="1"  Style="{StaticResource GeneralTextBox}" x:Name="Nombre"/>
 
-                <!--Linea 3-->
-                <TextBlock Grid.Row="3" Grid.Column="0">Unidad de Venta:</TextBlock>
-                <ComboBox Template="{StaticResource GeneralComboBox}" Grid.Row="3" Grid.Column="1"  Margin="1" FontWeight="DemiBold" FontSize="12"   SelectedItem="{Binding Path=UnidadVenta}" x:Name="Unidadv">
-                    <ComboBoxItem>Bulto (B)</ComboBoxItem>
-                    <ComboBoxItem>Canastilla (C)</ComboBoxItem>
-                    <ComboBoxItem>Kilogramo (K)</ComboBoxItem>
-                    <ComboBoxItem>Unidades (U)</ComboBoxItem>
-                </ComboBox>
+                    <!--Linea 3-->
+                    <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Bottom" FontSize="21">Código de barras:</TextBlock>
+                    <TextBox  Grid.Row="3" Grid.Column="1" Style="{StaticResource GeneralTextBox}" x:Name="CodigoBarras" PreviewTextInput="NumberValidationTextBox" />
 
-                <!--linea 4-->
-                <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Bottom">Sección:</TextBlock>
-                <ComboBox Template="{StaticResource GeneralComboBox}" Grid.Row="4" Grid.Column="1" Margin="1" FontWeight="DemiBold" FontSize="12"  SelectedItem="{Binding Path=Seccion}"  x:Name="Section">
-                    <ComboBoxItem>Frutas y verduras</ComboBoxItem>
-                    <ComboBoxItem>Abarrotes</ComboBoxItem>
-                    <ComboBoxItem>Carnes</ComboBoxItem>
-                </ComboBox>
+                    <!--linea 4-->
+                    <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Bottom">Sección:</TextBlock>
+                    <ComboBox Template="{StaticResource GeneralComboBox}" Grid.Row="4" Grid.Column="1" Margin="1" FontWeight="DemiBold" FontSize="12"  SelectedItem="{Binding Path=Seccion}"  x:Name="Section">
+                        <ComboBoxItem>Frutas y verduras</ComboBoxItem>
+                        <ComboBoxItem>Abarrotes</ComboBoxItem>
+                        <ComboBoxItem>Carnes</ComboBoxItem>
+                    </ComboBox>
 
-                <!--Linea 5-->
-                <TextBlock Grid.Row="5" Grid.Column="0"  >Vencimiento:</TextBlock>
-                <DatePicker   Style="{DynamicResource date}" Grid.Row="5" Grid.Column="1"   x:Name="FechaVencimiento" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0 2 0 0" FontWeight="DemiBold" />
+                    <!--Linea 5-->
+                    <TextBlock Grid.Row="5" Grid.Column="0"  >Vencimiento:</TextBlock>
+                    <DatePicker   Style="{DynamicResource date}" Grid.Row="5" Grid.Column="1"   x:Name="FechaVencimiento" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0 2 0 0" FontWeight="DemiBold" />
 
-                <!--Linea 9-->
-                <TextBlock Grid.Row="6" Grid.Column="0" VerticalAlignment="Bottom">I.V.A.:</TextBlock>
-                <StackPanel Grid.Row="6" Grid.Column="1" Orientation="Horizontal" >
-                    <TextBox   Style="{StaticResource GeneralTextBox}" x:Name="IVA" PreviewTextInput="NumberValidationTextBox" Width="40" HorizontalAlignment="Left" MaxLength="3" HorizontalContentAlignment="Center"/>
-                    <TextBlock   Text="%"/>
-                </StackPanel>
+                    <!--Linea 6-->
+                    <TextBlock Grid.Row="6" Grid.Column="0" VerticalAlignment="Bottom">I.V.A.:</TextBlock>
+                    <StackPanel Grid.Row="6" Grid.Column="1" Orientation="Horizontal" >
+                        <TextBox   Style="{StaticResource GeneralTextBox}" x:Name="IVA" PreviewTextInput="NumberValidationTextBox" Width="40" HorizontalAlignment="Left" MaxLength="3" HorizontalContentAlignment="Center"/>
+                        <TextBlock   Text="%"/>
+                    </StackPanel>
 
-                <!--Linea 10-->
-                <TextBlock Grid.Row="7" Grid.Column="0" VerticalAlignment="Bottom" FontSize="21">Código de barras:</TextBlock>
-                <TextBox  Grid.Row="7" Grid.Column="1" Style="{StaticResource GeneralTextBox}" x:Name="CodigoBarras" PreviewTextInput="NumberValidationTextBox" />
-            </Grid>
+                    <!--Linea 7-->
+                    <TextBlock Grid.Row="7" Grid.Column="0">Unidad de compra:</TextBlock>
+                    <ComboBox Template="{StaticResource GeneralComboBox}" Grid.Row="7" Grid.Column="1"  Margin="1" FontWeight="DemiBold" FontSize="12"   SelectedItem="{Binding Path=UnidadCompra}" x:Name="UnidadesC"/>
+                    
+                    <!--Linea 8-->
+                    <TextBlock Grid.Row="8" Grid.Column="0">Unidad de Venta:</TextBlock>
+                    <ComboBox Template="{StaticResource GeneralComboBox}" Grid.Row="8" Grid.Column="1"  Margin="1" FontWeight="DemiBold" FontSize="12"   SelectedItem="{Binding Path=UnidadVenta}" x:Name="UnidadesV"/>
 
-            <!--Boton guardar-->
+                    <!--Linea 9-->
+                    <TextBlock Grid.Row="9" Grid.Column="0">Factor de conversión:</TextBlock>
+                    <TextBox  Grid.Row="9" Grid.Column="1"  Margin="1" HorizontalContentAlignment="Center" FontSize="22" FontWeight="Normal" HorizontalAlignment="Left" Width="60" Style="{StaticResource GeneralTextBox}"  x:Name="FactorConversion" ToolTip="Valor utilizado para convertir las unidades de venta en unidades de compra, utilice coma (',') si es decimal."/>
+
+                    <!--Linea 10-->
+                    <StackPanel Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock Text="Un(a) " FontWeight="Normal"/>
+                        <TextBlock Text="{Binding UnidadCompra}" FontWeight="Normal"/>
+                        <TextBlock Text=" de " FontWeight="Normal"/>
+                        <TextBlock Text="{Binding Nombre}" FontWeight="Normal"/>
+                        <TextBlock Text=" equivale a "  FontWeight="Normal"/>
+                        <TextBlock Text="{Binding FactorConversion}" FontWeight="Normal"/>
+                        <TextBlock Text=" " FontWeight="Normal"/>
+                        <TextBlock Text="{Binding UnidadVenta}" FontWeight="Normal"/>
+                    </StackPanel>
+                    
+                    
+
+                </Grid>
+            </ScrollViewer>
+            
+            
+                <!--Boton guardar-->
             <Button Style="{StaticResource GeneralButton}"  Margin="11" Height="50" HorizontalAlignment="Center"  Width="250" Content="    GUARDAR    "  x:Name="Guardar" Grid.Column="1" Grid.Row="1" >
                 <Button.IsEnabled>
                     <MultiBinding Converter="{StaticResource Converter }" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
                         <Binding ElementName="LetraCodigo" Path="(Validation.HasError)" />
                         <Binding ElementName="NumeroCodigo" Path="(Validation.HasError)" />
                         <Binding ElementName="Nombre" Path="(Validation.HasError)" />
-                        <Binding ElementName="Unidadv" Path="(Validation.HasError)" />
+                        <Binding ElementName="UnidadesC" Path="(Validation.HasError)" />
+                        <Binding ElementName="UnidadesV" Path="(Validation.HasError)" />
+                        <Binding ElementName="FactorConversion" Path="(Validation.HasError)" />
                         <Binding ElementName="Section" Path="(Validation.HasError)" />
                         <Binding ElementName="FechaVencimiento" Path="(Validation.HasError)" />
                         <Binding ElementName="IVA" Path="(Validation.HasError)" />

@@ -11,6 +11,7 @@ namespace Client.Main.Models
         public string nombre { get; set; }
         public string unidadVenta { get; set; } = "";
         public string unidadCompra { get; set; } = "";
+        public decimal factorConversion { get; set; } = 1;
         public string seccion { get; set; }
         public DateTime fechaVencimiento { get; set; } = DateTime.Now;
         public decimal iva { get; set; }

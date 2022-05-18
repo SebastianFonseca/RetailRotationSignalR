@@ -13,7 +13,7 @@ namespace Client.Main.Utilities
 
 
         /// <summary>
-        /// 'Global' variable indicates the server conection ClientStatus.
+        /// 'Global' variable wich indicates the server conection ClientStatus.
         /// </summary>
         private static string _clientStatus = "Trabajando localmente";
         public static string ClientStatus
@@ -25,6 +25,26 @@ namespace Client.Main.Utilities
 
             }
         }
+
+        /// <summary>
+        /// Lista con los nombres de las unidades utilizadas para llenar diferentes formularios 
+        /// </summary>
+        private static BindableCollection<string> _unidades = new BindableCollection<string>()
+        {           "Bandeja(s)",
+                    "Bulto(s)",
+                    "Docena(s)",
+                    "Caja(s)",
+                    "Canastilla(s)",
+                    "Kilogramo(s)",
+                    "Unidad(es)"
+        };
+
+        public static BindableCollection<string>  Unidades
+        {
+            get { return _unidades; }
+        }
+
+
 
         #region Crypto
         /// Size of salt, must be 8 bytes or larger.

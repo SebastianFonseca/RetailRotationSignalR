@@ -37,6 +37,17 @@ namespace Client.Main.ViewModels
             set { }
         }
 
+        public string UnidadCompra
+        {
+            get { return Producto.unidadCompra; }
+            set { }
+        }
+
+        public string FactorConversion
+        {
+            get { return Producto.factorConversion.ToString(); }
+            set { }
+        }
         public string Seccion
         {
             get { return Producto.seccion; }

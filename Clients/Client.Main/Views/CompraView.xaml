@@ -122,14 +122,14 @@
 
                 <Separator Grid.Row="1" VerticalAlignment="Bottom" Foreground="Beige" Margin="0"/>
 
-                <ListView  KeyboardNavigation.TabNavigation="Cycle" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True" x:Name="Productos" Background="#F3E0D2" BorderThickness="0"  FlowDirection="LeftToRight" HorizontalAlignment="Stretch" Grid.Row="2" ItemsSource="{Binding Path=Productos}" Margin="0 3 0 3">
+                <ListView  KeyboardNavigation.TabNavigation="Cycle" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.CanContentScroll="True" x:Name="Productos" Background="#F3E0D2" BorderThickness="0"  FlowDirection="LeftToRight" HorizontalAlignment="Stretch" Grid.Row="2" ItemsSource="{Binding Path=Productos}" Margin="0 3 0 3">
                     <ListBox.ItemTemplate  >
                         <DataTemplate >
                             <Grid Focusable="False">
 
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="230"/>
                                     <ColumnDefinition />
                                     <ColumnDefinition Width="200"/>
                                 </Grid.ColumnDefinitions>
@@ -137,7 +137,7 @@
                                 <TextBlock Text="{Binding Path=codigoProducto}" Margin="0" FontSize="18" HorizontalAlignment="Center"/>
                                 <TextBlock Text="{Binding Path=nombre}" Grid.Column="1"  FontSize="18" HorizontalAlignment="Center"/>
                                 <TextBlock  Grid.Column="2"  Width="60" Text="{Binding Path=sumaPedido}" HorizontalAlignment="Center" TextAlignment="Center" FontSize="18" />
-                                <TextBlock Text="{Binding Path=unidadVenta}" Grid.Column="3"  FontSize="18" HorizontalAlignment="Center"/>
+                                <TextBlock Text="{Binding Path=unidadCompra}" Grid.Column="3"  FontSize="18" HorizontalAlignment="Center"/>
                             </Grid>
 
                         </DataTemplate>

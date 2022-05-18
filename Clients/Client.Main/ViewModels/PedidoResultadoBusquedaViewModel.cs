@@ -28,7 +28,7 @@ namespace Client.Main.ViewModels
             {
                 foreach (ProductoModel producto in pedido.productos)
                 {
-                    producto.unidadVenta = "( " + producto.unidadVenta.Substring(0, 1) + " )";
+                    producto.unidadVenta =  producto.unidadVenta.Substring(0, 3) ;
                 }
 
                 return pedido.productos; 
