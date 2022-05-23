@@ -75,7 +75,8 @@ namespace Client.Main.ViewModels
             //MessageBox.Show(_cargo);
             ActivateItem(new MainMenuViewModel(this));
             base.OnActivate();
-            
+            DisplayName = " ";
+           
         }
 
 

@@ -18,6 +18,7 @@ namespace Client.Main.ViewModels
         {
             VentanaPrincipal = argVentana;
             pedido = pPedido;
+            
         }
 
 

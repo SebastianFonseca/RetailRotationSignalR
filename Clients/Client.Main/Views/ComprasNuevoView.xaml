@@ -85,7 +85,7 @@
                     
                     <ListView KeyboardNavigation.TabNavigation="Cycle" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.CanContentScroll="True" x:Name="Pedidos" 
                               Background="#F3E0D2" BorderThickness="0"  FlowDirection="LeftToRight"  ItemsSource="{Binding Path=Pedidos}"  
-                              cal:Message.Attach="[Event SelectionChanged] = [Action ItemSeleccionado]" HorizontalAlignment="Center" SelectionMode="Multiple" >
+                              HorizontalAlignment="Center" SelectionMode="Multiple" >
                         <ListBox.ItemTemplate  >
                             <DataTemplate >
                                 

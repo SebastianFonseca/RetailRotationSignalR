@@ -20,12 +20,17 @@ namespace Client.Main.Models
         public int? pedido { get; set; }
         public int? sumaPedido { get; set; }
         public int? compra { get; set; }
+
+        public int? compraPorLocal { get; set; }
+        public ProveedorModel proveedor { get; set; } = new ProveedorModel();
         public string estado { get; set; }
 
         /// <summary>
         /// warning si el precio de venta es cero en una venta
         /// </summary>
-        public decimal precioVenta { get; set; } = 0;
+        public decimal? precioVenta { get; set; }
+
+        public decimal precioCompra  { get; set; }
 
         /// <summary>
         ///Propiedad necesaria para el binding de datos en las listbox con el productoseleccionado.

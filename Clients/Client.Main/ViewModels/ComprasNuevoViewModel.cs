@@ -65,34 +65,7 @@ namespace Client.Main.ViewModels
         }
 
 
-
-
-
-        public async void ItemSeleccionado()
-        {
-            //MessageBox.Show(pedidosSeleccionados.Count.ToString() + Pedido.codigo.ToString()) ;
-            //try
-            //{
-            //    if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
-            //    {
-            //        Task<object> re = conexion.CallServerMethod("getExistenciasConProductos", Arguments: new object[] { Existencia.codigo });
-            //        await re;
-            //        BindableCollection<ExistenciasModel> seleccionada = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ExistenciasModel>>(re.Result.ToString());
-            //        VentanaPrincipal.ActivateItem(new PedidoEditarViewModel(VentanaPrincipal, seleccionada[0]));
-            //    }
-            //    if (MainWindowViewModel.Status == "Trabajando localmente")
-            //    {
-            //        VentanaPrincipal.ActivateItem(new PedidoEditarViewModel(VentanaPrincipal, DbConnection.getExistenciasConProductos(Existencia.codigo)[0]));
-            //    }
-            //}
-            //catch (Exception e)
-            //{
-            //    MessageBox.Show(e.Message);
-            //}
-
-        }
-
-        public async void Crear()
+        public void Crear()
         {
             foreach (PedidoModel item in Pedidos)
             {
@@ -101,7 +74,8 @@ namespace Client.Main.ViewModels
                     pedidosSeleccionados.Add(item);
                 }
             }
-            VentanaPrincipal.ActivateItem(new CompraViewModel(VentanaPrincipal, pedidosSeleccionados));
+
+            VentanaPrincipal.ActivateItem(new ComprasDistribucionPorLocalViewModel(pedidosSeleccionados, VentanaPrincipal));
 
         }
 

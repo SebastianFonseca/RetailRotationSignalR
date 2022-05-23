@@ -147,13 +147,8 @@
 
                     <!--Linea 7-->
                     <TextBlock Grid.Row="10" Grid.Column="0" VerticalAlignment="Bottom">Cargo:</TextBlock>
-                    <ComboBox Template="{StaticResource GeneralComboBox}" Grid.Row="10" Grid.Column="1"  Margin="1" FontWeight="DemiBold" FontSize="12" x:Name="Cargo" SelectedItem="{Binding Path=Cargo}" >
-                        <ComboBoxItem>Administrador de sede</ComboBoxItem>
-                        <ComboBoxItem>Bodeguero</ComboBoxItem>
-                        <ComboBoxItem>Cajero</ComboBoxItem>
-                        <ComboBoxItem >Encargado de despacho</ComboBoxItem>
-                        <ComboBoxItem >Gerente general</ComboBoxItem>
-                        <ComboBoxItem>Jefe de compras</ComboBoxItem>
+                    <ComboBox Template="{StaticResource GeneralComboBox}" Grid.Row="10" Grid.Column="1"  Margin="1" FontWeight="DemiBold" FontSize="12" x:Name="Cargo" ItemsSource="{Binding Path=Cargos}" SelectedItem="{Binding Path=Cargo}" >
+
                     </ComboBox>
 
                     <!--Linea 8-->

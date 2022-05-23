@@ -168,6 +168,23 @@ namespace Client.Main.ViewModels
             }
         }
 
+        private BindableCollection<string> _cargos = new BindableCollection<string>() {
+            "Administrador de sede", 
+            "Bodeguero",
+            "Cajero",
+            "Encargado de despacho",
+            "Gerente general", 
+            "Jefe de compras"
+        };
+
+
+        public BindableCollection<string> Cargos
+        {
+            get { return _cargos; }
+            set { _cargos = value; }
+        }
+
+
         public string Password
         {
             get { return NuevoEmpleado.password; }

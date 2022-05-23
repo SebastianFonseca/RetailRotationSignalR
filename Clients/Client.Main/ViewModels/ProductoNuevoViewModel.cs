@@ -98,14 +98,24 @@ namespace Client.Main.ViewModels
             get { return Producto.factorConversion.ToString() ; }
             set 
             {
+
                 decimal a;
                 if (decimal.TryParse(value,out a))
                 {
+                    if (a == 0)
+                    {
+                        MessageBox.Show("El factor de conversion no puede ser 0.");
+                        return;
+                    }
+                    else 
+                    { 
                     Producto.factorConversion = a;
                     NotifyOfPropertyChange(() => FactorConversion);
+                    }
                 }
                 if (string.IsNullOrEmpty(value))
                 {
+                    MessageBox.Show("El factor de conversion no puede quedar vacío.");
 
                 }
 

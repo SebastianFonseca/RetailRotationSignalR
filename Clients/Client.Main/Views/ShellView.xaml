@@ -29,16 +29,16 @@
         </Grid.RowDefinitions>
         
            <!--Fila 1.Iniciar Sesion-->
-        <TextBlock   Grid.Row="1" Grid.Column="1" Margin="0    0  0   0" HorizontalAlignment="Center"  x:Name="InsesionTb"   VerticalAlignment="Center" FontSize="24"  FontFamily="Corbel"       Grid.ColumnSpan="2" Text="INICIAR SESIÓN"/>
+        <TextBlock   Grid.Row="1" Grid.Column="1" Margin="0 0 0 0" HorizontalAlignment="Center"  x:Name="InsesionTb"   VerticalAlignment="Center" FontSize="24"  FontFamily="Corbel"       Grid.ColumnSpan="2" Text="INICIAR SESIÓN"/>
 
            <!--Fila 2.Usuario-->       
-        <TextBlock   Grid.Row="2" Grid.Column="1" Margin="0  8.0 14 3.5" HorizontalAlignment="Right"   x:Name="UsuarioTb"    VerticalAlignment="Center" FontSize="15"  FontFamily="Corbel light" FontWeight="Bold"   Text="Usuario:"/>
+        <TextBlock   Grid.Row="2" Grid.Column="1" Margin="0  8.0 14 3.5" HorizontalAlignment="Right"   x:Name="UsuarioTb"    VerticalAlignment="Center" FontSize="16"  FontFamily="Corbel" FontWeight="Normal"   Text="Usuario:" Panel.ZIndex="10"/>
         <Border Grid.Row="2" Grid.Column="2" CornerRadius="6" Background="White" VerticalAlignment="Bottom" Margin="2">
             <TextBox      HorizontalAlignment="Center"  x:Name="User"     Background="Transparent"   MaxWidth="100" MinWidth="100" BorderThickness="0"    VerticalAlignment="Center" Margin="5 0 0 0"/>
         </Border>
         
            <!--Fila 3.Contraseña-->
-        <TextBlock Grid.Row="3" Grid.Column="1" Margin="0 0 5 10" HorizontalAlignment="Right" x:Name="ContraseñaTb" VerticalAlignment="Center" FontSize="15" FontFamily="Corbel light" FontWeight="Bold" Text="Contraseña:"/>
+        <TextBlock Grid.Row="3" Grid.Column="1" Margin="0 0 5 10" HorizontalAlignment="Right" x:Name="ContraseñaTb" VerticalAlignment="Center" FontSize="15" FontFamily="Corbel" FontWeight="Normal"  Text="Contraseña:"/>
         <Border   Grid.Row="3" Grid.Column="2" CornerRadius="6" Background="White" VerticalAlignment="Top" Margin="2">
             <PasswordBox pwbx:PasswordBoxAssistant.BoundPassword="{Binding UserPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True, ValidatesOnDataErrors=True}" Background="Transparent"  
                          HorizontalAlignment="Center"   BorderThickness="0" MaxWidth="100" MinWidth="100" Margin="5 0 0 0" x:Name="UserPassword"  />

@@ -128,7 +128,7 @@
 
                     <!--Linea 9-->
                     <TextBlock Grid.Row="9" Grid.Column="0">Factor de conversión:</TextBlock>
-                    <TextBox  Grid.Row="9" Grid.Column="1"  Margin="1" HorizontalContentAlignment="Center" FontSize="22" FontWeight="Normal" HorizontalAlignment="Left" Width="60" Style="{StaticResource GeneralTextBox}"  x:Name="FactorConversion" ToolTip="Valor utilizado para convertir las unidades de venta en unidades de compra, utilice coma (',') si es decimal."/>
+                    <TextBox  Grid.Row="9" Grid.Column="1"  Margin="1" HorizontalContentAlignment="Center" FontSize="22" FontWeight="Normal" HorizontalAlignment="Left" Width="60" Style="{StaticResource GeneralTextBox}" Text="{Binding FactorConversion,UpdateSourceTrigger=LostFocus}" x:Name="FactorConversion" ToolTip="Valor utilizado para convertir las unidades de venta en unidades de compra, utilice coma (',') si es decimal."/>
 
                     <!--Linea 10-->
                     <StackPanel Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">

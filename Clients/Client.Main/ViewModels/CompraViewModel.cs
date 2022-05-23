@@ -22,7 +22,11 @@ namespace Client.Main.ViewModels
         {
             VentanaPrincipal = argVentana;
             compra = new ComprasModel(pedidos);
+            DisplayName = "Compra";
+            getProveedores();
         }
+
+
 
         public void BackButton()
         {
@@ -41,7 +45,49 @@ namespace Client.Main.ViewModels
             }
 
         }
+            
+        public string Fecha
+        {
+            get { return compra.fecha.ToString("dd/MM/yyyy"); ; }
+        }
+        public string Codigo
+        {
+            get { return compra.codigo; ; }
+        }
+
+        private BindableCollection<ProveedorModel> _proveedores;
+
+        public BindableCollection<ProveedorModel> Proveedores
+        {
+            get { return _proveedores; }
+            set { _proveedores = value; }
+        }
 
 
-    }
+        public async void getProveedores()
+        {
+            try
+            {
+                if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+                {
+                    ///Por implementar
+                    //Task<object> re = conexion.CallServerMethod("ServidorgetIdProductos", Arguments: new object[] { });
+                    //await re;
+                    //Productos = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ProductoModel>>(re.Result.ToString());
+                }
+                if (MainWindowViewModel.Status == "Trabajando localmente")
+                {
+                    _proveedores = DbConnection.getProveedores();
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+        }
+
+
+
+
+     }
 }

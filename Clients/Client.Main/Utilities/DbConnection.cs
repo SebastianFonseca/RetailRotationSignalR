@@ -505,6 +505,44 @@ namespace Client.Main.Utilities
                 return null;
             }
         }
+         /// <summary>
+         /// Obtiene la lsita de todos los proveedores.
+         /// </summary>
+         /// <returns></returns>
+        public static BindableCollection<ProveedorModel> getProveedores()
+        {
+
+            try
+            {
+                BindableCollection<ProveedorModel> proveedores = new BindableCollection<ProveedorModel>();
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"SELECT Distinct * FROM Proveedor ORDER BY Nombres ";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        proveedores.Clear();
+                        while (reader.Read())
+                        {
+                            ProveedorModel proveedor = new ProveedorModel();
+                            proveedor.cedula = reader["CedulaProveedor"].ToString();
+                            proveedor.firstName = reader["Nombres"].ToString();
+                            proveedor.lastName = reader["Apellidos"].ToString();
+                            proveedores.Add(proveedor);
+                        }
+                    }
+
+                    conn.Close();
+                    return proveedores;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
 
         /// <summary>
         /// Retorna un proveedor especificamente daso su numero de cedula.
