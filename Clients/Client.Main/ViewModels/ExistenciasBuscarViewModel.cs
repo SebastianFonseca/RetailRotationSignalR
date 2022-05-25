@@ -242,7 +242,7 @@ namespace Client.Main.ViewModels
                         Busquedas = DbConnection.getExistencias(BuscarTbx);
                     }
 
-                    if (Busquedas.Count == 0)
+                    if (Busquedas!= null & Busquedas.Count == 0)
                     {
                         BusquedasVisibilidad = "Hidden";
                     }
@@ -283,7 +283,7 @@ namespace Client.Main.ViewModels
                         MessageBox.Show(e.Message);
                     }
                 }
-                if (Busquedas.Count == 0)
+                if ( Busquedas != null & Busquedas.Count == 0)
                 {
                     BusquedasVisibilidad = "Hidden";
                 }

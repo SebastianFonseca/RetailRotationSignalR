@@ -74,8 +74,7 @@ namespace Client.Main.ViewModels
                     pedidosSeleccionados.Add(item);
                 }
             }
-
-            VentanaPrincipal.ActivateItem(new ComprasDistribucionPorLocalViewModel(pedidosSeleccionados, VentanaPrincipal));
+           VentanaPrincipal.ActivateItem(new ComprasDistribucionPorLocalViewModel(pedidosSeleccionados, VentanaPrincipal));
 
         }
 

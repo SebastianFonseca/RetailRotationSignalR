@@ -7,19 +7,31 @@ namespace Client.Main.Models
 {
     public class ComprasModel: DocumentoModel
     {
+
+        public int? numeroCanastillas { get; set; } = null;
+        public int? peso { get; set; } = null;
+
+        /// <summary>
+        /// Lista con los pedidos que componen el documento de compras.
+        /// </summary>
+        public BindableCollection<string> codPedidos = new BindableCollection<string>();
+
         /// <summary>
         /// Lista de productos con la suma de la cantidad pedida.
         /// </summary>
-        public BindableCollection<ProductoModel> sumaProductosPedidosTransformadoUnidadCompra = new BindableCollection<ProductoModel>();
-        BindableCollection<string> codPedidos = new BindableCollection<string>();
+        public BindableCollection<ProductoModel> sumaPedidos = new BindableCollection<ProductoModel>();
 
+        public ComprasModel()
+        {
+
+        }
         public ComprasModel(BindableCollection<PedidoModel> pedidos)
         {
-            this.codigo = DateTime.Today.ToString("ddMMyyyyHHmm");
+            this.codigo = DateTime.Now.ToString("ddMMyyyyHHmm");
             this.fecha = DateTime.Today.Date;
 
             ///Coleccion de strings que contendra todos los codigos de los productos para facilitar su manipulacion
-            BindableCollection<string> codigos = new BindableCollection<string>();
+            BindableCollection<string> codigosProductos = new BindableCollection<string>();
 
             ///Se  guarda el codigo del pedido de la posicion 0 en la lista de codigos de pedido que componen la compra
             codPedidos.Add(pedidos[0].codigo);
@@ -28,22 +40,19 @@ namespace Client.Main.Models
             foreach (ProductoModel producto in pedidos[0].productos)
             {
                 producto.sumaPedido = producto.pedido;
-                codigos.Add(producto.codigoProducto);
+                codigosProductos.Add(producto.codigoProducto);
                 producto.unidadCompra = producto.unidadCompra.Substring(0, 3) + ".";
                 producto.unidadVenta = producto.unidadVenta.Substring(0, 3) + ".";
-                sumaProductosPedidosTransformadoUnidadCompra.Add(producto);
+                sumaPedidos.Add(producto);
 
             }
             ///Si no hay mas pedidos que solamete 1 ya se proceso anteriormente el primero.
             if (pedidos.Count == 1)
             {
-                for (int i = 0; i < sumaProductosPedidosTransformadoUnidadCompra.Count; i++)
+                for (int i = 0; i < sumaPedidos.Count; i++)
                 {
-                    sumaProductosPedidosTransformadoUnidadCompra[i].sumaPedido = (int?)(sumaProductosPedidosTransformadoUnidadCompra[i].sumaPedido / sumaProductosPedidosTransformadoUnidadCompra[i].factorConversion);
-                    if (sumaProductosPedidosTransformadoUnidadCompra[i].sumaPedido == 0)
-                    {
-                        sumaProductosPedidosTransformadoUnidadCompra.Remove(sumaProductosPedidosTransformadoUnidadCompra[i]);
-                    }
+                    sumaPedidos[i].sumaPedido = (int?)(sumaPedidos[i].sumaPedido / sumaPedidos[i].factorConversion);
+
                 }
 
                 return;
@@ -61,12 +70,12 @@ namespace Client.Main.Models
                     {
 
                         ///La posicon del producto pedido dado su codigo en la lista de codigos obtenida de los productos en el pedido de la posicion 0, para sumarle la cantidad de este nuevo pedido en la posicion i
-                        int posicionProductPedido = codigos.IndexOf(productoPedido.codigoProducto);
+                        int posicionProductPedido = codigosProductos.IndexOf(productoPedido.codigoProducto);
                         ///si se encontro el produto en los codigos de los productos del pedido en la posicion 0. Si retorna posicion si esta, si retorna -1 no esta, debe agregarse
                         if(posicionProductPedido >= 0)
                         {
                             ///Se adiciona la nueva cantidad del nuevo pedido que se esta iterando
-                            sumaProductosPedidosTransformadoUnidadCompra[posicionProductPedido].sumaPedido = sumaProductosPedidosTransformadoUnidadCompra[posicionProductPedido].sumaPedido + productoPedido.pedido;
+                            sumaPedidos[posicionProductPedido].sumaPedido = sumaPedidos[posicionProductPedido].sumaPedido + productoPedido.pedido;
                             productoPedido.unidadCompra = productoPedido.unidadCompra.Substring(0, 3) + ".";
                             productoPedido.unidadVenta = productoPedido.unidadVenta.Substring(0, 3) + ".";
 
@@ -77,24 +86,17 @@ namespace Client.Main.Models
                             productoPedido.sumaPedido = productoPedido.pedido;
                             productoPedido.unidadCompra = productoPedido.unidadCompra.Substring(0,3)+".";
                             productoPedido.unidadVenta = productoPedido.unidadVenta.Substring(0, 3) + ".";
-                            sumaProductosPedidosTransformadoUnidadCompra.Add(productoPedido);
+                            sumaPedidos.Add(productoPedido);
                         }
  
                     }
                 }
             }
 
-            for (int i = 0; i < sumaProductosPedidosTransformadoUnidadCompra.Count; i++)
+            for (int i = 0; i < sumaPedidos.Count; i++)
             {
-                sumaProductosPedidosTransformadoUnidadCompra[i].sumaPedido = (int?)(sumaProductosPedidosTransformadoUnidadCompra[i].sumaPedido / sumaProductosPedidosTransformadoUnidadCompra[i].factorConversion);
-                if (sumaProductosPedidosTransformadoUnidadCompra[i].sumaPedido == 0)
-                {
-                    sumaProductosPedidosTransformadoUnidadCompra.Remove(sumaProductosPedidosTransformadoUnidadCompra[i]);
-                }
+                sumaPedidos[i].sumaPedido = (int?)(sumaPedidos[i].sumaPedido / sumaPedidos[i].factorConversion);
             }
-
-
-
         }
     }
 }

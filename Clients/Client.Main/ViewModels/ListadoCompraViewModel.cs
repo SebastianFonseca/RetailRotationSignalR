@@ -97,8 +97,8 @@ namespace Client.Main.ViewModels
 
 
 
-        private BindableCollection<PedidoModel> _busquedas = new BindableCollection<PedidoModel>();
-        public BindableCollection<PedidoModel> Busquedas
+        private BindableCollection<ComprasModel> _busquedas = new BindableCollection<ComprasModel>();
+        public BindableCollection<ComprasModel> Busquedas
         {
             get => _busquedas;
             set
@@ -109,12 +109,12 @@ namespace Client.Main.ViewModels
         }
 
 
-        PedidoModel Seleccionada;
+        ComprasModel Seleccionada;
 
-        private PedidoModel _existenciaSeleccionada;
-        public PedidoModel ExistenciaSeleccionada
+        private ComprasModel _compraSeleccionada;
+        public ComprasModel CompraSeleccionada
         {
-            get => _existenciaSeleccionada;
+            get => _compraSeleccionada;
             set
             {
                 if (value != null)
@@ -123,58 +123,57 @@ namespace Client.Main.ViewModels
                     BuscarTbx = value.codigo + " " + value.fecha.ToString("yyyy-MM-dd");
                     BusquedasVisibilidad = "Hidden";
                 }
-                _existenciaSeleccionada = value;
+                _compraSeleccionada = value;
 
-                NotifyOfPropertyChange(() => ExistenciaSeleccionada);
+                NotifyOfPropertyChange(() => CompraSeleccionada);
             }
         }
 
         public  void CrearListado()
         {
             VentanaPrincipal.ActivateItem(new ComprasNuevoViewModel(VentanaPrincipal));
-
         }
 
 
         public async void Buscar()
         {
-            //if (String.IsNullOrEmpty(BuscarTbx) && string.IsNullOrEmpty(BuscarTbxFecha))
-            //{
-            //    MessageBox.Show("Rellene alguno de los campos.");
-            //    return;
-            //}
-            //else
-            //{
-            //    if (Seleccionada == null)
-            //    {
-            //        MessageBox.Show("Seleccione alguna de las busquedas");
-            //        return;
-            //    }
-            //    if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
-            //    {
-            //        try
-            //        {
-            //            Task<object> re = conexion.CallServerMethod("ServidorgetProductoPedido", Arguments: new[] { Seleccionada.codigo });
-            //            await re;
+            if (String.IsNullOrEmpty(BuscarTbx) && string.IsNullOrEmpty(BuscarTbxFecha))
+            {
+                MessageBox.Show("Rellene alguno de los campos.");
+                return;
+            }
+            else
+            {
+                if (Seleccionada == null)
+                {
+                    MessageBox.Show("Seleccione alguna de las busquedas");
+                    return;
+                }
+                if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+                {
+                    try
+                    {
+                        Task<object> re = conexion.CallServerMethod("ServidorgetProductoPedido", Arguments: new[] { Seleccionada.codigo });
+                        await re;
 
-            //            Seleccionada.productos = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ProductoModel>>(re.Result.ToString());
+                        Seleccionada.productos = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ProductoModel>>(re.Result.ToString());
 
 
-            //            VentanaPrincipal.ActivateItem(new PedidoResultadoBusquedaViewModel(VentanaPrincipal, Seleccionada));
-            //        }
-            //        catch (Exception e)
-            //        {
-            //            MessageBox.Show(e.Message);
-            //        }
-            //    }
-            //    else if (MainWindowViewModel.Status == "Trabajando localmente")
-            //    {
-            //        Seleccionada.productos = DbConnection.getProductoPedido(Seleccionada.codigo);
-            //        VentanaPrincipal.ActivateItem(new PedidoResultadoBusquedaViewModel(VentanaPrincipal, Seleccionada));
+                        VentanaPrincipal.ActivateItem(new CompraResultadoBusquedaViewModel(VentanaPrincipal, Seleccionada));
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(e.Message);
+                    }
+                }
+                else if (MainWindowViewModel.Status == "Trabajando localmente")
+                {
+                    Seleccionada.productos = DbConnection.getProductoCompra(Seleccionada.codigo);
+                    VentanaPrincipal.ActivateItem(new CompraResultadoBusquedaViewModel(VentanaPrincipal, Seleccionada));
 
-            //    }
+                }
 
-            //}
+            }
         }
 
         public void BackButton()
@@ -236,19 +235,19 @@ namespace Client.Main.ViewModels
                 {
                     if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
                     {
-                        //BindableCollection<PedidoModel> existencias = new BindableCollection<PedidoModel>();
+                        //BindableCollection<ComprasModel> existencias = new BindableCollection<ComprasModel>();
                         Task<object> re = conexion.CallServerMethod("ServidorGetPedidos", Arguments: new[] { BuscarTbx });
                         await re;
 
-                        Busquedas = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<PedidoModel>>(re.Result.ToString());
+                        Busquedas = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ComprasModel>>(re.Result.ToString());
 
                     }
                     else if (MainWindowViewModel.Status == "Trabajando localmente")
                     {
-                        Busquedas = DbConnection.getPedidos(BuscarTbx);
+                        Busquedas = DbConnection.getCompras(BuscarTbx);
                     }
 
-                    if (Busquedas.Count == 0)
+                    if (Busquedas != null && Busquedas.Count == 0)
                     {
                         BusquedasVisibilidad = "Hidden";
                     }
@@ -271,16 +270,16 @@ namespace Client.Main.ViewModels
                     {
                         if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
                         {
-                            //BindableCollection<PedidoModel> existencias = new BindableCollection<PedidoModel>();
+                            //BindableCollection<ComprasModel> existencias = new BindableCollection<ComprasModel>();
                             Task<object> re = conexion.CallServerMethod("ServidorGetPedidos", Arguments: new[] { BuscarTbxFecha });
                             await re;
 
-                            Busquedas = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<PedidoModel>>(re.Result.ToString());
+                            Busquedas = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ComprasModel>>(re.Result.ToString());
 
                         }
                         else if (MainWindowViewModel.Status == "Trabajando localmente")
                         {
-                            Busquedas = DbConnection.getPedidos(BuscarTbxFecha);
+                            Busquedas = DbConnection.getCompras(BuscarTbxFecha);
                         }
 
                     }
@@ -289,7 +288,7 @@ namespace Client.Main.ViewModels
                         MessageBox.Show(e.Message);
                     }
                 }
-                if (Busquedas.Count == 0)
+                if (Busquedas != null && Busquedas.Count == 0)
                 {
                     BusquedasVisibilidad = "Hidden";
                 }

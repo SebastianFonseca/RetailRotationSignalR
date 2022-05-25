@@ -126,7 +126,7 @@
                                                 <Setter.Value>
                                                     <VisualBrush Stretch="None">
                                                         <VisualBrush.Visual>
-                                                            <TextBlock Text="Codigo de pedido o código del local" Foreground="Gray"/>
+                                                            <TextBlock Text="Codigo de compra" Foreground="Gray"/>
                                                         </VisualBrush.Visual>
                                                     </VisualBrush>
                                                 </Setter.Value>
@@ -166,7 +166,7 @@
                     <ListBox
                     x:Name="Busquedas" 
                     VerticalAlignment="Stretch"
-                    SelectedItem="{Binding Path=ExistenciaSeleccionada}"                                 
+                    SelectedItem="{Binding Path=CompraSeleccionada}"                                 
                     ItemsSource="{Binding Path=Busquedas}" 
                     ScrollViewer.VerticalScrollBarVisibility="Visible"
                     ScrollViewer.CanContentScroll="True"                          
@@ -177,10 +177,9 @@
                             <DataTemplate >
                                 <TextBlock>
                                     <TextBlock.Text>
-                                        <MultiBinding StringFormat=" {0}  {1:dd - MMMM / yyyy} Local: {2}">
+                                        <MultiBinding StringFormat=" {0}  {1:dd - MMMM / yyyy}">
                                             <Binding Path="codigo"/>
                                             <Binding Path="fecha"/>
-                                            <Binding Path="puntoVenta.codigo"/>
                                         </MultiBinding>
                                     </TextBlock.Text>
                                 </TextBlock>

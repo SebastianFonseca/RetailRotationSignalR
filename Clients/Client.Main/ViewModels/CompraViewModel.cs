@@ -22,6 +22,8 @@ namespace Client.Main.ViewModels
         {
             VentanaPrincipal = argVentana;
             compra = new ComprasModel(pedidos);
+            compra.responsable.cedula = argVentana.usuario.cedula;
+            DbConnection.NuevaCompraBool(compra); //Ver si esta conectado al servidor
             DisplayName = "Compra";
             getProveedores();
         }
@@ -37,15 +39,45 @@ namespace Client.Main.ViewModels
 
         public BindableCollection<ProductoModel> Productos
         {
-            get => compra.sumaProductosPedidosTransformadoUnidadCompra;
+            get => compra.sumaPedidos;
             set
             {
-                compra.sumaProductosPedidosTransformadoUnidadCompra = value;
+                compra.sumaPedidos = value;
                 NotifyOfPropertyChange(() => Productos);
             }
 
         }
-            
+
+        private string _cantComprada;
+
+        public string CantComprada
+        {
+            get { return _cantComprada; }
+            set 
+            {
+                MessageBox.Show(value);
+                _cantComprada = value;
+                NotifyOfPropertyChange(() => CantComprada);
+            }
+        }
+        private ProductoModel _seleccionado;    
+
+        public ProductoModel Seleccionado
+        {
+            get { return _seleccionado; }
+            set 
+            { 
+                _seleccionado = value;
+                NotifyOfPropertyChange(() => Seleccionado);
+                MessageBox.Show(value.nombre);
+
+            }
+        }
+
+
+
+
+
         public string Fecha
         {
             get { return compra.fecha.ToString("dd/MM/yyyy"); ; }
