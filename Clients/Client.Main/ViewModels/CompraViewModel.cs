@@ -17,11 +17,14 @@ namespace Client.Main.ViewModels
         public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
         public BindableCollection<PedidoModel> pedidosSeleccionados = new BindableCollection<PedidoModel>();
         public ComprasModel compra;
+        public ComprasModel compra2 ;
+
 
         public CompraViewModel(MainWindowViewModel argVentana, BindableCollection<PedidoModel> pedidos)
         {
             VentanaPrincipal = argVentana;
             compra = new ComprasModel(pedidos);
+            compra2 = new ComprasModel() { codigo = compra.codigo, fecha = compra.fecha };
             compra.responsable.cedula = argVentana.usuario.cedula;
             DbConnection.NuevaCompraBool(compra); //Ver si esta conectado al servidor
             DisplayName = "Compra";
@@ -60,21 +63,44 @@ namespace Client.Main.ViewModels
                 NotifyOfPropertyChange(() => CantComprada);
             }
         }
+
+
+        public ProductoModel seleccionadoAnterior = new ProductoModel();
+        
+
         private ProductoModel _seleccionado;    
 
         public ProductoModel Seleccionado
         {
             get { return _seleccionado; }
             set 
-            { 
-                _seleccionado = value;
+            {
+               
+                _seleccionado = value;                
                 NotifyOfPropertyChange(() => Seleccionado);
-                MessageBox.Show(value.nombre);
+                if (value != null)
+                {
+                    compra2.productos = null;
+                    compra2.productos = new BindableCollection<ProductoModel>() { seleccionadoAnterior };
+                    DbConnection.UpdateRegistroCompra(compra2);
+                    seleccionadoAnterior = value;
+                }
+                
+
 
             }
         }
 
+        BindableCollection<string> seleccionados = new BindableCollection<string>();
+        public void CambioProducto()
+        {
+            if (Seleccionado != null)
+            {
+                MessageBox.Show(Seleccionado.nombre);
 
+            }
+
+        }
 
 
 
@@ -119,7 +145,24 @@ namespace Client.Main.ViewModels
         }
 
 
-
+        public void Guardar()
+        {
+            string a = "";
+            foreach (ProductoModel producto in Productos)
+            {
+                a = a + producto.isSelected + " ";
+  
+            }
+            MessageBox.Show(a);
+            if (Seleccionado != null)
+                MessageBox.Show(Seleccionado.nombre);
+            string b="";
+            foreach (string name in seleccionados)
+            {
+                b = b + name + " ";
+            }
+            MessageBox.Show(b);
+        }
 
      }
 }

@@ -45,8 +45,8 @@
         </Border>
         
             <!--Fila 4.Boton de entrar-->        
-        <Button  Grid.Row="4" Grid.Column="1" Margin="5    0  5   0" HorizontalAlignment="Stretch" x:Name="Entrar"    VerticalAlignment="Center" FontSize="10"  FontFamily="Corbel"       FontWeight="Bold"   Content="ENTRAR"                           
-         Background="#FFF3E0C2"     Opacity="0.50" BorderThickness="0"       Grid.ColumnSpan="2" Cursor="Hand" Style="{StaticResource GeneralButton}">
+        <Button  Grid.Row="4" Grid.Column="1" Margin="5  0  5   0" HorizontalAlignment="Stretch" x:Name="Entrar"    VerticalAlignment="Center" FontSize="14"  FontFamily="Corbel"   Foreground="Black"    FontWeight="ExtraBlack"   Content="ENTRAR"                           
+         Background="#FFF3E0C2"     Opacity="0.6" BorderThickness="0"       Grid.ColumnSpan="2" Cursor="Hand" Style="{StaticResource GeneralButton}">
             
             <Button.IsEnabled>
                 <MultiBinding Converter="{StaticResource Converter }" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">

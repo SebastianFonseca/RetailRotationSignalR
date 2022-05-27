@@ -10,6 +10,7 @@
 	xmlns:cal="http://www.caliburnproject.org"
 	xmlns:sys="clr-namespace:System;assembly=mscorlib"
              d:DesignHeight="450" d:DesignWidth="800">
+    
     <UserControl.Resources>
         <!--#region    -->
         <Style TargetType="TextBlock">
@@ -22,44 +23,9 @@
             <Setter Property="Margin" Value="0"/>
             <Setter Property="FontSize" Value="40"/>
         </Style>
-        
-        <Style TargetType="{x:Type ListViewItem}">
-            <Setter Property="IsTabStop" Value="False"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                        <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
-                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#F3E0D2" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <EventTrigger RoutedEvent="PreviewGotKeyboardFocus">
-                    <BeginStoryboard>
-                        <Storyboard>
-                            <BooleanAnimationUsingKeyFrames Storyboard.TargetProperty="(ListViewItem.IsSelected)">
-                                <DiscreteBooleanKeyFrame KeyTime="0" Value="True"/>
-                            </BooleanAnimationUsingKeyFrames>
-                        </Storyboard>
-                    </BeginStoryboard>
-                </EventTrigger>
-            </Style.Triggers>
-
-
-        </Style>
-
-
-
-
-        
         <!--#endregion-->
     </UserControl.Resources>
+    
     <!--Color de fondo y borde curveado-->
     <Border Background="#F3E0C2" CornerRadius="10" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <!--Grid principal, botones atras y guardar-->
@@ -109,7 +75,8 @@
                 <Separator Grid.Row="0" VerticalAlignment="Bottom" Background="Gray" Margin="0"/>
                 <!--    Listado de productos        -->
                 <ListView  KeyboardNavigation.TabNavigation="Cycle" ScrollViewer.VerticalScrollBarVisibility="Visible"  ScrollViewer.CanContentScroll="True" x:Name="Productos" Background="#F3E0D2" 
-                           BorderThickness="0"  FlowDirection="LeftToRight" HorizontalAlignment="Stretch"  ItemsSource="{Binding Path=Productos}" Margin="0 3 0 3" Grid.Row="1" SelectedItem="{Binding Path=Seleccionado}" >
+                           BorderThickness="0"  FlowDirection="LeftToRight" HorizontalAlignment="Stretch"  ItemsSource="{Binding Path=Productos}" Margin="0 3 0 3" Grid.Row="1" SelectedItem="{Binding Path=Seleccionado}"
+                            SelectionMode="Single" >
                     <ListBox.ItemTemplate  >
                         <DataTemplate >
                             <Grid Focusable="False" ShowGridLines="False">
@@ -159,6 +126,32 @@
                             
                         </DataTemplate>
                     </ListBox.ItemTemplate>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListBoxItem}">
+                            <Setter Property="IsSelected" Value="{Binding isSelected, Mode=TwoWay}" />
+                            <Setter Property="IsTabStop" Value="False"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                        <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
+                                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#F3E0D2" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                    <Setter Property="IsSelected" Value="True" />
+                                </Trigger>
+                            </Style.Triggers>
+
+                        </Style>
+                    </ListBox.ItemContainerStyle>
                 </ListView>
             </Grid>
             <Separator  Grid.Row="2"  Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Top"  Background="Gray" Margin="15 0 5 0" Panel.ZIndex="1"/>

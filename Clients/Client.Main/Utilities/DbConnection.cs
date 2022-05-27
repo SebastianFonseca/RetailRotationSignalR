@@ -1828,6 +1828,43 @@ namespace Client.Main.Utilities
         }
 
         /// <summary>
+        /// Actualiza la informacion del registro de compra del producto dado como parametro.
+        /// </summary>
+        /// <param name="producto"></param>
+        /// <returns></returns>
+        public static bool UpdateRegistroCompra(ComprasModel compra) 
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+
+                    string cadena = $"UPDATE RegistroCompra SET CedulaProveedor = @prov, CantidadComprada = @cant, PrecioCompra= @precio WHERE CodigoCompra='{compra.codigo}' and CodigoProducto = '{compra.productos[0].codigoProducto}'";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+
+                    cmd.Parameters.AddWithValue("@prov", string.IsNullOrEmpty(compra.productos[0].proveedor.cedula)? (object)DBNull.Value : compra.productos[0].proveedor.cedula);
+                    cmd.Parameters.AddWithValue("@cant", string.IsNullOrEmpty(compra.productos[0].compra.ToString()) ? (object)DBNull.Value : compra.productos[0].compra);
+                    cmd.Parameters.AddWithValue("@precio", string.IsNullOrEmpty(compra.productos[0].precioCompra.ToString()) ? (object)DBNull.Value : compra.productos[0].precioCompra.ToString());
+
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    //MessageBox.Show($"Se ha editado la informacion del local: {Local.nombre }");
+                    conn.Close();
+                    return true;
+
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+
+                    MessageBox.Show(e.Message);
+                    return false;
+                
+            }
+        }
+
+        /// <summary>
         /// Inserta en la base de datos, en la tabla CompraPedido la relacion entre un documento de compra y los pedidos que la componen.
         /// </summary>
         /// <param name="compra"></param>
@@ -1887,7 +1924,7 @@ namespace Client.Main.Utilities
                         fecha = DateTime.MinValue;
                     }
 
-                    string cadena = $" select * from Compras where FechaCompra = '{fecha.ToString("yyyy-MM-dd")}' or CodigoCompra like '%{Caracteres}%' ORDER BY CodigoCompra;";
+                    string cadena = $" select CodigoCompra, FechaCompra,NumeroCanastillas,peso,Empleado.CedulaEmpleado, Nombres, Apellidos from Compras join empleado on compras.CedulaEmpleado = Empleado.CedulaEmpleado where FechaCompra = '{fecha.ToString("yyyy-MM-dd")}' or CodigoCompra like '%{Caracteres}%' ORDER BY CodigoCompra;";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -1899,6 +1936,8 @@ namespace Client.Main.Utilities
 
                             comp.codigo = reader["CodigoCompra"].ToString();
                             comp.responsable.cedula = reader["CedulaEmpleado"].ToString();
+                            comp.responsable.firstName = reader["Nombres"].ToString();
+                            comp.responsable.lastName = reader["Apellidos"].ToString();
                             comp.fecha = DateTime.Parse(reader["FechaCompra"].ToString());
                             int i;
                             Int32.TryParse(reader["NumeroCanastillas"].ToString(), out i);
@@ -1931,7 +1970,7 @@ namespace Client.Main.Utilities
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
                     BindableCollection<ProductoModel> productos = new BindableCollection<ProductoModel>();
-                    string cadena = $"select producto.codigoproducto, producto.Nombre, producto.unidadcompra,  pedido from producto join RegistroCompra on Producto.CodigoProducto = RegistroCompra.CodigoProducto where CodigoCompra = '{codigoCompra}' and producto.Estado = 'Activo' order by codigoproducto ";
+                    string cadena = $"select producto.codigoproducto, producto.Nombre, producto.unidadcompra,  pedido, CantidadComprada, PrecioCompra, CedulaProveedor from producto join RegistroCompra on Producto.CodigoProducto = RegistroCompra.CodigoProducto where CodigoCompra = '{codigoCompra}' and producto.Estado = 'Activo' order by codigoproducto ";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -1944,7 +1983,28 @@ namespace Client.Main.Utilities
                             producto.nombre = reader["nombre"].ToString();
                             producto.unidadCompra = reader["unidadcompra"].ToString();
                             producto.sumaPedido = Int32.Parse(reader["pedido"].ToString());
+                            MessageBox.Show(reader["CantidadComprada"].ToString());
+                            
+                            int a;
+                            if (Int32.TryParse(reader["CantidadComprada"].ToString(), out a))
+                            {
+                                producto.compra = a;
+                            }
+                            else
+                            {
+                                producto.compra = null;
+                            }
 
+                            decimal b;
+                            if (decimal.TryParse(reader["PrecioCompra"].ToString(), out b))
+                            {
+                                producto.precioCompra = b;
+                            }
+                            else
+                            {
+                                producto.precioCompra = null;
+                            }
+                            producto.proveedor.cedula = reader["CedulaProveedor"].ToString();
                             productos.Add(producto);
                         }
                     }

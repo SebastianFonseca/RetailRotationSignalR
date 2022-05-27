@@ -30,7 +30,7 @@ namespace Client.Main.Models
         /// </summary>
         public decimal? precioVenta { get; set; }
 
-        public decimal precioCompra  { get; set; }
+        public decimal? precioCompra  { get; set; }
 
         /// <summary>
         ///Propiedad necesaria para el binding de datos en las listbox con el productoseleccionado.

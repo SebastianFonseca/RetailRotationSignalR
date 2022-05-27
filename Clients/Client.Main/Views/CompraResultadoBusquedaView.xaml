@@ -117,25 +117,21 @@
                                 <TextBlock Grid.Column="0" Text="{Binding Path=unidadCompra}"   FontSize="18" HorizontalAlignment="Center" />
                                 <TextBlock Grid.Column="1" Text="{Binding Path=nombre}"  FontSize="18" HorizontalAlignment="Left" Margin="20 0 0 0"/>
                                 <TextBlock Grid.Column="2" Width="60" Text="{Binding Path=sumaPedido}" HorizontalAlignment="Center" TextAlignment="Center" FontSize="18" />
-                                <TextBox   Grid.Column="3" Style="{StaticResource GeneralTextBox}"  Width="60"  Text="{Binding Path=compra}" HorizontalAlignment="Center" MaxLength="5" TextAlignment="Center"  />
+                                <TextBlock   Grid.Column="3"   Width="60"  Text="{Binding Path=compra}" HorizontalAlignment="Center"  TextAlignment="Center"  />
                                 <StackPanel Grid.Column="4"  Width="80" Orientation="Horizontal">
                                     <TextBlock  Margin="0 4 0 0" FontSize="15">$</TextBlock>
-                                    <TextBox    Style="{StaticResource GeneralTextBox}"   Width="150" Text="{Binding Path=precioCompra}" HorizontalAlignment="Left" TextAlignment="Left" FontSize="17"/>
+                                    <TextBlock  Width="150" Text="{Binding Path=precioCompra}" HorizontalAlignment="Left" TextAlignment="Left" FontSize="17"/>
                                 </StackPanel>
-                                <ComboBox  Grid.Column="5" Width="130"  SelectedItem="{Binding Path=proveedor}" VerticalContentAlignment="Bottom" FontSize="17" HorizontalAlignment="Left" Template="{StaticResource GeneralComboBox}" MaxDropDownHeight="100" ItemsSource="{Binding ElementName=Productos, Path=DataContext.Proveedores}" x:Name="Proveedores">
-                                    <ComboBox.ItemTemplate>
-                                        <DataTemplate >
-                                            <TextBlock>
-                                                <TextBlock.Text>
-                                                    <MultiBinding StringFormat=" {0} {1}">
-                                                        <Binding Path="firstName"/>
-                                                        <Binding Path="lastName"/>
-                                                    </MultiBinding>
-                                                </TextBlock.Text>
-                                            </TextBlock>
-                                        </DataTemplate>
-                                    </ComboBox.ItemTemplate>
-                                </ComboBox>
+                                <TextBlock Grid.Column="5" Width="130"   FontSize="17" HorizontalAlignment="Left" >
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat=" {0} {1} {2}">
+                                            <Binding Path="proveedor.cedula"/>
+                                            <Binding Path="proveedor.firstName"/>
+                                            <Binding Path="proveedor.lastName"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+
                                 <Separator Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Bottom"  Background="#F7EBD7" Margin="0 0 0 0" Panel.ZIndex="1"/>
 
                             </Grid>
