@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -1842,9 +1843,11 @@ namespace Client.Main.Utilities
                     string cadena = $"UPDATE RegistroCompra SET CedulaProveedor = @prov, CantidadComprada = @cant, PrecioCompra= @precio WHERE CodigoCompra='{compra.codigo}' and CodigoProducto = '{compra.productos[0].codigoProducto}'";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
 
+                    
+
                     cmd.Parameters.AddWithValue("@prov", string.IsNullOrEmpty(compra.productos[0].proveedor.cedula)? (object)DBNull.Value : compra.productos[0].proveedor.cedula);
                     cmd.Parameters.AddWithValue("@cant", string.IsNullOrEmpty(compra.productos[0].compra.ToString()) ? (object)DBNull.Value : compra.productos[0].compra);
-                    cmd.Parameters.AddWithValue("@precio", string.IsNullOrEmpty(compra.productos[0].precioCompra.ToString()) ? (object)DBNull.Value : compra.productos[0].precioCompra.ToString());
+                    cmd.Parameters.AddWithValue("@precio", string.IsNullOrEmpty(compra.productos[0].precioCompra.ToString()) ? (object)DBNull.Value : compra.productos[0].precioCompra);
 
                     conn.Open();
                     cmd.ExecuteNonQuery();
@@ -1938,11 +1941,10 @@ namespace Client.Main.Utilities
                             comp.responsable.cedula = reader["CedulaEmpleado"].ToString();
                             comp.responsable.firstName = reader["Nombres"].ToString();
                             comp.responsable.lastName = reader["Apellidos"].ToString();
-                            comp.fecha = DateTime.Parse(reader["FechaCompra"].ToString());
-                            int i;
-                            Int32.TryParse(reader["NumeroCanastillas"].ToString(), out i);
+                            comp.fecha = DateTime.Parse(reader["FechaCompra"].ToString());                            
+                            Int32.TryParse(reader["NumeroCanastillas"].ToString(), out int i);
                             comp.numeroCanastillas = i;
-                            Int32.TryParse(reader["peso"].ToString(),out i);
+                            Int32.TryParse(reader["peso"].ToString(),out int i);
                             comp.peso = i;
                             cCompras.Add(comp);
                         }
@@ -1982,9 +1984,7 @@ namespace Client.Main.Utilities
                             producto.codigoProducto = reader["codigoproducto"].ToString();
                             producto.nombre = reader["nombre"].ToString();
                             producto.unidadCompra = reader["unidadcompra"].ToString();
-                            producto.sumaPedido = Int32.Parse(reader["pedido"].ToString());
-                            MessageBox.Show(reader["CantidadComprada"].ToString());
-                            
+                            producto.sumaPedido = Int32.Parse(reader["pedido"].ToString());                                                        
                             int a;
                             if (Int32.TryParse(reader["CantidadComprada"].ToString(), out a))
                             {
@@ -1994,9 +1994,9 @@ namespace Client.Main.Utilities
                             {
                                 producto.compra = null;
                             }
-
+                            
                             decimal b;
-                            if (decimal.TryParse(reader["PrecioCompra"].ToString(), out b))
+                            if (decimal.TryParse(reader["PrecioCompra"].ToString() , out b ))
                             {
                                 producto.precioCompra = b;
                             }

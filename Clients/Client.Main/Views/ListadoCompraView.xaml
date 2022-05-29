@@ -56,11 +56,6 @@
                 <RowDefinition Height="0.1*"/>
             </Grid.RowDefinitions>
 
-            <!--Boton ATRAS-->
-            <Button x:Name="BackButton" Grid.Column="0" Grid.Row="0" Margin="5" Style="{StaticResource GeneralButton}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="80">
-                <fa:ImageAwesome Icon="ArrowLeft" Height="25"/>
-            </Button>
-
             <!--TextBox principal para realizar las busquedas-->
             <StackPanel Grid.Column="1" Grid.Row="1">
                 <Border   Margin="5 10 5 10"  BorderThickness="1 1 1 1" BorderBrush="Gray" Height="50">

@@ -29,7 +29,7 @@
     <!--Color de fondo y borde curveado-->
     <Border Background="#F3E0C2" CornerRadius="10" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <!--Grid principal, botones atras y guardar-->
-        <Grid ShowGridLines="False"  Margin="-10 -20 0 -15" >
+        <Grid ShowGridLines="False"   >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0.1*"/>
                 <ColumnDefinition Width="0.9*"/>
@@ -40,7 +40,7 @@
                 <RowDefinition Height="0.25*"/>
             </Grid.RowDefinitions>
             <!--Boton atras-->
-            <Button x:Name="BackButton" Grid.Column="0" Grid.Row="0"  Style="{StaticResource GeneralButton}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 10 0 0">
+            <Button x:Name="BackButton" Grid.Column="0" Grid.Row="0"  Style="{StaticResource GeneralButton}"  Margin="5 0 1 1">
                 <fa:ImageAwesome Icon="ArrowLeft" Height="25"/>
             </Button>
             <!--    Parte superior, informacion general del documento de existencias     -->
@@ -98,14 +98,9 @@
                                     </TextBlock.Text>
                                 </TextBlock>
                                 <TextBlock Grid.Column="2" Width="60" Text="{Binding Path=sumaPedido}" HorizontalAlignment="Center" TextAlignment="Center" FontSize="18" />
-
-
                                 <TextBox   Grid.Column="3" Style="{StaticResource GeneralTextBox}"  Width="60"  Text="{Binding compra}" HorizontalAlignment="Center" MaxLength="5" TextAlignment="Center"  >
                                 </TextBox>
-                                <StackPanel Grid.Column="4"  Width="80" Orientation="Horizontal">
-                                    <TextBlock  Margin="0 4 0 0" FontSize="15">$</TextBlock>
-                                    <TextBox    Style="{StaticResource GeneralTextBox}"   Width="150" Text="{Binding Path=precioCompra}" HorizontalAlignment="Left" TextAlignment="Left" FontSize="17"/>
-                                </StackPanel>
+                                <TextBox    Style="{StaticResource GeneralTextBox}"   Grid.Column="4"  Width="80" Text="{Binding Path=precioCompra, StringFormat={}${0:#.}}" HorizontalAlignment="Left" TextAlignment="Left" FontSize="17"/>
                                 <ComboBox  Grid.Column="5" Width="130"  SelectedItem="{Binding Path=proveedor}" VerticalContentAlignment="Bottom" FontSize="17" HorizontalAlignment="Left" Template="{StaticResource GeneralComboBox}" MaxDropDownHeight="100" ItemsSource="{Binding ElementName=Productos, Path=DataContext.Proveedores}" x:Name="Proveedores">
                                     <ComboBox.ItemTemplate>
                                         <DataTemplate >

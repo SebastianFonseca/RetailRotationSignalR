@@ -6,15 +6,17 @@
 	xmlns:local="clr-namespace:Client.Main.ViewModels"
 	xmlns:c="clr-namespace:Client.Main.Utilities"
 	xmlns:fa="http://schemas.fontawesome.io/icons/"
-             mc:Ignorable="d"
+    mc:Ignorable="d"
 	xmlns:cal="http://www.caliburnproject.org"
 	xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
+        <c:DecimalToStringConverter x:Key="Decimal"/>
         <!--#region    -->
         <Style TargetType="TextBlock">
             <Setter Property="FontSize" Value="22"/>
-            <Setter Property="FontWeight" Value="DemiBold"/>
+            <Setter Property="FontWeight" Value="Normal"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
         </Style>
@@ -110,19 +112,16 @@
                                     <ColumnDefinition Width="40"/>
                                     <ColumnDefinition Width="190"/>
                                     <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="90"/>
-                                    <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="130"/>
+                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="120"/>
+                                    <ColumnDefinition Width="105"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="{Binding Path=unidadCompra}"   FontSize="18" HorizontalAlignment="Center" />
-                                <TextBlock Grid.Column="1" Text="{Binding Path=nombre}"  FontSize="18" HorizontalAlignment="Left" Margin="20 0 0 0"/>
-                                <TextBlock Grid.Column="2" Width="60" Text="{Binding Path=sumaPedido}" HorizontalAlignment="Center" TextAlignment="Center" FontSize="18" />
-                                <TextBlock   Grid.Column="3"   Width="60"  Text="{Binding Path=compra}" HorizontalAlignment="Center"  TextAlignment="Center"  />
-                                <StackPanel Grid.Column="4"  Width="80" Orientation="Horizontal">
-                                    <TextBlock  Margin="0 4 0 0" FontSize="15">$</TextBlock>
-                                    <TextBlock  Width="150" Text="{Binding Path=precioCompra}" HorizontalAlignment="Left" TextAlignment="Left" FontSize="17"/>
-                                </StackPanel>
-                                <TextBlock Grid.Column="5" Width="130"   FontSize="17" HorizontalAlignment="Left" >
+                                <TextBlock Grid.Column="0" FontSize="17" Text="{Binding Path=unidadCompra}"    HorizontalAlignment="Center" />
+                                <TextBlock Grid.Column="1" FontSize="17" Text="{Binding Path=nombre}"   HorizontalAlignment="Left" Margin="20 0 0 0"/>
+                                <TextBlock Grid.Column="2" FontSize="17" Width="60"    Text="{Binding Path=sumaPedido}" HorizontalAlignment="Center" TextAlignment="Center"  />
+                                <TextBlock Grid.Column="3" FontSize="17" Width="60"  Text="{Binding Path=compra}" HorizontalAlignment="Center"  TextAlignment="Center"  />
+                                <TextBlock Grid.Column="4" FontSize="17" Width="130" Text="{Binding Path=precioCompra, StringFormat={}${0:#.}}" HorizontalAlignment="Center" TextAlignment="Center" />
+                                <TextBlock Grid.Column="5" FontSize="17" Width="130"    HorizontalAlignment="Center" TextAlignment="Center" >
                                     <TextBlock.Text>
                                         <MultiBinding StringFormat=" {0} {1} {2}">
                                             <Binding Path="proveedor.cedula"/>
@@ -142,7 +141,7 @@
             </Grid>
             <Separator  Grid.Row="2"  Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Top"  Background="Gray" Margin="15 0 0 0" Panel.ZIndex="1"/>
             
-            <Button Style="{StaticResource GeneralButton}"  Margin="1" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center"  Grid.ColumnSpan="2"  Width="130" Content="GUARDAR"  FontSize="15" x:Name="Guardar"  Grid.Row="2"  Grid.Column="0" />
+            <Button Style="{StaticResource GeneralButton}"  Margin="1" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center"  Grid.ColumnSpan="2"  Width="130" Content="EDITAR"  FontSize="15" x:Name="Editar"  Grid.Row="2"  Grid.Column="0" />
             
         </Grid>
     </Border>

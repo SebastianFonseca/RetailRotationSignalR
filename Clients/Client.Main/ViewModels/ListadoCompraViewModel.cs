@@ -176,15 +176,7 @@ namespace Client.Main.ViewModels
             }
         }
 
-        public void BackButton()
-        {
-            if (Busquedas.Count != 0)
-            {
-                Busquedas.Clear();
-            }
 
-            VentanaPrincipal.ActivateItem(new AdministracionInventarioViewModel(VentanaPrincipal));
-        }
 
         public string Error => null;
         int flag = 0;

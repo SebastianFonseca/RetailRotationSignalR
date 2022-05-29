@@ -17,7 +17,8 @@ namespace Client.Main.ViewModels
         public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
         public BindableCollection<PedidoModel> pedidosSeleccionados = new BindableCollection<PedidoModel>();
         public ComprasModel compra;
-        public ComprasModel compra2 ;
+        public ComprasModel compra2;
+        public string ctor = "";
 
 
         public CompraViewModel(MainWindowViewModel argVentana, BindableCollection<PedidoModel> pedidos)
@@ -29,15 +30,35 @@ namespace Client.Main.ViewModels
             DbConnection.NuevaCompraBool(compra); //Ver si esta conectado al servidor
             DisplayName = "Compra";
             getProveedores();
+            ctor = "New";
         }
-
+        public CompraViewModel(MainWindowViewModel argVentana, ComprasModel pCompra)
+        {
+            VentanaPrincipal = argVentana;
+            compra = pCompra;
+            compra2 = new ComprasModel() { codigo = compra.codigo, fecha = compra.fecha };
+            Productos = pCompra.productos;
+            DisplayName = "Compra";
+            getProveedores();
+            ctor = "Update";
+        }
 
 
         public void BackButton()
         {
             if(Productos!= null)
                 Productos.Clear();
-            VentanaPrincipal.ActivateItem(new ComprasNuevoViewModel(VentanaPrincipal));
+            if (ctor == "New")
+            {
+                VentanaPrincipal.ActivateItem(new ComprasNuevoViewModel(VentanaPrincipal));
+            }
+            else if (ctor == "Update")
+            {
+                VentanaPrincipal.ActivateItem(new ListadoCompraViewModel(VentanaPrincipal));
+
+            }
+
+
         }
 
         public BindableCollection<ProductoModel> Productos
@@ -79,7 +100,7 @@ namespace Client.Main.ViewModels
                 _seleccionado = value;                
                 NotifyOfPropertyChange(() => Seleccionado);
                 if (value != null)
-                {
+                {                   
                     compra2.productos = null;
                     compra2.productos = new BindableCollection<ProductoModel>() { seleccionadoAnterior };
                     DbConnection.UpdateRegistroCompra(compra2);

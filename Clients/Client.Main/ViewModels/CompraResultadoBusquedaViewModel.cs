@@ -28,6 +28,7 @@ namespace Client.Main.ViewModels
                 foreach (ProductoModel producto in compra.productos)
                 {
                     producto.unidadCompra = producto.unidadCompra.Substring(0, 3);
+
                 }
 
                 return compra.productos;
@@ -126,7 +127,10 @@ namespace Client.Main.ViewModels
             Productos.Clear();
             VentanaPrincipal.ActivateItem(new ListadoCompraViewModel(VentanaPrincipal));
         }
-
+         public void Editar()
+        {
+            VentanaPrincipal.ActivateItem(new CompraViewModel(VentanaPrincipal, compra));
+        }
 
 
     }
