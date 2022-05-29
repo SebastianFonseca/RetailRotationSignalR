@@ -98,7 +98,7 @@ namespace Client.Main.ViewModels
             {
                
                 _seleccionado = value;                
-                NotifyOfPropertyChange(() => Seleccionado);
+                NotifyOfPropertyChange(() => Seleccionado) ;
                 if (value != null)
                 {                   
                     compra2.productos = null;
