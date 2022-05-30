@@ -49,8 +49,10 @@ namespace Client.Main.Utilities
                         {
                             if (Statics.Verify(Password, reader["Password"].ToString()))
                             {
-                                EmpleadoModel persona = new EmpleadoModel();
-                                persona.cedula = reader["CedulaEmpleado"].ToString();
+                                EmpleadoModel persona = new EmpleadoModel
+                                {
+                                    cedula = reader["CedulaEmpleado"].ToString()
+                                };
                                 persona.puntoDeVenta.codigo = reader["CodigoPuntoVenta"].ToString();
                                 persona.firstName = reader["Nombres"].ToString();
                                 persona.lastName = reader["Apellidos"].ToString();
@@ -183,7 +185,7 @@ namespace Client.Main.Utilities
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
                 //return e.Message;
@@ -251,7 +253,7 @@ namespace Client.Main.Utilities
                 }
 
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
                 //Console.WriteLine(e.Message);
@@ -310,16 +312,18 @@ namespace Client.Main.Utilities
                     {
                         while (reader.Read())
                         {
-                            ProductoModel producto = new ProductoModel();
-                            producto.codigoProducto = reader["CodigoProducto"].ToString();
-                            producto.nombre = reader["Nombre"].ToString();
-                            producto.unidadCompra = reader["UnidadCompra"].ToString();
-                            producto.unidadVenta = reader["UnidadVenta"].ToString();
-                            producto.precioVenta = Convert.ToDecimal(reader["PrecioVenta"].ToString());
-                            producto.seccion = reader["Seccion"].ToString();
-                            producto.iva = Convert.ToDecimal(reader["IVA"].ToString());
-                            producto.codigoBarras = reader["CodigoBarras"].ToString();
-                            producto.factorConversion = decimal.Parse(reader["FactorConversion"].ToString());
+                            ProductoModel producto = new ProductoModel
+                            {
+                                codigoProducto = reader["CodigoProducto"].ToString(),
+                                nombre = reader["Nombre"].ToString(),
+                                unidadCompra = reader["UnidadCompra"].ToString(),
+                                unidadVenta = reader["UnidadVenta"].ToString(),
+                                precioVenta = Convert.ToDecimal(reader["PrecioVenta"].ToString()),
+                                seccion = reader["Seccion"].ToString(),
+                                iva = Convert.ToDecimal(reader["IVA"].ToString()),
+                                codigoBarras = reader["CodigoBarras"].ToString(),
+                                factorConversion = decimal.Parse(reader["FactorConversion"].ToString())
+                            };
                             if (reader["FechaVencimiento"].ToString() == "")
                             {
                                 producto.fechaVencimiento = DateTime.MinValue;
@@ -363,9 +367,9 @@ namespace Client.Main.Utilities
                     string cadena = "INSERT INTO Proveedor(CedulaProveedor,Nombres,Apellidos,Telefono,Ciudad,Direccion, Estado) VALUES " +
                                                         "(@cedula,@nombre,@apellidos,@telefono,@ciudad,@direccion, 'Activo');";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
-                    cmd.Parameters.AddWithValue("@cedula", proveedor.cedula);
-                    cmd.Parameters.AddWithValue("@nombre", proveedor.firstName);
-                    cmd.Parameters.AddWithValue("@apellidos", proveedor.lastName);
+                    cmd.Parameters.AddWithValue("@cedula", Statics.PrimeraAMayuscula( proveedor.cedula));
+                    cmd.Parameters.AddWithValue("@nombre", Statics.PrimeraAMayuscula(proveedor.firstName));
+                    cmd.Parameters.AddWithValue("@apellidos", Statics.PrimeraAMayuscula(proveedor.lastName));
                     cmd.Parameters.AddWithValue("@telefono", proveedor.telefono);
                     cmd.Parameters.AddWithValue("@ciudad", proveedor.ciudad);
                     cmd.Parameters.AddWithValue("@direccion", proveedor.direccion);
@@ -467,13 +471,15 @@ namespace Client.Main.Utilities
                         proveedores.Clear();
                         while (reader.Read())
                         {
-                            ProveedorModel proveedor = new ProveedorModel();
-                            proveedor.cedula = reader["CedulaProveedor"].ToString();
-                            proveedor.firstName = reader["Nombres"].ToString();
-                            proveedor.lastName = reader["Apellidos"].ToString();
-                            proveedor.telefono = reader["Telefono"].ToString();
-                            proveedor.ciudad = reader["Ciudad"].ToString();
-                            proveedor.direccion = reader["Direccion"].ToString();
+                            ProveedorModel proveedor = new ProveedorModel
+                            {
+                                cedula = reader["CedulaProveedor"].ToString(),
+                                firstName = reader["Nombres"].ToString(),
+                                lastName = reader["Apellidos"].ToString(),
+                                telefono = reader["Telefono"].ToString(),
+                                ciudad = reader["Ciudad"].ToString(),
+                                direccion = reader["Direccion"].ToString()
+                            };
                             proveedores.Add(proveedor);
                         }
                     }
@@ -485,13 +491,15 @@ namespace Client.Main.Utilities
                     {
                         while (reader0.Read())
                         {
-                            ProveedorModel proveedor = new ProveedorModel();
-                            proveedor.cedula = reader0["CedulaProveedor"].ToString();
-                            proveedor.firstName = reader0["Nombres"].ToString();
-                            proveedor.lastName = reader0["Apellidos"].ToString();
-                            proveedor.telefono = reader0["Telefono"].ToString();
-                            proveedor.ciudad = reader0["Ciudad"].ToString();
-                            proveedor.direccion = reader0["Direccion"].ToString();
+                            ProveedorModel proveedor = new ProveedorModel
+                            {
+                                cedula = reader0["CedulaProveedor"].ToString(),
+                                firstName = reader0["Nombres"].ToString(),
+                                lastName = reader0["Apellidos"].ToString(),
+                                telefono = reader0["Telefono"].ToString(),
+                                ciudad = reader0["Ciudad"].ToString(),
+                                direccion = reader0["Direccion"].ToString()
+                            };
                             proveedores.Add(proveedor);
                         }
                     }
@@ -526,10 +534,12 @@ namespace Client.Main.Utilities
                         proveedores.Clear();
                         while (reader.Read())
                         {
-                            ProveedorModel proveedor = new ProveedorModel();
-                            proveedor.cedula = reader["CedulaProveedor"].ToString();
-                            proveedor.firstName = reader["Nombres"].ToString();
-                            proveedor.lastName = reader["Apellidos"].ToString();
+                            ProveedorModel proveedor = new ProveedorModel
+                            {
+                                cedula = reader["CedulaProveedor"].ToString(),
+                                firstName = reader["Nombres"].ToString(),
+                                lastName = reader["Apellidos"].ToString()
+                            };
                             proveedores.Add(proveedor);
                         }
                     }
@@ -582,9 +592,11 @@ namespace Client.Main.Utilities
                         while (reader0.Read())
                         {
 
-                            ProductoModel producto = new ProductoModel();
-                            producto.codigoProducto = reader0["CodigoProducto"].ToString();
-                            producto.nombre = reader0["Nombre"].ToString();
+                            ProductoModel producto = new ProductoModel
+                            {
+                                codigoProducto = reader0["CodigoProducto"].ToString(),
+                                nombre = reader0["Nombre"].ToString()
+                            };
                             productos.Add(producto);
 
                         }
@@ -643,8 +655,8 @@ namespace Client.Main.Utilities
                     string cadena = "UPDATE Proveedor SET Nombres=@nombre,Apellidos=@apellidos,Telefono=@telefono,Ciudad=@ciudad, Direccion=@direccion WHERE CedulaProveedor=@cedula;";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     cmd.Parameters.AddWithValue("@cedula", proveedor.cedula);
-                    cmd.Parameters.AddWithValue("@nombre", proveedor.firstName);
-                    cmd.Parameters.AddWithValue("@apellidos", proveedor.lastName);
+                    cmd.Parameters.AddWithValue("@nombre", Statics.PrimeraAMayuscula(proveedor.firstName));
+                    cmd.Parameters.AddWithValue("@apellidos", Statics.PrimeraAMayuscula(proveedor.lastName));
                     cmd.Parameters.AddWithValue("@telefono", proveedor.telefono);
                     cmd.Parameters.AddWithValue("@ciudad", proveedor.ciudad);
                     cmd.Parameters.AddWithValue("@direccion", proveedor.direccion);
@@ -834,8 +846,10 @@ namespace Client.Main.Utilities
                         emp.Clear();
                         while (reader.Read())
                         {
-                            EmpleadoModel persona = new EmpleadoModel();
-                            persona.cedula = reader["CedulaEmpleado"].ToString();
+                            EmpleadoModel persona = new EmpleadoModel
+                            {
+                                cedula = reader["CedulaEmpleado"].ToString()
+                            };
                             persona.puntoDeVenta.codigo = reader["CodigoPuntoVenta"].ToString();
                             persona.firstName = reader["Nombres"].ToString();
                             persona.lastName = reader["Apellidos"].ToString();
@@ -1046,14 +1060,16 @@ namespace Client.Main.Utilities
                         locales.Clear();
                         while (reader.Read()) 
                         {
-                            LocalModel local = new LocalModel();
-                            local.codigo = reader["codigoPuntoVenta"].ToString();
-                            local.nombre = reader["Nombres"].ToString();
-                            local.direccion = reader["Direccion"].ToString();
-                            local.telefono = reader["Telefono"].ToString();
-                            local.ciudad = reader["Ciudad"].ToString();
-                            local.numeroDeCanastillas = Int32.Parse(reader["NumeroCanastillas"].ToString());
-                            local.fechaDeApertura = DateTime.Parse(reader["FechaDeApertura"].ToString());
+                            LocalModel local = new LocalModel
+                            {
+                                codigo = reader["codigoPuntoVenta"].ToString(),
+                                nombre = reader["Nombres"].ToString(),
+                                direccion = reader["Direccion"].ToString(),
+                                telefono = reader["Telefono"].ToString(),
+                                ciudad = reader["Ciudad"].ToString(),
+                                numeroDeCanastillas = Int32.Parse(reader["NumeroCanastillas"].ToString()),
+                                fechaDeApertura = DateTime.Parse(reader["FechaDeApertura"].ToString())
+                            };
                             locales.Add(local);
                         }
                     }
@@ -1092,9 +1108,11 @@ namespace Client.Main.Utilities
                     {
                         while (reader.Read())
                         {
-                            LocalModel local = new LocalModel();
-                            local.codigo = reader["CodigoPuntoVenta"].ToString();
-                            local.nombre = reader["Nombres"].ToString();
+                            LocalModel local = new LocalModel
+                            {
+                                codigo = reader["CodigoPuntoVenta"].ToString(),
+                                nombre = reader["Nombres"].ToString()
+                            };
                             locales.Add(local);
                         }
                     }
@@ -1270,7 +1288,7 @@ namespace Client.Main.Utilities
                         fecha = DateTime.MinValue;
                     }
 
-                    string cadena = $" select * from ExistenciasFisicas where FechaExistencia = '{fecha.ToString("yyyy-MM-dd")}' or CodigoExistencia like '%{Caracteres}%'  or CodigoExistencia like '______________{Caracteres}' ORDER BY CodigoExistencia;";
+                    string cadena = $" select * from ExistenciasFisicas where FechaExistencia = '{fecha:yyyy-MM-dd}' or CodigoExistencia like '%{Caracteres}%'  or CodigoExistencia like '______________{Caracteres}' ORDER BY CodigoExistencia;";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -1278,8 +1296,10 @@ namespace Client.Main.Utilities
                         cExistencias.Clear();
                         while (reader.Read())
                         {
-                            ExistenciasModel exist = new ExistenciasModel();
-                            exist.codigo = reader["CodigoExistencia"].ToString();
+                            ExistenciasModel exist = new ExistenciasModel
+                            {
+                                codigo = reader["CodigoExistencia"].ToString()
+                            };
                             exist.responsable.cedula = reader["CedulaEmpleado"].ToString();
                             exist.fecha = DateTime.Parse(reader["FechaExistencia"].ToString());
                             exist.puntoVenta.codigo = reader["CodigoPuntoVenta"].ToString();
@@ -1317,11 +1337,13 @@ namespace Client.Main.Utilities
                         productos.Clear();
                         while (reader.Read())
                         {
-                            ProductoModel producto = new ProductoModel();
-                            producto.codigoProducto = reader["codigoproducto"].ToString();
-                            producto.nombre = reader["nombre"].ToString();
-                            producto.unidadVenta = reader["unidadventa"].ToString();
-                            producto.existencia = Int32.Parse(reader["cantidad"].ToString());
+                            ProductoModel producto = new ProductoModel
+                            {
+                                codigoProducto = reader["codigoproducto"].ToString(),
+                                nombre = reader["nombre"].ToString(),
+                                unidadVenta = reader["unidadventa"].ToString(),
+                                existencia = Int32.Parse(reader["cantidad"].ToString())
+                            };
 
                             productos.Add(producto);
                         }
@@ -1358,8 +1380,10 @@ namespace Client.Main.Utilities
                         cExistencias.Clear();
                         while (reader.Read())
                         {
-                            ExistenciasModel exist = new ExistenciasModel();
-                            exist.codigo = reader["CodigoExistencia"].ToString();
+                            ExistenciasModel exist = new ExistenciasModel
+                            {
+                                codigo = reader["CodigoExistencia"].ToString()
+                            };
                             exist.responsable.cedula = reader["CedulaEmpleado"].ToString();
                             exist.fecha = DateTime.Parse(reader["FechaExistencia"].ToString());
                             exist.puntoVenta.codigo = reader["CodigoPuntoVenta"].ToString();
@@ -1398,8 +1422,10 @@ namespace Client.Main.Utilities
                         cExistencias.Clear();
                         while (reader.Read())
                         {
-                            ExistenciasModel exist = new ExistenciasModel();
-                            exist.codigo = reader["CodigoExistencia"].ToString();
+                            ExistenciasModel exist = new ExistenciasModel
+                            {
+                                codigo = reader["CodigoExistencia"].ToString()
+                            };
                             exist.responsable.cedula = reader["CedulaEmpleado"].ToString();
                             exist.responsable.firstName = reader["Nombres"].ToString();
                             exist.responsable.lastName = reader["Apellidos"].ToString();
@@ -1578,7 +1604,7 @@ namespace Client.Main.Utilities
                         fecha = DateTime.MinValue;
                     }
 
-                    string cadena = $" select * from Pedido where FechaPedido = '{fecha.ToString("yyyy-MM-dd")}' or CodigoPedido like '%{Caracteres}%'  or CodigoPedido like '______________{Caracteres}' ORDER BY CodigoPedido;";
+                    string cadena = $" select * from Pedido where FechaPedido = '{fecha:yyyy-MM-dd}' or CodigoPedido like '%{Caracteres}%'  or CodigoPedido like '______________{Caracteres}' ORDER BY CodigoPedido;";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -1586,8 +1612,10 @@ namespace Client.Main.Utilities
                         cPedidos.Clear();
                         while (reader.Read())
                         {
-                            PedidoModel ped = new PedidoModel();
-                            ped.codigo = reader["CodigoPedido"].ToString();
+                            PedidoModel ped = new PedidoModel
+                            {
+                                codigo = reader["CodigoPedido"].ToString()
+                            };
                             ped.responsable.cedula = reader["CedulaEmpleado"].ToString();
                             ped.fecha = DateTime.Parse(reader["FechaPedido"].ToString());
                             ped.puntoVenta.codigo = reader["CodigoPuntoVenta"].ToString();
@@ -1625,14 +1653,16 @@ namespace Client.Main.Utilities
                         productos.Clear();
                         while (reader.Read())
                         {
-                            ProductoModel producto = new ProductoModel();
-                            producto.codigoProducto = reader["codigoproducto"].ToString();
-                            producto.nombre = reader["nombre"].ToString();
-                            producto.unidadVenta = reader["unidadventa"].ToString();
-                            producto.unidadCompra = reader["unidadcompra"].ToString();
-                            producto.factorConversion = decimal.Parse(reader["factorconversion"].ToString());
-                            producto.existencia = Int32.Parse(reader["ExistenciaCantidad"].ToString());
-                            producto.pedido = Int32.Parse(reader["cantidad"].ToString());
+                            ProductoModel producto = new ProductoModel
+                            {
+                                codigoProducto = reader["codigoproducto"].ToString(),
+                                nombre = reader["nombre"].ToString(),
+                                unidadVenta = reader["unidadventa"].ToString(),
+                                unidadCompra = reader["unidadcompra"].ToString(),
+                                factorConversion = decimal.Parse(reader["factorconversion"].ToString()),
+                                existencia = Int32.Parse(reader["ExistenciaCantidad"].ToString()),
+                                pedido = Int32.Parse(reader["cantidad"].ToString())
+                            };
 
                             productos.Add(producto);
                         }
@@ -1669,8 +1699,10 @@ namespace Client.Main.Utilities
                         cPedido.Clear();
                         while (reader.Read())
                         {
-                            PedidoModel ped = new PedidoModel();
-                            ped.codigo = reader["CodigoPedido"].ToString();
+                            PedidoModel ped = new PedidoModel
+                            {
+                                codigo = reader["CodigoPedido"].ToString()
+                            };
                             ped.responsable.cedula = reader["CedulaEmpleado"].ToString();
                             ped.fecha = DateTime.Parse(reader["FechaPedido"].ToString());
                             ped.puntoVenta.codigo = reader["CodigoPuntoVenta"].ToString();
@@ -1709,12 +1741,13 @@ namespace Client.Main.Utilities
                         cPedido.Clear();
                         while (reader.Read())
                         {
-                            PedidoModel ped = new PedidoModel();
-                            ped.codigo = reader["CodigoPedido"].ToString();
+                            PedidoModel ped = new PedidoModel
+                            {
+                                codigo = reader["CodigoPedido"].ToString()
+                            };
                             ped.responsable.cedula = reader["CedulaEmpleado"].ToString();
                             ped.responsable.firstName = reader["Nombres"].ToString();
                             ped.responsable.lastName = reader["Apellidos"].ToString();
-
                             ped.fecha = DateTime.Parse(reader["FechaPedido"].ToString());
                             ped.puntoVenta.codigo = reader["CodigoPuntoVenta"].ToString();
                             ped.puntoVenta.nombre = reader["name"].ToString();
@@ -1839,19 +1872,22 @@ namespace Client.Main.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-
-                    string cadena = $"UPDATE RegistroCompra SET CedulaProveedor = @prov, CantidadComprada = @cant, PrecioCompra= @precio WHERE CodigoCompra='{compra.codigo}' and CodigoProducto = '{compra.productos[0].codigoProducto}'";
-                    SqlCommand cmd = new SqlCommand(cadena, conn);
-
-                    
-
-                    cmd.Parameters.AddWithValue("@prov", string.IsNullOrEmpty(compra.productos[0].proveedor.cedula)? (object)DBNull.Value : compra.productos[0].proveedor.cedula);
-                    cmd.Parameters.AddWithValue("@cant", string.IsNullOrEmpty(compra.productos[0].compra.ToString()) ? (object)DBNull.Value : compra.productos[0].compra);
-                    cmd.Parameters.AddWithValue("@precio", string.IsNullOrEmpty(compra.productos[0].precioCompra.ToString()) ? (object)DBNull.Value : compra.productos[0].precioCompra);
-
                     conn.Open();
+                    string cadena = $"UPDATE RegistroCompra SET CedulaProveedor = @prov WHERE CodigoCompra='{compra.codigo}' and CodigoProducto = '{compra.productos[0].codigoProducto}'";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);                   
+                    cmd.Parameters.AddWithValue("@prov", string.IsNullOrEmpty(compra.productos[0].proveedor.cedula)? (object)DBNull.Value : compra.productos[0].proveedor.cedula);
                     cmd.ExecuteNonQuery();
-                    //MessageBox.Show($"Se ha editado la informacion del local: {Local.nombre }");
+
+                    string cadena0 = $"UPDATE RegistroCompra SET  CantidadComprada = @cant WHERE CodigoCompra='{compra.codigo}' and CodigoProducto = '{compra.productos[0].codigoProducto}'";
+                    SqlCommand cmd0 = new SqlCommand(cadena0, conn);
+                    cmd0.Parameters.AddWithValue("@cant", string.IsNullOrEmpty(compra.productos[0].compra.ToString()) ? (object)DBNull.Value : compra.productos[0].compra);
+                    cmd0.ExecuteNonQuery();
+
+                    string cadena1 = $"UPDATE RegistroCompra SET PrecioCompra= @precio WHERE CodigoCompra='{compra.codigo}' and CodigoProducto = '{compra.productos[0].codigoProducto}'";
+                    SqlCommand cmd1 = new SqlCommand(cadena1, conn);
+                    cmd1.Parameters.AddWithValue("@precio", string.IsNullOrEmpty(compra.productos[0].precioCompra.ToString()) ? (object)DBNull.Value : compra.productos[0].precioCompra);
+                    cmd1.ExecuteNonQuery();
+                                      
                     conn.Close();
                     return true;
 
@@ -1927,7 +1963,7 @@ namespace Client.Main.Utilities
                         fecha = DateTime.MinValue;
                     }
 
-                    string cadena = $" select CodigoCompra, FechaCompra,NumeroCanastillas,peso,Empleado.CedulaEmpleado, Nombres, Apellidos from Compras join empleado on compras.CedulaEmpleado = Empleado.CedulaEmpleado where FechaCompra = '{fecha.ToString("yyyy-MM-dd")}' or CodigoCompra like '%{Caracteres}%' ORDER BY CodigoCompra;";
+                    string cadena = $" select CodigoCompra, FechaCompra,NumeroCanastillas,peso,Empleado.CedulaEmpleado, Nombres, Apellidos from Compras join empleado on compras.CedulaEmpleado = Empleado.CedulaEmpleado where FechaCompra = '{fecha:yyyy-MM-dd}' or CodigoCompra like '%{Caracteres}%' ORDER BY CodigoCompra;";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -1935,17 +1971,18 @@ namespace Client.Main.Utilities
                         cCompras.Clear();
                         while (reader.Read())
                         {
-                            ComprasModel comp = new ComprasModel();
-
-                            comp.codigo = reader["CodigoCompra"].ToString();
+                            ComprasModel comp = new ComprasModel
+                            {
+                                codigo = reader["CodigoCompra"].ToString()
+                            };
                             comp.responsable.cedula = reader["CedulaEmpleado"].ToString();
                             comp.responsable.firstName = reader["Nombres"].ToString();
                             comp.responsable.lastName = reader["Apellidos"].ToString();
                             comp.fecha = DateTime.Parse(reader["FechaCompra"].ToString());                            
                             Int32.TryParse(reader["NumeroCanastillas"].ToString(), out int i);
                             comp.numeroCanastillas = i;
-                            Int32.TryParse(reader["peso"].ToString(),out int i);
-                            comp.peso = i;
+                            Int32.TryParse(reader["peso"].ToString(),out int a);
+                            comp.peso = a;
                             cCompras.Add(comp);
                         }
                     }
@@ -1972,7 +2009,7 @@ namespace Client.Main.Utilities
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
                     BindableCollection<ProductoModel> productos = new BindableCollection<ProductoModel>();
-                    string cadena = $"select producto.codigoproducto, producto.Nombre, producto.unidadcompra,  pedido, CantidadComprada, PrecioCompra, CedulaProveedor from producto join RegistroCompra on Producto.CodigoProducto = RegistroCompra.CodigoProducto where CodigoCompra = '{codigoCompra}' and producto.Estado = 'Activo' order by codigoproducto ";
+                    string cadena = $"select producto.codigoproducto, producto.Nombre, producto.unidadcompra,  pedido, CantidadComprada, PrecioCompra, RegistroCompra.CedulaProveedor, proveedor.Nombres, Apellidos  from RegistroCompra  join Producto on Producto.CodigoProducto = RegistroCompra.CodigoProducto left join Proveedor on RegistroCompra.CedulaProveedor = Proveedor.CedulaProveedor where CodigoCompra = '{codigoCompra}' and producto.Estado = 'Activo' order by codigoproducto ";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -1980,13 +2017,15 @@ namespace Client.Main.Utilities
                         productos.Clear();
                         while (reader.Read())
                         {
-                            ProductoModel producto = new ProductoModel();
-                            producto.codigoProducto = reader["codigoproducto"].ToString();
-                            producto.nombre = reader["nombre"].ToString();
-                            producto.unidadCompra = reader["unidadcompra"].ToString();
-                            producto.sumaPedido = Int32.Parse(reader["pedido"].ToString());                                                        
-                            int a;
-                            if (Int32.TryParse(reader["CantidadComprada"].ToString(), out a))
+                            ProductoModel producto = new ProductoModel
+                            {
+                                codigoProducto = reader["codigoproducto"].ToString(),
+                                nombre = reader["nombre"].ToString(),
+                                unidadCompra = reader["unidadcompra"].ToString(),
+                                sumaPedido = Int32.Parse(reader["pedido"].ToString())
+                            };
+
+                            if (Int32.TryParse(reader["CantidadComprada"].ToString(), out int a))
                             {
                                 producto.compra = a;
                             }
@@ -1995,8 +2034,8 @@ namespace Client.Main.Utilities
                                 producto.compra = null;
                             }
                             
-                            decimal b;
-                            if (decimal.TryParse(reader["PrecioCompra"].ToString() , out b ))
+                            
+                            if (decimal.TryParse(reader["PrecioCompra"].ToString() , out decimal b ))
                             {
                                 producto.precioCompra = b;
                             }
@@ -2005,6 +2044,8 @@ namespace Client.Main.Utilities
                                 producto.precioCompra = null;
                             }
                             producto.proveedor.cedula = reader["CedulaProveedor"].ToString();
+                            producto.proveedor.firstName = reader["Nombres"].ToString();
+                            producto.proveedor.lastName = reader["Apellidos"].ToString();
                             productos.Add(producto);
                         }
                     }
@@ -2091,13 +2132,15 @@ namespace Client.Main.Utilities
                         cli.Clear();
                         while (reader.Read())
                         {
-                            ClientesModel cliente = new ClientesModel();
-                            cliente.firstName = reader["Nombres"].ToString();
-                            cliente.lastName = reader["Apellidos"].ToString();
-                            cliente.cedula = reader["CedulaCliente"].ToString();
-                            cliente.correo = reader["Email"].ToString();
-                            cliente.telefono = reader["Telefono"].ToString();
-                            cliente.Puntos = Int32.Parse(reader["Puntos"].ToString());
+                            ClientesModel cliente = new ClientesModel
+                            {
+                                firstName = reader["Nombres"].ToString(),
+                                lastName = reader["Apellidos"].ToString(),
+                                cedula = reader["CedulaCliente"].ToString(),
+                                correo = reader["Email"].ToString(),
+                                telefono = reader["Telefono"].ToString(),
+                                Puntos = Int32.Parse(reader["Puntos"].ToString())
+                            };
                             cli.Add(cliente);
                         }
                     }
@@ -2213,7 +2256,7 @@ namespace Client.Main.Utilities
 
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 ////MessageBox.Show(e.Message);
                 return 0;

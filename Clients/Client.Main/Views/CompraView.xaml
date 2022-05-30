@@ -98,10 +98,12 @@
                                     </TextBlock.Text>
                                 </TextBlock>
                                 <TextBlock Grid.Column="2" Width="60" Text="{Binding Path=sumaPedido}" HorizontalAlignment="Center" TextAlignment="Center" FontSize="18" />
-                                <TextBox   Grid.Column="3" Style="{StaticResource GeneralTextBox}"  Width="60"  Text="{Binding compra}" HorizontalAlignment="Center" MaxLength="5" TextAlignment="Center"  >
+                                <TextBox   Grid.Column="3" Style="{StaticResource GeneralTextBox}"  Width="60"  Text="{Binding compra, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" MaxLength="5" TextAlignment="Center"  >
                                 </TextBox>
-                                <TextBox    Style="{StaticResource GeneralTextBox}"   Grid.Column="4"  Width="80" Text="{Binding Path=precioCompra, StringFormat={}${0:#.}}" HorizontalAlignment="Left" TextAlignment="Left" FontSize="17"/>
-                                <ComboBox  Grid.Column="5" Width="130"  SelectedItem="{Binding Path=proveedor}" VerticalContentAlignment="Bottom" FontSize="17" HorizontalAlignment="Left" Template="{StaticResource GeneralComboBox}" MaxDropDownHeight="100" ItemsSource="{Binding ElementName=Productos, Path=DataContext.Proveedores}" x:Name="Proveedores">
+                                <TextBox    Style="{StaticResource GeneralTextBox}"   Grid.Column="4"  Width="80" Text="{Binding Path=precioCompra, StringFormat={}${0:#.}, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" TextAlignment="Left" FontSize="17">
+ 
+                                </TextBox>
+                                <ComboBox  Grid.Column="5" Width="130"  SelectedItem="{Binding Path=proveedor, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Bottom" FontSize="17" HorizontalAlignment="Left" Template="{StaticResource GeneralComboBox}" MaxDropDownHeight="100" ItemsSource="{Binding ElementName=Productos, Path=DataContext.Proveedores}" x:Name="Proveedores">
                                     <ComboBox.ItemTemplate>
                                         <DataTemplate >
                                             <TextBlock>
@@ -116,9 +118,7 @@
                                     </ComboBox.ItemTemplate>
                                 </ComboBox>
                                 <Separator Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Bottom"  Background="#F7EBD7" Margin="0 0 0 0" Panel.ZIndex="1"/>
-
                             </Grid>
-                            
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                     <ListBox.ItemContainerStyle>
@@ -154,4 +154,3 @@
         </Grid>
     </Border>
 </UserControl>
-

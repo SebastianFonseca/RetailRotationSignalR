@@ -85,9 +85,24 @@ namespace Client.Main.ViewModels
             }
         }
 
+        private decimal _precio;
+
+        public decimal Precio
+        {
+            get { return _precio; }
+            set 
+            {
+                MessageBox.Show(value.ToString());
+                _precio = value;
+                NotifyOfPropertyChange(() => Precio);
+
+            }
+        }
+
+
 
         public ProductoModel seleccionadoAnterior = new ProductoModel();
-        
+        public BindableCollection<ProductoModel> seleccionadosanteriores = new BindableCollection<ProductoModel>();
 
         private ProductoModel _seleccionado;    
 
@@ -96,23 +111,35 @@ namespace Client.Main.ViewModels
             get { return _seleccionado; }
             set 
             {
-               
-                _seleccionado = value;                
-                NotifyOfPropertyChange(() => Seleccionado) ;
-                if (value != null)
-                {                   
+                if (value != null )
+                {
+                    MessageBox.Show(seleccionadoAnterior.nombre +"Compra:" + seleccionadoAnterior.compra + "Precio:"+seleccionadoAnterior.precioCompra + "Proveedor:"+seleccionadoAnterior.proveedor.cedula);
+                    //seleccionadosanteriores.Add(value);
+                    _seleccionado = value;
+                    NotifyOfPropertyChange(() => Seleccionado);
                     compra2.productos = null;
                     compra2.productos = new BindableCollection<ProductoModel>() { seleccionadoAnterior };
                     DbConnection.UpdateRegistroCompra(compra2);
                     seleccionadoAnterior = value;
+
+
+                    //if (value.codigoProducto != seleccionadoAnterior.codigoProducto)
+                    //{
+                    //   // MessageBox.Show(Seleccionado.nombre + Seleccionado.compra + Seleccionado.precioCompra + Seleccionado.proveedor.cedula + "anterior" + seleccionadoAnterior.nombre);
+                    //    compra2.productos = null;
+                    //    compra2.productos = new BindableCollection<ProductoModel>() { seleccionadoAnterior };
+                    //    DbConnection.UpdateRegistroCompra(compra2);
+                    //    seleccionadoAnterior = value;
+                    //}
                 }
+
                 
 
 
             }
         }
 
-        BindableCollection<string> seleccionados = new BindableCollection<string>();
+        readonly BindableCollection<string> seleccionados = new BindableCollection<string>();
         public void CambioProducto()
         {
             if (Seleccionado != null)
@@ -169,20 +196,21 @@ namespace Client.Main.ViewModels
         public void Guardar()
         {
             string a = "";
-            foreach (ProductoModel producto in Productos)
-            {
-                a = a + producto.isSelected + " ";
-  
-            }
-            MessageBox.Show(a);
-            if (Seleccionado != null)
-                MessageBox.Show(Seleccionado.nombre);
-            string b="";
-            foreach (string name in seleccionados)
-            {
-                b = b + name + " ";
-            }
-            MessageBox.Show(b);
+            //foreach (ProductoModel producto in seleccionadosanteriores)
+            //{
+            //    //a = a + producto.nombre + " ";
+            //    MessageBox.Show(seleccionadosanteriores.Count.ToString());
+            //}
+            ////MessageBox.Show(seleccionadosanteriores.Count.ToString());
+            //MessageBox.Show(a);
+            //if (Seleccionado != null)
+            //    MessageBox.Show(Seleccionado.nombre);
+            //string b="";
+            //foreach (string name in seleccionados)
+            //{
+            //    b = b + name + " ";
+            //}
+            //MessageBox.Show(b);
         }
 
      }
