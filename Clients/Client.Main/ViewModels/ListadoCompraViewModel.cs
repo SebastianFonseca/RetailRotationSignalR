@@ -153,7 +153,7 @@ namespace Client.Main.ViewModels
                 {
                     try
                     {
-                        Task<object> re = conexion.CallServerMethod("ServidorgetProductoPedido", Arguments: new[] { Seleccionada.codigo });
+                        Task<object> re = conexion.CallServerMethod("ServidorgetProductoCompra", Arguments: new[] { Seleccionada.codigo });
                         await re;
 
                         Seleccionada.productos = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ProductoModel>>(re.Result.ToString());
@@ -227,8 +227,8 @@ namespace Client.Main.ViewModels
                 {
                     if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
                     {
-                        //BindableCollection<ComprasModel> existencias = new BindableCollection<ComprasModel>();
-                        Task<object> re = conexion.CallServerMethod("ServidorGetPedidos", Arguments: new[] { BuscarTbx });
+                     
+                        Task<object> re = conexion.CallServerMethod("ServidorgetCompra", Arguments: new[] { BuscarTbx });
                         await re;
 
                         Busquedas = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ComprasModel>>(re.Result.ToString());
@@ -263,7 +263,7 @@ namespace Client.Main.ViewModels
                         if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
                         {
                             //BindableCollection<ComprasModel> existencias = new BindableCollection<ComprasModel>();
-                            Task<object> re = conexion.CallServerMethod("ServidorGetPedidos", Arguments: new[] { BuscarTbxFecha });
+                            Task<object> re = conexion.CallServerMethod("ServidorgetCompra", Arguments: new[] { BuscarTbxFecha });
                             await re;
 
                             Busquedas = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ComprasModel>>(re.Result.ToString());

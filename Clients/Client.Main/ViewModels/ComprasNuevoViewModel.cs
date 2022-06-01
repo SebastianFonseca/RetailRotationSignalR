@@ -33,9 +33,9 @@ namespace Client.Main.ViewModels
             {
                 if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
                 {
-                    Task<object> re = conexion.CallServerMethod("servidorGetTodasLasExistencias", Arguments: new object[] { });
+                    Task<object> re = conexion.CallServerMethod("ServidorGetTodoPedidoConProductos", Arguments: new object[] { });
                     await re;
-                   // Pedidos = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ExistenciasModel>>(re.Result.ToString());
+                   Pedidos = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<PedidoModel>>(re.Result.ToString());
                 }
                 if (MainWindowViewModel.Status == "Trabajando localmente")
                 {

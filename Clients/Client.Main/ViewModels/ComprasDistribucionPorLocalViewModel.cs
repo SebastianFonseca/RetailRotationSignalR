@@ -13,8 +13,9 @@ namespace Client.Main.ViewModels
 {
     public class ComprasDistribucionPorLocalViewModel :Conductor<IScreen>.Collection.OneActive
     {
+        public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
         public BindableCollection<PedidoModel> pedidos = new BindableCollection<PedidoModel>();
-       public  MainWindowViewModel VentanaPrincipal;
+        public  MainWindowViewModel VentanaPrincipal;
         public ComprasDistribucionPorLocalViewModel(BindableCollection<PedidoModel> pedidos, MainWindowViewModel VentanaPrincipal)
         {
             this.VentanaPrincipal = VentanaPrincipal;

@@ -180,6 +180,15 @@ namespace ServerConsole
         }
 
         /// <summary>
+        /// Retorna la informacion de todos los proveedores en la base de datos
+        /// </summary>
+        /// <returns></returns>
+        public BindableCollection<ProveedorModel> ServidorGetTodosProveedor()
+        {
+            return DbConnection.getProveedores();
+        }
+
+        /// <summary>
         /// Metodo que se llama desde un cliente para eliminar un proveedor.
         /// </summary>
         /// <param name="cedula"></param>
@@ -360,7 +369,7 @@ namespace ServerConsole
         {
             return DbConnection.NuevoPedido(pedido);
         } 
-        #endregion
+       
 
         /// <summary>
         /// Al ser llamado desde un cliente retorna los pedidoc que coinciden con el numero d elocal, la fecha o el codigo dado en los caracteres
@@ -392,6 +401,80 @@ namespace ServerConsole
             return DbConnection.getPedidoConProductos(caracteres);
         }
 
+        /// <summary>
+        /// Devuelve el pedido con el codigo dado junto con los productos.
+        /// </summary>
+        /// <returns></returns>
+        public BindableCollection<PedidoModel> ServidorGetTodoPedidoConProductos()
+        {
+            return DbConnection.getPedidoConProductos();
+        }
+        #endregion
+
+        #region Compras
+
+        /// <summary>
+        /// Inserta el registro del nuevo documento de compra.
+        /// </summary>
+        /// <param name="compra"></param>
+        /// <returns></returns>
+        public  bool ServidorNuevaCompraBool(ComprasModel compra) 
+        { 
+            return DbConnection.NuevaCompraBool(compra); 
+        }
+
+        /// <summary>
+        /// Inserta en la base de datos, en la tabla RegistroCompra los datos de dicho documento.
+        /// </summary>
+        /// <param name="compra"></param>
+        /// <returns></returns>
+        public  string ServidorInsertarRegistroCompraProducto(ComprasModel compra)
+        { 
+            return DbConnection.InsertarRegistroCompraProducto(compra); 
+        }
+
+        /// <summary>
+        /// Actualiza la informacion del registro de compra del producto dado como parametro.
+        /// </summary>
+        /// <param name="compra"></param>
+        /// <returns></returns>
+        public  bool ServidorUpdateRegistroCompra(ComprasModel compra)
+        { 
+            return DbConnection.UpdateRegistroCompra(compra);
+        }
+
+        /// <summary>
+        /// Inserta en la base de datos, en la tabla CompraPedido la relacion entre un documento de compra y los pedidos que la componen.
+        /// </summary>
+        /// <param name="compra"></param>
+        /// <returns></returns>
+        public  string ServidorInsertarPedidosCompra(ComprasModel compra)
+        {
+            return DbConnection.InsertarPedidosCompra(compra); 
+        }
+
+        /// <summary>
+        /// Retorna las coincidencias en las compras con de los caracteres dados comparados con los codigos de los compra o la fecha.
+        /// </summary>
+        /// <param name="Caracteres"></param>
+        /// <returns></returns>
+        public  BindableCollection<ComprasModel> ServidorgetCompra(string Caracteres) 
+        { 
+            return DbConnection.getCompras(Caracteres); 
+        }
+
+        /// <summary>
+        /// Devuelve el nombre, codigo y suma  de los productos relacionados con el codigo del compra dado como parametro.
+        /// </summary>
+        /// <param name="codigoCompra"></param>
+        /// <returns></returns>
+        public  BindableCollection<ProductoModel> ServidorgetProductoCompra(string codigoCompra)
+        {
+            return DbConnection.getProductoCompra(codigoCompra); 
+        }
+
+
+        #endregion
 
         #region Clientes
         /// <summary>

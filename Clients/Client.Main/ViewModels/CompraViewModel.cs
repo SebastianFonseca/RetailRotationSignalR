@@ -11,7 +11,7 @@ using System.Windows;
 
 namespace Client.Main.ViewModels
 {
-    public class CompraViewModel:Screen
+    public class CompraViewModel : Screen
     {
         public MainWindowViewModel VentanaPrincipal;
         public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
@@ -27,11 +27,39 @@ namespace Client.Main.ViewModels
             compra = new ComprasModel(pedidos);
             compra2 = new ComprasModel() { codigo = compra.codigo, fecha = compra.fecha };
             compra.responsable.cedula = argVentana.usuario.cedula;
-            DbConnection.NuevaCompraBool(compra); //Ver si esta conectado al servidor
             DisplayName = "Compra";
             getProveedores();
+            InsertarCompra(compra);
             ctor = "New";
+
+
+
         }
+
+        public async void InsertarCompra(ComprasModel compra)
+        {
+            try
+            {
+                if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+                {
+
+                    Task<object> re = conexion.CallServerMethod("ServidorNuevaCompraBool", Arguments: new object[] { compra });
+                    await re;
+                    if (!System.Text.Json.JsonSerializer.Deserialize<bool>(re.Result.ToString())) { DbConnection.NuevaCompraBool(compra); }
+                }
+                if (MainWindowViewModel.Status == "Trabajando localmente")
+                {
+                    DbConnection.NuevaCompraBool(compra); 
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+        }
+
+
+
         public CompraViewModel(MainWindowViewModel argVentana, ComprasModel pCompra)
         {
             VentanaPrincipal = argVentana;
@@ -43,24 +71,6 @@ namespace Client.Main.ViewModels
             ctor = "Update";
         }
 
-
-        public void BackButton()
-        {
-            if(Productos!= null)
-                Productos.Clear();
-            if (ctor == "New")
-            {
-                VentanaPrincipal.ActivateItem(new ComprasNuevoViewModel(VentanaPrincipal));
-            }
-            else if (ctor == "Update")
-            {
-                VentanaPrincipal.ActivateItem(new ListadoCompraViewModel(VentanaPrincipal));
-
-            }
-
-
-        }
-
         public BindableCollection<ProductoModel> Productos
         {
             get => compra.sumaPedidos;
@@ -69,106 +79,43 @@ namespace Client.Main.ViewModels
                 compra.sumaPedidos = value;
                 NotifyOfPropertyChange(() => Productos);
             }
-
         }
 
-        private string _cantComprada;
+        public string Fecha => compra.fecha.ToString("dd/MM/yyyy");
 
-        public string CantComprada
+        public string Codigo
         {
-            get { return _cantComprada; }
-            set 
-            {
-                MessageBox.Show(value);
-                _cantComprada = value;
-                NotifyOfPropertyChange(() => CantComprada);
-            }
+            get { return compra.codigo; ; }
         }
-
-        private decimal _precio;
-
-        public decimal Precio
-        {
-            get { return _precio; }
-            set 
-            {
-                MessageBox.Show(value.ToString());
-                _precio = value;
-                NotifyOfPropertyChange(() => Precio);
-
-            }
-        }
-
-
 
         public ProductoModel seleccionadoAnterior = new ProductoModel();
-        public BindableCollection<ProductoModel> seleccionadosanteriores = new BindableCollection<ProductoModel>();
 
-        private ProductoModel _seleccionado;    
-
+        private ProductoModel _seleccionado;
         public ProductoModel Seleccionado
         {
-            get { return _seleccionado; }
-            set 
+            get => _seleccionado;
+            set
             {
-                if (value != null )
+                if (value != null)
                 {
-                    MessageBox.Show(seleccionadoAnterior.nombre +"Compra:" + seleccionadoAnterior.compra + "Precio:"+seleccionadoAnterior.precioCompra + "Proveedor:"+seleccionadoAnterior.proveedor.cedula);
-                    //seleccionadosanteriores.Add(value);
                     _seleccionado = value;
                     NotifyOfPropertyChange(() => Seleccionado);
                     compra2.productos = null;
                     compra2.productos = new BindableCollection<ProductoModel>() { seleccionadoAnterior };
-                    DbConnection.UpdateRegistroCompra(compra2);
+                    ActualizarRegistro(compra2);
                     seleccionadoAnterior = value;
-
-
-                    //if (value.codigoProducto != seleccionadoAnterior.codigoProducto)
-                    //{
-                    //   // MessageBox.Show(Seleccionado.nombre + Seleccionado.compra + Seleccionado.precioCompra + Seleccionado.proveedor.cedula + "anterior" + seleccionadoAnterior.nombre);
-                    //    compra2.productos = null;
-                    //    compra2.productos = new BindableCollection<ProductoModel>() { seleccionadoAnterior };
-                    //    DbConnection.UpdateRegistroCompra(compra2);
-                    //    seleccionadoAnterior = value;
-                    //}
                 }
 
-                
-
-
             }
-        }
-
-        readonly BindableCollection<string> seleccionados = new BindableCollection<string>();
-        public void CambioProducto()
-        {
-            if (Seleccionado != null)
-            {
-                MessageBox.Show(Seleccionado.nombre);
-
-            }
-
-        }
-
-
-
-        public string Fecha
-        {
-            get { return compra.fecha.ToString("dd/MM/yyyy"); ; }
-        }
-        public string Codigo
-        {
-            get { return compra.codigo; ; }
         }
 
         private BindableCollection<ProveedorModel> _proveedores;
 
         public BindableCollection<ProveedorModel> Proveedores
         {
-            get { return _proveedores; }
-            set { _proveedores = value; }
+            get => _proveedores;
+            set => _proveedores = value;
         }
-
 
         public async void getProveedores()
         {
@@ -176,10 +123,10 @@ namespace Client.Main.ViewModels
             {
                 if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
                 {
-                    ///Por implementar
-                    //Task<object> re = conexion.CallServerMethod("ServidorgetIdProductos", Arguments: new object[] { });
-                    //await re;
-                    //Productos = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ProductoModel>>(re.Result.ToString());
+
+                    Task<object> re = conexion.CallServerMethod("ServidorGetTodosProveedor", Arguments: new object[] { });
+                    await re;
+                    _proveedores = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ProveedorModel>>(re.Result.ToString());
                 }
                 if (MainWindowViewModel.Status == "Trabajando localmente")
                 {
@@ -193,25 +140,66 @@ namespace Client.Main.ViewModels
         }
 
 
-        public void Guardar()
+        public void BackButton()
         {
-            string a = "";
-            //foreach (ProductoModel producto in seleccionadosanteriores)
-            //{
-            //    //a = a + producto.nombre + " ";
-            //    MessageBox.Show(seleccionadosanteriores.Count.ToString());
-            //}
-            ////MessageBox.Show(seleccionadosanteriores.Count.ToString());
-            //MessageBox.Show(a);
-            //if (Seleccionado != null)
-            //    MessageBox.Show(Seleccionado.nombre);
-            //string b="";
-            //foreach (string name in seleccionados)
-            //{
-            //    b = b + name + " ";
-            //}
-            //MessageBox.Show(b);
+            if (Productos != null)
+            {
+                Productos.Clear();
+            }
+
+            if (ctor == "New")
+            {
+                VentanaPrincipal.ActivateItem(new CompraResultadoBusquedaViewModel(VentanaPrincipal, compra));
+            }
+            else if (ctor == "Update")
+            {
+                VentanaPrincipal.ActivateItem(new ListadoCompraViewModel(VentanaPrincipal));
+
+            }
+
         }
 
-     }
+        public override void CanClose(Action<bool> callback)
+        {
+            compra2.productos = null;
+            compra2.productos = new BindableCollection<ProductoModel>() { seleccionadoAnterior };
+            ActualizarRegistro(compra2);
+            callback(true);
+        }
+
+        public void Guardar()
+        {
+            compra2.productos = null;
+            compra2.productos = new BindableCollection<ProductoModel>() { seleccionadoAnterior };
+            ActualizarRegistro(compra2);
+            VentanaPrincipal.ActivateItem(new CompraResultadoBusquedaViewModel(VentanaPrincipal, compra));
+
+        }
+
+
+
+        public async void ActualizarRegistro(ComprasModel compra) 
+        {
+            try
+            {
+                if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+                {
+
+                    Task<object> re = conexion.CallServerMethod("ServidorUpdateRegistroCompra", Arguments: new object[] { compra });
+                    await re;
+                    if (!System.Text.Json.JsonSerializer.Deserialize<bool>(re.Result.ToString())) { DbConnection.UpdateRegistroCompra(compra); }
+                }
+                if (MainWindowViewModel.Status == "Trabajando localmente")
+                {
+                    DbConnection.UpdateRegistroCompra(compra);
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+        }
+
+
+    }
 }

@@ -8,22 +8,30 @@ namespace ServerConsole.Models
     {
         public string codigoProducto { get; set; }
         public string nombre { get; set; }
-        public string unidadVenta { get; set; }
-        public string unidadCompra { get; set; }
+        public string unidadVenta { get; set; } = "";
+        public string unidadCompra { get; set; } = "";
         public decimal factorConversion { get; set; } = 1;
-        /// <summary>
-        /// warning si el precio de venta es cero en una venta
-        /// </summary>
-        public decimal precioVenta { get; set; } = 0;
         public string seccion { get; set; }
         public DateTime fechaVencimiento { get; set; } = DateTime.Today;
+
         public decimal iva { get; set; }
         public string codigoBarras { get; set; }
         public int? existencia { get; set; } = null;
 
         public int? pedido { get; set; }
 
+        public int? sumaPedido { get; set; }
+
+        public int? compra { get; set; }
+
+        public int? compraPorLocal { get; set; }
+        public ProveedorModel proveedor { get; set; } = new ProveedorModel();
         public string estado { get; set; }
+        /// <summary>
+        /// warning si el precio de venta es cero en una venta
+        /// </summary>
+        public decimal precioVenta { get; set; } 
+        public decimal? precioCompra { get; set; }
 
     }
 }

@@ -8,9 +8,9 @@
 	xmlns:fa="http://schemas.fontawesome.io/icons/"
     mc:Ignorable="d"
 	xmlns:cal="http://www.caliburnproject.org"
-	xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             
-             d:DesignHeight="450" d:DesignWidth="800">
+	xmlns:sys="clr-namespace:System;assembly=mscorlib"             
+    d:DesignHeight="450" d:DesignWidth="800">
+    
     <UserControl.Resources>
         <c:DecimalToStringConverter x:Key="Decimal"/>
         <!--#region    -->
@@ -57,7 +57,8 @@
                 <RowDefinition Height="0.2*"/>
             </Grid.RowDefinitions>
             <!--Boton atras-->
-            <Button x:Name="BackButton" Grid.Column="0" Grid.Row="0"  Style="{StaticResource GeneralButton}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 10 0 0">
+            <!--Boton atras-->
+            <Button x:Name="BackButton" Grid.Column="0" Grid.Row="0"  Style="{StaticResource GeneralButton}"  Margin="5 0 1 1">
                 <fa:ImageAwesome Icon="ArrowLeft" Height="25"/>
             </Button>
             <!--Parte superior, informacion general del documento de pedido-->
@@ -72,13 +73,7 @@
 
                 <!--Col 0-->
                 <TextBlock  Grid.Column="0" HorizontalAlignment="Center">Fecha:</TextBlock>
-                <StackPanel  Grid.Column="1"  x:Name="Fecha" Orientation="Horizontal" Margin="3">
-                    <TextBlock  Width="30" x:Name="Dia" FontWeight="Normal" HorizontalAlignment="Center"/>
-                    <TextBlock Text=" / " FontWeight="Normal" />
-                    <TextBlock Width="30" x:Name="Mes"  FontWeight="Normal" HorizontalAlignment="Right"/>
-                    <TextBlock Text=" / " FontWeight="Normal"/>
-                    <TextBlock Width="50" x:Name="Año" FontWeight="Normal" HorizontalAlignment="Center" />
-                </StackPanel>
+                <TextBlock  Grid.Column="1"  x:Name="Fecha"  FontWeight="Normal" Grid.ColumnSpan="2" HorizontalAlignment="Left" />
 
                 <!--col 1-->
                 <TextBlock  Grid.Column="2" HorizontalAlignment="Center">Código:</TextBlock>
@@ -96,9 +91,9 @@
                 <StackPanel Grid.Row="0" Orientation="Horizontal" Background="#F3E0D2" Grid.ColumnSpan="2">
                     <TextBlock Text="Und."      Margin="6 0 0 0"/>
                     <TextBlock Text="Producto"  Margin="6 0 0 0"/>
-                    <TextBlock Text="Pedido"    Margin="100 0 0 0"/>
+                    <TextBlock Text="Pedido"    Margin="125 0 0 0"/>
                     <TextBlock Text="Comprado"  Margin="6 0 0 0"/>
-                    <TextBlock Text="Precio"    Margin="16 0 0 0"/>
+                    <TextBlock Text="Precio"    Margin="6 0 0 0"/>
                     <TextBlock Text="Proveedor" Margin="30 0 0 0"/>
                 </StackPanel>
                 <Separator Grid.Row="0" VerticalAlignment="Bottom" Background="Gray" Margin="0"/>
@@ -107,21 +102,21 @@
                            BorderThickness="0"  FlowDirection="LeftToRight" HorizontalAlignment="Stretch"  ItemsSource="{Binding Path=Productos}" Margin="0 3 0 3" Grid.Row="1" >
                     <ListBox.ItemTemplate  >
                         <DataTemplate >
-                            <Grid Focusable="False" ShowGridLines="False">
+                            <Grid Focusable="False" ShowGridLines="False" Height="30">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="40"/>
-                                    <ColumnDefinition Width="190"/>
+                                    <ColumnDefinition Width="210"/>
                                     <ColumnDefinition Width="100"/>
                                     <ColumnDefinition Width="70"/>
-                                    <ColumnDefinition Width="120"/>
+                                    <ColumnDefinition Width="100"/>
                                     <ColumnDefinition Width="120"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0" FontSize="17" Text="{Binding Path=unidadCompra}"    HorizontalAlignment="Center" />
                                 <TextBlock Grid.Column="1" FontSize="17" Text="{Binding Path=nombre}"   HorizontalAlignment="Left" Margin="20 0 0 0"/>
-                                <TextBlock Grid.Column="2" FontSize="17" Width="60"    Text="{Binding Path=sumaPedido}" HorizontalAlignment="Center" TextAlignment="Center"  />
+                                <TextBlock Grid.Column="2" FontSize="17" Width="60"  Text="{Binding Path=sumaPedido}" HorizontalAlignment="Center" TextAlignment="Center"  />
                                 <TextBlock Grid.Column="3" FontSize="17" Width="60"  Text="{Binding Path=compra}" HorizontalAlignment="Center"  TextAlignment="Center"  />
-                                <TextBlock Grid.Column="4" FontSize="17" Width="130" Text="{Binding Path=precioCompra, StringFormat={}${0:#.}}" HorizontalAlignment="Center" TextAlignment="Center" />
-                                <TextBlock Grid.Column="5" FontSize="17" Width="130"    HorizontalAlignment="Left" TextAlignment="Left" >
+                                <TextBlock Grid.Column="4" FontSize="17" Width="100" Text="{Binding Path=precioCompra, StringFormat={}${0:#.}}" HorizontalAlignment="Center" TextAlignment="Center" />
+                                <TextBlock Grid.Column="5" FontSize="17" Width="115" HorizontalAlignment="Center" TextAlignment="Center" >
                                     <TextBlock.Text>
                                         <MultiBinding StringFormat=" {0} {1}">
                                             <Binding Path="proveedor.firstName"/>
@@ -130,7 +125,7 @@
                                     </TextBlock.Text>
                                 </TextBlock>
 
-                                <Separator Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Bottom"  Background="#F7EBD7" Margin="0 0 0 0" Panel.ZIndex="1"/>
+                                <Separator Grid.Column="0" Grid.ColumnSpan="6" VerticalAlignment="Bottom"  Background="#F7EBD7" Margin="0 0 0 0" Panel.ZIndex="1"/>
 
                             </Grid>
 

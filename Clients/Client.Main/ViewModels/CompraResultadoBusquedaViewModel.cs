@@ -25,11 +25,15 @@ namespace Client.Main.ViewModels
         {
             get
             {
-                foreach (ProductoModel producto in compra.productos)
+                if (compra.productos != null)
                 {
-                    producto.unidadCompra = producto.unidadCompra.Substring(0, 3);
+                    foreach (ProductoModel producto in compra.productos)
+                    {
+                        producto.unidadCompra = producto.unidadCompra.Substring(0, 3);
 
+                    }
                 }
+
 
                 return compra.productos;
             }
@@ -114,6 +118,11 @@ namespace Client.Main.ViewModels
                 }
 
             }
+        }
+
+        public string Fecha
+        {
+            get { return compra.fecha.ToString("dd/MM/yyyy");  }
         }
 
         public string Responsable

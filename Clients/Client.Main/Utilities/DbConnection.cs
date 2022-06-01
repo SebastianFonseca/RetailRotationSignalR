@@ -514,8 +514,9 @@ namespace Client.Main.Utilities
                 return null;
             }
         }
+
          /// <summary>
-         /// Obtiene la lsita de todos los proveedores.
+         /// Obtiene la lista de todos los proveedores.
          /// </summary>
          /// <returns></returns>
         public static BindableCollection<ProveedorModel> getProveedores()
@@ -1720,7 +1721,6 @@ namespace Client.Main.Utilities
                 return null;
             }
         }
-
 
         /// <summary>
         /// Devuelve todas las instancias de pedidos registradas en la base de datos.

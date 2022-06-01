@@ -6,16 +6,16 @@
 	xmlns:local="clr-namespace:Client.Main.ViewModels"
 	xmlns:c="clr-namespace:Client.Main.Utilities"
 	xmlns:fa="http://schemas.fontawesome.io/icons/"
-             mc:Ignorable="d"
+    mc:Ignorable="d"
 	xmlns:cal="http://www.caliburnproject.org"
 	xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             d:DesignHeight="450" d:DesignWidth="800">
+    d:DesignHeight="450" d:DesignWidth="800">
     
     <UserControl.Resources>
         <!--#region    -->
         <Style TargetType="TextBlock">
             <Setter Property="FontSize" Value="22"/>
-            <Setter Property="FontWeight" Value="DemiBold"/>
+            <Setter Property="FontWeight" Value="Normal"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
         </Style>
@@ -35,16 +35,16 @@
                 <ColumnDefinition Width="0.9*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="0.15*"/>
+                <RowDefinition Height="0.2*"/>
                 <RowDefinition Height="0.6*"/>
-                <RowDefinition Height="0.25*"/>
+                <RowDefinition Height="0.2*"/>
             </Grid.RowDefinitions>
             <!--Boton atras-->
             <Button x:Name="BackButton" Grid.Column="0" Grid.Row="0"  Style="{StaticResource GeneralButton}"  Margin="5 0 1 1">
                 <fa:ImageAwesome Icon="ArrowLeft" Height="25"/>
             </Button>
             <!--    Parte superior, informacion general del documento de existencias     -->
-            <Grid Grid.Row="0" Grid.Column="1" ShowGridLines="False" Margin="1 15 1 1">
+            <Grid Grid.Row="0" Grid.Column="1" ShowGridLines="False">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0.112*"/>
                     <ColumnDefinition Width="0.2*"/>
@@ -67,7 +67,7 @@
                 <StackPanel Grid.Row="0" Orientation="Horizontal" Background="#F3E0D2" Grid.ColumnSpan="2">
                     <TextBlock Text="Und."      Margin="6 0 0 0"/>
                     <TextBlock Text="Producto"  Margin="6 0 0 0"/>
-                    <TextBlock Text="Pedido"    Margin="100 0 0 0"/>
+                    <TextBlock Text="Pedido"    Margin="140 0 0 0"/>
                     <TextBlock Text="Comprado"  Margin="6 0 0 0"/>
                     <TextBlock Text="Precio"    Margin="16 0 0 0"/>
                     <TextBlock Text="Proveedor" Margin="30 0 0 0"/>
@@ -79,31 +79,21 @@
                             SelectionMode="Single" >
                     <ListBox.ItemTemplate  >
                         <DataTemplate >
-                            <Grid Focusable="False" ShowGridLines="False">
+                            <Grid Focusable="False" ShowGridLines="False" Height="30">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="40"/>
-                                    <ColumnDefinition Width="190"/>
+                                    <ColumnDefinition Width="230"/>
                                     <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="90"/>
+                                    <ColumnDefinition Width="70"/>
                                     <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="130"/>
+                                    <ColumnDefinition Width="120"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="{Binding Path=unidadCompra}"   FontSize="18" HorizontalAlignment="Center" />
-                                <TextBlock Grid.Column="1"   FontSize="18" HorizontalAlignment="Left" Margin="20 0 0 0">
-                                    <TextBlock.Text>
-                                        <MultiBinding StringFormat=" {0}">
-                                            <Binding Path="nombre"/>
-                                            <!--<Binding Path="Seleccionado.nombre" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged" />-->
-                                        </MultiBinding>
-                                    </TextBlock.Text>
-                                </TextBlock>
-                                <TextBlock Grid.Column="2" Width="60" Text="{Binding Path=sumaPedido}" HorizontalAlignment="Center" TextAlignment="Center" FontSize="18" />
-                                <TextBox   Grid.Column="3" Style="{StaticResource GeneralTextBox}"  Width="60"  Text="{Binding compra, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" MaxLength="5" TextAlignment="Center"  >
-                                </TextBox>
-                                <TextBox    Style="{StaticResource GeneralTextBox}"   Grid.Column="4"  Width="80" Text="{Binding Path=precioCompra, StringFormat={}${0:#.}, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" TextAlignment="Left" FontSize="17">
- 
-                                </TextBox>
-                                <ComboBox  Grid.Column="5" Width="130"  SelectedItem="{Binding Path=proveedor, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Bottom" FontSize="17" HorizontalAlignment="Left" Template="{StaticResource GeneralComboBox}" MaxDropDownHeight="100" ItemsSource="{Binding ElementName=Productos, Path=DataContext.Proveedores}" x:Name="Proveedores">
+                                <TextBlock Grid.Column="0" FontSize="17" Text="{Binding Path=unidadCompra}"    HorizontalAlignment="Center" />
+                                <TextBlock Grid.Column="1" FontSize="17" Text="{Binding Path=nombre}"   HorizontalAlignment="Left" Margin="20 0 0 0"/>
+                                <TextBlock Grid.Column="2" FontSize="17" Width="60" Text="{Binding Path=sumaPedido}" HorizontalAlignment="Center" TextAlignment="Center"  />
+                                <TextBox   Grid.Column="3" FontSize="17" Width="60" Text="{Binding compra, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource GeneralTextBox}"    HorizontalAlignment="Center" MaxLength="5" TextAlignment="Right"  />
+                                <TextBox   Grid.Column="4" FontSize="17" Width="100" Style="{StaticResource GeneralTextBox}"   Text="{Binding Path=precioCompra, StringFormat={}${0:#.}, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" TextAlignment="Right" />
+                                <ComboBox  Grid.Column="5" FontSize="17" Width="115"  SelectedItem="{Binding Path=proveedor, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Bottom"  HorizontalAlignment="Right"  Template="{StaticResource GeneralComboBox}" MaxDropDownHeight="100" ItemsSource="{Binding ElementName=Productos, Path=DataContext.Proveedores}" x:Name="Proveedores">
                                     <ComboBox.ItemTemplate>
                                         <DataTemplate >
                                             <TextBlock>
