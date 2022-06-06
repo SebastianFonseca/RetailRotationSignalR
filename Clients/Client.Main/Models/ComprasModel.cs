@@ -14,12 +14,12 @@ namespace Client.Main.Models
         /// <summary>
         /// Lista con los pedidos que componen el documento de compras.
         /// </summary>
-        public BindableCollection<string> codPedidos = new BindableCollection<string>();
+        public BindableCollection<string> codPedidos { get; set; } = new BindableCollection<string>();
 
         /// <summary>
         /// Lista de productos con la suma de la cantidad pedida.
         /// </summary>
-        public BindableCollection<ProductoModel> sumaPedidos = new BindableCollection<ProductoModel>();
+        public BindableCollection<ProductoModel> sumaPedidos { get; set; } = new BindableCollection<ProductoModel>();
 
         public ComprasModel()
         {

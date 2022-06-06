@@ -4,7 +4,6 @@ using Client.Main.Models;
 using Client.Main.Utilities;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -23,17 +22,23 @@ namespace Client.Main.ViewModels
 
         public CompraViewModel(MainWindowViewModel argVentana, BindableCollection<PedidoModel> pedidos)
         {
-            VentanaPrincipal = argVentana;
-            compra = new ComprasModel(pedidos);
-            compra2 = new ComprasModel() { codigo = compra.codigo, fecha = compra.fecha };
-            compra.responsable.cedula = argVentana.usuario.cedula;
-            DisplayName = "Compra";
-            getProveedores();
-            InsertarCompra(compra);
-            ctor = "New";
+            try
+            {
+                VentanaPrincipal = argVentana;
+                getProveedores();
+                compra = new ComprasModel(pedidos);
+                compra.responsable.cedula = this.VentanaPrincipal.usuario.cedula;
+                InsertarCompra(compra);
+                compra2 = new ComprasModel() { codigo = compra.codigo, fecha = compra.fecha };
+                DisplayName = "Compra";
+                          
+                ctor = "New";
+            }
+            catch (Exception e )
+            {
 
-
-
+                MessageBox.Show(e.Message + "aqui");
+            }
         }
 
         public async void InsertarCompra(ComprasModel compra)
@@ -42,10 +47,9 @@ namespace Client.Main.ViewModels
             {
                 if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
                 {
-
-                    Task<object> re = conexion.CallServerMethod("ServidorNuevaCompraBool", Arguments: new object[] { compra });
+                    Task<object> re = conexion.CallServerMethod("ServidorNuevaCompra", Arguments: new object[] { compra });
                     await re;
-                    if (!System.Text.Json.JsonSerializer.Deserialize<bool>(re.Result.ToString())) { DbConnection.NuevaCompraBool(compra); }
+                    if (re.Result.ToString() != "true") { DbConnection.NuevaCompraBool(compra); }
                 }
                 if (MainWindowViewModel.Status == "Trabajando localmente")
                 {
@@ -54,8 +58,9 @@ namespace Client.Main.ViewModels
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
+                MessageBox.Show(e.Message + "metodo insertar");
             }
+
         }
 
 
@@ -65,7 +70,7 @@ namespace Client.Main.ViewModels
             VentanaPrincipal = argVentana;
             compra = pCompra;
             compra2 = new ComprasModel() { codigo = compra.codigo, fecha = compra.fecha };
-            Productos = pCompra.productos;
+            Productos = pCompra.sumaPedidos;
             DisplayName = "Compra";
             getProveedores();
             ctor = "Update";
@@ -187,7 +192,7 @@ namespace Client.Main.ViewModels
 
                     Task<object> re = conexion.CallServerMethod("ServidorUpdateRegistroCompra", Arguments: new object[] { compra });
                     await re;
-                    if (!System.Text.Json.JsonSerializer.Deserialize<bool>(re.Result.ToString())) { DbConnection.UpdateRegistroCompra(compra); }
+                    if (re.Result.ToString() != "true") { DbConnection.UpdateRegistroCompra(compra); }
                 }
                 if (MainWindowViewModel.Status == "Trabajando localmente")
                 {

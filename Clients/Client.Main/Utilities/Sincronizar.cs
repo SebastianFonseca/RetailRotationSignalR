@@ -113,7 +113,7 @@ namespace Client.Main.Utilities
                     ///Si el cambio se registro correctamente en el servidor
                     if (resultado.Result.ToString() == regis[5].Trim())
                     {
-                        ///Se actualiza localmente el numero del ultimo registro actuzlizado.
+                        ///Se actualiza localmente el numero del ultimo registro actualizado.
                         DbConnection.registroSubidoAlServidor(Int16.Parse(regis[0]));
                     }
                     return true;
@@ -121,7 +121,7 @@ namespace Client.Main.Utilities
             }
             catch (Exception e)
             {
-                //MessageBox.Show(e.Message);
+                MessageBox.Show(e.Message);
                 return false;
                 throw;
 

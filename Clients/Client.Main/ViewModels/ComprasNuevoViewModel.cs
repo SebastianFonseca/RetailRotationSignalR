@@ -39,7 +39,7 @@ namespace Client.Main.ViewModels
                 }
                 if (MainWindowViewModel.Status == "Trabajando localmente")
                 {
-                    Pedidos = DbConnection.getPedidoConProductos();
+                    Pedidos = DbConnection.getTodoPedidoConProductos();
                 }
             }
             catch (Exception e)

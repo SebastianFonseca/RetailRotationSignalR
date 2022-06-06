@@ -370,7 +370,6 @@ namespace ServerConsole
             return DbConnection.NuevoPedido(pedido);
         } 
        
-
         /// <summary>
         /// Al ser llamado desde un cliente retorna los pedidoc que coinciden con el numero d elocal, la fecha o el codigo dado en los caracteres
         /// </summary>
@@ -407,7 +406,7 @@ namespace ServerConsole
         /// <returns></returns>
         public BindableCollection<PedidoModel> ServidorGetTodoPedidoConProductos()
         {
-            return DbConnection.getPedidoConProductos();
+            return DbConnection.getTodoPedidoConProductos();
         }
         #endregion
 
@@ -418,9 +417,9 @@ namespace ServerConsole
         /// </summary>
         /// <param name="compra"></param>
         /// <returns></returns>
-        public  bool ServidorNuevaCompraBool(ComprasModel compra) 
-        { 
-            return DbConnection.NuevaCompraBool(compra); 
+        public  string ServidorNuevaCompra(ComprasModel compras) 
+        {
+            return DbConnection.NuevaCompra(compras) ; 
         }
 
         /// <summary>
@@ -438,7 +437,7 @@ namespace ServerConsole
         /// </summary>
         /// <param name="compra"></param>
         /// <returns></returns>
-        public  bool ServidorUpdateRegistroCompra(ComprasModel compra)
+        public  string ServidorUpdateRegistroCompra(ComprasModel compra)
         { 
             return DbConnection.UpdateRegistroCompra(compra);
         }

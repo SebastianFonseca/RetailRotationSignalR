@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Client.Main.ViewModels
 {
-    public class CompraResultadoBusquedaViewModel:Screen
+    public class CompraResultadoBusquedaViewModel : Screen
     {
         MainWindowViewModel VentanaPrincipal;
         public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
@@ -25,9 +25,9 @@ namespace Client.Main.ViewModels
         {
             get
             {
-                if (compra.productos != null)
+                if (compra.sumaPedidos != null)
                 {
-                    foreach (ProductoModel producto in compra.productos)
+                    foreach (ProductoModel producto in compra.sumaPedidos)
                     {
                         producto.unidadCompra = producto.unidadCompra.Substring(0, 3);
 
@@ -35,7 +35,7 @@ namespace Client.Main.ViewModels
                 }
 
 
-                return compra.productos;
+                return compra.sumaPedidos;
             }
             set
             {
@@ -61,7 +61,7 @@ namespace Client.Main.ViewModels
         public string Dia
         {
 
-            get { return compra.fecha.Day.ToString(); }
+            get => compra.fecha.Day.ToString();
             set
             {
                 short a;
@@ -72,8 +72,6 @@ namespace Client.Main.ViewModels
                         _dia = value;
                         NotifyOfPropertyChange(() => Dia);
                     }
-
-
                 }
             }
         }
@@ -82,7 +80,7 @@ namespace Client.Main.ViewModels
 
         public string Mes
         {
-            get { return compra.fecha.Month.ToString(); }
+            get => compra.fecha.Month.ToString();
             set
             {
                 short a;
@@ -103,7 +101,7 @@ namespace Client.Main.ViewModels
 
         public string Año
         {
-            get { return compra.fecha.Year.ToString(); }
+            get => compra.fecha.Year.ToString();
             set
             {
                 short a;
@@ -120,23 +118,20 @@ namespace Client.Main.ViewModels
             }
         }
 
-        public string Fecha
-        {
-            get { return compra.fecha.ToString("dd/MM/yyyy");  }
-        }
+        public string Fecha => compra.fecha.ToString("dd/MM/yyyy");
 
-        public string Responsable
-        {
-            get => compra.responsable.cedula.ToString();
-
-        }
+        public string Responsable => compra.responsable.cedula.ToString();
 
         public void BackButton()
         {
-            Productos.Clear();
+            if (Productos != null)
+            {
+                Productos.Clear();
+            }
+
             VentanaPrincipal.ActivateItem(new ListadoCompraViewModel(VentanaPrincipal));
         }
-         public void Editar()
+        public void Editar()
         {
             VentanaPrincipal.ActivateItem(new CompraViewModel(VentanaPrincipal, compra));
         }

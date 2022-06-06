@@ -19,7 +19,7 @@ namespace Client.Main.ViewModels
         public ComprasDistribucionPorLocalViewModel(BindableCollection<PedidoModel> pedidos, MainWindowViewModel VentanaPrincipal)
         {
             this.VentanaPrincipal = VentanaPrincipal;
-            Items.Add(new CompraViewModel(VentanaPrincipal,pedidos));
+            Items.Add(new CompraViewModel(VentanaPrincipal, pedidos));
             foreach (PedidoModel pedido in pedidos)
             {
                 Items.Add(new ComprasPorLocalViewModel(VentanaPrincipal, pedido));

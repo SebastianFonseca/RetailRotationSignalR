@@ -16,7 +16,7 @@ namespace ServerConsole.Models
 
         public decimal iva { get; set; }
         public string codigoBarras { get; set; }
-        public int? existencia { get; set; } = null;
+        public int? existencia { get; set; } 
 
         public int? pedido { get; set; }
 
@@ -30,7 +30,7 @@ namespace ServerConsole.Models
         /// <summary>
         /// warning si el precio de venta es cero en una venta
         /// </summary>
-        public decimal precioVenta { get; set; } 
+        public decimal? precioVenta { get; set; } 
         public decimal? precioCompra { get; set; }
 
     }

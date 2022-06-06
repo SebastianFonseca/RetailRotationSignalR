@@ -156,7 +156,7 @@ namespace Client.Main.ViewModels
                         Task<object> re = conexion.CallServerMethod("ServidorgetProductoCompra", Arguments: new[] { Seleccionada.codigo });
                         await re;
 
-                        Seleccionada.productos = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ProductoModel>>(re.Result.ToString());
+                        Seleccionada.sumaPedidos = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ProductoModel>>(re.Result.ToString());
 
 
                         VentanaPrincipal.ActivateItem(new CompraResultadoBusquedaViewModel(VentanaPrincipal, Seleccionada));
@@ -168,7 +168,7 @@ namespace Client.Main.ViewModels
                 }
                 else if (MainWindowViewModel.Status == "Trabajando localmente")
                 {
-                    Seleccionada.productos = DbConnection.getProductoCompra(Seleccionada.codigo);
+                    Seleccionada.sumaPedidos = DbConnection.getProductoCompra(Seleccionada.codigo);
                     VentanaPrincipal.ActivateItem(new CompraResultadoBusquedaViewModel(VentanaPrincipal, Seleccionada));
 
                 }

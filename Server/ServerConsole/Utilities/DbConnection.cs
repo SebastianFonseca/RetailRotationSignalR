@@ -617,7 +617,7 @@ namespace ServerConsole.Utilities
                 BindableCollection<ProveedorModel> proveedores = new BindableCollection<ProveedorModel>();
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = $"SELECT Distinct * FROM Proveedor ORDER BY Nombres ";
+                    string cadena = $"SELECT Distinct * FROM Proveedor where Estado = 'Activo' ORDER BY Nombres ";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -1708,7 +1708,7 @@ namespace ServerConsole.Utilities
         /// Devuelve todas las instancias de pedidos registradas en la base de datos.
         /// </summary>
         /// <returns></returns>
-        public static BindableCollection<PedidoModel> getPedidoConProductos()
+        public static BindableCollection<PedidoModel> getTodoPedidoConProductos()
         {
             try
             {
@@ -1758,6 +1758,60 @@ namespace ServerConsole.Utilities
         /// </summary>
         /// <param name="compra"></param>
         /// <returns></returns>
+        public static string NuevaCompra(ComprasModel compra)
+        {
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"INSERT INTO Compras(CodigoCompra,CedulaEmpleado,FechaCompra) VALUES (@codigo,@empleado,@fecha);";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codigo", compra.codigo);
+                    cmd.Parameters.AddWithValue("@empleado", compra.responsable.cedula);
+                    cmd.Parameters.AddWithValue("@fecha", compra.fecha.Date);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    string response = InsertarRegistroCompraProducto(compra);
+                    string rta = InsertarPedidosCompra(compra);
+                    if (response == "Y" && rta == "Y")
+                    {
+                        conn.Close();
+                        Console.ForegroundColor = ConsoleColor.DarkCyan;
+                        Console.Write("\n\t" + DateTime.Now + "--");
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo documento: Compra con fecha {compra .fecha.ToString("dd'/'MM'/'yyyy")}.");
+
+                        return "true";
+                    }
+                    /// Si algo fallo en la insercion de los productos y las cantidades se borra el registro del documento de compra para que pueda ser exitoso en proximos intentos.
+                    string cadena0 = $"delete from Compras where CodigoCompra = '{compra.codigo}';";
+                    SqlCommand cmd0 = new SqlCommand(cadena0, conn);
+                    cmd0.ExecuteNonQuery();
+
+                    return "false";
+                }
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
+                {
+                    return "false";
+                }
+                else
+                {
+                    Console.WriteLine(e.Message);
+                    return  e.Message ;
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Inserta el registro del nuevo documento de compra.
+        /// </summary>
+        /// <param name="compra"></param>
+        /// <returns></returns>
         public static bool NuevaCompraBool(ComprasModel compra)
         {
 
@@ -1795,6 +1849,7 @@ namespace ServerConsole.Utilities
                 }
                 else
                 {
+                    Console.WriteLine(e.Message);
                     return false;
                 }
             }
@@ -1837,8 +1892,10 @@ namespace ServerConsole.Utilities
                     return "Ya registrado.";
                 }
                 else
-                {
+                {              
+                    Console.WriteLine(e.Message);
                     return "Server " + e.Message;
+     
                 }
             }
         }
@@ -1848,37 +1905,29 @@ namespace ServerConsole.Utilities
         /// </summary>
         /// <param name="producto"></param>
         /// <returns></returns>
-        public static bool UpdateRegistroCompra(ComprasModel compra)
+        public static string UpdateRegistroCompra(ComprasModel compra)
         {
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
                     conn.Open();
-                    string cadena = $"UPDATE RegistroCompra SET CedulaProveedor = @prov WHERE CodigoCompra='{compra.codigo}' and CodigoProducto = '{compra.productos[0].codigoProducto}'";
+                    string cadena = $"UPDATE RegistroCompra SET CedulaProveedor = @prov, CantidadComprada = @cant, PrecioCompra= @precio  WHERE CodigoCompra='{compra.codigo}' and CodigoProducto = '{compra.productos[0].codigoProducto}'";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     cmd.Parameters.AddWithValue("@prov", string.IsNullOrEmpty(compra.productos[0].proveedor.cedula) ? (object)DBNull.Value : compra.productos[0].proveedor.cedula);
+                    cmd.Parameters.AddWithValue("@cant", string.IsNullOrEmpty(compra.productos[0].compra.ToString()) ? (object)DBNull.Value : compra.productos[0].compra);
+                    cmd.Parameters.AddWithValue("@precio", string.IsNullOrEmpty(compra.productos[0].precioCompra.ToString()) ? (object)DBNull.Value : compra.productos[0].precioCompra);
                     cmd.ExecuteNonQuery();
 
-                    string cadena0 = $"UPDATE RegistroCompra SET  CantidadComprada = @cant WHERE CodigoCompra='{compra.codigo}' and CodigoProducto = '{compra.productos[0].codigoProducto}'";
-                    SqlCommand cmd0 = new SqlCommand(cadena0, conn);
-                    cmd0.Parameters.AddWithValue("@cant", string.IsNullOrEmpty(compra.productos[0].compra.ToString()) ? (object)DBNull.Value : compra.productos[0].compra);
-                    cmd0.ExecuteNonQuery();
-
-                    string cadena1 = $"UPDATE RegistroCompra SET PrecioCompra= @precio WHERE CodigoCompra='{compra.codigo}' and CodigoProducto = '{compra.productos[0].codigoProducto}'";
-                    SqlCommand cmd1 = new SqlCommand(cadena1, conn);
-                    cmd1.Parameters.AddWithValue("@precio", string.IsNullOrEmpty(compra.productos[0].precioCompra.ToString()) ? (object)DBNull.Value : compra.productos[0].precioCompra);
-                    cmd1.ExecuteNonQuery();
-
                     conn.Close();
-                    return true;
+                    return "true";
 
                 }
             }
             catch (Exception e)
             {
-
-                return false;
+                Console.WriteLine(e.Message);
+                return e.Message +"false";
 
             }
         }
@@ -1914,6 +1963,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
+                Console.WriteLine(e.Message);
                 if (e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
                 {
                     return "Ya registrado.";
@@ -1921,7 +1971,7 @@ namespace ServerConsole.Utilities
                 else
                 {
                     return "Server " + e.Message;
-                }
+                }                                
             }
         }
 
@@ -2087,9 +2137,6 @@ namespace ServerConsole.Utilities
             }
         }
         #endregion
-
-
-
 
         /// <summary>
         /// Crea los registros en la base de datos local de los cambios realizados para que los clientes puedan despues replicarlos.
