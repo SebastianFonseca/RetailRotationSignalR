@@ -19,7 +19,7 @@ namespace Client.Main.Models
             return pedido;
         }
         /// <summary>
-        ///Propiedad necesaria para el binding de datos en las listbox con el productoseleccionado.
+        ///Propiedad necesaria para el binding de datos en las listbox.
         /// </summary>
         bool _isSelected;
         public bool isSelected

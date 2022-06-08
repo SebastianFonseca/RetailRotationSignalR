@@ -16,10 +16,12 @@ namespace Client.Main.ViewModels
         public MainWindowViewModel VentanaPrincipal;
         public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
         public PedidoModel pedido;
+        public EnvioModel envio = new EnvioModel();
 
         public ComprasPorLocalViewModel(MainWindowViewModel argVentana, PedidoModel pedido)
         {
             this.pedido = pedido;
+            envio = pedido;
             VentanaPrincipal = argVentana;
             DisplayName = "Pedido de "+ pedido.puntoVenta.nombre;
         }
@@ -33,10 +35,10 @@ namespace Client.Main.ViewModels
 
         public BindableCollection<ProductoModel> Productos
         {
-            get => pedido.productos;
+            get => envio.productos;
             set
             {
-                pedido.productos = value;
+                envio.productos = value;
                 NotifyOfPropertyChange(() => Productos);
             }
 
@@ -45,19 +47,58 @@ namespace Client.Main.ViewModels
 
         public string Fecha
         {
-            get { return pedido.fecha.ToShortDateString(); }
+            get { return envio.fecha.ToShortDateString(); }
         }
         public string Codigo  
         {
             get { return pedido.codigo; }
         }
 
-        public string ProductoVisibilidad { get; set; } = "Visible";
+        private string _placasN;
+
+        public string PlacasN
+        {
+            get { return _placasN; }
+            set
+            { 
+                _placasN = value;
+                NotifyOfPropertyChange(() => PlacasN);
+            }
+        }
+
+        private string _placasL;
+
+        public string PlacasL
+        {
+            get { return _placasL; }
+            set 
+            {
+                _placasL = value.ToUpper();
+                NotifyOfPropertyChange(() => PlacasL);
+            }
+        }
+        private string _conductor;
+
+        public string Conductor
+        {
+            get { return _conductor; }
+            set
+            {
+                Statics.PrimeraAMayuscula(value);
+                _conductor = value;
+                envio.nombreConductor = value;
+                NotifyOfPropertyChange(() => Conductor);
+            }
+        }
+
+
+
+
 
         public void Guardar()
         {
-            ProductoVisibilidad = "Hidden";
-            MessageBox.Show("Holaa");
+            envio.placasCarro = PlacasL + "-" + PlacasN;
+            DbConnection.NuevoEnvioBool(envio);
         }
 
 

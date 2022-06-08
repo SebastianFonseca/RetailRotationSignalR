@@ -80,36 +80,6 @@ namespace Client.Main.Utilities
             }
 
 
-
-
-
-
-
-            //try {
-
-            //    using (IDbConnection conn = new SqlConnection(_connString))
-            //    {
-
-            //        var parameters = new DynamicParameters();
-            //        parameters.Add("@cedula", User);
-            //        MessageBox.Show(Statics.Hash(Password));
-            //        parameters.Add("@password", Statics.Hash(Password));
-            //        parameters.Add(name: "@RetVal", dbType: DbType.Int32, direction: ParameterDirection.ReturnValue);
-
-            //        var returnCode = conn.Execute(sql: "Login", param: parameters, commandType: CommandType.StoredProcedure);
-            //        if (parameters.Get<Int32>("@RetVal") == 0)
-            //            return false;
-            //        else
-            //            return true;
-            //    }
-
-            //}
-            //catch (Exception e)
-            //{
-            //    MessageBox.Show(e.Message);
-            //    return false;
-            //}
-
         }
 
 
@@ -2198,6 +2168,96 @@ namespace Client.Main.Utilities
 
 
         #endregion
+
+
+        #region Envios
+
+        public static bool NuevoEnvioBool(EnvioModel envio)
+        {
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"INSERT INTO Envio(CodigoEnvio,CedulaEmpleado,CodigoPuntoVenta,FechaEnvio,NombreChofer,PlacasCarro) VALUES (@codigo,@empleado,@pv,@fecha,@conductor,@placas);";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codigo", Statics.PrimeraAMayuscula(envio.codigo));
+                    cmd.Parameters.AddWithValue("@empleado", Statics.PrimeraAMayuscula(envio.responsable.cedula));
+                    cmd.Parameters.AddWithValue("@pv", Statics.PrimeraAMayuscula(envio.puntoVenta.codigo));
+                    cmd.Parameters.AddWithValue("@fecha", envio.fechaEnvio.Date);
+                    cmd.Parameters.AddWithValue("@conductor", Statics.PrimeraAMayuscula(envio.nombreConductor));
+                    cmd.Parameters.AddWithValue("@placas", Statics.PrimeraAMayuscula(envio.placasCarro.ToUpper()));
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    string response = InsertarEnvioProducto(envio);
+                    if (response == "Y")
+                    {
+                        conn.Close();
+                       // registrarCambioLocal(NombreMetodoLocal: "getExistenciasConProductos", PK: $"{existencia.codigo}", NombreMetodoServidor: "ServidorNuevaExistencia", RespuestaExitosaServidor: "Se ha registrado el nuevo documento.", Tipo: "Insert");
+                        return true;
+                    }
+                    /// Si algo fallo en la insercion de los productos y las cantidades se borra el registro del documento de existencias para que pueda ser exitoso en proximos intentos.
+                    string cadena0 = $"delete from Envio where CodigoEnvio = '{envio.codigo}';";
+                    SqlCommand cmd0 = new SqlCommand(cadena0, conn);
+                    cmd0.ExecuteNonQuery();
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
+                {
+                    return false;
+                }
+                else
+                {
+                    return false;
+                }
+                MessageBox.Show(e.Message);
+            }
+        }
+
+
+        public static string InsertarEnvioProducto(EnvioModel envio)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    conn.Open();
+                    ///Si la operacion no termino exitosamente en un intento anterior, la realiza desde cero borrando los registros insertados en el anterior intento.
+                    string cadena0 = $"update PedidoProducto set CantidadEnviada = null where CodigoPedido = '{envio.codigo}';";
+                    SqlCommand cmd0 = new SqlCommand(cadena0, conn);
+                    cmd0.ExecuteNonQuery();
+                    foreach (ProductoModel producto in envio.productos)
+                    {
+                        string cadena = $"update PedidoProducto set CantidadEnviada = @envio  WHERE CodigoProducto = '{producto.codigoProducto}' AND CodigoPedido = '{envio.codigo}';";
+                        SqlCommand cmd = new SqlCommand(cadena, conn);
+                        cmd.Parameters.AddWithValue("@envio", string.IsNullOrEmpty(producto.compraPorLocal.ToString()) ? (object)DBNull.Value : producto.compraPorLocal);
+                        cmd.ExecuteNonQuery();
+                    }
+                    conn.Close();
+                    return "Y";
+                }
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
+                {
+                    return "Ya registrado.";
+                }
+                else
+                {
+                    return "Server " + e.Message;
+                }
+            }
+        }
+
+
+        #endregion
+
+
 
         #region Clientes
 

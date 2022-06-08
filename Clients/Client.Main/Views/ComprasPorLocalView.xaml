@@ -50,9 +50,9 @@
                 <ColumnDefinition Width="0.9*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="0.15*"/>
-                <RowDefinition Height="0.6*"/>
                 <RowDefinition Height="0.25*"/>
+                <RowDefinition Height="0.55*"/>
+                <RowDefinition Height="0.2*"/>
             </Grid.RowDefinitions>
             <!--Boton atras-->
             <Button x:Name="BackButton" Grid.Column="0" Grid.Row="0"  Style="{StaticResource GeneralButton}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 10 0 0">
@@ -63,13 +63,32 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0.05*"/>
                     <ColumnDefinition Width="0.09*"/>
-                    <ColumnDefinition Width="0.055*"/>
-                    <ColumnDefinition Width="0.25*"/>
+                    <ColumnDefinition Width="0.07*"/>
+                    <ColumnDefinition Width="0.27*"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock  Grid.Column="0" HorizontalAlignment="Left" >Fecha:</TextBlock>
-                <TextBlock  Grid.Column="1"  x:Name="Fecha"  FontWeight="Normal" Grid.ColumnSpan="2" HorizontalAlignment="Left" />
-                <TextBlock  Grid.Column="2" HorizontalAlignment="Left">Código:</TextBlock>
-                <TextBlock  Grid.Column="3" x:Name="Codigo" FontWeight="Normal" Grid.ColumnSpan="2" HorizontalAlignment="Left"/>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                    
+                <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" >Fecha:</TextBlock>
+                <TextBlock Grid.Row="0" Grid.Column="1"  x:Name="Fecha"  FontWeight="Normal" Grid.ColumnSpan="2" HorizontalAlignment="Left" />
+                <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left">Código:</TextBlock>
+                <TextBlock Grid.Row="0" Grid.Column="3" x:Name="Codigo" FontWeight="Normal" Grid.ColumnSpan="2" HorizontalAlignment="Left"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left">Placas:</TextBlock>
+                <DockPanel Grid.Row="1" Grid.Column="1" >
+                    <TextBox  x:Name="PlacasL" FontWeight="Normal"  MaxLength="3" HorizontalAlignment="Left" Style="{StaticResource GeneralTextBox}" Width="45" TextAlignment="Center"/>
+                    <TextBlock  Text="-"/>
+                    <TextBox  x:Name="PlacasN" FontWeight="Normal"  MaxLength="3" HorizontalAlignment="Left" Style="{StaticResource GeneralTextBox}" Width="45" TextAlignment="Center"/>
+                </DockPanel>
+                <TextBlock Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" FontSize="18">Conductor:</TextBlock>
+                <TextBox Grid.Row="1" Grid.Column="3"  x:Name="Conductor"  FontWeight="Normal" Style="{StaticResource GeneralTextBox}" HorizontalAlignment="Stretch" />
+
+
+
+
+
             </Grid>
             <!--Tabla con productos-->
             <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9"   Grid.Column="0" Grid.Row="1"  Grid.ColumnSpan="2" Margin="15 5 5 0" ScrollViewer.HorizontalScrollBarVisibility="Auto" MinWidth="690" >
@@ -89,7 +108,7 @@
                 <Separator Grid.Row="0" VerticalAlignment="Bottom" Background="Gray" Margin="0"/>
                 <!--    Listado de productos        -->
                 <ListView  KeyboardNavigation.TabNavigation="Cycle" ScrollViewer.VerticalScrollBarVisibility="Visible"  ScrollViewer.CanContentScroll="True" x:Name="Productos" Background="#F3E0D2" 
-                           BorderThickness="0"  FlowDirection="LeftToRight" HorizontalAlignment="Stretch"  ItemsSource="{Binding Path=Productos}" Margin="0 3 0 3" Grid.Row="1" >
+                           BorderThickness="0"  FlowDirection="LeftToRight" HorizontalAlignment="Stretch"  ItemsSource="{Binding Path=Productos}" Margin="0 3 0 1" Grid.Row="1" >
                     <ListBox.ItemTemplate  >
                         <DataTemplate >
                             <Grid Focusable="False" ShowGridLines="False">
@@ -102,7 +121,7 @@
                                 <TextBlock Grid.Column="0" Text="{Binding Path=unidadVenta}"   FontSize="18" HorizontalAlignment="Center" />
                                 <TextBlock Grid.Column="1" Text="{Binding Path=nombre}"  FontSize="18" HorizontalAlignment="Left" Margin="20 0 0 0"/>
                                 <TextBlock Grid.Column="2" Width="60" Text="{Binding Path=pedido}" HorizontalAlignment="Center" TextAlignment="Center" FontSize="18" />
-                                <TextBox   Grid.Column="3" Style="{StaticResource GeneralTextBox}"  Width="60"  Text="{Binding Path=compra}" HorizontalAlignment="Center" MaxLength="5" TextAlignment="Center"  />
+                                <TextBox   Grid.Column="3" Style="{StaticResource GeneralTextBox}"  Width="60"  Text="{Binding Path=compraPorLocal}" HorizontalAlignment="Center" MaxLength="5" TextAlignment="Center"  />
                                 <Separator Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Bottom"  Background="#F7EBD7" Margin="0 0 0 0" Panel.ZIndex="1"/>
 
                             </Grid>
@@ -113,7 +132,7 @@
             </Grid>
             <Separator  Grid.Row="2"  Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Top"  Background="Gray" Margin="15 0 5 0" Panel.ZIndex="1"/>
 
-            <Button Style="{StaticResource GeneralButton}"  Margin="5" Height="40" HorizontalAlignment="Center" Grid.ColumnSpan="2"  Width="130" Content="GUARDAR"  FontSize="15" x:Name="Guardar"  Grid.Row="2"  Grid.Column="0" />
+            <Button Style="{StaticResource GeneralButton}"  Margin="5" Height="35" HorizontalAlignment="Center" VerticalAlignment="Top" Grid.ColumnSpan="2"  Width="130" Content="GUARDAR"  FontSize="15" x:Name="Guardar"  Grid.Row="2"  Grid.Column="0" />
         </Grid>
     </Border>
 </UserControl>

@@ -341,7 +341,7 @@ namespace ServerConsole
         /// </summary>
         /// <param name="codigoExistencia"></param>
         /// <returns></returns>
-        public BindableCollection<ExistenciasModel> getExistenciasConProductos(string codigoExistencia)
+        public BindableCollection<ExistenciasModel> servidorGetExistenciasConProductos(string codigoExistencia)
         {
             return DbConnection.getExistenciasConProductos(codigoExistencia);
         }
@@ -471,6 +471,21 @@ namespace ServerConsole
         {
             return DbConnection.getProductoCompra(codigoCompra); 
         }
+
+        /// <summary>
+        /// Retorna la compra del codigo dado como parametro, la informacion de los registros de compra y los documentos de pedido que conforman el documento de compra tambien es obtenida.
+        /// </summary>
+        /// <param name="Caracteres"></param>
+        /// <returns></returns>
+        public BindableCollection<ComprasModel> ServidorGetComprasConProductos(string Caracteres)
+        {
+          return  DbConnection.getComprasConProductos(Caracteres);
+        }
+
+
+
+
+
 
 
         #endregion

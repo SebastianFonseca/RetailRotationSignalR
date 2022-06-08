@@ -1231,7 +1231,7 @@ namespace ServerConsole.Utilities
                     cmd.Parameters.AddWithValue("@fecha", existencia.fecha.Date);
                     conn.Open();
                     cmd.ExecuteNonQuery();
-                    Registrar("Insert", "getExistenciasConProductos", existencia.codigo, "ExistenciasModel[]", "NuevaExistenciaBool", "codigo");
+                    Registrar(Tipo:"Insert", NombreMetodoServidor:"servidorGetExistenciasConProductos", ClavePrimaria: existencia.codigo, TipoRetornoMetodoServidor: "ExistenciasModel[]", NombreMetodoCliente: "NuevaExistenciaBool", NombrePK: "codigo");
                     string response = InsertarExistenciaProducto(existencia);
                     if (response == "Y")
                     {
@@ -1501,7 +1501,6 @@ namespace ServerConsole.Utilities
                     if (response == "Y")
                     {
                         conn.Close();
-                        //registrarCambioLocal(NombreMetodoLocal: "getExistenciasConProductos", PK: $"{pedido.codigo}", NombreMetodoServidor: "ServidorNuevaExistencia", RespuestaExitosaServidor: "Se ha registrado el nuevo documento.", Tipo: "Insert");
                         Console.ForegroundColor = ConsoleColor.DarkCyan;
                         Console.Write("\n\t" + DateTime.Now + "--");
                         Console.ForegroundColor = ConsoleColor.White;
@@ -1772,6 +1771,7 @@ namespace ServerConsole.Utilities
                     cmd.Parameters.AddWithValue("@fecha", compra.fecha.Date);
                     conn.Open();
                     cmd.ExecuteNonQuery();
+                    Registrar(Tipo: "Insert", NombreMetodoServidor: "ServidorGetComprasConProductos", ClavePrimaria: compra.codigo, TipoRetornoMetodoServidor: "ComprasModel[]", NombreMetodoCliente: "NuevaCompraBool", NombrePK: "codigo");
                     string response = InsertarRegistroCompraProducto(compra);
                     string rta = InsertarPedidosCompra(compra);
                     if (response == "Y" && rta == "Y")
@@ -1805,7 +1805,6 @@ namespace ServerConsole.Utilities
                 }
             }
         }
-
 
         /// <summary>
         /// Inserta el registro del nuevo documento de compra.
@@ -2028,6 +2027,61 @@ namespace ServerConsole.Utilities
         }
 
         /// <summary>
+        /// Retorna la compra del codigo dado como parametro, la informacion de los registros de compra y los documentos de pedido que conforman el documento de compra tambien es obtenida.
+        /// </summary>
+        /// <param name="Caracteres"></param>
+        /// <returns></returns>
+        public static BindableCollection<ComprasModel> getComprasConProductos(string Caracteres)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<ComprasModel> cCompras = new BindableCollection<ComprasModel>();
+                    DateTime fecha = new DateTime();
+                    if (!DateTime.TryParse(Caracteres, out fecha))
+                    {
+                        fecha = DateTime.MinValue;
+                    }
+
+                    string cadena = $" select CodigoCompra, FechaCompra,NumeroCanastillas,peso,Empleado.CedulaEmpleado, Nombres, Apellidos from Compras join empleado on compras.CedulaEmpleado = Empleado.CedulaEmpleado where  CodigoCompra = '{Caracteres}';";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        cCompras.Clear();
+                        while (reader.Read())
+                        {
+                            ComprasModel comp = new ComprasModel
+                            {
+                                codigo = reader["CodigoCompra"].ToString()
+                            };
+                            comp.responsable.cedula = reader["CedulaEmpleado"].ToString();
+                            comp.responsable.firstName = reader["Nombres"].ToString();
+                            comp.responsable.lastName = reader["Apellidos"].ToString();
+                            comp.fecha = DateTime.Parse(reader["FechaCompra"].ToString());
+                            Int32.TryParse(reader["NumeroCanastillas"].ToString(), out int i);
+                            comp.numeroCanastillas = i;
+                            Int32.TryParse(reader["peso"].ToString(), out int a);
+                            comp.peso = a;
+                            comp.sumaPedidos = getProductoCompra(Caracteres);
+                            comp.codPedidos = getPedidosCompra(Caracteres);
+                            cCompras.Add(comp);
+                        }
+                    }
+                    conn.Close();
+
+                    return cCompras;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
         /// Devuelve el nombre, codigo y suma  de los productos relacionados con el codigo del compra dado como parametro.
         /// </summary>
         /// <param name="codigoCompra"></param>
@@ -2090,6 +2144,90 @@ namespace ServerConsole.Utilities
             }
 
         }
+
+        /// <summary>
+        /// Devuelve el nombre, codigo y suma  de los productos relacionados con el codigo del compra dado como parametro.
+        /// </summary>
+        /// <param name="codigoCompra"></param>
+        /// <returns></returns>
+        public static BindableCollection<string> getPedidosCompra(string codigoCompra)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<string> pedidosCodPedidos = new BindableCollection<string>();
+                    string cadena = $"select codigopedido from CompraPedido where CodigoCompra = '{codigoCompra}'";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        pedidosCodPedidos.Clear();
+                        while (reader.Read())
+                        {
+                            pedidosCodPedidos.Add(reader["codigopedido"].ToString());
+
+                        }
+                    }
+                    conn.Close();
+                    return pedidosCodPedidos;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+
+        }
+
+        /// <summary>
+        /// Devuelve una instancia de la clase ComprasModel con un unico producto en la propiedad productos que contiene la informacion relacionada con el registro de la compra del producto dado como parametro.
+        /// </summary>
+        /// <param name="codigoCompra"></param>
+        /// <returns></returns>
+        public static BindableCollection<ComprasModel> getRegistroCompra(string codigoCompraCodigoProducto)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<ComprasModel> compras = new BindableCollection<ComprasModel>();
+                    string cadena = $"select * from RegistroCompra where CodigoCompra = '{codigoCompraCodigoProducto.Split("+")[0]}' and CodigoProducto = '{codigoCompraCodigoProducto.Split("+")[1]}'";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        compras.Clear();
+                        while (reader.Read())
+                        {
+
+                            ComprasModel compra = new ComprasModel { codigo = reader["CodigoCompra"].ToString() };
+                            ProductoModel producto = new ProductoModel { codigoProducto = reader["CodigoProducto"].ToString() };
+                            if (Int32.TryParse(reader["CantidadComprada"].ToString(), out int a)) { producto.compra = a; }
+                            else { producto.compra = null; }
+                            if (decimal.TryParse(reader["PrecioCompra"].ToString(), out decimal b)) { producto.precioCompra = b; }
+                            else { producto.precioCompra = null; }
+                            producto.proveedor.cedula = reader["CedulaProveedor"].ToString();
+                            compra.productos.Add(producto);
+                            compras.Add(compra);
+                        }
+                    }
+                    conn.Close();
+                    return compras;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+
+        }
+
+
+
+
 
         #endregion
 
