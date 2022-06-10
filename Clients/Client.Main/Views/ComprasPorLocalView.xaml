@@ -6,10 +6,10 @@
 	xmlns:local="clr-namespace:Client.Main.ViewModels"
 	xmlns:c="clr-namespace:Client.Main.Utilities"
 	xmlns:fa="http://schemas.fontawesome.io/icons/"
-             mc:Ignorable="d"
+    mc:Ignorable="d"
 	xmlns:cal="http://www.caliburnproject.org"
 	xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             d:DesignHeight="450" d:DesignWidth="800">
+    d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <!--#region    -->
         <Style TargetType="TextBlock">
@@ -44,54 +44,42 @@
     <!--Color de fondo y borde curveado-->
     <Border Background="#F3E0C2" CornerRadius="10" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <!--Grid principal, botones atras y guardar-->
-        <Grid ShowGridLines="False"  Margin="-10 -20 0 -15" >
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="0.1*"/>
-                <ColumnDefinition Width="0.9*"/>
-            </Grid.ColumnDefinitions>
+        <Grid ShowGridLines="False"  Margin="1">
+
             <Grid.RowDefinitions>
-                <RowDefinition Height="0.25*"/>
-                <RowDefinition Height="0.55*"/>
+                <RowDefinition Height="0.2*"/>
+                <RowDefinition Height="0.6*"/>
                 <RowDefinition Height="0.2*"/>
             </Grid.RowDefinitions>
-            <!--Boton atras-->
-            <Button x:Name="BackButton" Grid.Column="0" Grid.Row="0"  Style="{StaticResource GeneralButton}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 10 0 0">
-                <fa:ImageAwesome Icon="ArrowLeft" Height="25"/>
-            </Button>
+
             <!--    Parte superior, informacion general del documento de existencias     -->
-            <Grid Grid.Row="0" Grid.Column="1" ShowGridLines="False" Margin="1 15 1 1">
+            <Grid Grid.Row="0"  ShowGridLines="False" Margin="15 1 1 1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0.05*"/>
-                    <ColumnDefinition Width="0.09*"/>
-                    <ColumnDefinition Width="0.07*"/>
+                    <ColumnDefinition Width="0.045*"/>
+                    <ColumnDefinition Width="0.075*"/>
+                    <ColumnDefinition Width="0.06*"/>
                     <ColumnDefinition Width="0.27*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                    
                 <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" >Fecha:</TextBlock>
                 <TextBlock Grid.Row="0" Grid.Column="1"  x:Name="Fecha"  FontWeight="Normal" Grid.ColumnSpan="2" HorizontalAlignment="Left" />
                 <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left">Código:</TextBlock>
-                <TextBlock Grid.Row="0" Grid.Column="3" x:Name="Codigo" FontWeight="Normal" Grid.ColumnSpan="2" HorizontalAlignment="Left"/>
-
+                <TextBlock Grid.Row="0" Grid.Column="3" x:Name="Codigo" FontWeight="Normal" Grid.ColumnSpan="2" HorizontalAlignment="Left" FontSize="18" />
                 <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left">Placas:</TextBlock>
                 <DockPanel Grid.Row="1" Grid.Column="1" >
-                    <TextBox  x:Name="PlacasL" FontWeight="Normal"  MaxLength="3" HorizontalAlignment="Left" Style="{StaticResource GeneralTextBox}" Width="45" TextAlignment="Center"/>
-                    <TextBlock  Text="-"/>
-                    <TextBox  x:Name="PlacasN" FontWeight="Normal"  MaxLength="3" HorizontalAlignment="Left" Style="{StaticResource GeneralTextBox}" Width="45" TextAlignment="Center"/>
+                    <TextBox  x:Name="PlacasL" FontWeight="Normal"  MaxLength="3" HorizontalAlignment="Left" Style="{StaticResource GeneralTextBox}" Width="45" TextAlignment="Center" FontSize="15" />
+                    <TextBlock  Text=" - "/>
+                    <TextBox  x:Name="PlacasN" FontWeight="Normal"  MaxLength="3" HorizontalAlignment="Left" Style="{StaticResource GeneralTextBox}" Width="45" TextAlignment="Center" FontSize="15" />
                 </DockPanel>
                 <TextBlock Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" FontSize="18">Conductor:</TextBlock>
-                <TextBox Grid.Row="1" Grid.Column="3"  x:Name="Conductor"  FontWeight="Normal" Style="{StaticResource GeneralTextBox}" HorizontalAlignment="Stretch" />
-
-
-
-
-
+                <TextBox Grid.Row="1" Grid.Column="3"  x:Name="Conductor"  FontWeight="Normal" Style="{StaticResource GeneralTextBox}" HorizontalAlignment="Stretch" Margin="10 0 30 0" Padding="3 0 3 0"/>
             </Grid>
+            
             <!--Tabla con productos-->
-            <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9"   Grid.Column="0" Grid.Row="1"  Grid.ColumnSpan="2" Margin="15 5 5 0" ScrollViewer.HorizontalScrollBarVisibility="Auto" MinWidth="690" >
+            <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9"  Grid.Row="1"  Grid.ColumnSpan="2" Margin="15 5 5 0" ScrollViewer.HorizontalScrollBarVisibility="Auto" MinWidth="690" >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="0.15*"/>
                     <RowDefinition Height="0.85*"/>
@@ -123,16 +111,13 @@
                                 <TextBlock Grid.Column="2" Width="60" Text="{Binding Path=pedido}" HorizontalAlignment="Center" TextAlignment="Center" FontSize="18" />
                                 <TextBox   Grid.Column="3" Style="{StaticResource GeneralTextBox}"  Width="60"  Text="{Binding Path=compraPorLocal}" HorizontalAlignment="Center" MaxLength="5" TextAlignment="Center"  />
                                 <Separator Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Bottom"  Background="#F7EBD7" Margin="0 0 0 0" Panel.ZIndex="1"/>
-
                             </Grid>
-
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListView>
             </Grid>
             <Separator  Grid.Row="2"  Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Top"  Background="Gray" Margin="15 0 5 0" Panel.ZIndex="1"/>
-
-            <Button Style="{StaticResource GeneralButton}"  Margin="5" Height="35" HorizontalAlignment="Center" VerticalAlignment="Top" Grid.ColumnSpan="2"  Width="130" Content="GUARDAR"  FontSize="15" x:Name="Guardar"  Grid.Row="2"  Grid.Column="0" />
+            <Button Style="{StaticResource GeneralButton}" Width="130" Content="GUARDAR"  FontSize="15" x:Name="Guardar" Grid.Row="2" Margin="10" Height="35"/>
         </Grid>
     </Border>
 </UserControl>

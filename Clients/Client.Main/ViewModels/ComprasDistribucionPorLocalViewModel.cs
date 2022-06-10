@@ -25,5 +25,44 @@ namespace Client.Main.ViewModels
                 Items.Add(new ComprasPorLocalViewModel(VentanaPrincipal, pedido));
             }            
         }
+
+        public ComprasDistribucionPorLocalViewModel(MainWindowViewModel VentanaPrincipal, ComprasModel compra)
+        {
+            this.VentanaPrincipal = VentanaPrincipal;
+            Items.Add(new CompraResultadoBusquedaViewModel(VentanaPrincipal, compra));
+            getEnvios(compra);
+
+        }
+
+
+        public async void getEnvios(ComprasModel compra) 
+        {
+            foreach (string codigo in compra.codPedidos)
+            {
+                try
+                {
+                    if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+                    {
+
+                        Task<object> re = conexion.CallServerMethod("ServidorGetPedidoConProductos", Arguments: new[] { codigo });
+                        await re;
+
+                        BindableCollection<EnvioModel> envios = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<EnvioModel>>(re.Result.ToString());
+                        Items.Add(new ComprasPorLocalResultadoBusquedaViewModel(VentanaPrincipal,envios[0]));
+
+                    }
+                    else if (MainWindowViewModel.Status == "Trabajando localmente")
+                    {
+                        BindableCollection<EnvioModel> envios = DbConnection.getEnvioConProductos(codigo+":"+compra.codigo);
+                        Items.Add(new ComprasPorLocalResultadoBusquedaViewModel(VentanaPrincipal, envios[0]));
+                    }
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message);
+                }
+            }
+        }
+
     }
 }

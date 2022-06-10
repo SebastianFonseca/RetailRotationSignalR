@@ -199,7 +199,7 @@ namespace Client.Main.ViewModels
             }
         }
 
-        public decimal Salario
+        public decimal? Salario
         {
             get { return NuevoEmpleado.salario; }
             set
@@ -257,7 +257,6 @@ namespace Client.Main.ViewModels
                          !string.IsNullOrWhiteSpace(NuevoEmpleado.password) &&
                          !string.IsNullOrWhiteSpace(PasswordAgain))
                         {
-
                         try
                         {
                             Task<object> re = conexion.CallServerMethod("ServidorCreateNuevoUsuario", Arguments: new[] { NuevoEmpleado });
@@ -284,25 +283,12 @@ namespace Client.Main.ViewModels
                             MessageBox.Show(e.Message);
                         }
 
-  
+                     }
+                     else
+                     {
+                        MessageBox.Show("Primero debe rellenar los datos.");
 
-
-                        //if (DbConnection.NuevoUsuario(Empleado: NuevoEmpleado))
-                        //{
-                        //    VentanaPrincipal.ActivateItem(new NuevoUsuarioViewModel(VentanaPrincipal));
-                        //}
-                        //else
-                        //{
-                        //    CC = "";
-                        //}
-                    }
-                        else
-                        {
-                            MessageBox.Show("Primero debe rellenar los datos.");
-
-                        }
-
-
+                     }
                  }
             }
             else

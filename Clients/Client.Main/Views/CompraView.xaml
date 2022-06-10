@@ -35,8 +35,8 @@
                 <ColumnDefinition Width="0.9*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="0.2*"/>
-                <RowDefinition Height="0.6*"/>
+                <RowDefinition Height="0.15*"/>
+                <RowDefinition Height="0.65*"/>
                 <RowDefinition Height="0.2*"/>
             </Grid.RowDefinitions>
             <!--Boton atras-->
@@ -140,7 +140,8 @@
                 </ListView>
             </Grid>
             <Separator  Grid.Row="2"  Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Top"  Background="Gray" Margin="15 0 5 0" Panel.ZIndex="1"/>
-            <Button Style="{StaticResource GeneralButton}"  Margin="5" Height="40" HorizontalAlignment="Center" Grid.ColumnSpan="2"  Width="130" Content="GUARDAR"  FontSize="15" x:Name="Guardar"  Grid.Row="2"  Grid.Column="0" />
+
+            <Button Style="{StaticResource GeneralButton}" Width="130" Content="GUARDAR"  FontSize="15" x:Name="Guardar" Grid.Row="2" Grid.Column="0" Margin="10" Height="35"  Grid.ColumnSpan="2"/>
         </Grid>
     </Border>
 </UserControl>

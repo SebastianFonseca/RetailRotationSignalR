@@ -17,7 +17,7 @@ namespace Client.Main.Models
         {
             return new EnvioModel
             {
-                codigo = v.codigo,
+                codigo = v.codigo + ":" + DateTime.Now.ToString("ddMMyyyyHHmm"),
                 productos = v.productos,
                 puntoVenta = v.puntoVenta,
                 responsable = v.responsable

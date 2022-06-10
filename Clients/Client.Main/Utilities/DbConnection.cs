@@ -1616,7 +1616,7 @@ namespace Client.Main.Utilities
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
                     BindableCollection<ProductoModel> productos = new BindableCollection<ProductoModel>();
-                    string cadena = $"select  producto.codigoproducto, producto.Nombre, producto.unidadventa, producto.unidadcompra, PedidoProducto.Cantidad, producto.factorconversion,ExistenciaProducto.Cantidad as ExistenciaCantidad from  producto join pedidoproducto on producto.codigoproducto = PedidoProducto.CodigoProducto join ExistenciaProducto on ExistenciaProducto.CodigoProducto = Producto.CodigoProducto where pedidoproducto.codigopedido = '{codigoPedido}' and CodigoExistencia = '{codigoPedido.Split(':')[0]}' and estado = 'Activo' order by ExistenciaProducto.CodigoProducto; ";
+                    string cadena = $"select  producto.codigoproducto, producto.Nombre, producto.unidadventa, producto.unidadcompra, PedidoProducto.Cantidad, PedidoProducto.CantidadEnviada, producto.factorconversion,ExistenciaProducto.Cantidad as ExistenciaCantidad from  producto join pedidoproducto on producto.codigoproducto = PedidoProducto.CodigoProducto join ExistenciaProducto on ExistenciaProducto.CodigoProducto = Producto.CodigoProducto where pedidoproducto.codigopedido = '{codigoPedido}' and CodigoExistencia = '{codigoPedido.Split(':')[0]}' and estado = 'Activo' order by ExistenciaProducto.CodigoProducto; ";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -1632,9 +1632,11 @@ namespace Client.Main.Utilities
                                 unidadCompra = reader["unidadcompra"].ToString(),
                                 factorConversion = decimal.Parse(reader["factorconversion"].ToString()),
                                 existencia = Int32.Parse(reader["ExistenciaCantidad"].ToString()),
-                                pedido = Int32.Parse(reader["cantidad"].ToString())
+                                pedido = Int32.Parse(reader["cantidad"].ToString()),
+                            
                             };
-
+                            //Int32.TryParse(reader["CantidadEnviada"].ToString(), out int a);
+                            //producto.compraPorLocal = a;
                             productos.Add(producto);
                         }
                     }
@@ -1696,7 +1698,7 @@ namespace Client.Main.Utilities
         /// Devuelve todas las instancias de pedidos registradas en la base de datos.
         /// </summary>
         /// <returns></returns>
-        public static BindableCollection<PedidoModel> getTodoPedidoConProductos()
+        public static BindableCollection<PedidoModel> getTodoPedido()
         {
             try
             {
@@ -1722,7 +1724,6 @@ namespace Client.Main.Utilities
                             ped.puntoVenta.codigo = reader["CodigoPuntoVenta"].ToString();
                             ped.puntoVenta.nombre = reader["name"].ToString();
 
-                            ped.productos = getProductoPedido(ped.codigo);
                             cPedido.Add(ped);
                         }
                     }
@@ -1946,7 +1947,9 @@ namespace Client.Main.Utilities
                             Int32.TryParse(reader["NumeroCanastillas"].ToString(), out int i);
                             comp.numeroCanastillas = i;
                             Int32.TryParse(reader["peso"].ToString(),out int a);
+                            comp.codPedidos = getPedidosCompra(comp.codigo);
                             comp.peso = a;
+                            
                             cCompras.Add(comp);
                         }
                     }
@@ -2051,9 +2054,7 @@ namespace Client.Main.Utilities
                             else
                             {
                                 producto.compra = null;
-                            }
-                            
-                            
+                            }                                                        
                             if (decimal.TryParse(reader["PrecioCompra"].ToString() , out decimal b ))
                             {
                                 producto.precioCompra = b;
@@ -2161,17 +2162,15 @@ namespace Client.Main.Utilities
 
         }
 
-
-
-
-
-
-
         #endregion
-
 
         #region Envios
 
+        /// <summary>
+        /// Regista en la base de datos la informacion relacionada con el nuevo documento de envio.
+        /// </summary>
+        /// <param name="envio"></param>
+        /// <returns></returns>
         public static bool NuevoEnvioBool(EnvioModel envio)
         {
 
@@ -2214,11 +2213,15 @@ namespace Client.Main.Utilities
                 {
                     return false;
                 }
-                MessageBox.Show(e.Message);
+                
             }
         }
 
-
+        /// <summary>
+        /// Inserta en la base de datos la cantidad envidada de cada producto
+        /// </summary>
+        /// <param name="envio"></param>
+        /// <returns></returns>
         public static string InsertarEnvioProducto(EnvioModel envio)
         {
             try
@@ -2227,13 +2230,15 @@ namespace Client.Main.Utilities
                 {
                     conn.Open();
                     ///Si la operacion no termino exitosamente en un intento anterior, la realiza desde cero borrando los registros insertados en el anterior intento.
-                    string cadena0 = $"update PedidoProducto set CantidadEnviada = null where CodigoPedido = '{envio.codigo}';";
+                    string cadena0 = $"delete from EnvioProducto where CodigoEnvio = '{envio.codigo}';";
                     SqlCommand cmd0 = new SqlCommand(cadena0, conn);
                     cmd0.ExecuteNonQuery();
                     foreach (ProductoModel producto in envio.productos)
                     {
-                        string cadena = $"update PedidoProducto set CantidadEnviada = @envio  WHERE CodigoProducto = '{producto.codigoProducto}' AND CodigoPedido = '{envio.codigo}';";
+                        string cadena = $"insert into EnvioProducto(CodigoEnvio,CodigoProducto,Cantidad) values (@codigoEnvio,@codigoProducto,@envio);";
                         SqlCommand cmd = new SqlCommand(cadena, conn);
+                        cmd.Parameters.AddWithValue("@codigoEnvio", envio.codigo);
+                        cmd.Parameters.AddWithValue("@codigoProducto", producto.codigoProducto);
                         cmd.Parameters.AddWithValue("@envio", string.IsNullOrEmpty(producto.compraPorLocal.ToString()) ? (object)DBNull.Value : producto.compraPorLocal);
                         cmd.ExecuteNonQuery();
                     }
@@ -2254,10 +2259,188 @@ namespace Client.Main.Utilities
             }
         }
 
+        /// <summary>
+        /// Obtiene los productos con la cantidad enviada para el documento de envio.
+        /// </summary>
+        /// <param name="codigoEnvio"></param>
+        /// <returns></returns>
+        public static BindableCollection<ProductoModel> getProductoEnvio(string codigoEnvio)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<ProductoModel> productos = new BindableCollection<ProductoModel>();
+
+                    string cadena = $"select producto.codigoproducto,producto.Nombre,producto.unidadventa,producto.unidadcompra,PedidoProducto.Cantidad,EnvioProducto.Cantidad as EnvioCantidad from producto join envioproducto on producto.codigoproducto = EnvioProducto.CodigoProducto join PedidoProducto on PedidoProducto.CodigoProducto = Producto.CodigoProducto where envioproducto.CodigoEnvio = '{codigoEnvio}' and CodigoPedido = '{codigoEnvio.Split(':')[0] + ":" + codigoEnvio.Split(':')[1]}' and estado = 'Activo' order by CodigoProducto;";
+
+
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        productos.Clear();
+                        while (reader.Read())
+                        {
+                            ProductoModel producto = new ProductoModel
+                            {
+                                codigoProducto = reader["codigoproducto"].ToString(),
+                                nombre = reader["nombre"].ToString(),
+                                unidadVenta = reader["unidadventa"].ToString().Substring(0,3),
+                                unidadCompra = reader["unidadcompra"].ToString().Substring(0,3),
+                                pedido = Int32.Parse(reader["Cantidad"].ToString()),
+
+                            };
+                            Int32.TryParse(reader["EnvioCantidad"].ToString(), out int a);
+                            producto.compraPorLocal = a;
+                            productos.Add(producto);
+                        }
+                    }
+                    conn.Close();
+                    return productos;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+
+        }
+
+        /// <summary>
+        /// Devuelve la instancia del pedido envio con los productos relacionados con el codigo de pedido dado como parametro.
+        /// </summary>
+        /// <param name="Caracteres"></param>
+        /// <returns></returns>
+        public static BindableCollection<EnvioModel> getEnvioConProductos(string Caracteres)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection < EnvioModel> cEnvios = new BindableCollection<EnvioModel>();
+                    string cadena = $" select * from envio join PuntoVenta on Envio.CodigoPuntoVenta = PuntoVenta.CodigoPuntoVenta where CodigoEnvio = '{Caracteres}'  ORDER BY CodigoEnvio;";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        cEnvios.Clear();
+                        while (reader.Read())
+                        {
+                            EnvioModel envio = new EnvioModel
+                            {
+                                codigo = reader["CodigoEnvio"].ToString(),
+                                nombreConductor = reader["NombreChofer"].ToString(),
+                                placasCarro = reader["PlacasCarro"].ToString()
+
+
+                            };
+                            envio.responsable.cedula = reader["CedulaEmpleado"].ToString();
+                            envio.fecha = DateTime.Parse(reader["FechaEnvio"].ToString());
+                            envio.puntoVenta.codigo = reader["CodigoPuntoVenta"].ToString();
+                            envio.puntoVenta.nombre = reader["Nombres"].ToString();
+                            envio.productos = getProductoEnvio(envio.codigo);
+                            cEnvios.Add(envio);
+                        }
+                    }
+                    conn.Close();
+                    return cEnvios;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Actualiza la informacion de un envio.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public static bool updateEnvio(EnvioModel envio) 
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"UPDATE Envio SET CodigoEnvio = @codigo, CedulaEmpleado = @empleado,CodigoPuntoVenta = @pv,FechaEnvio = @fecha,NombreChofer = @conductoR,PlacasCarro=@placas WHERE CodigoEnvio = '{envio.codigo}';";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codigo", Statics.PrimeraAMayuscula(envio.codigo));
+                    cmd.Parameters.AddWithValue("@empleado", Statics.PrimeraAMayuscula(envio.responsable.cedula));
+                    cmd.Parameters.AddWithValue("@pv", Statics.PrimeraAMayuscula(envio.puntoVenta.codigo));
+                    cmd.Parameters.AddWithValue("@fecha", envio.fechaEnvio.Date);
+                    cmd.Parameters.AddWithValue("@conductor", Statics.PrimeraAMayuscula(envio.nombreConductor));
+                    cmd.Parameters.AddWithValue("@placas", Statics.PrimeraAMayuscula(envio.placasCarro.ToUpper()));
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    string response = updateProductosEnvio(envio);
+                    if (response == "Y")
+                    {
+                        conn.Close();
+                        // registrarCambioLocal(NombreMetodoLocal: "getExistenciasConProductos", PK: $"{existencia.codigo}", NombreMetodoServidor: "ServidorNuevaExistencia", RespuestaExitosaServidor: "Se ha registrado el nuevo documento.", Tipo: "Insert");
+                        return true;
+                    }
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
+                {
+                    return false;
+                }
+                else
+                {
+                    return false;
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// Actualiza la informacion de la cantidad enviada de un producto.
+        /// </summary>
+        /// <param name="envio"></param>
+        /// <returns></returns>
+        public static string updateProductosEnvio(EnvioModel envio)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    conn.Open();
+                    foreach (ProductoModel producto in envio.productos)
+                    {
+                        string cadena = $"UPDATE  EnvioProducto SET Cantidad = @envio WHERE CodigoEnvio = @codigoEnvio AND CodigoProducto = @codigoProducto;";
+                        SqlCommand cmd = new SqlCommand(cadena, conn);
+                        cmd.Parameters.AddWithValue("@codigoEnvio", envio.codigo);
+                        cmd.Parameters.AddWithValue("@codigoProducto", producto.codigoProducto);
+                        cmd.Parameters.AddWithValue("@envio", string.IsNullOrEmpty(producto.compraPorLocal.ToString()) ? (object)DBNull.Value : producto.compraPorLocal);
+                        cmd.ExecuteNonQuery();
+                    }
+                    conn.Close();
+                    return "Y";
+                }
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
+                {
+                    return "Ya registrado.";
+                }
+                else
+                {
+                    return  e.Message;
+                }
+            }
+        }
+
 
         #endregion
-
-
 
         #region Clientes
 

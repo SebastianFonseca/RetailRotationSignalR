@@ -406,7 +406,7 @@ namespace ServerConsole
         /// <returns></returns>
         public BindableCollection<PedidoModel> ServidorGetTodoPedidoConProductos()
         {
-            return DbConnection.getTodoPedidoConProductos();
+            return DbConnection.getTodoPedido();
         }
         #endregion
 

@@ -150,7 +150,7 @@ namespace Client.Main.ViewModels
             }
         }
 
-        public decimal Salario
+        public decimal? Salario
         {
             get { return resultadoEmpleado.salario; }
             set

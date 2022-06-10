@@ -137,42 +137,44 @@ namespace Client.Main.ViewModels
 
         public async void Buscar()
         {
-            if (String.IsNullOrEmpty(BuscarTbx) && string.IsNullOrEmpty(BuscarTbxFecha))
+            try
             {
+                if (String.IsNullOrEmpty(BuscarTbx) && string.IsNullOrEmpty(BuscarTbxFecha))
+                {
                 MessageBox.Show("Rellene alguno de los campos.");
                 return;
-            }
-            else
-            {
-                if (Seleccionada == null)
-                {
-                    MessageBox.Show("Seleccione alguna de las busquedas");
-                    return;
                 }
-                if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+                else
                 {
-                    try
+                    if (Seleccionada == null)
                     {
+                        MessageBox.Show("Seleccione alguna de las busquedas");
+                        return;
+                    }
+                    if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+                    {
+
                         Task<object> re = conexion.CallServerMethod("ServidorgetProductoCompra", Arguments: new[] { Seleccionada.codigo });
                         await re;
 
                         Seleccionada.sumaPedidos = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ProductoModel>>(re.Result.ToString());
+                        VentanaPrincipal.ActivateItem(new ComprasDistribucionPorLocalViewModel(VentanaPrincipal, Seleccionada));
+                        
 
-
-                        VentanaPrincipal.ActivateItem(new CompraResultadoBusquedaViewModel(VentanaPrincipal, Seleccionada));
                     }
-                    catch (Exception e)
+                    else if (MainWindowViewModel.Status == "Trabajando localmente")
                     {
-                        MessageBox.Show(e.Message);
+                        Seleccionada.sumaPedidos = DbConnection.getProductoCompra(Seleccionada.codigo);
+                        VentanaPrincipal.ActivateItem(new ComprasDistribucionPorLocalViewModel(VentanaPrincipal, Seleccionada));
                     }
-                }
-                else if (MainWindowViewModel.Status == "Trabajando localmente")
-                {
-                    Seleccionada.sumaPedidos = DbConnection.getProductoCompra(Seleccionada.codigo);
-                    VentanaPrincipal.ActivateItem(new CompraResultadoBusquedaViewModel(VentanaPrincipal, Seleccionada));
 
-                }
+                    
 
+            }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
             }
         }
 

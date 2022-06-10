@@ -751,7 +751,7 @@ namespace ServerConsole.Utilities
                     cmd.Parameters.AddWithValue("@salario", Empleado.salario);
                     cmd.Parameters.AddWithValue("@telefono", Empleado.telefono);
                     cmd.Parameters.AddWithValue("@direccion", Empleado.direccion);
-                    cmd.Parameters.AddWithValue("@cargo", Empleado.cargo.Substring(37));
+                    cmd.Parameters.AddWithValue("@cargo", Empleado.cargo);
                     cmd.Parameters.AddWithValue("@contraseña", Statics.Hash(Empleado.password));
                     conn.Open();
                     cmd.ExecuteNonQuery();
@@ -1629,7 +1629,7 @@ namespace ServerConsole.Utilities
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
                     BindableCollection<ProductoModel> productos = new BindableCollection<ProductoModel>();
-                    string cadena = $"select  producto.codigoproducto, producto.Nombre, producto.unidadventa, producto.unidadcompra, PedidoProducto.Cantidad, producto.factorconversion,ExistenciaProducto.Cantidad as ExistenciaCantidad from  producto join pedidoproducto on producto.codigoproducto = PedidoProducto.CodigoProducto join ExistenciaProducto on ExistenciaProducto.CodigoProducto = Producto.CodigoProducto where pedidoproducto.codigopedido = '{codigoPedido}' and CodigoExistencia = '{codigoPedido.Split(':')[0]}' and estado = 'Activo' order by ExistenciaProducto.CodigoProducto; ";
+                    string cadena = $"select  producto.codigoproducto, producto.Nombre, producto.unidadventa, producto.unidadcompra, PedidoProducto.Cantidad, PedidoProducto.CantidadEnviada, producto.factorconversion,ExistenciaProducto.Cantidad as ExistenciaCantidad from  producto join pedidoproducto on producto.codigoproducto = PedidoProducto.CodigoProducto join ExistenciaProducto on ExistenciaProducto.CodigoProducto = Producto.CodigoProducto where pedidoproducto.codigopedido = '{codigoPedido}' and CodigoExistencia = '{codigoPedido.Split(':')[0]}' and estado = 'Activo' order by ExistenciaProducto.CodigoProducto; ";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -1645,7 +1645,9 @@ namespace ServerConsole.Utilities
                                 unidadCompra = reader["unidadcompra"].ToString(),
                                 factorConversion = decimal.Parse(reader["factorconversion"].ToString()),
                                 existencia = Int32.Parse(reader["ExistenciaCantidad"].ToString()),
-                                pedido = Int32.Parse(reader["cantidad"].ToString())
+                                pedido = Int32.Parse(reader["cantidad"].ToString()),
+                                compraPorLocal = Int32.Parse(reader["CantidadEnviada"].ToString())
+
                             };
 
                             productos.Add(producto);
@@ -1707,7 +1709,7 @@ namespace ServerConsole.Utilities
         /// Devuelve todas las instancias de pedidos registradas en la base de datos.
         /// </summary>
         /// <returns></returns>
-        public static BindableCollection<PedidoModel> getTodoPedidoConProductos()
+        public static BindableCollection<PedidoModel> getTodoPedido()
         {
             try
             {
@@ -2011,6 +2013,7 @@ namespace ServerConsole.Utilities
                             Int32.TryParse(reader["NumeroCanastillas"].ToString(), out int i);
                             comp.numeroCanastillas = i;
                             Int32.TryParse(reader["peso"].ToString(), out int a);
+                            comp.codPedidos = getPedidosCompra(comp.codigo);
                             comp.peso = a;
                             cCompras.Add(comp);
                         }

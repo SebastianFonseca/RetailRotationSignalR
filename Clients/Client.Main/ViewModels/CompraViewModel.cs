@@ -17,7 +17,6 @@ namespace Client.Main.ViewModels
         public BindableCollection<PedidoModel> pedidosSeleccionados = new BindableCollection<PedidoModel>();
         public ComprasModel compra;
         public ComprasModel compra2;
-        public string ctor = "";
 
 
         public CompraViewModel(MainWindowViewModel argVentana, BindableCollection<PedidoModel> pedidos)
@@ -32,7 +31,6 @@ namespace Client.Main.ViewModels
                 compra2 = new ComprasModel() { codigo = compra.codigo, fecha = compra.fecha };
                 DisplayName = "Compra";
                           
-                ctor = "New";
             }
             catch (Exception e )
             {
@@ -73,7 +71,6 @@ namespace Client.Main.ViewModels
             Productos = pCompra.sumaPedidos;
             DisplayName = "Compra";
             getProveedores();
-            ctor = "Update";
         }
 
         public BindableCollection<ProductoModel> Productos
@@ -151,17 +148,8 @@ namespace Client.Main.ViewModels
             {
                 Productos.Clear();
             }
-
-            if (ctor == "New")
-            {
-                VentanaPrincipal.ActivateItem(new CompraResultadoBusquedaViewModel(VentanaPrincipal, compra));
-            }
-            else if (ctor == "Update")
-            {
-                VentanaPrincipal.ActivateItem(new ListadoCompraViewModel(VentanaPrincipal));
-
-            }
-
+            
+                VentanaPrincipal.ActivateItem(new ListadoCompraViewModel(VentanaPrincipal));          
         }
 
         public override void CanClose(Action<bool> callback)

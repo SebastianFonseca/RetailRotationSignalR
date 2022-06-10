@@ -4,6 +4,7 @@ using Client.Main.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows;
 
 namespace Client.Main.ViewModels
 {
@@ -18,7 +19,7 @@ namespace Client.Main.ViewModels
         {
             VentanaPrincipal = argVentana;
             compra = pCompra;
-
+            DisplayName = "Compra";
         }
 
         public BindableCollection<ProductoModel> Productos
@@ -132,7 +133,7 @@ namespace Client.Main.ViewModels
             VentanaPrincipal.ActivateItem(new ListadoCompraViewModel(VentanaPrincipal));
         }
         public void Editar()
-        {
+        {            
             VentanaPrincipal.ActivateItem(new CompraViewModel(VentanaPrincipal, compra));
         }
 

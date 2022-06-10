@@ -39,7 +39,7 @@ namespace Client.Main.ViewModels
                 }
                 if (MainWindowViewModel.Status == "Trabajando localmente")
                 {
-                    Pedidos = DbConnection.getTodoPedidoConProductos();
+                    Pedidos = DbConnection.getTodoPedido();
                 }
             }
             catch (Exception e)
@@ -65,12 +65,30 @@ namespace Client.Main.ViewModels
         }
 
 
-        public void Crear()
+        public async void Crear()
         {
             foreach (PedidoModel item in Pedidos)
             {
                 if (item.isSelected)
                 {
+                    try
+                    {
+                        if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+                        {
+                            Task<object> re = conexion.CallServerMethod("ServidorgetProductoPedido", Arguments: new object[] { item.codigo });
+                            await re;
+                            item.productos = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ProductoModel>>(re.Result.ToString());
+                        }
+                        if (MainWindowViewModel.Status == "Trabajando localmente")
+                        {
+                            item.productos = DbConnection.getProductoPedido(item.codigo);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(e.Message);
+                    }
+
                     pedidosSeleccionados.Add(item);
                 }
             }

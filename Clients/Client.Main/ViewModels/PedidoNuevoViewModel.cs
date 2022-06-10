@@ -82,7 +82,7 @@ namespace Client.Main.ViewModels
             {
                 if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
                 {
-                    Task<object> re = conexion.CallServerMethod("getExistenciasConProductos", Arguments: new object[] { Existencia.codigo });
+                    Task<object> re = conexion.CallServerMethod("servidorGetExistenciasConProductos", Arguments: new object[] { Existencia.codigo });
                     await re;
                     BindableCollection<ExistenciasModel> seleccionada = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ExistenciasModel>>(re.Result.ToString());
                     VentanaPrincipal.ActivateItem(new PedidoEditarViewModel(VentanaPrincipal, seleccionada[0]));

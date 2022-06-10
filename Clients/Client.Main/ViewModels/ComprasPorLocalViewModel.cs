@@ -15,23 +15,28 @@ namespace Client.Main.ViewModels
     {
         public MainWindowViewModel VentanaPrincipal;
         public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
-        public PedidoModel pedido;
+       // public PedidoModel pedido;
         public EnvioModel envio = new EnvioModel();
+        public string ctor = "";
 
         public ComprasPorLocalViewModel(MainWindowViewModel argVentana, PedidoModel pedido)
         {
-            this.pedido = pedido;
+           // this.pedido = pedido;
             envio = pedido;
             VentanaPrincipal = argVentana;
             DisplayName = "Pedido de "+ pedido.puntoVenta.nombre;
+            ctor = "new";
         }
 
-        public void BackButton()
+        public ComprasPorLocalViewModel(MainWindowViewModel argVentana, EnvioModel envio)
         {
-            if (Productos != null)
-                Productos.Clear();
-            VentanaPrincipal.ActivateItem(new ComprasNuevoViewModel(VentanaPrincipal));
+            this.envio = envio;            
+            VentanaPrincipal = argVentana;
+            DisplayName = "Pedido de " + envio.puntoVenta.nombre;
+            ctor = "update";
         }
+
+
 
         public BindableCollection<ProductoModel> Productos
         {
@@ -47,32 +52,53 @@ namespace Client.Main.ViewModels
 
         public string Fecha
         {
-            get { return envio.fecha.ToShortDateString(); }
+            get { return envio.fechaEnvio.ToShortDateString(); }
         }
         public string Codigo  
         {
-            get { return pedido.codigo; }
+            get { return envio.codigo; }
         }
 
-        private string _placasN;
+        public bool flag = true;
+        public bool cambio1 = false;
+
+        private string _placasN = "";
 
         public string PlacasN
         {
-            get { return _placasN; }
+            get 
+            {
+                //return envio.placasCarro.Split('-')[1];
+                if (ctor == "update" && flag) { flag = false; return envio.placasCarro.Split('-')[1]; }
+                if (ctor == "update" && cambio1 == false) { return envio.placasCarro.Split('-')[1]; }
+                return _placasN;
+            }
             set
-            { 
+            {
+                cambio1 = true;
                 _placasN = value;
                 NotifyOfPropertyChange(() => PlacasN);
             }
         }
 
-        private string _placasL;
+        public bool flag2 = true;
+        public bool cambio = false;
+
+        private string _placasL = "";
 
         public string PlacasL
         {
-            get { return _placasL; }
+            get
+            {
+                //return envio.placasCarro.Split('-')[0];
+                
+                if (ctor == "update" && flag2) { flag2 = false; return envio.placasCarro.Split('-')[0]; }
+                if (ctor == "update" && cambio == false) { return envio.placasCarro.Split('-')[0]; }
+                return _placasL;
+            }
             set 
             {
+                cambio = true;
                 _placasL = value.ToUpper();
                 NotifyOfPropertyChange(() => PlacasL);
             }
@@ -81,7 +107,11 @@ namespace Client.Main.ViewModels
 
         public string Conductor
         {
-            get { return _conductor; }
+            get 
+            {
+                if (envio.nombreConductor != null) return envio.nombreConductor;
+                return _conductor;
+            }
             set
             {
                 Statics.PrimeraAMayuscula(value);
@@ -92,13 +122,58 @@ namespace Client.Main.ViewModels
         }
 
 
+        public override void CanClose(Action<bool> callback)
+        {
+            if (ctor == "update")
+            {
+                callback(true);
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(Conductor) & PlacasL.Length == 3 & PlacasN.Length == 3)
+            {
+                envio.placasCarro = PlacasL + "-" + PlacasN;
+
+                if (ctor == "new")
+                {
+                    if (DbConnection.NuevoEnvioBool(envio))
+                        MessageBox.Show("Datos del envio guardados");
+                }
+                callback(true);
+            }
+            else
+            {
+                MessageBox.Show("Complete los datos del conductor y las placas antes de cerrar el formulario");
+            }
+            
+        }
 
 
 
         public void Guardar()
         {
             envio.placasCarro = PlacasL + "-" + PlacasN;
-            DbConnection.NuevoEnvioBool(envio);
+            if ( !string.IsNullOrEmpty(Conductor) & envio.placasCarro.Length == 7  )
+            {                
+                if (ctor == "new")
+                {                    
+                    if ( DbConnection.NuevoEnvioBool(envio))
+                    MessageBox.Show("Datos del envio guardados");
+                }
+                if (ctor == "update")
+                {
+                   
+                    if(DbConnection.updateEnvio(envio))
+                        MessageBox.Show("Datos actualizados");
+                    VentanaPrincipal.ActivateItem(new ListadoCompraViewModel(VentanaPrincipal));
+                }
+                
+            }
+            else
+            {
+                MessageBox.Show("Asegurese de rellenas los campos correctamente");
+            }
+
         }
 
 
