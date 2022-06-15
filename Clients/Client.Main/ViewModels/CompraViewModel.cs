@@ -128,11 +128,11 @@ namespace Client.Main.ViewModels
 
                     Task<object> re = conexion.CallServerMethod("ServidorGetTodosProveedor", Arguments: new object[] { });
                     await re;
-                    _proveedores = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ProveedorModel>>(re.Result.ToString());
+                    Proveedores = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ProveedorModel>>(re.Result.ToString());
                 }
                 if (MainWindowViewModel.Status == "Trabajando localmente")
                 {
-                    _proveedores = DbConnection.getProveedores();
+                    Proveedores = DbConnection.getProveedores();
                 }
             }
             catch (Exception e)

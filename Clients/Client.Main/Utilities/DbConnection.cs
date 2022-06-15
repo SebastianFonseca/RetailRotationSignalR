@@ -1791,6 +1791,53 @@ namespace Client.Main.Utilities
         }
 
         /// <summary>
+        /// Inserta el registro del nuevo documento de compra, este metodo es necesario para el uso desde el servidor para evitar redundacia.
+        /// </summary>
+        /// <param name="compra"></param>
+        /// <returns></returns>
+        public static bool NuevaCompraBoolServidor(ComprasModel compra)
+        {
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"INSERT INTO Compras(CodigoCompra,CedulaEmpleado,FechaCompra) VALUES (@codigo,@empleado,@fecha);";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codigo", compra.codigo);
+                    cmd.Parameters.AddWithValue("@empleado", compra.responsable.cedula);
+                    cmd.Parameters.AddWithValue("@fecha", compra.fecha.Date);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    string response = InsertarRegistroCompraProducto(compra);
+                    string rta = InsertarPedidosCompra(compra);
+                    if (response == "Y" && rta == "Y")
+                    {
+                        conn.Close();
+                        return true;
+                    }
+                    /// Si algo fallo en la insercion de los productos y las cantidades se borra el registro del documento de compra para que pueda ser exitoso en proximos intentos.
+                    string cadena0 = $"delete from Compras where CodigoCompra = '{compra.codigo}';";
+                    SqlCommand cmd0 = new SqlCommand(cadena0, conn);
+                    cmd0.ExecuteNonQuery();
+
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
+                {
+                    return false;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        /// <summary>
         /// Inserta en la base de datos, en la tabla RegistroCompra los datos de dicho documento.
         /// </summary>
         /// <param name="codigo"></param>
@@ -2192,7 +2239,7 @@ namespace Client.Main.Utilities
                     if (response == "Y")
                     {
                         conn.Close();
-                       // registrarCambioLocal(NombreMetodoLocal: "getExistenciasConProductos", PK: $"{existencia.codigo}", NombreMetodoServidor: "ServidorNuevaExistencia", RespuestaExitosaServidor: "Se ha registrado el nuevo documento.", Tipo: "Insert");
+                        registrarCambioLocal(Tipo: "Insert", NombreMetodoLocal: "getEnvioConProductos", PK: $"{envio.codigo}", NombreMetodoServidor: "ServidorNuevoEnvioBool", RespuestaExitosaServidor: "true");
                         return true;
                     }
                     /// Si algo fallo en la insercion de los productos y las cantidades se borra el registro del documento de existencias para que pueda ser exitoso en proximos intentos.
@@ -2216,6 +2263,57 @@ namespace Client.Main.Utilities
                 
             }
         }
+       
+        /// <summary>
+        /// Regista en la base de datos la informacion relacionada con el nuevo documento de envio, coumple la mmisma funcion que NuevoEnvioBool, pero no gregistra el cambio local para evitar redundancia. .
+        /// </summary>
+        /// <param name="envio"></param>
+        /// <returns></returns>
+        public static bool NuevoEnvioBoolServidor(EnvioModel envio)
+        {
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"INSERT INTO Envio(CodigoEnvio,CedulaEmpleado,CodigoPuntoVenta,FechaEnvio,NombreChofer,PlacasCarro) VALUES (@codigo,@empleado,@pv,@fecha,@conductor,@placas);";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codigo", Statics.PrimeraAMayuscula(envio.codigo));
+                    cmd.Parameters.AddWithValue("@empleado", Statics.PrimeraAMayuscula(envio.responsable.cedula));
+                    cmd.Parameters.AddWithValue("@pv", Statics.PrimeraAMayuscula(envio.puntoVenta.codigo));
+                    cmd.Parameters.AddWithValue("@fecha", envio.fechaEnvio.Date);
+                    cmd.Parameters.AddWithValue("@conductor", Statics.PrimeraAMayuscula(envio.nombreConductor));
+                    cmd.Parameters.AddWithValue("@placas", Statics.PrimeraAMayuscula(envio.placasCarro.ToUpper()));
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    string response = InsertarEnvioProducto(envio);
+                    if (response == "Y")
+                    {
+                        conn.Close();
+                        return true;
+                    }
+                    /// Si algo fallo en la insercion de los productos y las cantidades se borra el registro del documento de existencias para que pueda ser exitoso en proximos intentos.
+                    string cadena0 = $"delete from Envio where CodigoEnvio = '{envio.codigo}';";
+                    SqlCommand cmd0 = new SqlCommand(cadena0, conn);
+                    cmd0.ExecuteNonQuery();
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
+                {
+                    return false;
+                }
+                else
+                {
+                    return false;
+                }
+
+            }
+        }
+
 
         /// <summary>
         /// Inserta en la base de datos la cantidad envidada de cada producto
@@ -2380,7 +2478,7 @@ namespace Client.Main.Utilities
                     if (response == "Y")
                     {
                         conn.Close();
-                        // registrarCambioLocal(NombreMetodoLocal: "getExistenciasConProductos", PK: $"{existencia.codigo}", NombreMetodoServidor: "ServidorNuevaExistencia", RespuestaExitosaServidor: "Se ha registrado el nuevo documento.", Tipo: "Insert");
+                        registrarCambioLocal(Tipo: "Update", NombreMetodoLocal: "getEnvioConProductos", PK: $"{envio.codigo}", NombreMetodoServidor: "ServidorupdateEnvio", RespuestaExitosaServidor: "true");
                         return true;
                     }
                     return false;
@@ -2773,7 +2871,35 @@ namespace Client.Main.Utilities
                 return false;
 
             }
-        } 
+        }
+
+        /// <summary>
+        /// Inserta en la base de datos el ID de un registro que no pudo ser actualizado.
+        /// </summary>
+        /// <param name="CodigoRegistro"></param>
+        /// <returns></returns>
+        public static bool registrarCambioSinGuardar(string CodigoRegistro)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"INSERT INTO RegistrosSinGuardar(ID) VALUES ('{CodigoRegistro}');";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+
+                Console.WriteLine(e.Message);
+                return false;
+
+            }
+        }
         #endregion
 
         /// <summary>

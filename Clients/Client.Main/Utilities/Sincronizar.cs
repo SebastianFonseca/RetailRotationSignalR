@@ -82,7 +82,7 @@ namespace Client.Main.Utilities
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
+                MessageBox.Show("Error descargando los datos del servidor: " + e.Message);
 
                 throw;
             }
@@ -92,11 +92,13 @@ namespace Client.Main.Utilities
 
         public static async Task<bool> actualizarRegistrosLocales()
         {
+            string codigo = "";
             try
             {
 
                 foreach (var regis in DbConnection.registrosLocalesPorActualizar())
                 {
+                    codigo = regis[0];
                     ///Instacia de la clase DbConnection que permite llamar los metodos necesarios por medio de la reflexion 
                     DbConnection conexionLocal = new DbConnection();
 
@@ -106,22 +108,33 @@ namespace Client.Main.Utilities
                     ///variable que almacena el objeto que retorna el llamado al metodo indicado en el registro
                     dynamic objeto = (dynamic)mi.Invoke(conexionLocal, new object[] { regis[3] });
 
-                    ///llama el metodo en el servidor responsable de insertar la instancia obteneida al ejecutar el metodo anterior.
-                    Task<object> resultado = conexion.CallServerMethod(regis[4], Arguments: new object[] { objeto[0] });
-                    await resultado;
-
-                    ///Si el cambio se registro correctamente en el servidor
-                    if (resultado.Result.ToString() == regis[5].Trim())
+                    ///Verifica si se obtuvo algun elemento de la base de datos, caso contrario se registra que no se pudo guardar en el servidor dichos datos.
+                    if (objeto.Count != 0)
                     {
-                        ///Se actualiza localmente el numero del ultimo registro actualizado.
-                        DbConnection.registroSubidoAlServidor(Int16.Parse(regis[0]));
+                        ///Llama el metodo en el servidor responsable de insertar la instancia obteneida al ejecutar el metodo anterior.
+                        Task<object> resultado = conexion.CallServerMethod(regis[4], Arguments: new object[] { objeto[0] });
+                        await resultado;
+
+                        ///Si el cambio se registro correctamente en el servidor
+                        if (resultado.Result.ToString() == regis[5].Trim())
+                        {
+                            ///Se actualiza localmente el numero del ultimo registro actualizado.
+                            DbConnection.registroSubidoAlServidor(Int16.Parse(regis[0]));
+                        }
+                       // return true;
                     }
-                    return true;
+                    else
+                    {
+                        DbConnection.registrarCambioSinGuardar(regis[0]);
+                    }
+
                 }
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
+                
+                MessageBox.Show("Error registrando los datos en la base de datos del servidor: " + e.Message);
+                DbConnection.registrarCambioSinGuardar(codigo);
                 return false;
                 throw;
 

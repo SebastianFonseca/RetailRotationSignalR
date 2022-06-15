@@ -122,7 +122,7 @@ namespace Client.Main.ViewModels
         }
 
 
-        public override void CanClose(Action<bool> callback)
+        public override async void CanClose(Action<bool> callback)
         {
             if (ctor == "update")
             {
@@ -134,10 +134,32 @@ namespace Client.Main.ViewModels
             {
                 envio.placasCarro = PlacasL + "-" + PlacasN;
 
-                if (ctor == "new")
+                try
                 {
-                    if (DbConnection.NuevoEnvioBool(envio))
-                        MessageBox.Show("Datos del envio guardados");
+                    if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+                    {
+                        if (ctor == "new")
+                        {
+                            Task<object> re = conexion.CallServerMethod("ServidorNuevoEnvioBool", Arguments: new[] { envio });
+                            await re;
+                            if (re.Result.ToString() == "true")
+                                MessageBox.Show("Datos del envio guardados");
+                        }
+
+                    }
+                    else if (MainWindowViewModel.Status == "Trabajando localmente")
+                    {
+
+                        if (ctor == "new")
+                        {
+                            if (DbConnection.NuevoEnvioBool(envio))
+                                MessageBox.Show("Datos del envio guardados");
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message);
                 }
                 callback(true);
             }
@@ -150,24 +172,52 @@ namespace Client.Main.ViewModels
 
 
 
-        public void Guardar()
+        public async void Guardar()
         {
             envio.placasCarro = PlacasL + "-" + PlacasN;
             if ( !string.IsNullOrEmpty(Conductor) & envio.placasCarro.Length == 7  )
-            {                
-                if (ctor == "new")
-                {                    
-                    if ( DbConnection.NuevoEnvioBool(envio))
-                    MessageBox.Show("Datos del envio guardados");
-                }
-                if (ctor == "update")
+            {
+                try
                 {
-                   
-                    if(DbConnection.updateEnvio(envio))
-                        MessageBox.Show("Datos actualizados");
-                    VentanaPrincipal.ActivateItem(new ListadoCompraViewModel(VentanaPrincipal));
+                    if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+                    {
+                        if (ctor == "new")
+                        {
+                            Task<object> re = conexion.CallServerMethod("ServidorNuevoEnvioBool", Arguments: new[] {envio});
+                            await re;                            
+                            if (re.Result.ToString() == "true")
+                            { MessageBox.Show("Datos del envio guardados"); }
+                        }
+                        if (ctor == "update")
+                        {
+                            Task<object> re = conexion.CallServerMethod("ServidorupdateEnvio", Arguments: new[] { envio });
+                            await re;
+                            if (re.Result.ToString() == "True")
+                                MessageBox.Show("Datos actualizados");
+                            VentanaPrincipal.ActivateItem(new ListadoCompraViewModel(VentanaPrincipal));
+                        }
+
+                    }
+                    else if (MainWindowViewModel.Status == "Trabajando localmente")
+                    {
+
+                        if (ctor == "new")
+                        {
+                            if (DbConnection.NuevoEnvioBool(envio))
+                                MessageBox.Show("Datos del envio guardados");
+                        }
+                        if (ctor == "update")
+                        {
+                            if (DbConnection.updateEnvio(envio))
+                                MessageBox.Show("Datos actualizados");
+                            VentanaPrincipal.ActivateItem(new ListadoCompraViewModel(VentanaPrincipal));
+                        }
+                    }
                 }
-                
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message);
+                }                
             }
             else
             {

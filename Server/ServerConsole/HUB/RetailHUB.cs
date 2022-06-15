@@ -482,13 +482,67 @@ namespace ServerConsole
           return  DbConnection.getComprasConProductos(Caracteres);
         }
 
-
+        /// <summary>
+        /// Devuelve una instancia de la clase ComprasModel con un unico producto en la propiedad productos que contiene la informacion relacionada con el registro de la compra del producto dado como parametro.
+        /// </summary>
+        /// <param name="codigoCompraCodigoProducto"></param>
+        /// <returns></returns>
+        public  BindableCollection<ComprasModel> ServidorgetRegistroCompra(string codigoCompraCodigoProducto)
+        {
+           return  DbConnection.getRegistroCompra(codigoCompraCodigoProducto);
+        }
 
 
 
 
 
         #endregion
+
+        #region Envios
+
+        /// <summary>
+        /// Regista en la base de datos la informacion relacionada con el nuevo documento de envio.
+        /// </summary>
+        /// <param name="envio"></param>
+        /// <returns></returns>
+        public string ServidorNuevoEnvioBool(EnvioModel envio)
+        {
+            return   DbConnection.NuevoEnvioBool(envio);
+        }
+
+        /// <summary>
+        /// Obtiene los productos con la cantidad enviada para el documento de envio.
+        /// </summary>
+        /// <param name="codigoEnvio"></param>
+        /// <returns></returns>
+        public BindableCollection<ProductoModel> ServidorgetProductoEnvio(string codigoEnvio)
+        {
+            return DbConnection.getProductoEnvio(codigoEnvio);
+        }
+
+        /// <summary>
+        /// Devuelve la instancia del pedido envio con los productos relacionados con el codigo de pedido dado como parametro.
+        /// </summary>
+        /// <param name="Caracteres"></param>
+        /// <returns></returns>
+
+        public BindableCollection<EnvioModel> ServidorgetEnvioConProductos(string Caracteres)
+        {
+            return DbConnection.getEnvioConProductos(Caracteres);
+        }
+
+        /// <summary>
+        /// Actualiza la informacion de un envio.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public string ServidorupdateEnvio(EnvioModel envio)
+        {
+            return DbConnection.updateEnvio(envio);
+        }
+
+        #endregion
+
 
         #region Clientes
         /// <summary>
@@ -523,6 +577,7 @@ namespace ServerConsole
         }
 
         #endregion
+
 
 
 
