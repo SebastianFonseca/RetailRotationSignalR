@@ -487,7 +487,7 @@ namespace ServerConsole
         /// </summary>
         /// <param name="codigoCompraCodigoProducto"></param>
         /// <returns></returns>
-        public  BindableCollection<ComprasModel> ServidorgetRegistroCompra(string codigoCompraCodigoProducto)
+        public  BindableCollection<ProductoModel> ServidorgetRegistroCompra(string codigoCompraCodigoProducto)
         {
            return  DbConnection.getRegistroCompra(codigoCompraCodigoProducto);
         }

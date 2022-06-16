@@ -23,6 +23,23 @@
             <Setter Property="Margin" Value="0"/>
             <Setter Property="FontSize" Value="40"/>
         </Style>
+        <Style TargetType="{x:Type ListBoxItem}">
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                        <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#F3E0D2" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <!--#endregion-->
     </UserControl.Resources>
     
@@ -74,7 +91,7 @@
                 </StackPanel>
                 <Separator Grid.Row="0" VerticalAlignment="Bottom" Background="Gray" Margin="0"/>
                 <!--    Listado de productos        -->
-                <ListView  KeyboardNavigation.TabNavigation="Cycle" ScrollViewer.VerticalScrollBarVisibility="Visible"  ScrollViewer.CanContentScroll="True" x:Name="Productos" Background="#F3E0D2" 
+                <ListView  KeyboardNavigation.TabNavigation="Cycle" ScrollViewer.VerticalScrollBarVisibility="Visible"  ScrollViewer.CanContentScroll="True" x:Name="Productos" Background="#F3E0D2"  x:Uid="p"
                            BorderThickness="0"  FlowDirection="LeftToRight" HorizontalAlignment="Stretch"  ItemsSource="{Binding Path=Productos}" Margin="0 3 0 3" Grid.Row="1" SelectedItem="{Binding Path=Seleccionado}"
                             SelectionMode="Single" >
                     <ListBox.ItemTemplate  >
@@ -93,7 +110,7 @@
                                 <TextBlock Grid.Column="2" FontSize="17" Width="60" Text="{Binding Path=sumaPedido}" HorizontalAlignment="Center" TextAlignment="Center"  />
                                 <TextBox   Grid.Column="3" FontSize="17" Width="60" Text="{Binding compra, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource GeneralTextBox}"    HorizontalAlignment="Center" MaxLength="5" TextAlignment="Right"  />
                                 <TextBox   Grid.Column="4" FontSize="17" Width="100" Style="{StaticResource GeneralTextBox}"   Text="{Binding Path=precioCompra, StringFormat={}${0:#.}, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" TextAlignment="Right" />
-                                <ComboBox  Grid.Column="5" FontSize="17" Width="115"  SelectedItem="{Binding Path=proveedor, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Bottom"  HorizontalAlignment="Right"  Template="{StaticResource GeneralComboBox}" MaxDropDownHeight="100" ItemsSource="{Binding ElementName=Productos, Path=DataContext.Proveedores}" x:Name="Proveedores">
+                                <ComboBox  Grid.Column="5" FontSize="17" Width="115"  SelectedItem="{Binding Path=proveedor, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Bottom" Template="{StaticResource GeneralComboBox}" HorizontalAlignment="Right"   MaxDropDownHeight="100" ItemsSource="{Binding Path=DataContext.Proveedores, ElementName=Productos, UpdateSourceTrigger=PropertyChanged}" x:Name="Proveedores">
                                     <ComboBox.ItemTemplate>
                                         <DataTemplate >
                                             <TextBlock>

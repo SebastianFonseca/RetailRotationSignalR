@@ -16,6 +16,9 @@ namespace Client.Main.Utilities
 
         public static async Task<bool> SincronizarRegistro()
         {
+            ///Varaible para almacenar el codigo del registro por si ocurre una excepcion y deber ser guardado como un registro sin actualizar
+
+            string codigo = "";
             try
             {
                 ///Obtiene de la base de datos en el servidor la informacion de los registros que han cambiado y deben ser actualizados en la base local para el evento en que el cliente deba funcionar localmente.
@@ -25,6 +28,7 @@ namespace Client.Main.Utilities
 
                 foreach (string[] registro in registroDeCambios)
                 {
+                    codigo = registro[0];
                     if (registro[1] == "Insert" | registro[1] == "Update")
                     {
                         ///Se llama al metodo especificado en los detalles en la posicion uno del arreglo.
@@ -58,6 +62,11 @@ namespace Client.Main.Utilities
                                     ///Actualiza en la base de datos local el ID del ultimo registro sincronizado.
                                     DbConnection.actualizarUltimoRegistro(int.Parse(registro[0]));
                                 }
+                                else
+                                {
+                                    ///Si no se inserto correcatamente se guarda el codigo del registro sin actualizar.
+                                     DbConnection.registrarCambioSinGuardar(codigo);
+                                }                                
                                 break;
                             }
                         }
@@ -76,6 +85,11 @@ namespace Client.Main.Utilities
                             ///Actualiza en la base de datos local el ID del ultimo registro sincronizado.
                             DbConnection.actualizarUltimoRegistro(int.Parse(registro[0]));
                         }
+                        else
+                        {
+                            ///Si no se inserto correcatamente se guarda el codigo del registro sin actualizar.
+                            DbConnection.registrarCambioSinGuardar(codigo); 
+                        }
                     }
                 }
                 return true;
@@ -83,7 +97,8 @@ namespace Client.Main.Utilities
             catch (Exception e)
             {
                 MessageBox.Show("Error descargando los datos del servidor: " + e.Message);
-
+                ///Si no se inserto correcatamente se guarda el codigo del registro sin actualizar.
+                DbConnection.registrarCambioSinGuardar(codigo);
                 throw;
             }
 
@@ -92,6 +107,7 @@ namespace Client.Main.Utilities
 
         public static async Task<bool> actualizarRegistrosLocales()
         {
+            ///Varaible para almacenar el codigo del registro por si ocurre una excepcion y deber ser guardado como un registro sin actualizar
             string codigo = "";
             try
             {

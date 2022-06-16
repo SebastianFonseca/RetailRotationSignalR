@@ -1923,7 +1923,7 @@ namespace ServerConsole.Utilities
                     cmd.ExecuteNonQuery();
                     conn.Close();
                     if (compra.codigo != null && compra.productos[0].codigoProducto != null)
-                        Registrar(Tipo: "Update", NombreMetodoServidor: "ServidorgetRegistroCompra", ClavePrimaria: $"{compra.codigo}+{compra.productos[0].codigoProducto}", TipoRetornoMetodoServidor: "ComprasModel[]", NombreMetodoCliente: "UpdateRegistroCompra", NombrePK: "codigo");
+                        Registrar(Tipo: "Update", NombreMetodoServidor: "ServidorgetRegistroCompra", ClavePrimaria: $"{compra.codigo}+{compra.productos[0].codigoProducto}", TipoRetornoMetodoServidor: "ProductoModel[]", NombreMetodoCliente: "UpdateRegistroCompraServidor", NombrePK: "codigoProducto");
 
                     return "true";
 
@@ -2193,35 +2193,32 @@ namespace ServerConsole.Utilities
         /// </summary>
         /// <param name="codigoCompra"></param>
         /// <returns></returns>
-        public static BindableCollection<ComprasModel> getRegistroCompra(string codigoCompraCodigoProducto)
+        public static BindableCollection<ProductoModel> getRegistroCompra(string codigoCompraCodigoProducto)
         {
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    BindableCollection<ComprasModel> compras = new BindableCollection<ComprasModel>();
+                    BindableCollection<ProductoModel> productos = new BindableCollection<ProductoModel>();
                     string cadena = $"select * from RegistroCompra where CodigoCompra = '{codigoCompraCodigoProducto.Split("+")[0]}' and CodigoProducto = '{codigoCompraCodigoProducto.Split("+")[1]}'";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
-                        compras.Clear();
+                        productos.Clear();
                         while (reader.Read())
                         {
-
-                            ComprasModel compra = new ComprasModel { codigo = reader["CodigoCompra"].ToString() };
-                            ProductoModel producto = new ProductoModel { codigoProducto = reader["CodigoProducto"].ToString() };
+                            ProductoModel producto = new ProductoModel { codigoProducto = reader["CodigoCompra"].ToString()+ "+" + reader["CodigoProducto"].ToString() };
                             if (Int32.TryParse(reader["CantidadComprada"].ToString(), out int a)) { producto.compra = a; }
                             else { producto.compra = null; }
                             if (decimal.TryParse(reader["PrecioCompra"].ToString(), out decimal b)) { producto.precioCompra = b; }
                             else { producto.precioCompra = null; }
                             producto.proveedor.cedula = reader["CedulaProveedor"].ToString();
-                            compra.productos.Add(producto);
-                            compras.Add(compra);
+                            productos.Add(producto);
                         }
                     }
                     conn.Close();
-                    return compras;
+                    return productos;
                 }
             }
             catch (Exception e)
@@ -2457,8 +2454,8 @@ namespace ServerConsole.Utilities
                     if (response == "Y")
                     {
                         conn.Close();
-                        Registrar(Tipo: "Update", NombreMetodoServidor: "ServidorgetEnvioConProductos", ClavePrimaria: envio.codigo, TipoRetornoMetodoServidor: "EnvioModel[]", NombreMetodoCliente: "updateEnvio", NombrePK: "codigo");
-
+                        Registrar(Tipo: "Update", NombreMetodoServidor: "ServidorgetEnvioConProductos", ClavePrimaria: envio.codigo, TipoRetornoMetodoServidor: "EnvioModel[]", NombreMetodoCliente: "updateEnvioServidor", NombrePK: "codigo");
+                        Console.WriteLine("Registrando update");
                         return "true";
                     }
                     return "false";

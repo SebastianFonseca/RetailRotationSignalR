@@ -1944,16 +1944,43 @@ namespace Client.Main.Utilities
                     if(compra.codigo != null && compra.productos[0].codigoProducto != null)
                         registrarCambioLocal(Tipo: "Update", NombreMetodoLocal: "getRegistroCompra", PK: $"{compra.codigo}+{compra.productos[0].codigoProducto}", NombreMetodoServidor: "ServidorUpdateRegistroCompra", RespuestaExitosaServidor: "true");
                     return true;
+                }
+            }
+            catch (Exception e)
+            {                
+                MessageBox.Show(e.Message);
 
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Actualiza la informacion del registro de compra del producto dado como parametro, este metodo es necesario para ser ejecutado desde el servidor.
+        /// </summary>
+        /// <param name="producto"></param>
+        /// <returns></returns>
+        public static bool UpdateRegistroCompraServidor(ProductoModel producto)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    conn.Open();
+                    string cadena = $"UPDATE RegistroCompra SET CedulaProveedor = @prov, CantidadComprada = @cant, PrecioCompra= @precio  WHERE CodigoCompra='{producto.codigoProducto.Split('+')[0]}' and CodigoProducto = '{producto.codigoProducto.Split('+')[1]}'";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@prov", string.IsNullOrEmpty(producto.proveedor.cedula) ? (object)DBNull.Value : producto.proveedor.cedula);
+                    cmd.Parameters.AddWithValue("@cant", string.IsNullOrEmpty(producto.compra.ToString()) ? (object)DBNull.Value : producto.compra);
+                    cmd.Parameters.AddWithValue("@precio", string.IsNullOrEmpty(producto.precioCompra.ToString()) ? (object)DBNull.Value : producto.precioCompra);
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                    return true;
                 }
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
 
-                MessageBox.Show(e.Message);
                 return false;
-
             }
         }
 
@@ -2459,6 +2486,52 @@ namespace Client.Main.Utilities
         /// <param name="model"></param>
         /// <returns></returns>
         public static bool updateEnvio(EnvioModel envio) 
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"UPDATE Envio SET CodigoEnvio = @codigo, CedulaEmpleado = @empleado,CodigoPuntoVenta = @pv,FechaEnvio = @fecha,NombreChofer = @conductoR,PlacasCarro=@placas WHERE CodigoEnvio = '{envio.codigo}';";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codigo", Statics.PrimeraAMayuscula(envio.codigo));
+                    cmd.Parameters.AddWithValue("@empleado", Statics.PrimeraAMayuscula(envio.responsable.cedula));
+                    cmd.Parameters.AddWithValue("@pv", Statics.PrimeraAMayuscula(envio.puntoVenta.codigo));
+                    cmd.Parameters.AddWithValue("@fecha", envio.fechaEnvio.Date);
+                    cmd.Parameters.AddWithValue("@conductor", Statics.PrimeraAMayuscula(envio.nombreConductor));
+                    cmd.Parameters.AddWithValue("@placas", Statics.PrimeraAMayuscula(envio.placasCarro.ToUpper()));
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    string response = updateProductosEnvio(envio);
+                    if (response == "Y")
+                    {
+                        conn.Close();
+                        registrarCambioLocal(Tipo: "Update", NombreMetodoLocal: "getEnvioConProductos", PK: $"{envio.codigo}", NombreMetodoServidor: "ServidorupdateEnvio", RespuestaExitosaServidor: "true");
+                        return true;
+                    }
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
+                {
+                    return false;
+                }
+                else
+                {
+                    return false;
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// Actualiza la informacion de un envio, metodo necesario para usar desde el servidro y evitar redundancia.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public static bool updateEnvioServidor(EnvioModel envio)
         {
             try
             {
