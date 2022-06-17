@@ -23,6 +23,12 @@ namespace Client.Main.Models
         public int? compraPorLocal { get; set; }
         public ProveedorModel proveedor { get; set; } = new ProveedorModel();
         public string estado { get; set; }
+        public DateTime? fechaDePago { get; set; }
+        public DateTime? fechaDeCompra { get; set; }
+
+        public string soportePago { get; set; }
+
+        public string codigoCompra { get; set; }
 
         /// <summary>
         /// warning si el precio de venta es cero en una venta

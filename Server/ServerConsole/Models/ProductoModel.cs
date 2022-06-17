@@ -16,7 +16,7 @@ namespace ServerConsole.Models
 
         public decimal iva { get; set; }
         public string codigoBarras { get; set; }
-        public int? existencia { get; set; } 
+        public int? existencia { get; set; }
 
         public int? pedido { get; set; }
 
@@ -27,10 +27,12 @@ namespace ServerConsole.Models
         public int? compraPorLocal { get; set; }
         public ProveedorModel proveedor { get; set; } = new ProveedorModel();
         public string estado { get; set; }
+        public DateTime fechaDePago { get; set; }
+
         /// <summary>
         /// warning si el precio de venta es cero en una venta
         /// </summary>
-        public decimal? precioVenta { get; set; } 
+        public decimal? precioVenta { get; set; }
         public decimal? precioCompra { get; set; }
 
     }

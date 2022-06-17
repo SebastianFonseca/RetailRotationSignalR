@@ -1,0 +1,164 @@
+﻿<UserControl x:Class="Client.Main.Views.ComprasPagosEditarView"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:local="clr-namespace:Client.Main.ViewModels"
+	xmlns:c="clr-namespace:Client.Main.Utilities"
+	xmlns:fa="http://schemas.fontawesome.io/icons/"
+    mc:Ignorable="d"
+	xmlns:cal="http://www.caliburnproject.org"
+	xmlns:sys="clr-namespace:System;assembly=mscorlib"             
+    d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <c:DecimalToStringConverter x:Key="Decimal"/>
+        <!--#region    -->
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="FontSize" Value="40"/>
+        </Style>
+        <Style TargetType="{x:Type ListViewItem}">
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                        <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#F3E0D2" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!--#endregion-->
+    </UserControl.Resources>
+    
+    <!--Color de fondo y borde curveado-->
+    <Border Background="#F3E0C2" CornerRadius="10" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        
+        <!--Grid principal, botones atras y guardar-->
+        <Grid ShowGridLines="False"  >
+            
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.1*"/>
+                <ColumnDefinition Width="0.9*"/>
+            </Grid.ColumnDefinitions>
+            
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.18*"/>
+                <RowDefinition Height="0.9*"/>
+                <RowDefinition Height="0.19*"/>
+            </Grid.RowDefinitions>
+            
+            <!--Boton atras-->     
+            <Button x:Name="BackButton" Grid.Column="0" Grid.Row="0"  Style="{StaticResource GeneralButton}"  Margin="5 0 1 1">
+                <fa:ImageAwesome Icon="ArrowLeft" Height="25"/>
+            </Button>
+            
+            <!--Parte superior, informacion general del documento de pedido-->
+            <Grid Grid.Row="0" Grid.Column="1" ShowGridLines="False" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.112*"/>
+                    <ColumnDefinition Width="0.2*"/>
+                    <ColumnDefinition Width="0.25*"/>
+                </Grid.ColumnDefinitions>
+                
+                <!--Col 0-->
+                <TextBlock  Grid.Column="0" HorizontalAlignment="Center">Resultados:</TextBlock>
+                <TextBlock  Grid.Column="1"  x:Name="Info"  FontWeight="Normal" Grid.ColumnSpan="2" HorizontalAlignment="Left" />
+                
+            </Grid>
+            
+            <!--Tabla con productos-->
+            <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9"   Grid.Column="0" Grid.Row="1"  Grid.ColumnSpan="2" Margin="15 5 5 0" ScrollViewer.HorizontalScrollBarVisibility="Auto" MinWidth="690" >
+                
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="0.15*"/>
+                    <RowDefinition Height="0.85*"/>
+                    <RowDefinition Height="0.2*"/>
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                
+                <Separator Grid.Row="0" VerticalAlignment="Top" Background="Gray" Margin="0 0 0 0" Panel.ZIndex="1" Grid.ColumnSpan="3"/>
+                
+                <!--Encabezado de la tabla con el nombre de las columnas-->
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Background="#F3E0D2" Grid.ColumnSpan="3">
+                    <TextBlock Text="Und."      Margin="6 0 0 0"/>
+                    <TextBlock Text="Producto"  Margin="6 0 0 0"/>
+                    <TextBlock Text="Fecha"    Margin="125 0 0 0"/>
+                    <TextBlock Text="Cantidad"  Margin="6 0 0 0"/>
+                    <TextBlock Text="Precio"    Margin="6 0 0 0"/>
+                    <TextBlock Text="Proveedor" Margin="35 0 0 0"/>
+                </StackPanel>
+                
+                <Separator Grid.Row="0" VerticalAlignment="Bottom" Background="Gray" Margin="0"  Grid.ColumnSpan="3"/>
+                
+                <!--    Listado de productos        -->
+                <ListView  KeyboardNavigation.TabNavigation="Cycle" ScrollViewer.VerticalScrollBarVisibility="Visible"  ScrollViewer.CanContentScroll="True" x:Name="Productos" Background="#F3E0D2" 
+                           BorderThickness="0"  FlowDirection="LeftToRight" HorizontalAlignment="Stretch"  ItemsSource="{Binding Path=Productos}" Margin="0 3 0 3" Grid.Row="1"  Grid.ColumnSpan="3" >
+                    <ListBox.ItemTemplate >
+                        <DataTemplate >
+                            
+                            <Grid Focusable="False" ShowGridLines="False" Height="30">
+                                
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="40"/>
+                                    <ColumnDefinition Width="190"/>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="40"/>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="120"/>
+                                    <ColumnDefinition Width="60"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <TextBlock Grid.Column="0" FontSize="16" Text="{Binding Path=unidadCompra}"    HorizontalAlignment="Center" />
+                                <TextBlock Grid.Column="1" FontSize="16" Text="{Binding Path=nombre}"   HorizontalAlignment="Left" Margin="20 0 0 0"/>
+                                <TextBlock Grid.Column="2" FontSize="16" Width="60"  Text="{Binding Path=fechaDeCompra, StringFormat=dd-MM}" HorizontalAlignment="Center" TextAlignment="Center"  />
+                                <TextBlock Grid.Column="3" FontSize="16" Width="60"  Text="{Binding Path=compra}" HorizontalAlignment="Center"  TextAlignment="Center"  />
+                                <TextBlock Grid.Column="4" FontSize="16" Width="100" Text="{Binding Path=precioCompra, StringFormat={}${0:0,0}}" HorizontalAlignment="Center" TextAlignment="Center" />
+                                <TextBlock Grid.Column="5" FontSize="16" Width="115" HorizontalAlignment="Center" TextAlignment="Center" >
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat=" {0} {1}">
+                                            <Binding Path="proveedor.firstName"/>
+                                            <Binding Path="proveedor.lastName"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                                <Button Grid.Column="6" Style="{StaticResource GeneralButton}" FontWeight="Normal" FontSize="12" Width="60" Margin="0 -5 0 0" >Pagar</Button>
+                                <Separator Grid.Column="0" Grid.ColumnSpan="7" VerticalAlignment="Bottom"  Background="#F7EBD7" Margin="0 0 0 0" Panel.ZIndex="1"/>
+                            </Grid>
+
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListView>
+                
+                <Separator  Grid.Row="2"  Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Top"  Background="Gray" Margin="15 0 5 0" Panel.ZIndex="1"/>
+                
+                <Button Grid.Row="2" Grid.Column="2" FontSize="12" Content="Pagar Total" Style="{StaticResource GeneralButton}" Margin="0" Width="100"/>
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Total:" />
+                <TextBlock Grid.Row="2" Grid.Column="1"  Text="{Binding StringFormat={}${0:#,#}, Path=Total}"/>
+
+
+            </Grid>
+
+            <Button Style="{StaticResource GeneralButton}" Width="130" Content="EDITAR"  FontSize="15" x:Name="Editar" Grid.Row="2" Grid.Column="0" Margin="10" Height="35"  Grid.ColumnSpan="2"/>
+
+        </Grid>
+    </Border>
+</UserControl>

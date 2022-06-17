@@ -318,6 +318,50 @@ namespace Client.Main.Utilities
         }
 
 
+        /// <summary>
+        /// Devuielve los productos con coincidencias de los carateres dados como parametro y los nombres de los productos
+        /// </summary>
+        /// <param name="caracteres"></param>
+        /// <returns></returns>
+        public static BindableCollection<ProductoModel> getProductos(string caracteres)
+        {
+
+            productos.Clear();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"SELECT *  FROM Producto where Nombre like '%{caracteres}%' ORDER BY Nombre ";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            ProductoModel producto = new ProductoModel
+                            {
+                                codigoProducto = reader["CodigoProducto"].ToString(),
+                                nombre = reader["Nombre"].ToString(),
+                                unidadCompra = reader["UnidadCompra"].ToString(),
+                                unidadVenta = reader["UnidadVenta"].ToString(),
+                                precioVenta = Convert.ToDecimal(reader["PrecioVenta"].ToString())                                
+                            };
+                            productos.Add(producto);
+                        }
+                    }
+                    conn.Close();
+                    return productos;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+
+        }
+
+
 
         #endregion
 
@@ -589,6 +633,53 @@ namespace Client.Main.Utilities
         /// </summary>
         /// <param name="cedula"></param>
         /// <returns></returns>
+
+        /// <summary>
+        /// Obtiene los proveedores
+        /// </summary>
+        /// <param name="Caracteres"></param>
+        /// <returns></returns>
+        public static BindableCollection<ProveedorModel> getNombresProveedores(string Caracteres)
+        {
+
+            try
+            {
+                BindableCollection<ProveedorModel> proveedores = new BindableCollection<ProveedorModel>();
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"SELECT Distinct * FROM Proveedor WHERE (( Nombres like '%{Caracteres}%' ) or ( Apellidos like '%{Caracteres}%' )) and Estado = 'Activo' ORDER BY Nombres ";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+
+                    using (SqlDataReader reader0 = cmd.ExecuteReader())
+                    {
+                        while (reader0.Read())
+                        {
+                            ProveedorModel proveedor = new ProveedorModel
+                            {
+                                cedula = reader0["CedulaProveedor"].ToString(),
+                                firstName = reader0["Nombres"].ToString(),
+                                lastName = reader0["Apellidos"].ToString(),
+                                telefono = reader0["Telefono"].ToString(),
+                                ciudad = reader0["Ciudad"].ToString(),
+                                direccion = reader0["Direccion"].ToString()
+                            };
+                            proveedores.Add(proveedor);
+                        }
+                    }
+
+                    conn.Close();
+                    return proveedores;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+
+
         public static bool deleteProveedor(string Cedula)
         {
             try
@@ -2191,7 +2282,6 @@ namespace Client.Main.Utilities
 
         }
 
-
         /// <summary>
         /// Devuelve una instancia de la clase ComprasModel con un unico producto en la propiedad productos que contiene la informacion relacionada con el registro de la compra del producto dado como parametro.
         /// </summary>
@@ -2235,6 +2325,63 @@ namespace Client.Main.Utilities
             }
 
         }
+
+
+        /// <summary>
+        /// Retorna una losta de objetos de la clase ProductoModel con los registros de compra del proveedor o el producto dado como parametro.
+        /// /// </summary>
+        /// <param name="codigoProductoCedula"></param>
+        /// <returns></returns>
+        public static BindableCollection<ProductoModel> getRegistroCompraCodigoCedula(string codigoProductoCedula)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<ProductoModel> productos = new BindableCollection<ProductoModel>();
+                    string cadena = $"select top 100 RegistroCompra.CodigoCompra, Producto.CodigoProducto, Proveedor.CedulaProveedor, RegistroCompra.CantidadComprada, RegistroCompra.PrecioCompra, Producto.UnidadCompra, compras.fechacompra, RegistroCompra.FechaPagado, RegistroCompra.Soporte, Proveedor.Nombres, Proveedor.Apellidos, Producto.Nombre from RegistroCompra left join Proveedor on RegistroCompra.CedulaProveedor = Proveedor.CedulaProveedor left join Producto on RegistroCompra.CodigoProducto = Producto.CodigoProducto left join Compras on compras.codigocompra = registrocompra.codigocompra where Proveedor.CedulaProveedor = '{codigoProductoCedula}' or Producto.CodigoProducto = '{codigoProductoCedula}' ";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        productos.Clear();
+                        while (reader.Read())
+                        {
+
+
+
+                            ProductoModel producto = new ProductoModel { 
+                            codigoProducto = reader["CodigoProducto"].ToString(),
+                            nombre = reader["Nombre"].ToString()};
+                            producto.codigoCompra = reader["CodigoCompra"].ToString();
+                            producto.proveedor.cedula = reader["CedulaProveedor"].ToString();
+                            producto.proveedor.firstName = reader["Nombres"].ToString();
+                            producto.proveedor.lastName = reader["Apellidos"].ToString();
+                            producto.unidadCompra = reader["UnidadCompra"].ToString().Substring(0,3);                                                                                                               
+                            if (DateTime.TryParse(reader["fechaCompra"].ToString(), out DateTime fecha)){producto.fechaDeCompra = fecha;}
+                            if(DateTime.TryParse(reader["FechaPagado"].ToString(), out DateTime date))producto.fechaDePago = date;
+                            producto.soportePago = reader["Soporte"].ToString();
+                            if (Int32.TryParse(reader["CantidadComprada"].ToString(), out int a)) { producto.compra = a; }
+                            else { producto.compra = null; }
+                            if (decimal.TryParse(reader["PrecioCompra"].ToString(), out decimal b)) { producto.precioCompra = b; }
+                            else { producto.precioCompra = null; }
+                            productos.Add(producto);
+                        }
+                    }
+                    conn.Close();
+                    return productos;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+
+        }
+
+
+
 
         #endregion
 

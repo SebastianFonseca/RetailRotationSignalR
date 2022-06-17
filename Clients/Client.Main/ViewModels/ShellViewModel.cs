@@ -5,6 +5,8 @@ using Client.Main.Utilities;
 using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.ComponentModel;
+using System.Globalization;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -59,7 +61,8 @@ namespace Client.Main.ViewModels
 
         public ShellViewModel()
         {
-
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("es-Co");
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("es-Co");
         }
 
         bool flag2 = true;
