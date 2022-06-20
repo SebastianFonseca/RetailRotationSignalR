@@ -91,7 +91,7 @@
                 </StackPanel>
                 <Separator Grid.Row="0" VerticalAlignment="Bottom" Background="Gray" Margin="0"/>
                 <!--    Listado de productos        -->
-                <ListView  KeyboardNavigation.TabNavigation="Cycle" ScrollViewer.VerticalScrollBarVisibility="Visible"  ScrollViewer.CanContentScroll="True" x:Name="Productos" Background="#F3E0D2"  x:Uid="p"
+                <ListView  KeyboardNavigation.TabNavigation="Cycle" ScrollViewer.VerticalScrollBarVisibility="Visible"  ScrollViewer.CanContentScroll="True" x:Name="Productos" Background="#F3E0D2"  
                            BorderThickness="0"  FlowDirection="LeftToRight" HorizontalAlignment="Stretch"  ItemsSource="{Binding Path=Productos}" Margin="0 3 0 3" Grid.Row="1" SelectedItem="{Binding Path=Seleccionado}"
                             SelectionMode="Single" >
                     <ListBox.ItemTemplate  >
@@ -151,7 +151,6 @@
                                     <Setter Property="IsSelected" Value="True" />
                                 </Trigger>
                             </Style.Triggers>
-
                         </Style>
                     </ListBox.ItemContainerStyle>
                 </ListView>

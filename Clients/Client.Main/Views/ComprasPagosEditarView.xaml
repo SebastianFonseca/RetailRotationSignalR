@@ -111,12 +111,12 @@
                 
                 <!--    Listado de productos        -->
                 <ListView  KeyboardNavigation.TabNavigation="Cycle" ScrollViewer.VerticalScrollBarVisibility="Visible"  ScrollViewer.CanContentScroll="True" x:Name="Productos" Background="#F3E0D2" 
-                           BorderThickness="0"  FlowDirection="LeftToRight" HorizontalAlignment="Stretch"  ItemsSource="{Binding Path=Productos}" Margin="0 3 0 3" Grid.Row="1"  Grid.ColumnSpan="3" >
+                           BorderThickness="0"  FlowDirection="LeftToRight" HorizontalAlignment="Stretch"  ItemsSource="{Binding Path=Productos}" Margin="0 3 0 3" Grid.Row="1"  Grid.ColumnSpan="3" SelectedItem="{Binding Path=Seleccionado, UpdateSourceTrigger=PropertyChanged}" >
                     <ListBox.ItemTemplate >
                         <DataTemplate >
-                            
+
                             <Grid Focusable="False" ShowGridLines="False" Height="30">
-                                
+
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="40"/>
                                     <ColumnDefinition Width="190"/>
@@ -126,7 +126,7 @@
                                     <ColumnDefinition Width="120"/>
                                     <ColumnDefinition Width="60"/>
                                 </Grid.ColumnDefinitions>
-                                
+
                                 <TextBlock Grid.Column="0" FontSize="16" Text="{Binding Path=unidadCompra}"    HorizontalAlignment="Center" />
                                 <TextBlock Grid.Column="1" FontSize="16" Text="{Binding Path=nombre}"   HorizontalAlignment="Left" Margin="20 0 0 0"/>
                                 <TextBlock Grid.Column="2" FontSize="16" Width="60"  Text="{Binding Path=fechaDeCompra, StringFormat=dd-MM}" HorizontalAlignment="Center" TextAlignment="Center"  />
@@ -140,12 +140,38 @@
                                         </MultiBinding>
                                     </TextBlock.Text>
                                 </TextBlock>
-                                <Button Grid.Column="6" Style="{StaticResource GeneralButton}" FontWeight="Normal" FontSize="12" Width="60" Margin="0 -5 0 0" >Pagar</Button>
+                                <Button Grid.Column="6" Style="{StaticResource GeneralButton}" FontWeight="Normal" FontSize="12" Width="60" Margin="0 -5 0 0" cal:Message.Attach="[Event Click] = [Action Click]"  >Pagar</Button>
                                 <Separator Grid.Column="0" Grid.ColumnSpan="7" VerticalAlignment="Bottom"  Background="#F7EBD7" Margin="0 0 0 0" Panel.ZIndex="1"/>
                             </Grid>
-
                         </DataTemplate>
                     </ListBox.ItemTemplate>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListBoxItem}">
+                            <Setter Property="IsSelected" Value="{Binding isSelected, Mode=TwoWay}" />
+                            <Setter Property="IsTabStop" Value="False"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                        <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
+                                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#F3E0D2" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                    <Setter Property="IsSelected" Value="True" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+
+
                 </ListView>
                 
                 <Separator  Grid.Row="2"  Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Top"  Background="Gray" Margin="15 0 5 0" Panel.ZIndex="1"/>

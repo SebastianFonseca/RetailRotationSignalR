@@ -5,8 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:pwbx="clr-namespace:Client.Main"
         xmlns:gif="http://wpfanimatedgif.codeplex.com"
-                     xmlns:c="clr-namespace:Client.Main.Utilities"
-
+        xmlns:c="clr-namespace:Client.Main.Utilities"
         mc:Ignorable="d"
         Title="  " Height="400" Width="247.2" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
         

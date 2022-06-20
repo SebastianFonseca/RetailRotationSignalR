@@ -38,6 +38,7 @@ namespace Client.Main.ViewModels
 
         public void NuevoRecibido()
         {
+            VentanaPrincipal.ActivateItem(new RecibidoNuevoViewModel(VentanaPrincipal));
 
         }
 

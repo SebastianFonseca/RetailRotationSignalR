@@ -61,8 +61,7 @@ namespace Client.Main.ViewModels
 
         public ShellViewModel()
         {
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("es-Co");
-            Thread.CurrentThread.CurrentUICulture = new CultureInfo("es-Co");
+
         }
 
         bool flag2 = true;

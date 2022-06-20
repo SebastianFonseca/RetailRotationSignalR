@@ -21,6 +21,11 @@ namespace Client.Main.Models
         public int? sumaPedido { get; set; }
         public int? compra { get; set; }
         public int? compraPorLocal { get; set; }
+
+        /// <summary>
+        /// Agregar a la clase en el servidor
+        /// </summary>
+        public int? recibido { get; set; } = null;
         public ProveedorModel proveedor { get; set; } = new ProveedorModel();
         public string estado { get; set; }
         public DateTime? fechaDePago { get; set; }

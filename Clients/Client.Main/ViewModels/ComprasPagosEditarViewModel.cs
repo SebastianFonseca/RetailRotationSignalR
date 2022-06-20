@@ -16,6 +16,7 @@ namespace Client.Main.ViewModels
         MainWindowViewModel VentanaPrincipal;
         public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
         public BindableCollection<PedidoModel> pedidosSeleccionados = new BindableCollection<PedidoModel>();
+        private readonly IWindowManager window = new WindowManager();
 
         public ComprasPagosEditarViewModel(MainWindowViewModel argVentana, string codigoCedula)
         {
@@ -25,7 +26,7 @@ namespace Client.Main.ViewModels
         }
 
 
-        public async void getRegistros(string caracteres) 
+        public async void getRegistros(string caracteres)
         {
 
 
@@ -33,8 +34,8 @@ namespace Client.Main.ViewModels
             foreach (ProductoModel producto in Productos)
             {
                 producto.precioCompra = producto.precioCompra;
-                if(producto.precioCompra != null & producto.compra != null)
-                Total = (decimal)(Total + (producto.precioCompra * producto.compra));
+                if (producto.precioCompra != null & producto.compra != null)
+                    Total = (decimal)(Total + (producto.precioCompra * producto.compra));
             }
 
         }
@@ -43,8 +44,8 @@ namespace Client.Main.ViewModels
         public decimal Total
         {
             get { return _total; }
-            set 
-            { 
+            set
+            {
                 _total = value;
                 NotifyOfPropertyChange(() => Total);
             }
@@ -69,8 +70,8 @@ namespace Client.Main.ViewModels
         public string Info
         {
             get { return _info; }
-            set 
-            { 
+            set
+            {
                 _info = value;
                 NotifyOfPropertyChange(() => Info);
             }
@@ -87,6 +88,26 @@ namespace Client.Main.ViewModels
             VentanaPrincipal.ActivateItem(new ComprasPagosViewModel(VentanaPrincipal));
         }
 
+        public void Click()
+        {
+            window.ShowDialog(new ComprasPagosPagarViewModel(Seleccionado));
+        }
+
+        private ProductoModel _seleccionado;
+        public ProductoModel Seleccionado
+        {
+            get => _seleccionado;
+            set
+            {
+                if (value != null)
+                {
+                    _seleccionado = value;
+                    NotifyOfPropertyChange(() => Seleccionado);
+
+                }
+
+            }
+        }
 
 
     }

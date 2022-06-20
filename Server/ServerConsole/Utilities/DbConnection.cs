@@ -452,7 +452,7 @@ namespace ServerConsole.Utilities
         /// <param name="idProveedor"></param>
         /// <param name="productos"></param>
         /// <returns></returns>
-        public static string insertProductoProveedor(string idProveedor, BindableCollection<ProductoMdel> productos)
+        public static string insertProductoProveedor(string idProveedor, BindableCollection<ProductoModel> productos)
         {
             try
             {

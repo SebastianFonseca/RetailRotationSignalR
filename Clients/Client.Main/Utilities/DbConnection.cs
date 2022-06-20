@@ -361,7 +361,44 @@ namespace Client.Main.Utilities
 
         }
 
+        /// <summary>
+        /// Devuielve las unidades de venta y de compra de la lista de productos dados como parametros.
+        /// </summary>
+        /// <param name="caracteres"></param>
+        /// <returns></returns>
+        public static BindableCollection<ProductoModel> getUnidadVentaCompraProductos(BindableCollection<ProductoModel> productos)
+        {
 
+            productos.Clear();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+
+                    foreach (ProductoModel producto in productos)
+                    {
+                        string cadena = $"SELECT *  FROM Producto where CodigoProducto = '{producto.codigoProducto}'";
+                        SqlCommand cmd = new SqlCommand(cadena, conn);
+                        conn.Open();
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            reader.Read();
+                            producto.unidadCompra = reader["UnidadCompra"].ToString();
+                            producto.unidadVenta = reader["UnidadVenta"].ToString();                            
+                        }
+                        conn.Close();
+                    }
+
+                    return productos;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+
+        }
 
         #endregion
 
@@ -2756,6 +2793,156 @@ namespace Client.Main.Utilities
                 }
             }
         }
+
+        /// <summary>
+        /// Devuelve todas las instancias de envios por local registradas en la base de datos.
+        /// </summary>
+        /// <param name="Caracteres"></param>
+        /// <returns></returns>
+        public static BindableCollection<EnvioModel> getTodosLosEnviosPorLocal(string ccEmpleado)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<EnvioModel> cEnvios = new BindableCollection<EnvioModel>();
+                    string cadena = $" select envio.CodigoEnvio, envio.NombreChofer,envio.CodigoPuntoVenta,envio.CedulaEmpleado,envio.FechaEnvio,Envio.PlacasCarro,Puntoventa.Nombres as NombrePuntoVenta,Empleado.Nombres,Empleado.Apellidos from envio join PuntoVenta on Envio.CodigoPuntoVenta = PuntoVenta.CodigoPuntoVenta join Empleado on Empleado.CedulaEmpleado = '{ccEmpleado}'  ORDER BY CodigoEnvio;";
+                                    
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        cEnvios.Clear();
+                        while (reader.Read())
+                        {
+                            EnvioModel envio = new EnvioModel
+                            {
+                                codigo = reader["CodigoEnvio"].ToString(),
+                                nombreConductor = reader["NombreChofer"].ToString(),
+                                placasCarro = reader["PlacasCarro"].ToString()
+
+
+                            };
+                            envio.responsable.cedula = reader["CedulaEmpleado"].ToString();
+                            envio.responsable.firstName = reader["Nombres"].ToString();
+                            envio.responsable.lastName = reader["Apellidos"].ToString();
+                            envio.fecha = DateTime.Parse(reader["FechaEnvio"].ToString());
+                            envio.puntoVenta.codigo = reader["CodigoPuntoVenta"].ToString();
+                            envio.puntoVenta.nombre = reader["NombrePuntoVenta"].ToString();                            
+                            cEnvios.Add(envio);
+                        }
+                    }
+                    conn.Close();
+                    return cEnvios;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+
+
+        #endregion
+
+        #region Recibidos
+
+        /// <summary>
+        /// Regista en la base de datos la informacion relacionada con el nuevo documento de envio.
+        /// </summary>
+        /// <param name="envio"></param>
+        /// <returns></returns>
+        public static bool NuevoRecibidoBool(RecibidoModel recibido)
+        {
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"INSERT INTO Recibido(CodigoRecibido,CodigoPuntoVenta,CedulaEmpleado,Fecha,NombreConductor,Peso) VALUES (@codigo,@pv,@empleado,@fecha,@conductor,@peso);";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codigo", Statics.PrimeraAMayuscula(recibido.codigo));
+                    cmd.Parameters.AddWithValue("@pv", Statics.PrimeraAMayuscula(recibido.puntoVenta.codigo));
+                    cmd.Parameters.AddWithValue("@empleado", Statics.PrimeraAMayuscula(recibido.responsable.cedula));
+                    cmd.Parameters.AddWithValue("@fecha", recibido.fechaRecibido.Date);
+                    cmd.Parameters.AddWithValue("@conductor", Statics.PrimeraAMayuscula(recibido.nombreConductor));
+                    cmd.Parameters.AddWithValue("@peso", Statics.PrimeraAMayuscula(recibido.peso.ToString()));
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    string response = InsertarRecibidoProducto(recibido);
+                    if (response == "Y")
+                    {
+                        conn.Close();
+                        //registrarCambioLocal(Tipo: "Insert", NombreMetodoLocal: "getEnvioConProductos", PK: $"{envio.codigo}", NombreMetodoServidor: "ServidorNuevoEnvioBool", RespuestaExitosaServidor: "true");
+                        return true;
+                    }
+                    /// Si algo fallo en la insercion de los productos y las cantidades se borra el registro del documento de existencias para que pueda ser exitoso en proximos intentos.
+                    string cadena0 = $"delete from recibido where CodigoRecibido = '{recibido.codigo}';";
+                    SqlCommand cmd0 = new SqlCommand(cadena0, conn);
+                    cmd0.ExecuteNonQuery();
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
+                {
+                    MessageBox.Show("Ya se ha registrado un recibido para este envio, edite ese documento");
+                    return false;
+                }
+                else
+                {
+                    return false;
+                }
+
+            }
+        }
+
+
+        /// <summary>
+        /// Inserta en la base de datos la cantidad recibidas de cada producto
+        /// </summary>
+        /// <param name="envio"></param>
+        /// <returns></returns>
+        public static string InsertarRecibidoProducto(RecibidoModel recibido)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    conn.Open();
+                    ///Si la operacion no termino exitosamente en un intento anterior, la realiza desde cero borrando los registros insertados en el anterior intento.
+                    string cadena0 = $"delete from RecibidoProducto where CodigoRecibido = '{recibido.codigo}';";
+                    SqlCommand cmd0 = new SqlCommand(cadena0, conn);
+                    cmd0.ExecuteNonQuery();
+                    foreach (ProductoModel producto in recibido.productos)
+                    {
+                        string cadena = $"insert into RecibidoProducto(CodigoRecibido,CodigoProducto,Cantidad) values (@codigoRecibido,@codigoProducto,@recibido);";
+                        SqlCommand cmd = new SqlCommand(cadena, conn);
+                        cmd.Parameters.AddWithValue("@codigoRecibido", recibido.codigo);
+                        cmd.Parameters.AddWithValue("@codigoProducto", producto.codigoProducto);
+                        cmd.Parameters.AddWithValue("@recibido", string.IsNullOrEmpty(producto.recibido.ToString()) ? (object)DBNull.Value : producto.recibido);
+                        cmd.ExecuteNonQuery();
+                    }
+                    conn.Close();
+                    return "Y";
+                }
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
+                {
+                    return "Ya registrado.";
+                }
+                else
+                {
+                    return "Server " + e.Message;
+                }
+            }
+        }
+
 
 
         #endregion
