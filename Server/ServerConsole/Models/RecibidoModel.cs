@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Client.Main.Models
+namespace ServerConsole.Models
 {
     public class RecibidoModel : DocumentoModel
     {
@@ -15,7 +15,7 @@ namespace Client.Main.Models
 
         public static implicit operator RecibidoModel(EnvioModel v)
         {
-            return new RecibidoModel() 
+            return new RecibidoModel()
             {
                 codigo = v.codigo,
                 productos = v.productos,

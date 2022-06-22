@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore;
+﻿using Microsoft.AspNet.SignalR;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -35,7 +36,7 @@ namespace ServerConsole
                 // Identity made Cookie authentication the default.
                 // However, we want JWT Bearer Auth to be the default.
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;                
             })
            .AddJwtBearer(options =>
            {
@@ -72,11 +73,19 @@ namespace ServerConsole
                    }
 
                };
+               
+               
+
            }) ;           
 
             services.AddMvc();
             services.AddSignalRCore();
-            services.AddSignalR();
+            services.AddSignalR(options =>
+            {
+
+                    options.EnableDetailedErrors = true;
+                
+            });
         }
 
         public void Configure(IApplicationBuilder app)
@@ -85,11 +94,17 @@ namespace ServerConsole
 
             app.UseAuthentication();
             app.UseAuthorization();
-           
+
+
+            
+
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHub<RetailHUB>("/retailHub");
             });
+
+
 
         }
     }

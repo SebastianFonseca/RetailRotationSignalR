@@ -45,6 +45,7 @@ namespace Client.Main.ViewModels
 
         public void BuscarRecibido()
         {
+            VentanaPrincipal.ActivateItem(new RecibidoBuscarViewModel(VentanaPrincipal));
 
         }
 

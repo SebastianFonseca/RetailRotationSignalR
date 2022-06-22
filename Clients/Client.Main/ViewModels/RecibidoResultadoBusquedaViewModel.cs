@@ -10,19 +10,20 @@ using System.Windows;
 
 namespace Client.Main.ViewModels
 {
-    public class RecibidoEditarViewModel : Screen
+    class RecibidoResultadoBusquedaViewModel : Screen
     {
         MainWindowViewModel VentanaPrincipal;
         public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
+        public string ctor = "";
         public RecibidoModel recibido;
-        public RecibidoEditarViewModel(MainWindowViewModel argVentana, EnvioModel envio)
+
+
+        public RecibidoResultadoBusquedaViewModel(MainWindowViewModel argVentana, RecibidoModel Seleccionado)
         {
-            Placa = envio.placasCarro;
-            recibido = envio;
+            ctor = "new";
+            recibido = Seleccionado;
             VentanaPrincipal = argVentana;
-
         }
-
 
         public BindableCollection<ProductoModel> Productos
         {
@@ -38,8 +39,7 @@ namespace Client.Main.ViewModels
 
         public string Fecha => recibido.fechaRecibido.ToShortDateString();
         public string Codigo => recibido.codigo;
-        public string Placa { get; set; }
-
+        public string Placa => recibido.placas;
 
         private string _conductor;
 
@@ -56,26 +56,17 @@ namespace Client.Main.ViewModels
             }
             set
             {
-
                 _conductor = Statics.PrimeraAMayuscula(value);
                 recibido.nombreConductor = Statics.PrimeraAMayuscula(value);
                 NotifyOfPropertyChange(() => Conductor);
             }
         }
 
-        public bool cerrar = false;
-        public override void CanClose(Action<bool> callback)
+
+        public void BackButton()
         {
-            if (cerrar != true)
-            {
-                MessageBoxResult result = MessageBox.Show($"Los datos no se han guardado, ¿Desea guardarlos?", "", MessageBoxButton.YesNo);
-                if (result == MessageBoxResult.Yes) { Guardar(); }
-                else { callback(true); }
-            }
-            else { callback(true); }
-
+            VentanaPrincipal.ActivateItem(new RecibidoBuscarViewModel(VentanaPrincipal));
         }
-
 
         public async void Guardar()
         {
@@ -108,23 +99,21 @@ namespace Client.Main.ViewModels
             {
                 if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
                 {
-                    Task<object> re = conexion.CallServerMethod("ServidorNuevorecibidoBool", Arguments: new[] { recibido });
+                    Task<object> re = conexion.CallServerMethod("ServidorupdateRecibido", Arguments: new[] { recibido });
                     await re;
                     if (re.Result.ToString() == "true")
                     {
-                        MessageBox.Show("Datos del recibido guardados"); 
+                        MessageBox.Show("Datos actualizados");
                     }
-                    cerrar = true;
-                    VentanaPrincipal.ActivateItem(new AdministracionInventarioViewModel(VentanaPrincipal));
 
+                    VentanaPrincipal.ActivateItem(new ListadoCompraViewModel(VentanaPrincipal));
                 }
                 else if (MainWindowViewModel.Status == "Trabajando localmente")
                 {
-                    if (DbConnection.NuevoRecibidoBool(recibido))
+                    if (DbConnection.updateRecibido(recibido))
                     {
-                        MessageBox.Show("Datos del recibido guardados");
+                        MessageBox.Show("Datos actualizados");
                     }
-                    cerrar = true;
                     VentanaPrincipal.ActivateItem(new AdministracionInventarioViewModel(VentanaPrincipal));
                 }
             }
@@ -135,5 +124,7 @@ namespace Client.Main.ViewModels
 
 
         }
+
+
     }
 }

@@ -10,7 +10,7 @@ namespace Client.Main.Models
         {
             PedidoModel pedido = new PedidoModel()
             {
-                codigo = v.codigo + ":" + DateTime.Now.ToString("ddMMyyyyHHmm "),
+                codigo = v.codigo + ":" + DateTime.Now.ToString("ddMMyyyyHHmm"),
                 fecha = DateTime.Today,
                 responsable = v.responsable,
                 puntoVenta = v.puntoVenta,

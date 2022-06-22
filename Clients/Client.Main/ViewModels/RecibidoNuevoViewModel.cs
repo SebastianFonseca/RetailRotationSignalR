@@ -26,7 +26,7 @@ namespace Client.Main.ViewModels
             {
                 if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
                 {
-                    Task<object> re = conexion.CallServerMethod("servidorGetTodasLasEnvios", Arguments: new object[] { });
+                    Task<object> re = conexion.CallServerMethod("ServidorgetTodosLosEnviosPorLocal", Arguments: new object[] { VentanaPrincipal.usuario.cedula });
                     await re;
                     Envios = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<EnvioModel>>(re.Result.ToString());
                 }
@@ -34,10 +34,26 @@ namespace Client.Main.ViewModels
                 {
                     Envios = DbConnection.getTodosLosEnviosPorLocal(VentanaPrincipal.usuario.cedula);
                 }
+                if (Envios.Count == 0)
+                {
+                    Texto = "Ya se ha creado un recibido para todos los envios";
+                }
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
+            }
+        }
+
+        private string _texto;
+
+        public string Texto
+        {
+            get { return _texto; }
+            set 
+            { 
+                _texto = value;
+                NotifyOfPropertyChange(() => Texto);
             }
         }
 
@@ -81,10 +97,10 @@ namespace Client.Main.ViewModels
             {
                 if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
                 {
-                    Task<object> re = conexion.CallServerMethod("servidorGetEnviosConProductos", Arguments: new object[] { Envio.codigo });
+                    Task<object> re = conexion.CallServerMethod("ServidorgetEnvioConProductos", Arguments: new object[] { Envio.codigo });
                     await re;
                     BindableCollection<EnvioModel> seleccionada = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<EnvioModel>>(re.Result.ToString());
-                   // VentanaPrincipal.ActivateItem(new PedidoEditarViewModel(VentanaPrincipal, seleccionada[0]));
+                    VentanaPrincipal.ActivateItem(new RecibidoEditarViewModel(VentanaPrincipal, seleccionada[0]));
                 }
                 if (MainWindowViewModel.Status == "Trabajando localmente")
                 {
@@ -94,15 +110,9 @@ namespace Client.Main.ViewModels
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
+
             }
 
-
-
-
-
         }
-
-
-
     }
 }

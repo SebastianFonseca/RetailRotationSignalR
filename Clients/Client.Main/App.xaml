@@ -56,6 +56,7 @@
                 <Setter Property="Background" Value="#F3E0D2"/>
                 <Setter Property="VerticalContentAlignment" Value="Center"/>
                 <Setter Property="FontSize" Value="20"/>
+                <Setter Property="CharacterCasing" Value="Normal"/>
 
                 <Setter Property="Template">
                     <Setter.Value>

@@ -2436,7 +2436,7 @@ namespace Client.Main.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = $"INSERT INTO Envio(CodigoEnvio,CedulaEmpleado,CodigoPuntoVenta,FechaEnvio,NombreChofer,PlacasCarro) VALUES (@codigo,@empleado,@pv,@fecha,@conductor,@placas);";
+                    string cadena = $"INSERT INTO Envio(CodigoEnvio,CedulaEmpleado,CodigoPuntoVenta,FechaEnvio,NombreChofer,PlacasCarro,Estado) VALUES (@codigo,@empleado,@pv,@fecha,@conductor,@placas,'Pendiente');";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     cmd.Parameters.AddWithValue("@codigo", Statics.PrimeraAMayuscula(envio.codigo));
                     cmd.Parameters.AddWithValue("@empleado", Statics.PrimeraAMayuscula(envio.responsable.cedula));
@@ -2709,6 +2709,42 @@ namespace Client.Main.Utilities
 
             }
         }
+      
+        /// <summary>
+        /// Actualiza el estado del envio a:'Recibido'.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public static bool updateEstadoEnvio(string caracteres)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"UPDATE Envio SET Estado='Recibido' WHERE CodigoEnvio = '{caracteres}';";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                    //registrarCambioLocal(Tipo: "Update", NombreMetodoLocal: "getEnvioConProductos", PK: $"{envio.codigo}", NombreMetodoServidor: "ServidorupdateEnvio", RespuestaExitosaServidor: "true");
+                    return true;
+
+                }
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
+                {
+                    return false;
+                }
+                else
+                {
+                    return false;
+                }
+
+            }
+        }
 
         /// <summary>
         /// Actualiza la informacion de un envio, metodo necesario para usar desde el servidro y evitar redundancia.
@@ -2735,7 +2771,6 @@ namespace Client.Main.Utilities
                     if (response == "Y")
                     {
                         conn.Close();
-                        registrarCambioLocal(Tipo: "Update", NombreMetodoLocal: "getEnvioConProductos", PK: $"{envio.codigo}", NombreMetodoServidor: "ServidorupdateEnvio", RespuestaExitosaServidor: "true");
                         return true;
                     }
                     return false;
@@ -2806,7 +2841,7 @@ namespace Client.Main.Utilities
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
                     BindableCollection<EnvioModel> cEnvios = new BindableCollection<EnvioModel>();
-                    string cadena = $" select envio.CodigoEnvio, envio.NombreChofer,envio.CodigoPuntoVenta,envio.CedulaEmpleado,envio.FechaEnvio,Envio.PlacasCarro,Puntoventa.Nombres as NombrePuntoVenta,Empleado.Nombres,Empleado.Apellidos from envio join PuntoVenta on Envio.CodigoPuntoVenta = PuntoVenta.CodigoPuntoVenta join Empleado on Empleado.CedulaEmpleado = '{ccEmpleado}'  ORDER BY CodigoEnvio;";
+                    string cadena = $" select envio.CodigoEnvio, envio.NombreChofer,envio.CodigoPuntoVenta,envio.CedulaEmpleado,envio.FechaEnvio,Envio.PlacasCarro,Puntoventa.Nombres as NombrePuntoVenta,Empleado.Nombres,Empleado.Apellidos from envio join PuntoVenta on Envio.CodigoPuntoVenta = PuntoVenta.CodigoPuntoVenta join Empleado on Empleado.CedulaEmpleado = '{ccEmpleado}' where Envio.Estado = 'Pendiente' and envio.cedulaempleado = '{ccEmpleado}' ORDER BY CodigoEnvio;";
                                     
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
@@ -2844,6 +2879,8 @@ namespace Client.Main.Utilities
         }
 
 
+
+
         #endregion
 
         #region Recibidos
@@ -2851,16 +2888,15 @@ namespace Client.Main.Utilities
         /// <summary>
         /// Regista en la base de datos la informacion relacionada con el nuevo documento de envio.
         /// </summary>
-        /// <param name="envio"></param>
+        /// <param name="recibido"></param>
         /// <returns></returns>
         public static bool NuevoRecibidoBool(RecibidoModel recibido)
         {
-
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = $"INSERT INTO Recibido(CodigoRecibido,CodigoPuntoVenta,CedulaEmpleado,Fecha,NombreConductor,Peso) VALUES (@codigo,@pv,@empleado,@fecha,@conductor,@peso);";
+                    string cadena = $"INSERT INTO Recibido(CodigoRecibido,CodigoPuntoVenta,CedulaEmpleado,Fecha,NombreConductor,Peso,PlacasCarro) VALUES (@codigo,@pv,@empleado,@fecha,@conductor,@peso,@placa);";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     cmd.Parameters.AddWithValue("@codigo", Statics.PrimeraAMayuscula(recibido.codigo));
                     cmd.Parameters.AddWithValue("@pv", Statics.PrimeraAMayuscula(recibido.puntoVenta.codigo));
@@ -2868,13 +2904,67 @@ namespace Client.Main.Utilities
                     cmd.Parameters.AddWithValue("@fecha", recibido.fechaRecibido.Date);
                     cmd.Parameters.AddWithValue("@conductor", Statics.PrimeraAMayuscula(recibido.nombreConductor));
                     cmd.Parameters.AddWithValue("@peso", Statics.PrimeraAMayuscula(recibido.peso.ToString()));
+                    cmd.Parameters.AddWithValue("@placa", Statics.PrimeraAMayuscula(recibido.placas.ToString()));
                     conn.Open();
                     cmd.ExecuteNonQuery();
                     string response = InsertarRecibidoProducto(recibido);
                     if (response == "Y")
                     {
+                        updateEstadoEnvio(recibido.codigo);
                         conn.Close();
-                        //registrarCambioLocal(Tipo: "Insert", NombreMetodoLocal: "getEnvioConProductos", PK: $"{envio.codigo}", NombreMetodoServidor: "ServidorNuevoEnvioBool", RespuestaExitosaServidor: "true");
+                        registrarCambioLocal(Tipo: "Insert", NombreMetodoLocal: "getRecibidoConProductos", PK: $"{recibido.codigo}", NombreMetodoServidor: "ServidorNuevoRecibidoBool", RespuestaExitosaServidor: "true");
+                        return true;
+                    }
+                    /// Si algo fallo en la insercion de los productos y las cantidades se borra el registro del documento de existencias para que pueda ser exitoso en proximos intentos.
+                    string cadena0 = $"delete from recibido where CodigoRecibido = '{recibido.codigo}';";
+                    SqlCommand cmd0 = new SqlCommand(cadena0, conn);
+                    cmd0.ExecuteNonQuery();
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
+                {
+                    MessageBox.Show("Ya se ha registrado un recibido para este envio, edite ese documento");
+                    return false;
+                }
+                else
+                {
+                    return false;
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// Metodo necesario para invocarse desde el servidor y evitar redundancia al registrar el recibido. Regista en la base de datos la informacion relacionada con el nuevo documento de envio.
+        /// </summary>
+        /// <param name="recibido"></param>
+        /// <returns></returns>
+        public static bool NuevoRecibidoBoolServidor(RecibidoModel recibido)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"INSERT INTO Recibido(CodigoRecibido,CodigoPuntoVenta,CedulaEmpleado,Fecha,NombreConductor,Peso,PlacasCarro) VALUES (@codigo,@pv,@empleado,@fecha,@conductor,@peso,@placa);";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codigo", Statics.PrimeraAMayuscula(recibido.codigo));
+                    cmd.Parameters.AddWithValue("@pv", Statics.PrimeraAMayuscula(recibido.puntoVenta.codigo));
+                    cmd.Parameters.AddWithValue("@empleado", Statics.PrimeraAMayuscula(recibido.responsable.cedula));
+                    cmd.Parameters.AddWithValue("@fecha", recibido.fechaRecibido.Date);
+                    cmd.Parameters.AddWithValue("@conductor", Statics.PrimeraAMayuscula(recibido.nombreConductor));
+                    cmd.Parameters.AddWithValue("@peso", Statics.PrimeraAMayuscula(recibido.peso.ToString()));
+                    cmd.Parameters.AddWithValue("@placa", Statics.PrimeraAMayuscula(recibido.placas.ToString()));
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    string response = InsertarRecibidoProducto(recibido);
+                    if (response == "Y")
+                    {
+                        updateEstadoEnvio(recibido.codigo);
+                        conn.Close();
                         return true;
                     }
                     /// Si algo fallo en la insercion de los productos y las cantidades se borra el registro del documento de existencias para que pueda ser exitoso en proximos intentos.
@@ -2904,7 +2994,7 @@ namespace Client.Main.Utilities
         /// <summary>
         /// Inserta en la base de datos la cantidad recibidas de cada producto
         /// </summary>
-        /// <param name="envio"></param>
+        /// <param name="recibido"></param>
         /// <returns></returns>
         public static string InsertarRecibidoProducto(RecibidoModel recibido)
         {
@@ -2943,6 +3033,279 @@ namespace Client.Main.Utilities
             }
         }
 
+        /// <summary>
+        /// Retorna las coincidencias en los recibidos del local dado como parametro, los codigos y fechas de los recibidos.
+        /// </summary>
+        /// <param name="Caracteres"></param>
+        /// <param name="codigoPuntoVenta"></param>
+        /// <returns></returns>
+        public static BindableCollection<RecibidoModel> getRecibidos(string Caracteres, string codigoPuntoVenta)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<RecibidoModel> cRecibidos = new BindableCollection<RecibidoModel>();
+                    DateTime fecha = new DateTime();
+                    if (!DateTime.TryParse(Caracteres, out fecha))
+                    {
+                        fecha = DateTime.MinValue;
+                    }
+
+                    string cadena = $" select * from Recibido where (Fecha = '{fecha:yyyy-MM-dd}' or CodigoRecibido like '%{Caracteres}%') and CodigoPuntoVenta = '{codigoPuntoVenta}'  ORDER BY CodigoRecibido;";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        cRecibidos.Clear();
+                        while (reader.Read())
+                        {
+                            RecibidoModel rec = new RecibidoModel
+                            {
+                                codigo = reader["CodigoRecibido"].ToString(),
+                                nombreConductor = reader["NombreConductor"].ToString()
+                            };
+                            rec.responsable.cedula = reader["CedulaEmpleado"].ToString();
+                            rec.fecha = DateTime.Parse(reader["Fecha"].ToString());
+                            rec.puntoVenta.codigo = reader["CodigoPuntoVenta"].ToString();
+                            rec.placas = reader["PlacasCarro"].ToString();
+                            cRecibidos.Add(rec);
+                        }
+                    }
+                    conn.Close();
+                    return cRecibidos;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Devuelve la instancia del recibido -incluidos los poductos con la cantidad recibida- cuyo codigo de pedido es dado como parametro.
+        /// </summary>
+        /// <param name="Caracteres"></param>
+        /// <returns></returns>
+        public static BindableCollection<RecibidoModel> getRecibidoConProductos(string Caracteres)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<RecibidoModel> cRecibidos = new BindableCollection<RecibidoModel>();
+                    string cadena = $" select * from Recibido join PuntoVenta on Recibido.CodigoPuntoVenta = PuntoVenta.CodigoPuntoVenta where Codigorecibido = '{Caracteres}'  ORDER BY CodigoRecibido;";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        cRecibidos.Clear();
+                        while (reader.Read())
+                        {
+                            RecibidoModel recibido = new RecibidoModel
+                            {
+                                codigo = reader["CodigoRecibido"].ToString(),
+                                nombreConductor = reader["NombreConductor"].ToString(),
+                                placas = reader["PlacasCarro"].ToString()
+
+
+                            };
+                            recibido.responsable.cedula = reader["CedulaEmpleado"].ToString();
+                            recibido.fecha = DateTime.Parse(reader["Fecha"].ToString());
+                            recibido.puntoVenta.codigo = reader["CodigoPuntoVenta"].ToString();
+                            recibido.puntoVenta.nombre = reader["Nombres"].ToString();
+                            recibido.productos = getProductosRecibido(recibido.codigo);
+                            cRecibidos.Add(recibido);
+                        }
+                    }
+                    conn.Close();
+                    return cRecibidos;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Obtiene los productos con la cantidad enviada y la recibida en el documento de recibido con codigo igual al dado como parametro
+        /// </summary>
+        /// <param name="codigoRecibido"></param>
+        /// <returns></returns>
+        public static BindableCollection<ProductoModel> getProductosRecibido(string codigoRecibido)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<ProductoModel> productos = new BindableCollection<ProductoModel>();
+
+                    string cadena = $"select producto.codigoproducto,producto.Nombre,producto.unidadventa,producto.unidadcompra,EnvioProducto.Cantidad,RecibidoProducto.Cantidad as recibidoCantidad from producto join RecibidoProducto on producto.codigoproducto = RecibidoProducto.CodigoProducto join EnvioProducto on EnvioProducto.CodigoProducto = Producto.CodigoProducto where RecibidoProducto.CodigoRecibido = '{codigoRecibido}' and CodigoEnvio = '{codigoRecibido}' and estado = 'Activo' order by CodigoProducto;";
+
+
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        productos.Clear();
+                        while (reader.Read())
+                        {
+                            ProductoModel producto = new ProductoModel
+                            {
+                                codigoProducto = reader["codigoproducto"].ToString(),
+                                nombre = reader["nombre"].ToString(),
+                                unidadVenta = reader["unidadventa"].ToString().Substring(0, 3),
+                                unidadCompra = reader["unidadcompra"].ToString().Substring(0, 3)                                
+                            };
+                            Int32.TryParse(reader["Cantidad"].ToString(), out int b);
+                            producto.compraPorLocal = b;
+                            Int32.TryParse(reader["recibidoCantidad"].ToString(), out int a);
+                            producto.recibido = a;
+                            productos.Add(producto);
+                        }
+                    }
+                    conn.Close();
+                    return productos;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+
+        }
+
+        /// <summary>
+        /// Actualiza la informacion de un recibido.
+        /// </summary>
+        /// <param name="recibido"></param>
+        /// <returns></returns>
+        public static bool updateRecibido(RecibidoModel recibido)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"UPDATE Recibido SET CodigoRecibido = @codigo, CedulaEmpleado = @empleado,CodigoPuntoVenta = @pv,Fecha = @fecha,NombreConductor = @conductor,PlacasCarro=@placas WHERE CodigoRecibido = '{recibido.codigo}';";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codigo", Statics.PrimeraAMayuscula(recibido.codigo));
+                    cmd.Parameters.AddWithValue("@empleado", Statics.PrimeraAMayuscula(recibido.responsable.cedula));
+                    cmd.Parameters.AddWithValue("@pv", Statics.PrimeraAMayuscula(recibido.puntoVenta.codigo));
+                    cmd.Parameters.AddWithValue("@fecha", recibido.fecha.Date);
+                    cmd.Parameters.AddWithValue("@conductor", Statics.PrimeraAMayuscula(recibido.nombreConductor));
+                    cmd.Parameters.AddWithValue("@placas", Statics.PrimeraAMayuscula(recibido.placas.ToUpper()));
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    string response = updateProductosRecibido(recibido);
+                    if (response == "Y")
+                    {
+                        conn.Close();
+                        registrarCambioLocal(Tipo: "Update", NombreMetodoLocal: "getRecibidoConProductos", PK: $"{recibido.codigo}", NombreMetodoServidor: "ServidorupdateRecibido", RespuestaExitosaServidor: "true");
+                        return true;
+                    }
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
+                {
+                    return false;
+                }
+                else
+                {
+                    return false;
+                }
+
+            }
+        }
+        /// <summary>
+        /// Metodo que se invoca desde el servidor. Actualiza la informacion de un recibido.
+        /// </summary>
+        /// <param name="recibido"></param>
+        /// <returns></returns>
+        public static bool updateRecibidoServidor(RecibidoModel recibido)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"UPDATE Recibido SET CodigoRecibido = @codigo, CedulaEmpleado = @empleado,CodigoPuntoVenta = @pv,Fecha = @fecha,NombreConductor = @conductor,PlacasCarro=@placas WHERE CodigoRecibido = '{recibido.codigo}';";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codigo", Statics.PrimeraAMayuscula(recibido.codigo));
+                    cmd.Parameters.AddWithValue("@empleado", Statics.PrimeraAMayuscula(recibido.responsable.cedula));
+                    cmd.Parameters.AddWithValue("@pv", Statics.PrimeraAMayuscula(recibido.puntoVenta.codigo));
+                    cmd.Parameters.AddWithValue("@fecha", recibido.fecha.Date);
+                    cmd.Parameters.AddWithValue("@conductor", Statics.PrimeraAMayuscula(recibido.nombreConductor));
+                    cmd.Parameters.AddWithValue("@placas", Statics.PrimeraAMayuscula(recibido.placas.ToUpper()));
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    string response = updateProductosRecibido(recibido);
+                    if (response == "Y")
+                    {
+                        conn.Close();
+                        return true;
+                    }
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
+                {
+                    return false;
+                }
+                else
+                {
+                    return false;
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// Actualiza la informacion de la cantidad recibida de un producto.
+        /// </summary>
+        /// <param name="recibido"></param>
+        /// <returns></returns>
+        public static string updateProductosRecibido(RecibidoModel recibido)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    conn.Open();
+                    foreach (ProductoModel producto in recibido.productos)
+                    {
+                        string cadena = $"UPDATE  RecibidoProducto SET Cantidad = @recibido WHERE CodigoRecibido = @codigo AND CodigoProducto = @codigoProducto;";
+                        SqlCommand cmd = new SqlCommand(cadena, conn);
+                        cmd.Parameters.AddWithValue("@codigo", recibido.codigo);
+                        cmd.Parameters.AddWithValue("@codigoProducto", producto.codigoProducto);
+                        cmd.Parameters.AddWithValue("@recibido", string.IsNullOrEmpty(producto.recibido.ToString()) ? (object)DBNull.Value : producto.recibido);
+                        cmd.ExecuteNonQuery();
+                    }
+                    conn.Close();
+                    return "Y";
+                }
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
+                {
+                    return "Ya registrado.";
+                }
+                else
+                {
+                    return e.Message;
+                }
+            }
+        }
 
 
         #endregion
@@ -3285,13 +3648,13 @@ namespace Client.Main.Utilities
         /// </summary>
         /// <param name="CodigoRegistro"></param>
         /// <returns></returns>
-        public static bool registrarCambioSinGuardar(string CodigoRegistro)
+        public static bool registrarCambioSinGuardar(string CodigoRegistro, string tipo)
         {
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = $"INSERT INTO RegistrosSinGuardar(ID) VALUES ('{CodigoRegistro}');";
+                    string cadena = $"INSERT INTO RegistrosSinGuardar(ID,Tipo) VALUES ('{CodigoRegistro}','{tipo}');";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     cmd.ExecuteNonQuery();
@@ -3307,6 +3670,8 @@ namespace Client.Main.Utilities
 
             }
         }
+        
+        
         #endregion
 
         /// <summary>

@@ -75,6 +75,7 @@
 
             <!--LisView con las existencias-->
             <Grid Grid.Row="1" Grid.Column="1" >
+                <TextBlock x:Name="Texto" Panel.ZIndex="1" HorizontalAlignment="Center"/>
                 <ListView KeyboardNavigation.TabNavigation="Cycle" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.CanContentScroll="True" x:Name="Envios" 
                           Background="#F3E0D2" BorderThickness="0"  FlowDirection="LeftToRight"  ItemsSource="{Binding Path=Envios}" SelectedItem="{Binding Path=Envio}"  
                           cal:Message.Attach="[Event SelectionChanged] = [Action ItemSeleccionado]" HorizontalAlignment="Center">

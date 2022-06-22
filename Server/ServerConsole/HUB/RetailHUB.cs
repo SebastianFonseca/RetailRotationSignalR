@@ -419,7 +419,7 @@ namespace ServerConsole
         /// <returns></returns>
         public  string ServidorNuevaCompra(ComprasModel compras) 
         {
-            return DbConnection.NuevaCompra(compras) ; 
+            return DbConnection.NuevaCompra(compras); 
         }
 
         /// <summary>
@@ -540,6 +540,74 @@ namespace ServerConsole
         {
             return DbConnection.updateEnvio(envio);
         }
+
+        /// <summary>
+        /// Devuelve todas las instancias de envios por local registradas en la base de datos.
+        /// </summary>
+        /// <param name="Caracteres"></param>
+        /// <returns></returns>
+        public  BindableCollection<EnvioModel> ServidorgetTodosLosEnviosPorLocal(string ccEmpleado)
+        {
+            return DbConnection.getTodosLosEnviosPorLocal(ccEmpleado);
+        }
+
+
+        #endregion
+
+
+        #region Recibido
+
+        /// <summary>
+        /// Inserta en la base de datos los datos del nuevo recibido.
+        /// </summary>
+        /// <param name="recibido"></param>
+        /// <returns></returns>
+        public string ServidorNuevoRecibidoBool(RecibidoModel recibido)
+        {
+            return DbConnection.NuevoRecibidoBool(recibido);
+        }
+
+        /// <summary>
+        /// Retorna la instancia del recibido con el codigo dado como parametro, incluidos los productos 
+        /// </summary>
+        /// <param name="Caracteres"></param>
+        /// <returns></returns>
+        public  BindableCollection<RecibidoModel> ServidorgetRecibidoConProductos(string Caracteres)
+        {
+            return DbConnection.getRecibidoConProductos(Caracteres);
+        }
+
+        /// <summary>
+        /// Retorna las coincidencias en los recibidos del local dado como parametro, los codigos y fechas de los recibidos.
+        /// </summary>
+        /// <param name="Caracteres"></param>
+        /// <param name="codigoPuntoVenta"></param>
+        /// <returns></returns>
+        public  BindableCollection<RecibidoModel> ServidorgetRecibidos(string Caracteres, string codigoPuntoVenta)
+        {
+            return DbConnection.getRecibidos(Caracteres, codigoPuntoVenta);
+        }
+
+        /// <summary>
+        /// Obtiene los productos con la cantidad enviada y la recibida en el documento de recibido con codigo igual al dado como parametro
+        /// </summary>
+        /// <param name="codigoRecibido"></param>
+        /// <returns></returns>
+        public  BindableCollection<ProductoModel> ServidorgetProductosRecibido(string codigoRecibido)
+        {
+            return DbConnection.getProductosRecibido(codigoRecibido);
+        }
+
+        /// <summary>
+        /// Actualiza la informacion de un recibido.
+        /// </summary>
+        /// <param name="recibido"></param>
+        /// <returns></returns>
+        public string ServidorupdateRecibido(RecibidoModel recibido)
+        {
+            return DbConnection.updateRecibido(recibido);
+        }
+
 
         #endregion
 

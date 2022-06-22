@@ -65,7 +65,7 @@ namespace Client.Main.Utilities
                                 else
                                 {
                                     ///Si no se inserto correcatamente se guarda el codigo del registro sin actualizar.
-                                     DbConnection.registrarCambioSinGuardar(codigo);
+                                     DbConnection.registrarCambioSinGuardar(codigo,"Bajada");
                                 }                                
                                 break;
                             }
@@ -88,7 +88,7 @@ namespace Client.Main.Utilities
                         else
                         {
                             ///Si no se inserto correcatamente se guarda el codigo del registro sin actualizar.
-                            DbConnection.registrarCambioSinGuardar(codigo); 
+                            DbConnection.registrarCambioSinGuardar(codigo,"Bajada"); 
                         }
                     }
                 }
@@ -96,9 +96,9 @@ namespace Client.Main.Utilities
             }
             catch (Exception e)
             {
-                MessageBox.Show("Error descargando los datos del servidor: " + e.Message);
+                MessageBox.Show("Error descargando los datos del servidor: " + e.Message + $" Codigo:{codigo}");
                 ///Si no se inserto correcatamente se guarda el codigo del registro sin actualizar.
-                DbConnection.registrarCambioSinGuardar(codigo);
+                DbConnection.registrarCambioSinGuardar(codigo, "Bajada");
                 throw;
             }
 
@@ -141,7 +141,7 @@ namespace Client.Main.Utilities
                     }
                     else
                     {
-                        DbConnection.registrarCambioSinGuardar(regis[0]);
+                        DbConnection.registrarCambioSinGuardar(regis[0],"Subida");
                     }
 
                 }
@@ -149,8 +149,8 @@ namespace Client.Main.Utilities
             catch (Exception e)
             {
                 
-                MessageBox.Show("Error registrando los datos en la base de datos del servidor: " + e.Message);
-                DbConnection.registrarCambioSinGuardar(codigo);
+                MessageBox.Show("Error registrando los datos en la base de datos del servidor: " + e.Message + $" Codigo:{codigo}");
+                DbConnection.registrarCambioSinGuardar(codigo, "Subida");
                 return false;
                 throw;
 
