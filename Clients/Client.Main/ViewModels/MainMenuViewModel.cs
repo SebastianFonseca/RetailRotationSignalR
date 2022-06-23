@@ -20,7 +20,7 @@ namespace Client.Main.ViewModels
         MainWindowViewModel VentanaPrincipal;
         public MainMenuViewModel(MainWindowViewModel argVentana)
         {
-
+            
             VentanaPrincipal = argVentana;
             act();
         }

@@ -17,7 +17,6 @@ namespace Client.Main.Utilities
         public static async Task<bool> SincronizarRegistro()
         {
             ///Varaible para almacenar el codigo del registro por si ocurre una excepcion y deber ser guardado como un registro sin actualizar
-
             string codigo = "";
             try
             {

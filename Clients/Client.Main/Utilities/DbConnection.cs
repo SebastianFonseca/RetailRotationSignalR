@@ -149,6 +149,7 @@ namespace Client.Main.Utilities
                             cmd2.Parameters.AddWithValue("@fc", Producto.factorConversion);
                             cmd2.ExecuteNonQuery();
                             conn.Close();
+                            conn.Close();
                             return true;
                             ///return $"Nuevo producto: {Producto.codigoProducto}- {Producto.nombre}.";
                         }
@@ -344,7 +345,7 @@ namespace Client.Main.Utilities
                                 nombre = reader["Nombre"].ToString(),
                                 unidadCompra = reader["UnidadCompra"].ToString(),
                                 unidadVenta = reader["UnidadVenta"].ToString(),
-                                precioVenta = Convert.ToDecimal(reader["PrecioVenta"].ToString())                                
+                                precioVenta = Convert.ToDecimal(reader["PrecioVenta"].ToString())
                             };
                             productos.Add(producto);
                         }
@@ -384,7 +385,7 @@ namespace Client.Main.Utilities
                         {
                             reader.Read();
                             producto.unidadCompra = reader["UnidadCompra"].ToString();
-                            producto.unidadVenta = reader["UnidadVenta"].ToString();                            
+                            producto.unidadVenta = reader["UnidadVenta"].ToString();
                         }
                         conn.Close();
                     }
@@ -418,7 +419,7 @@ namespace Client.Main.Utilities
                     string cadena = "INSERT INTO Proveedor(CedulaProveedor,Nombres,Apellidos,Telefono,Ciudad,Direccion, Estado) VALUES " +
                                                         "(@cedula,@nombre,@apellidos,@telefono,@ciudad,@direccion, 'Activo');";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
-                    cmd.Parameters.AddWithValue("@cedula", Statics.PrimeraAMayuscula( proveedor.cedula));
+                    cmd.Parameters.AddWithValue("@cedula", Statics.PrimeraAMayuscula(proveedor.cedula));
                     cmd.Parameters.AddWithValue("@nombre", Statics.PrimeraAMayuscula(proveedor.firstName));
                     cmd.Parameters.AddWithValue("@apellidos", Statics.PrimeraAMayuscula(proveedor.lastName));
                     cmd.Parameters.AddWithValue("@telefono", proveedor.telefono);
@@ -566,10 +567,10 @@ namespace Client.Main.Utilities
             }
         }
 
-         /// <summary>
-         /// Obtiene la lista de todos los proveedores.
-         /// </summary>
-         /// <returns></returns>
+        /// <summary>
+        /// Obtiene la lista de todos los proveedores.
+        /// </summary>
+        /// <returns></returns>
         public static BindableCollection<ProveedorModel> getProveedores()
         {
 
@@ -1036,7 +1037,7 @@ namespace Client.Main.Utilities
                     cmd.Parameters.AddWithValue("@telefono", Statics.PrimeraAMayuscula(NuevoLocal.telefono));
                     cmd.Parameters.AddWithValue("@ciudad", Statics.PrimeraAMayuscula(NuevoLocal.ciudad));
                     cmd.Parameters.AddWithValue("@nrocanastillas", Statics.PrimeraAMayuscula(NuevoLocal.numeroDeCanastillas.ToString()));
-                    cmd.Parameters.AddWithValue("@fechaapertura", Statics.PrimeraAMayuscula(NuevoLocal.fechaDeApertura.Date.ToString("yyyy-MM-dd")));
+                    cmd.Parameters.AddWithValue("@fechaapertura", Statics.PrimeraAMayuscula(NuevoLocal.fechaDeApertura.Date.ToString("yyyy-MM-dd")));                    
                     conn.Open();
                     cmd.ExecuteNonQuery();
                     //MessageBox.Show($"Se ha registrado al nuevo local: {NuevoLocal.nombre }");
@@ -1157,7 +1158,7 @@ namespace Client.Main.Utilities
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         locales.Clear();
-                        while (reader.Read()) 
+                        while (reader.Read())
                         {
                             LocalModel local = new LocalModel
                             {
@@ -1200,7 +1201,7 @@ namespace Client.Main.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = "SELECT [CodigoPuntoVenta], [Nombres]  FROM PuntoVenta";
+                    string cadena = "SELECT Distinct [CodigoPuntoVenta], [Nombres]  FROM PuntoVenta where Estado = 'Activo' ORDER BY Nombres";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -1255,7 +1256,7 @@ namespace Client.Main.Utilities
                     if (response == "Y")
                     {
                         conn.Close();
-                        registrarCambioLocal(NombreMetodoLocal: "getExistenciasConProductos", PK: $"{existencia.codigo}", NombreMetodoServidor: "ServidorNuevaExistencia", RespuestaExitosaServidor: "Se ha registrado el nuevo documento.", Tipo:"Insert");
+                        registrarCambioLocal(NombreMetodoLocal: "getExistenciasConProductos", PK: $"{existencia.codigo}", NombreMetodoServidor: "ServidorNuevaExistencia", RespuestaExitosaServidor: "Se ha registrado el nuevo documento.", Tipo: "Insert");
                         return "Se ha registrado el nuevo documento.";
                     }
                     /// Si algo fallo en la insercion de los productos y las cantidades se borra el registro del documento de existencias para que pueda ser exitoso en proximos intentos.
@@ -1761,7 +1762,7 @@ namespace Client.Main.Utilities
                                 factorConversion = decimal.Parse(reader["factorconversion"].ToString()),
                                 existencia = Int32.Parse(reader["ExistenciaCantidad"].ToString()),
                                 pedido = Int32.Parse(reader["cantidad"].ToString()),
-                            
+
                             };
                             //Int32.TryParse(reader["CantidadEnviada"].ToString(), out int a);
                             //producto.compraPorLocal = a;
@@ -1987,7 +1988,7 @@ namespace Client.Main.Utilities
                         string cadena = "INSERT INTO RegistroCompra(CodigoCompra,CodigoProducto, Pedido,Estado) VALUES (@cod,@codProd, @pedido,'Pendiente' );";
                         SqlCommand cmd = new SqlCommand(cadena, conn);
                         cmd.Parameters.AddWithValue("@cod", compra.codigo);
-                        cmd.Parameters.AddWithValue("@codProd", producto.codigoProducto);                        
+                        cmd.Parameters.AddWithValue("@codProd", producto.codigoProducto);
                         cmd.Parameters.AddWithValue("@pedido", producto.sumaPedido);
                         cmd.ExecuteNonQuery();
                     }
@@ -2007,7 +2008,7 @@ namespace Client.Main.Utilities
                 }
             }
         }
-        
+
         /// <summary>
         /// Inserta en la base de datos, en la tabla CompraPedido la relacion entre un documento de compra y los pedidos que la componen.
         /// </summary>
@@ -2069,13 +2070,16 @@ namespace Client.Main.Utilities
                     cmd.Parameters.AddWithValue("@precio", string.IsNullOrEmpty(compra.productos[0].precioCompra.ToString()) ? (object)DBNull.Value : compra.productos[0].precioCompra);
                     cmd.ExecuteNonQuery();
                     conn.Close();
-                    if(compra.codigo != null && compra.productos[0].codigoProducto != null)
+                    if (compra.codigo != null && compra.productos[0].codigoProducto != null)
+                    {
                         registrarCambioLocal(Tipo: "Update", NombreMetodoLocal: "getRegistroCompra", PK: $"{compra.codigo}+{compra.productos[0].codigoProducto}", NombreMetodoServidor: "ServidorUpdateRegistroCompra", RespuestaExitosaServidor: "true");
+                    }
+
                     return true;
                 }
             }
             catch (Exception e)
-            {                
+            {
                 MessageBox.Show(e.Message);
 
                 return false;
@@ -2145,13 +2149,13 @@ namespace Client.Main.Utilities
                             comp.responsable.cedula = reader["CedulaEmpleado"].ToString();
                             comp.responsable.firstName = reader["Nombres"].ToString();
                             comp.responsable.lastName = reader["Apellidos"].ToString();
-                            comp.fecha = DateTime.Parse(reader["FechaCompra"].ToString());                            
+                            comp.fecha = DateTime.Parse(reader["FechaCompra"].ToString());
                             Int32.TryParse(reader["NumeroCanastillas"].ToString(), out int i);
                             comp.numeroCanastillas = i;
-                            Int32.TryParse(reader["peso"].ToString(),out int a);
+                            Int32.TryParse(reader["peso"].ToString(), out int a);
                             comp.codPedidos = getPedidosCompra(comp.codigo);
                             comp.peso = a;
-                            
+
                             cCompras.Add(comp);
                         }
                     }
@@ -2210,7 +2214,7 @@ namespace Client.Main.Utilities
                         }
                     }
                     conn.Close();
-                    
+
                     return cCompras;
                 }
             }
@@ -2256,8 +2260,8 @@ namespace Client.Main.Utilities
                             else
                             {
                                 producto.compra = null;
-                            }                                                        
-                            if (decimal.TryParse(reader["PrecioCompra"].ToString() , out decimal b ))
+                            }
+                            if (decimal.TryParse(reader["PrecioCompra"].ToString(), out decimal b))
                             {
                                 producto.precioCompra = b;
                             }
@@ -2303,8 +2307,8 @@ namespace Client.Main.Utilities
                         pedidosCodPedidos.Clear();
                         while (reader.Read())
                         {
-                            pedidosCodPedidos.Add(reader["codigopedido"].ToString());                                
-                            
+                            pedidosCodPedidos.Add(reader["codigopedido"].ToString());
+
                         }
                     }
                     conn.Close();
@@ -2340,12 +2344,12 @@ namespace Client.Main.Utilities
                         while (reader.Read())
                         {
 
-                            ComprasModel compra = new ComprasModel{ codigo = reader["CodigoCompra"].ToString()};
+                            ComprasModel compra = new ComprasModel { codigo = reader["CodigoCompra"].ToString() };
                             ProductoModel producto = new ProductoModel { codigoProducto = reader["CodigoProducto"].ToString() };
-                            if (Int32.TryParse(reader["CantidadComprada"].ToString(), out int a)){  producto.compra = a;}
-                            else{   producto.compra = null;}
-                            if (decimal.TryParse(reader["PrecioCompra"].ToString(), out decimal b)){    producto.precioCompra = b;}
-                            else{   producto.precioCompra = null;}
+                            if (Int32.TryParse(reader["CantidadComprada"].ToString(), out int a)) { producto.compra = a; }
+                            else { producto.compra = null; }
+                            if (decimal.TryParse(reader["PrecioCompra"].ToString(), out decimal b)) { producto.precioCompra = b; }
+                            else { producto.precioCompra = null; }
                             producto.proveedor.cedula = reader["CedulaProveedor"].ToString();
                             compra.productos.Add(producto);
                             compras.Add(compra);
@@ -2387,16 +2391,22 @@ namespace Client.Main.Utilities
 
 
 
-                            ProductoModel producto = new ProductoModel { 
-                            codigoProducto = reader["CodigoProducto"].ToString(),
-                            nombre = reader["Nombre"].ToString()};
+                            ProductoModel producto = new ProductoModel
+                            {
+                                codigoProducto = reader["CodigoProducto"].ToString(),
+                                nombre = reader["Nombre"].ToString()
+                            };
                             producto.codigoCompra = reader["CodigoCompra"].ToString();
                             producto.proveedor.cedula = reader["CedulaProveedor"].ToString();
                             producto.proveedor.firstName = reader["Nombres"].ToString();
                             producto.proveedor.lastName = reader["Apellidos"].ToString();
-                            producto.unidadCompra = reader["UnidadCompra"].ToString().Substring(0,3);                                                                                                               
-                            if (DateTime.TryParse(reader["fechaCompra"].ToString(), out DateTime fecha)){producto.fechaDeCompra = fecha;}
-                            if(DateTime.TryParse(reader["FechaPagado"].ToString(), out DateTime date))producto.fechaDePago = date;
+                            producto.unidadCompra = reader["UnidadCompra"].ToString().Substring(0, 3);
+                            if (DateTime.TryParse(reader["fechaCompra"].ToString(), out DateTime fecha)) { producto.fechaDeCompra = fecha; }
+                            if (DateTime.TryParse(reader["FechaPagado"].ToString(), out DateTime date))
+                            {
+                                producto.fechaDePago = date;
+                            }
+
                             producto.soportePago = reader["Soporte"].ToString();
                             if (Int32.TryParse(reader["CantidadComprada"].ToString(), out int a)) { producto.compra = a; }
                             else { producto.compra = null; }
@@ -2471,10 +2481,10 @@ namespace Client.Main.Utilities
                 {
                     return false;
                 }
-                
+
             }
         }
-       
+
         /// <summary>
         /// Regista en la base de datos la informacion relacionada con el nuevo documento de envio, coumple la mmisma funcion que NuevoEnvioBool, pero no gregistra el cambio local para evitar redundancia. .
         /// </summary>
@@ -2595,8 +2605,8 @@ namespace Client.Main.Utilities
                             {
                                 codigoProducto = reader["codigoproducto"].ToString(),
                                 nombre = reader["nombre"].ToString(),
-                                unidadVenta = reader["unidadventa"].ToString().Substring(0,3),
-                                unidadCompra = reader["unidadcompra"].ToString().Substring(0,3),
+                                unidadVenta = reader["unidadventa"].ToString().Substring(0, 3),
+                                unidadCompra = reader["unidadcompra"].ToString().Substring(0, 3),
                                 pedido = Int32.Parse(reader["Cantidad"].ToString()),
 
                             };
@@ -2628,7 +2638,7 @@ namespace Client.Main.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    BindableCollection < EnvioModel> cEnvios = new BindableCollection<EnvioModel>();
+                    BindableCollection<EnvioModel> cEnvios = new BindableCollection<EnvioModel>();
                     string cadena = $" select * from envio join PuntoVenta on Envio.CodigoPuntoVenta = PuntoVenta.CodigoPuntoVenta where CodigoEnvio = '{Caracteres}'  ORDER BY CodigoEnvio;";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
@@ -2669,7 +2679,7 @@ namespace Client.Main.Utilities
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public static bool updateEnvio(EnvioModel envio) 
+        public static bool updateEnvio(EnvioModel envio)
         {
             try
             {
@@ -2709,7 +2719,7 @@ namespace Client.Main.Utilities
 
             }
         }
-      
+
         /// <summary>
         /// Actualiza el estado del envio a:'Recibido'.
         /// </summary>
@@ -2824,7 +2834,7 @@ namespace Client.Main.Utilities
                 }
                 else
                 {
-                    return  e.Message;
+                    return e.Message;
                 }
             }
         }
@@ -2842,7 +2852,7 @@ namespace Client.Main.Utilities
                 {
                     BindableCollection<EnvioModel> cEnvios = new BindableCollection<EnvioModel>();
                     string cadena = $" select envio.CodigoEnvio, envio.NombreChofer,envio.CodigoPuntoVenta,envio.CedulaEmpleado,envio.FechaEnvio,Envio.PlacasCarro,Puntoventa.Nombres as NombrePuntoVenta,Empleado.Nombres,Empleado.Apellidos from envio join PuntoVenta on Envio.CodigoPuntoVenta = PuntoVenta.CodigoPuntoVenta join Empleado on Empleado.CedulaEmpleado = '{ccEmpleado}' where Envio.Estado = 'Pendiente' and envio.cedulaempleado = '{ccEmpleado}' ORDER BY CodigoEnvio;";
-                                    
+
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -2863,7 +2873,7 @@ namespace Client.Main.Utilities
                             envio.responsable.lastName = reader["Apellidos"].ToString();
                             envio.fecha = DateTime.Parse(reader["FechaEnvio"].ToString());
                             envio.puntoVenta.codigo = reader["CodigoPuntoVenta"].ToString();
-                            envio.puntoVenta.nombre = reader["NombrePuntoVenta"].ToString();                            
+                            envio.puntoVenta.nombre = reader["NombrePuntoVenta"].ToString();
                             cEnvios.Add(envio);
                         }
                     }
@@ -3158,7 +3168,7 @@ namespace Client.Main.Utilities
                                 codigoProducto = reader["codigoproducto"].ToString(),
                                 nombre = reader["nombre"].ToString(),
                                 unidadVenta = reader["unidadventa"].ToString().Substring(0, 3),
-                                unidadCompra = reader["unidadcompra"].ToString().Substring(0, 3)                                
+                                unidadCompra = reader["unidadcompra"].ToString().Substring(0, 3)
                             };
                             Int32.TryParse(reader["Cantidad"].ToString(), out int b);
                             producto.compraPorLocal = b;
@@ -3307,6 +3317,62 @@ namespace Client.Main.Utilities
             }
         }
 
+
+        #endregion
+
+        #region Inventario
+
+        /// <summary>
+        /// Registra los datos de creacion del nuevo inventario
+        /// </summary>
+        /// <param name="nombreLocal"></param>
+        public static bool nuevoInventario(InventarioModel inventario)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    conn.Open();
+                    string cadena = $"insert into Inventario(CodigoInventario,CodigoPuntoVenta) values ('{inventario.codigo}','{inventario.local.codigo}');";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                
+               MessageBox.Show("No se guardaron los datos del inventario del nuevo local");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Crera los nuevos campos de inventario para el nuevo producto.
+        /// </summary>
+        /// <param name="codigoProducto"></param>
+        public static void nuevoInventarioProducto(string codigoProducto)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<LocalModel> locales = getLocales();
+                    foreach (LocalModel local in locales)
+                    {
+                        string cadena = $"insert into InventarioProducto(codigoinventario, Codigoproducto) values ((select CodigoInventario from inventario where CodigoPuntoVenta = '{local.codigo}'), '{codigoProducto}') ";
+                        SqlCommand cmd = new SqlCommand(cadena, conn);
+                        conn.Open();
+                        conn.Close();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
 
         #endregion
 
@@ -3670,8 +3736,8 @@ namespace Client.Main.Utilities
 
             }
         }
-        
-        
+
+
         #endregion
 
         /// <summary>
@@ -3683,8 +3749,6 @@ namespace Client.Main.Utilities
         {
             return ConfigurationManager.ConnectionStrings[name].ConnectionString;
         }
-
-
 
     }
 }

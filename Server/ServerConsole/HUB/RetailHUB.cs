@@ -611,6 +611,20 @@ namespace ServerConsole
 
         #endregion
 
+        #region Inventario
+
+        /// <summary>
+        /// Retorna la instancia de inventario del local con el nombre dado
+        /// </summary>
+        /// <param name="nombreLocal"></param>
+        /// <returns></returns>
+        public BindableCollection<InventarioModel> ServidorgetInventario(string nombreLocal)
+        {
+            return DbConnection.getInventario(nombreLocal);
+        }
+
+        #endregion
+
 
         #region Clientes
         /// <summary>

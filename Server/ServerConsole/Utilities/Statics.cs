@@ -97,5 +97,19 @@ namespace ServerConsole.Utilities
                 return palabra[0].ToString().ToUpper() + palabra.Substring(1);
         }
 
+        /// <summary>
+        /// Imprime en consola el texto ingresado y la hora
+        /// </summary>
+        /// <param name="Texto"></param>
+        public static void Imprimir(string Texto)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.Write("\n\t" + DateTime.Now + "-- ");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine($"{Texto}");
+
+        }
+
+
     }
 }

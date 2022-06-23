@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Owin;
+using ServerConsole.Utilities;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -27,6 +28,7 @@ namespace ServerConsole
                 UseStartup<Startup>();
         static void Main(string[] args)
         {
+
             
             //AppDomain.CurrentDomain.ProcessExit += new EventHandler(OnProcessExit);
             CreateWebHostBuildder(args).Build().Run();    

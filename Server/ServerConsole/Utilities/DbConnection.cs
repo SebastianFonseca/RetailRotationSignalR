@@ -3,6 +3,7 @@ using ServerConsole.Models;
 using System;
 using System.Configuration;
 using System.Data.SqlClient;
+using ServerConsole.Utilities;
 
 namespace ServerConsole.Utilities
 {
@@ -158,6 +159,7 @@ namespace ServerConsole.Utilities
                             Console.Write("\n\t" + DateTime.Now + ": ");
                             Console.ForegroundColor = ConsoleColor.White;
                             Console.WriteLine($"El usuario {RetailHUB.usuarioConectado} registro un nuevo producto: {Producto.codigoProducto} - {Producto.nombre}.");
+                            nuevoInventarioProducto(Producto.codigoProducto);
                             return $"El usuario {RetailHUB.usuarioConectado} registro un nuevo producto: {Producto.codigoProducto} - {Producto.nombre}.";
                         }
                     }
@@ -948,15 +950,11 @@ namespace ServerConsole.Utilities
                     cmd.Parameters.AddWithValue("@ciudad", Statics.PrimeraAMayuscula(NuevoLocal.ciudad));
                     cmd.Parameters.AddWithValue("@nrocanastillas", Statics.PrimeraAMayuscula(NuevoLocal.numeroDeCanastillas.ToString()));
                     cmd.Parameters.AddWithValue("@fechaapertura", Statics.PrimeraAMayuscula(NuevoLocal.fechaDeApertura.Date.ToString("yyyy-MM-dd")));
-                    //conn.Open();
                     cmd.ExecuteNonQuery();
-                    Console.ForegroundColor = ConsoleColor.DarkCyan;
-                    Console.Write("\n\t" + DateTime.Now + "-- ");
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine($"{RetailHUB.usuarioConectado} Ha registrado el nuevo local: {NuevoLocal.nombre }");
+                    Statics.Imprimir($"{RetailHUB.usuarioConectado} ha registrado el nuevo local: {NuevoLocal.nombre }");
                     conn.Close();
                     Registrar("Insert", "ServidorGetLocales", LocalId(NuevoLocal.nombre), "LocalModel[]", "NuevoLocal", "codigo");
-
+                    nuevoInventario(NuevoLocal.nombre);
                     return $"Se ha registrado el nuevo local: {NuevoLocal.nombre }";
 
                 }
@@ -1183,7 +1181,7 @@ namespace ServerConsole.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = "SELECT Distinct [CodigoPuntoVenta], [Nombres]  FROM PuntoVenta ORDER BY Nombres";
+                    string cadena = "SELECT Distinct [CodigoPuntoVenta], [Nombres]  FROM PuntoVenta where Estado = 'Activo' ORDER BY Nombres";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -2490,7 +2488,11 @@ namespace ServerConsole.Utilities
                     {
                         conn.Close();
                         Registrar(Tipo: "Update", NombreMetodoServidor: "ServidorgetEnvioConProductos", ClavePrimaria: envio.codigo, TipoRetornoMetodoServidor: "EnvioModel[]", NombreMetodoCliente: "updateEnvioServidor", NombrePK: "codigo");
-                        Console.WriteLine("Registrando update");
+                        Console.ForegroundColor = ConsoleColor.DarkCyan;
+                        Console.Write("\n\t" + DateTime.Now + "--");
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha editado un documento: Envio con fecha {envio.fechaEnvio.ToString("dd'/'MM'/'yyyy")}.");
+
                         return "true";
                     }
                     return "false";
@@ -2609,7 +2611,6 @@ namespace ServerConsole.Utilities
         /// <returns></returns>
         public static string NuevoRecibidoBool(RecibidoModel recibido)
         {
-
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
@@ -2939,6 +2940,134 @@ namespace ServerConsole.Utilities
 
         #endregion
 
+        #region Inventario
+
+        /// <summary>
+        /// Registra los datos de creacion del nuevo inventario
+        /// </summary>
+        /// <param name="nombreLocal"></param>
+        public static void nuevoInventario(string nombreLocal)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    conn.Open();
+                    string cadena = $"insert into Inventario(CodigoPuntoVenta) values ((select CodigoPuntoVenta from PuntoVenta where Nombres = '{nombreLocal}'));";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);                   
+                    cmd.ExecuteNonQuery();
+                    Registrar(Tipo: "Insert", NombreMetodoServidor: "ServidorgetInventario", ClavePrimaria: getIdInventario(nombreLocal), TipoRetornoMetodoServidor: "InventarioModel[]", NombreMetodoCliente: "nuevoInventario", NombrePK: "codigo");
+                    Statics.Imprimir($"Se han registrado los datos de inventario del nuevo local");
+
+                    conn.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Statics.Imprimir("No se guardaron los datos del inventario del nuevo local");                
+            }
+        }
+
+        /// <summary>
+        /// Crera los nuevos campos de inventario para el nuevo producto.
+        /// </summary>
+        /// <param name="codigoProducto"></param>
+        public static void nuevoInventarioProducto(string codigoProducto)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<LocalModel> locales = getLocales();
+                    foreach (LocalModel local in locales)
+                    {
+                    string cadena = $"insert into InventarioProducto(codigoinventario, Codigoproducto) values ((select CodigoInventario from inventario where CodigoPuntoVenta = '{local.codigo}'), '{codigoProducto}') ";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    conn.Close();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Retorna la instancia de inventario del local con el nombre dado
+        /// </summary>
+        /// <param name="nombreLocal"></param>
+        /// <returns></returns>
+         public static BindableCollection<InventarioModel> getInventario(string codigoInventario)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<InventarioModel> cInventarios = new BindableCollection<InventarioModel>();
+                    string cadena = $" select * from Inventario where CodigoInventario = '{codigoInventario}';";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        cInventarios.Clear();
+                        while (reader.Read())
+                        {
+                            InventarioModel rec = new InventarioModel
+                            {
+                                codigo = reader["CodigoInventario"].ToString(),                               
+                            };
+                            rec.local.codigo = reader["CodigoPuntoVenta"].ToString();
+                            cInventarios.Add(rec);
+                        }
+                    }
+                    conn.Close();
+                    return cInventarios;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Retorna el codigo del inventario del local con el nombre dado
+        /// </summary>
+        /// <param name="nombreLocal"></param>
+        /// <returns></returns>
+        public static string getIdInventario(string nombreLocal)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string codigo;
+                    string cadena = $" select * from Inventario where CodigoPuntoVenta  = (select codigoPuntoVenta from Puntoventa where Nombres = '{nombreLocal}')";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+
+                        reader.Read();
+                        codigo =  reader["CodigoInventario"].ToString();
+
+                    }
+                    conn.Close();
+                    return codigo;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+
+        #endregion
+
         #region Clientes
         /// <summary>
         /// Metodo encargado de ejecutar el query insert del nuevo cliente en la base de datos local.
@@ -3066,6 +3195,10 @@ namespace ServerConsole.Utilities
         {
             return ConfigurationManager.ConnectionStrings[name].ConnectionString;
         }
+
+
+
+
 
     }
 }
