@@ -133,13 +133,13 @@
                     <!--Linea 10-->
                     <StackPanel Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                         <TextBlock Text="Un(a) " FontWeight="Normal"/>
-                        <TextBlock Text="{Binding UnidadCompra}" FontWeight="Normal"/>
+                        <TextBlock Text="{Binding UnidadCompra, UpdateSourceTrigger=PropertyChanged}" FontWeight="Normal"/>
                         <TextBlock Text=" de " FontWeight="Normal"/>
-                        <TextBlock Text="{Binding Nombre}" FontWeight="Normal"/>
+                        <TextBlock Text="{Binding Nombre, UpdateSourceTrigger=PropertyChanged}" FontWeight="Normal"/>
                         <TextBlock Text=" equivale a "  FontWeight="Normal"/>
-                        <TextBlock Text="{Binding FactorConversion}" FontWeight="Normal"/>
+                        <TextBlock Text="{Binding FactorConversion, UpdateSourceTrigger=PropertyChanged}" FontWeight="Normal"/>
                         <TextBlock Text=" " FontWeight="Normal"/>
-                        <TextBlock Text="{Binding UnidadVenta}" FontWeight="Normal"/>
+                        <TextBlock Text="{Binding UnidadVenta, UpdateSourceTrigger=PropertyChanged}" FontWeight="Normal"/>
                     </StackPanel>
                     
                     

@@ -117,7 +117,7 @@ namespace Client.Main.ViewModels
 
             }
         }
-        public decimal IVA
+        public decimal? IVA
         {
             get { return Producto.iva; }
             set

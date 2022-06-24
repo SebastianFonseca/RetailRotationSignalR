@@ -61,6 +61,8 @@ namespace Client.Main.ViewModels
 
         public ShellViewModel()
         {
+    
+
         }
 
         bool flag2 = true;

@@ -140,26 +140,23 @@ namespace ServerConsole.Utilities
                         {
                             reader.Close();
                             string cadena2 = "INSERT INTO Producto(CodigoProducto, Nombre, UnidadVenta,	UnidadCompra, PrecioVenta, Seccion, FechaVencimiento, IVA, CodigoBarras, Estado, FactorConversion )" +
-                                " VALUES (@codigo,@nombre,@univenta,@unicompra,@precio,@seccion,@fv,@iva,@cb,'Activo', @fc)";
+                                             " VALUES (             @codigo,        @nombre,  @univenta,@unicompra,     @precio,    @seccion,@fv,              @iva,@cb,          'Activo', @fc)";
                             SqlCommand cmd2 = new SqlCommand(cadena2, conn);
                             cmd2.Parameters.AddWithValue("@codigo", Statics.PrimeraAMayuscula(Producto.codigoProducto));
                             cmd2.Parameters.AddWithValue("@nombre", Statics.PrimeraAMayuscula(Producto.nombre));
                             cmd2.Parameters.AddWithValue("@univenta", Statics.PrimeraAMayuscula(Producto.unidadVenta));
-                            cmd2.Parameters.AddWithValue("@unicompra", Statics.PrimeraAMayuscula(Producto.unidadCompra));
-                            cmd2.Parameters.AddWithValue("@precio", Producto.precioVenta.ToString());
+                            cmd2.Parameters.AddWithValue("@unicompra", Statics.PrimeraAMayuscula(Producto.unidadCompra));     
+                            cmd2.Parameters.AddWithValue("@precio",  decimal.TryParse(Producto.precioVenta.ToString(), out decimal b ) ? b : (object)DBNull.Value);
                             cmd2.Parameters.AddWithValue("@seccion", Statics.PrimeraAMayuscula(Producto.seccion));
                             cmd2.Parameters.AddWithValue("@fv", Producto.fechaVencimiento == DateTime.Today ? (object)DBNull.Value : Producto.fechaVencimiento);
-                            cmd2.Parameters.AddWithValue("@iva", Producto.iva);
+                            cmd2.Parameters.AddWithValue("@iva", decimal.TryParse(Producto.iva.ToString(), out decimal c) ? c : (object)DBNull.Value);
                             cmd2.Parameters.AddWithValue("@cb", string.IsNullOrEmpty(Producto.codigoBarras) ? (object)DBNull.Value : Producto.codigoBarras);
-                            cmd2.Parameters.AddWithValue("@fc", Producto.factorConversion);
+                            cmd2.Parameters.AddWithValue("@fc", decimal.TryParse(Producto.factorConversion.ToString(), out decimal d ) ? d : (object)DBNull.Value);
                             cmd2.ExecuteNonQuery();
-                            Registrar("Insert", "ServidorGetProductos", Producto.codigoProducto, "ProductoModel[]", "NuevoProducto", "codigoProducto");
-                            conn.Close();
-                            Console.ForegroundColor = ConsoleColor.DarkCyan;
-                            Console.Write("\n\t" + DateTime.Now + ": ");
-                            Console.ForegroundColor = ConsoleColor.White;
-                            Console.WriteLine($"El usuario {RetailHUB.usuarioConectado} registro un nuevo producto: {Producto.codigoProducto} - {Producto.nombre}.");
+                            conn.Close();                            
                             nuevoInventarioProducto(Producto.codigoProducto);
+                            Registrar("Insert", "ServidorGetProductos", Producto.codigoProducto, "ProductoModel[]", "NuevoProducto", "codigoProducto");
+                            Statics.Imprimir($"El usuario {RetailHUB.usuarioConectado} registro un nuevo producto: {Producto.codigoProducto} - {Producto.nombre}.");
                             return $"El usuario {RetailHUB.usuarioConectado} registro un nuevo producto: {Producto.codigoProducto} - {Producto.nombre}.";
                         }
                     }
@@ -199,24 +196,19 @@ namespace ServerConsole.Utilities
                     {
                         while (reader.Read())
                         {
-                            ProductoModel producto = new ProductoModel();
-                            producto.codigoProducto = reader["CodigoProducto"].ToString();
-                            producto.nombre = reader["Nombre"].ToString();
-                            producto.unidadCompra = reader["UnidadCompra"].ToString();
-                            producto.unidadVenta = reader["UnidadVenta"].ToString();
-                            producto.precioVenta = Convert.ToDecimal(reader["PrecioVenta"].ToString());
-                            producto.seccion = reader["Seccion"].ToString();
-                            producto.iva = Convert.ToDecimal(reader["IVA"].ToString());
-                            producto.codigoBarras = reader["CodigoBarras"].ToString();
-                            producto.factorConversion = decimal.Parse(reader["FactorConversion"].ToString());
-                            if (reader["FechaVencimiento"].ToString() == "")
+                            ProductoModel producto = new ProductoModel
                             {
-                                producto.fechaVencimiento = DateTime.MinValue;
-                            }
-                            else
-                            {
-                                producto.fechaVencimiento = DateTime.Parse(reader["FechaVencimiento"].ToString());
-                            }
+                                codigoProducto = reader["CodigoProducto"].ToString(),
+                                nombre = reader["Nombre"].ToString(),
+                                unidadCompra = reader["UnidadCompra"].ToString(),
+                                unidadVenta = reader["UnidadVenta"].ToString(),
+                                seccion = reader["Seccion"].ToString(),
+                                codigoBarras = reader["CodigoBarras"].ToString()
+                            };
+                            if (decimal.TryParse(reader["PrecioVenta"].ToString(), out decimal b)) { producto.precioVenta = b; } else { producto.precioVenta = null; }
+                            if (decimal.TryParse(reader["IVA"].ToString(), out decimal c)) { producto.iva = c; } else { producto.iva = null; }
+                            if (decimal.TryParse(reader["FactorConversion"].ToString(), out decimal d)) { producto.factorConversion = d; } else { producto.factorConversion = null; }
+                            if (reader["FechaVencimiento"].ToString() == ""){producto.fechaVencimiento = DateTime.MinValue;}else{producto.fechaVencimiento = DateTime.Parse(reader["FechaVencimiento"].ToString());}
                             productos.Add(producto);
                         }
                     }
@@ -257,19 +249,16 @@ namespace ServerConsole.Utilities
                             producto.nombre = reader["Nombre"].ToString();
                             producto.unidadVenta = reader["UnidadVenta"].ToString();
                             producto.unidadCompra = reader["UnidadCompra"].ToString();
-                            producto.precioVenta = Convert.ToDecimal(reader["PrecioVenta"].ToString());
                             producto.seccion = reader["Seccion"].ToString();
-                            producto.iva = Convert.ToDecimal(reader["IVA"].ToString());
                             producto.codigoBarras = reader["CodigoBarras"].ToString();
-                            producto.factorConversion = decimal.Parse(reader["FactorConversion"].ToString());
-                            if (reader["FechaVencimiento"].ToString() == "")
-                            {
-                                producto.fechaVencimiento = DateTime.MinValue;
-                            }
-                            else
-                            {
-                                producto.fechaVencimiento = DateTime.Parse(reader["FechaVencimiento"].ToString());
-                            }
+                            if (decimal.TryParse(reader["PrecioVenta"].ToString(), out decimal precio)){producto.precioVenta = precio;}
+                            else{ producto.precioVenta = null;}
+                            if (decimal.TryParse(reader["IVA"].ToString(), out decimal iva)){producto.iva = iva;}
+                            else{producto.iva = null;}
+                            if (decimal.TryParse(reader["FactorConversion"].ToString(), out decimal FactorConversion)){producto.factorConversion = FactorConversion;}
+                            else{producto.factorConversion = null;}
+                            if (reader["FechaVencimiento"].ToString() == ""){producto.fechaVencimiento = DateTime.MinValue;}
+                            else{producto.fechaVencimiento = DateTime.Parse(reader["FechaVencimiento"].ToString());}
                             productos.Add(producto);
                             //Console.WriteLine($"se consulto el producto {producto.nombre}");
                         }
@@ -2981,14 +2970,16 @@ namespace ServerConsole.Utilities
                     BindableCollection<LocalModel> locales = getLocales();
                     foreach (LocalModel local in locales)
                     {
-                    string cadena = $"insert into InventarioProducto(codigoinventario, Codigoproducto) values ((select CodigoInventario from inventario where CodigoPuntoVenta = '{local.codigo}'), '{codigoProducto}') ";
+                    string cadena = $"insert into InventarioProducto(codigoinventario, Codigoproducto, Cantidad) values ((select CodigoInventario from inventario where CodigoPuntoVenta = '{local.codigo}'), '{codigoProducto}',0) ";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
+                        cmd.ExecuteNonQuery();
                     conn.Close();
                     }
                 }
             }
             catch (Exception e)
+            
             {
                 Console.WriteLine(e.Message);
             }
@@ -3006,7 +2997,7 @@ namespace ServerConsole.Utilities
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
                     BindableCollection<InventarioModel> cInventarios = new BindableCollection<InventarioModel>();
-                    string cadena = $" select * from Inventario where CodigoInventario = '{codigoInventario}';";
+                    string cadena = $" select * from Inventario where CodigoInventario = {codigoInventario};";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -3195,8 +3186,6 @@ namespace ServerConsole.Utilities
         {
             return ConfigurationManager.ConnectionStrings[name].ConnectionString;
         }
-
-
 
 
 

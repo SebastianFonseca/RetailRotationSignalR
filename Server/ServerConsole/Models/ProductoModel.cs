@@ -10,11 +10,11 @@ namespace ServerConsole.Models
         public string nombre { get; set; }
         public string unidadVenta { get; set; } = "";
         public string unidadCompra { get; set; } = "";
-        public decimal factorConversion { get; set; } = 1;
+        public decimal? factorConversion { get; set; } = 1;
         public string seccion { get; set; }
         public DateTime fechaVencimiento { get; set; } = DateTime.Today;
 
-        public decimal iva { get; set; }
+        public decimal? iva { get; set; }
         public string codigoBarras { get; set; }
         public int? existencia { get; set; }
 

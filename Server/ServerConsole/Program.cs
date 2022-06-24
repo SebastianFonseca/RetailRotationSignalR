@@ -28,8 +28,8 @@ namespace ServerConsole
                 UseStartup<Startup>();
         static void Main(string[] args)
         {
+   
 
-            
             //AppDomain.CurrentDomain.ProcessExit += new EventHandler(OnProcessExit);
             CreateWebHostBuildder(args).Build().Run();    
             

@@ -59,7 +59,7 @@ namespace Client.Main.ViewModels
             get { return Producto.fechaVencimiento.ToShortDateString() ; }
  
         }
-        public decimal iva
+        public decimal? iva
         {
             get { return Producto.iva; }
 
