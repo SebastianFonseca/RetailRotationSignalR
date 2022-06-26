@@ -62,33 +62,6 @@ namespace ServerConsole.Utilities
                 return new[] { "Exception" };
             }
 
-            //try
-            //{
-
-            //    using (IDbConnection conn = new SqlConnection(_connString))
-            //    {
-
-            //        var parameters = new DynamicParameters();
-            //        parameters.Add("@cedula", User);
-            //        parameters.Add("@password", Password);
-            //        parameters.Add(name: "@RetVal", dbType: DbType.Int32, direction: ParameterDirection.ReturnValue);
-
-
-            //        var returnCode = conn.Execute(sql: "Login", param: parameters, commandType: CommandType.StoredProcedure);
-
-            //        if (parameters.Get<Int32>("@RetVal") == 0)
-            //            return false;
-            //        else
-            //            return true;
-            //    }
-
-            //}
-            //catch (Exception e)
-            //{
-            //    Console.WriteLine(e.Message);
-            //    return false;
-            //}
-
         }
 
         #region Producto
@@ -1749,7 +1722,6 @@ namespace ServerConsole.Utilities
         /// <returns></returns>
         public static string NuevaCompra(ComprasModel compra)
         {
-
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
@@ -2618,6 +2590,7 @@ namespace ServerConsole.Utilities
                     string response = InsertarRecibidoProducto(recibido);
                     if (response == "Y")
                     {
+                        updateInventario(recibido.productos, recibido.responsable);
                         updateEstadoEnvio(recibido.codigo);
                         Console.ForegroundColor = ConsoleColor.DarkCyan;
                         Console.Write("\n\t" + DateTime.Now + "--");
@@ -3009,7 +2982,7 @@ namespace ServerConsole.Utilities
                             {
                                 codigo = reader["CodigoInventario"].ToString(),                               
                             };
-                            rec.local.codigo = reader["CodigoPuntoVenta"].ToString();
+                            rec.puntoVenta.codigo = reader["CodigoPuntoVenta"].ToString();
                             cInventarios.Add(rec);
                         }
                     }
@@ -3056,6 +3029,70 @@ namespace ServerConsole.Utilities
                 return null;
             }
         }
+
+        /// <summary>
+        /// Actualiza la cantidad en inventario de la lista de produtos dados como parametro.
+        /// </summary>
+        /// <param name="productos"></param>
+        public static void updateInventario(BindableCollection<ProductoModel> productos, EmpleadoModel empleado)
+        {
+            string codigoInventario;
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    Statics.Imprimir($"Modificación del inventario del local con código: {empleado.puntoDeVenta.codigo}");
+                    string cadena = $"select codigoinventario from Inventario where CodigoPuntoVenta = '{empleado.puntoDeVenta.codigo}'";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        reader.Read();
+                        codigoInventario = reader["CodigoInventario"].ToString();
+                    }
+                    conn.Close();
+                    foreach (ProductoModel producto in productos)
+                    {
+                        //Saltar al siguiente producto del foreach si para el producto actual no se recibio alguna cantidad
+                        if (producto.recibido == 0 | producto.recibido == null)
+                            continue;
+                        ///La hora no coincidira con la hora de reistro en el equipo donde localmente se registro el 
+                        string cadena0 = $"insert into HistorialIventario(CodigoInventario,CodigoProducto,AumentoDisminucion,Total,CedulaEmpleado,Fecha)values('{codigoInventario}','{producto.codigoProducto}','{producto.recibido}', (select cantidad from InventarioProducto where CodigoInventario={codigoInventario} and CodigoProducto = '{producto.codigoProducto}' )  +  {producto.recibido} ,'{ empleado.cedula}', '{DateTime.Now.ToString("yyyy-MM-dd HH:mm")}' )";
+                        SqlCommand cmd0 = new SqlCommand(cadena0, conn);
+                        conn.Open();
+                        cmd0.ExecuteNonQuery();
+                        conn.Close();
+
+                        int? cantidad = producto.recibido;
+                        string cadena1 = $"select Cantidad from InventarioProducto where codigoinventario = '{codigoInventario}' and CodigoProducto  = '{producto.codigoProducto}';";
+                        SqlCommand cmd1 = new SqlCommand(cadena1, conn);
+                        conn.Open();
+                        using (SqlDataReader reader1 = cmd1.ExecuteReader())
+                        {
+                            if (reader1.FieldCount > 1)
+                            { Console.WriteLine("Error en el iventario"); return; }
+
+                            reader1.Read();
+                            if (Int32.TryParse(reader1["Cantidad"].ToString(), out int valor))
+                                cantidad = cantidad + valor;
+                        }
+                        conn.Close();
+
+                        string cadena2 = $"update InventarioProducto set Cantidad = {cantidad} where codigoinventario = {codigoInventario} and CodigoProducto  = '{producto.codigoProducto}';";
+                        SqlCommand cmd2 = new SqlCommand(cadena2, conn);
+                        conn.Open();
+                        cmd2.ExecuteNonQuery();
+                        conn.Close();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+
 
         #endregion
 

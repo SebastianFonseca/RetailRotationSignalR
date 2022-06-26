@@ -13,7 +13,10 @@ namespace Client.Main.Utilities
     public class Sincronizar : Screen
     {
         public static Connect conexion = ContainerConfig.scope.Resolve<Connect>();
-
+        /// <summary>
+        /// Primero se descargan los datos del servidor y luego se suben los registros locales 
+        /// </summary>
+        /// <returns></returns>
         public static async Task<bool> SincronizarRegistro()
         {
             ///Varaible para almacenar el codigo del registro por si ocurre una excepcion y deber ser guardado como un registro sin actualizar

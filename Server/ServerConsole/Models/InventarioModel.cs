@@ -4,10 +4,8 @@ using System.Text;
 
 namespace ServerConsole.Models
 {
-    public class InventarioModel
+    public class InventarioModel: DocumentoModel
     {
-        public string codigo { get; set; }
 
-        public LocalModel local { get; set; } = new LocalModel();
     }
 }

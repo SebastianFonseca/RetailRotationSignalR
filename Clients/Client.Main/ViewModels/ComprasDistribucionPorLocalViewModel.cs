@@ -44,7 +44,7 @@ namespace Client.Main.ViewModels
                     if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
                     {
 
-                        Task<object> re = conexion.CallServerMethod("ServidorgetEnvioConProductos", Arguments: new[] { codigo + ":" + compra.codigo });
+                        Task<object> re = conexion.CallServerMethod("ServidorgetEnvioConProductos", Arguments: new[] { codigo+":"+compra.codigo });
                         await re;
 
                         BindableCollection<EnvioModel> envios = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<EnvioModel>>(re.Result.ToString());

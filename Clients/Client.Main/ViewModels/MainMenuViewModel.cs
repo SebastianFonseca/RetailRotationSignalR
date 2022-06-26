@@ -32,7 +32,10 @@ namespace Client.Main.ViewModels
             {
                 try
                 {
+                    //Descarga del servidor los cambios en la base de datos
                     await Utilities.Sincronizar.SincronizarRegistro();
+
+                    //Registra en la base de datos del servidor los cambios locales que se han registrado
                     await Utilities.Sincronizar.actualizarRegistrosLocales();
                 }
 

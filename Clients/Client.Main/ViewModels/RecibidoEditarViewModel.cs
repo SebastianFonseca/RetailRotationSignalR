@@ -19,6 +19,7 @@ namespace Client.Main.ViewModels
         {
             Placa = envio.placasCarro;
             recibido = envio;
+            recibido.responsable.puntoDeVenta.codigo = DbConnection.getLocalUbicacion();
             VentanaPrincipal = argVentana;
 
         }
@@ -132,8 +133,6 @@ namespace Client.Main.ViewModels
             {
                 MessageBox.Show(e.Message);
             }
-
-
         }
     }
 }
