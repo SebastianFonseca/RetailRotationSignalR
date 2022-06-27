@@ -58,7 +58,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return new[] { "Exception" };
             }
 
@@ -137,10 +137,8 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.ForegroundColor = ConsoleColor.DarkCyan;
-                Console.Write("\n\t" + DateTime.Now + ": ");
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine(e.Message);
+
+                Statics.Imprimir (e.Message);
                 return e.Message;
             }
         }
@@ -186,13 +184,13 @@ namespace ServerConsole.Utilities
                         }
                     }
                     conn.Close();
-                   // Console.WriteLine("Se consultaron los productos.");
+                   // Statics.Imprimir("Se consultaron los productos.");
                     return productos;
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
 
@@ -233,17 +231,16 @@ namespace ServerConsole.Utilities
                             if (reader["FechaVencimiento"].ToString() == ""){producto.fechaVencimiento = DateTime.MinValue;}
                             else{producto.fechaVencimiento = DateTime.Parse(reader["FechaVencimiento"].ToString());}
                             productos.Add(producto);
-                            //Console.WriteLine($"se consulto el producto {producto.nombre}");
+                            //Statics.Imprimir($"se consulto el producto {producto.nombre}");
                         }
                     }
-                    conn.Close();
-
+                    conn.Close();                    
                     return productos;
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
 
@@ -265,10 +262,8 @@ namespace ServerConsole.Utilities
                     conn.Open();
                     cmd.ExecuteNonQuery();
                     conn.Close();
-                    Console.ForegroundColor = ConsoleColor.DarkCyan;
-                    Console.Write("\n\t" + DateTime.Now + "--");
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha eliminado al producto con codigo: {idProducto}");
+
+                    Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha eliminado al producto con codigo: {idProducto}");
 
                     Registrar("Delete", "", idProducto, "", "deleteProducto", "codigoProducto");
                     return "Se ha eliminado al producto.";
@@ -276,7 +271,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return e.Message;
             }
 
@@ -333,10 +328,8 @@ namespace ServerConsole.Utilities
                             cmd.Parameters.AddWithValue("@cb", string.IsNullOrEmpty(Producto.codigoBarras) ? (object)DBNull.Value : Producto.codigoBarras);
                             cmd.Parameters.AddWithValue("@fc", Producto.factorConversion);
                             cmd.ExecuteNonQuery();
-                            Console.ForegroundColor = ConsoleColor.DarkCyan;
-                            Console.Write("\n\t" + DateTime.Now + "--");
-                            Console.ForegroundColor = ConsoleColor.White;
-                            Console.WriteLine($"{RetailHUB.usuarioConectado}: Ha Actualizado al producto {Producto.codigoProducto} - {Producto.nombre}");
+
+                            Statics.Imprimir($"{RetailHUB.usuarioConectado}: Ha Actualizado al producto {Producto.codigoProducto} - {Producto.nombre}");
                             conn.Close();
                             Registrar("Update", "ServidorGetProductos", Producto.codigoProducto, "ProductoModel[]", "actualizarProducto", "codigoProducto");
                             return "Producto actualizado.";
@@ -347,7 +340,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return e.Message;
             }
         }
@@ -381,10 +374,8 @@ namespace ServerConsole.Utilities
                     string response = insertProductoProveedor(proveedor.cedula, proveedor.productos);
                     if (response == "Y")
                     {
-                        Console.ForegroundColor = ConsoleColor.DarkCyan;
-                        Console.Write("\n\t" + DateTime.Now + "--");
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo proveedor {proveedor.firstName} {proveedor.lastName}");
+        
+                        Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo proveedor {proveedor.firstName} {proveedor.lastName}");
                         Registrar("Insert", "ServidorGetProveedor", proveedor.cedula, "ProveedorModel[]", "NuevoProveedor", "cedula");
                         conn.Close();
                         return "Se ha registrado al nuevo proveedor.";
@@ -508,7 +499,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
         }
@@ -564,7 +555,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
         }
@@ -605,7 +596,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
         }
@@ -626,17 +617,15 @@ namespace ServerConsole.Utilities
                     conn.Open();
                     cmd.ExecuteNonQuery();
                     conn.Close();
-                    Console.ForegroundColor = ConsoleColor.DarkCyan;
-                    Console.Write("\n\t" + DateTime.Now + "--");
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha eliminado al proveedor {Cedula}");
+
+                    Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha eliminado al proveedor {Cedula}");
                     Registrar("Delete", "", Cedula, "", "deleteProveedor", "cedula");
                     return "Se ha eliminado al proveedor.";
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return e.Message;
             }
         }
@@ -665,10 +654,8 @@ namespace ServerConsole.Utilities
                     string response = insertProductoProveedor(proveedor.cedula, proveedor.productos);
                     if (response == "Y")
                     {
-                        Console.ForegroundColor = ConsoleColor.DarkCyan;
-                        Console.Write("\n\t" + DateTime.Now + "--");
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha editado la información del proveedor {proveedor.firstName} {proveedor.lastName}");
+ 
+                        Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha editado la información del proveedor {proveedor.firstName} {proveedor.lastName}");
                         conn.Close();
                         Registrar("Update", "ServidorGetProveedor", proveedor.cedula, "ProveedorModel[]", "actualizarProveedor", "cedula");
                         return "Se ha editado la informacion.";
@@ -719,10 +706,8 @@ namespace ServerConsole.Utilities
                     cmd.Parameters.AddWithValue("@contraseña", Statics.Hash(Empleado.password));
                     conn.Open();
                     cmd.ExecuteNonQuery();
-                    Console.ForegroundColor = ConsoleColor.DarkCyan;
-                    Console.Write("\n\t" + DateTime.Now + "--");
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo usuario {Empleado.firstName} {Empleado.lastName}");
+        
+                    Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo usuario {Empleado.firstName} {Empleado.lastName}");
                     conn.Close();
                     Registrar("Insert", "ServidorGetUsuarios", Empleado.cedula, "EmpleadoModel[]", "NuevoUsuario", "cedula");
                     return "Se ha registrado al nuevo usuario.";
@@ -785,7 +770,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
         }
@@ -806,17 +791,15 @@ namespace ServerConsole.Utilities
                     conn.Open();
                     cmd.ExecuteNonQuery();
                     conn.Close();
-                    Console.ForegroundColor = ConsoleColor.DarkCyan;
-                    Console.Write("\n\t" + DateTime.Now + "--");
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha eliminado al usuario {Cedula}");
+
+                    Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha eliminado al usuario {Cedula}");
                     Registrar("Delete", "", Cedula, "", "deleteEmpleado", "cedula");
                     return "Se ha eliminado al usuario.";
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return e.Message;
             }
         }
@@ -851,10 +834,8 @@ namespace ServerConsole.Utilities
                     cmd.Parameters.AddWithValue("@AntiguoCedula", CC);
                     conn.Open();
                     cmd.ExecuteNonQuery();
-                    Console.ForegroundColor = ConsoleColor.DarkCyan;
-                    Console.Write("\n\t" + DateTime.Now + "--");
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine($"{RetailHUB.usuarioConectado}: Ha Actualizado al usuario {Empleado.firstName} {Empleado.lastName}");
+
+                    Statics.Imprimir($"{RetailHUB.usuarioConectado}: Ha Actualizado al usuario {Empleado.firstName} {Empleado.lastName}");
                     conn.Close();
                     Registrar("Update", "ServidorGetUsuarios", CC, "EmpleadoModel[]", "ActualizarUsuario", "cedula");
                     return "Usuario actualizado";
@@ -923,16 +904,16 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
 
                 if (e.Message.Substring(0, 52) == $"Violation of PRIMARY KEY constraint 'PK_PuntoVenta'.")
                 {
-                    //Console.WriteLine($"El nombre {NuevoLocal.Nombre} ya esta registrado.");
+                    //Statics.Imprimir($"El nombre {NuevoLocal.Nombre} ya esta registrado.");
                     return $"El codigo ya esta registrado.";
                 }
                 else
                 {
-                    //Console.WriteLine(e.Message);
+                    //Statics.Imprimir(e.Message);
                     return e.Message;
                 }
             }
@@ -967,11 +948,10 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
         }
-
 
         /// <summary>
         /// Variable que retorna el metodo getLocales().
@@ -1016,7 +996,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
         }
@@ -1060,10 +1040,8 @@ namespace ServerConsole.Utilities
                             //conn.Open();
                             cmd.ExecuteNonQuery();
                             conn.Close();
-                            Console.ForegroundColor = ConsoleColor.DarkCyan;
-                            Console.Write("\n\t" + DateTime.Now + "-- ");
-                            Console.ForegroundColor = ConsoleColor.White;
-                            Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha eliminado al local {Codigo} - {nombre}. \n");
+                 
+                            Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha eliminado al local {Codigo} - {nombre}. \n");
                             Registrar("Delete", "", Codigo, "", "deleteLocal", "codigo");
                             return new object[] { "Local eliminado" };
                         }
@@ -1076,7 +1054,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return e.Message;
             }
 
@@ -1108,7 +1086,7 @@ namespace ServerConsole.Utilities
                     cmd.Parameters.AddWithValue("@codigoAntiguo", IdAnterior);
                     conn.Open();
                     cmd.ExecuteNonQuery();
-                    Console.WriteLine($"Se ha editado la informacion del local: {Local.nombre }");
+                    Statics.Imprimir($"Se ha editado la informacion del local: {Local.nombre }");
                     conn.Close();
                     Registrar("Update", "ServidorGetLocales", Local.codigo, "LocalModel[]", "ActualizarLocal", "codigo");
                     return "El local se ha actualizado.";
@@ -1117,7 +1095,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
 
                 if (e.Message.Substring(0, 52) == $"Violation of PRIMARY KEY constraint 'PK_PuntoVenta'.")
                 {
@@ -1125,7 +1103,7 @@ namespace ServerConsole.Utilities
                 }
                 else
                 {
-                    Console.WriteLine(e.Message);
+                    Statics.Imprimir(e.Message);
                     return e.Message;
                 }
             }
@@ -1157,7 +1135,7 @@ namespace ServerConsole.Utilities
                         }
                     }
                     conn.Close();
-                    //Console.WriteLine("Se consultaron los locales.");
+                    //Statics.Imprimir("Se consultaron los locales.");
                     return locales;
                 }
             }
@@ -1195,10 +1173,8 @@ namespace ServerConsole.Utilities
                     string response = InsertarExistenciaProducto(existencia);
                     if (response == "Y")
                     {
-                        Console.ForegroundColor = ConsoleColor.DarkCyan;
-                        Console.Write("\n\t" + DateTime.Now + "--");
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo documento: Existencias con fecha {existencia.fecha.ToString("dd'/'MM'/'yyyy")}.");
+                      
+                        Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo documento: Existencias con fecha {existencia.fecha.ToString("dd'/'MM'/'yyyy")}.");
                         //Registrar("Insert", "ServidorGetLocales", NuevoLocal.codigo, "LocalModel[]", "NuevoLocal");
                         conn.Close();
 
@@ -1304,7 +1280,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
         }
@@ -1344,7 +1320,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
         }
@@ -1385,7 +1361,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
 
@@ -1427,7 +1403,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
         }
@@ -1461,10 +1437,8 @@ namespace ServerConsole.Utilities
                     if (response == "Y")
                     {
                         conn.Close();
-                        Console.ForegroundColor = ConsoleColor.DarkCyan;
-                        Console.Write("\n\t" + DateTime.Now + "--");
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo documento: Pedido con fecha {pedido.fecha.ToString("dd'/'MM'/'yyyy")}.");
+               
+                        Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo documento: Pedido con fecha {pedido.fecha.ToString("dd'/'MM'/'yyyy")}.");
 
                         return "Se ha registrado el nuevo documento.";
                     }
@@ -1484,7 +1458,7 @@ namespace ServerConsole.Utilities
                 }
                 else
                 {
-                    Console.WriteLine(e.Message);
+                    Statics.Imprimir(e.Message);
                     return e.Message;
                 }
             }
@@ -1573,7 +1547,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
         }
@@ -1620,7 +1594,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
 
@@ -1661,7 +1635,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
         }
@@ -1706,7 +1680,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
         }
@@ -1739,10 +1713,8 @@ namespace ServerConsole.Utilities
                     if (response == "Y" && rta == "Y")
                     {
                         conn.Close();
-                        Console.ForegroundColor = ConsoleColor.DarkCyan;
-                        Console.Write("\n\t" + DateTime.Now + "--");
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo documento: Compra con fecha {compra .fecha.ToString("dd'/'MM'/'yyyy")}.");
+                
+                        Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo documento: Compra con fecha {compra .fecha.ToString("dd'/'MM'/'yyyy")}.");
 
                         return "true";
                     }
@@ -1758,12 +1730,12 @@ namespace ServerConsole.Utilities
             {
                 if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
                 {
-                    Console.WriteLine(e.Message);
+                    Statics.Imprimir(e.Message);
                     return "false";
                 }
                 else
                 {
-                    Console.WriteLine(e.Message);
+                    Statics.Imprimir(e.Message);
                     return  e.Message ;
                 }
             }
@@ -1811,7 +1783,7 @@ namespace ServerConsole.Utilities
                 }
                 else
                 {
-                    Console.WriteLine(e.Message);
+                    Statics.Imprimir(e.Message);
                     return false;
                 }
             }
@@ -1855,7 +1827,7 @@ namespace ServerConsole.Utilities
                 }
                 else
                 {              
-                    Console.WriteLine(e.Message);
+                    Statics.Imprimir(e.Message);
                     return "Server " + e.Message;
      
                 }
@@ -1890,7 +1862,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return e.Message +"false";
 
             }
@@ -1927,7 +1899,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 if (e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
                 {
                     return "Ya registrado.";
@@ -1987,7 +1959,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
         }
@@ -2042,7 +2014,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
         }
@@ -2105,7 +2077,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
 
@@ -2141,7 +2113,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
 
@@ -2182,7 +2154,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
 
@@ -2219,10 +2191,8 @@ namespace ServerConsole.Utilities
                     if (response == "Y")
                     {
                         conn.Close();
-                        Console.ForegroundColor = ConsoleColor.DarkCyan;
-                        Console.Write("\n\t" + DateTime.Now + "--");
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo documento: Envio con fecha {envio.fechaEnvio.ToString("dd'/'MM'/'yyyy")}.");
+                        
+                        Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo documento: Envio con fecha {envio.fechaEnvio.ToString("dd'/'MM'/'yyyy")}.");
                         return "true";
                     }
                     /// Si algo fallo en la insercion de los productos y las cantidades se borra el registro del documento de existencias para que pueda ser exitoso en proximos intentos.
@@ -2237,12 +2207,12 @@ namespace ServerConsole.Utilities
 
                 if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
                 {
-                    //Console.WriteLine(e.Message);
+                    //Statics.Imprimir(e.Message);
                     return "false";
                 }
                 else
                 {
-                    Console.WriteLine(e.Message);
+                    Statics.Imprimir(e.Message);
                     return "false";
                 }
 
@@ -2334,7 +2304,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
 
@@ -2382,7 +2352,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
         }
@@ -2449,10 +2419,8 @@ namespace ServerConsole.Utilities
                     {
                         conn.Close();
                         Registrar(Tipo: "Update", NombreMetodoServidor: "ServidorgetEnvioConProductos", ClavePrimaria: envio.codigo, TipoRetornoMetodoServidor: "EnvioModel[]", NombreMetodoCliente: "updateEnvioServidor", NombrePK: "codigo");
-                        Console.ForegroundColor = ConsoleColor.DarkCyan;
-                        Console.Write("\n\t" + DateTime.Now + "--");
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha editado un documento: Envio con fecha {envio.fechaEnvio.ToString("dd'/'MM'/'yyyy")}.");
+                        
+                        Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha editado un documento: Envio con fecha {envio.fechaEnvio.ToString("dd'/'MM'/'yyyy")}.");
 
                         return "true";
                     }
@@ -2461,7 +2429,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
                 {
                     return "false";
@@ -2556,7 +2524,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
         }
@@ -2590,12 +2558,10 @@ namespace ServerConsole.Utilities
                     string response = InsertarRecibidoProducto(recibido);
                     if (response == "Y")
                     {
-                        updateInventario(recibido.productos, recibido.responsable);
+                        updateInventario(recibido);
                         updateEstadoEnvio(recibido.codigo);
-                        Console.ForegroundColor = ConsoleColor.DarkCyan;
-                        Console.Write("\n\t" + DateTime.Now + "--");
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo documento: Recibido con fecha {recibido.fechaRecibido.ToString("dd'/'MM'/'yyyy")}.");
+                        
+                        Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo documento: Recibido con fecha {recibido.fechaRecibido.ToString("dd'/'MM'/'yyyy")}.");
                         conn.Close();
                         Registrar(Tipo: "Insert", NombreMetodoServidor: "ServidorgetRecibidoConProductos", ClavePrimaria: recibido.codigo, TipoRetornoMetodoServidor: "RecibidoModel[]", NombreMetodoCliente: "NuevoRecibidoBoolServidor", NombrePK: "codigo");
                         return "true";
@@ -2612,7 +2578,7 @@ namespace ServerConsole.Utilities
 
                 if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
                 {
-                    //Console.WriteLine("Ya se ha registrado un recibido para este envio, edite ese documento");
+                    //Statics.Imprimir("Ya se ha registrado un recibido para este envio, edite ese documento");
                     return "false";
                 }
                 else
@@ -2710,7 +2676,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
         }
@@ -2757,7 +2723,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
         }
@@ -2805,7 +2771,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
 
@@ -2837,10 +2803,8 @@ namespace ServerConsole.Utilities
                     {
                         conn.Close();
                         Registrar(Tipo: "Update", NombreMetodoServidor: "ServidorgetRecibidoConProductos", ClavePrimaria: recibido.codigo, TipoRetornoMetodoServidor: "RecibidoModel[]", NombreMetodoCliente: "updateRecibidoServidor", NombrePK: "codigo");
-                        Console.ForegroundColor = ConsoleColor.DarkCyan;
-                        Console.Write("\n\t" + DateTime.Now + "--");
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.WriteLine($" {RetailHUB.usuarioConectado}: Ha registrado un documento: Recibido con fecha {recibido.fechaRecibido.ToString("dd'/'MM'/'yyyy")}.");
+                        
+                        Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha registrado un documento: Recibido con fecha {recibido.fechaRecibido.ToString("dd'/'MM'/'yyyy")}.");
                         return "true";
                     }
                     return "false";
@@ -2926,7 +2890,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Statics.Imprimir("No se guardaron los datos del inventario del nuevo local");                
+                Statics.Imprimir("No se guardaron los datos del inventario del nuevo local. Escepcion: " + e.Message);                
             }
         }
 
@@ -2954,7 +2918,7 @@ namespace ServerConsole.Utilities
             catch (Exception e)
             
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
             }
         }
 
@@ -2992,7 +2956,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
         }
@@ -3025,7 +2989,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
         }
@@ -3034,34 +2998,35 @@ namespace ServerConsole.Utilities
         /// Actualiza la cantidad en inventario de la lista de produtos dados como parametro.
         /// </summary>
         /// <param name="productos"></param>
-        public static void updateInventario(BindableCollection<ProductoModel> productos, EmpleadoModel empleado)
+        public static void updateInventario(RecibidoModel recibido)
         {
+
             string codigoInventario;
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    Statics.Imprimir($"Modificación del inventario del local con código: {empleado.puntoDeVenta.codigo}");
-                    string cadena = $"select codigoinventario from Inventario where CodigoPuntoVenta = '{empleado.puntoDeVenta.codigo}'";
+                    string codigoDelLocal = recibido.codigo.Split(':')[0].Substring(14);
+                    ///Se modifica el inventario del local cuyo codigo esta implicito en el codigo del recibido que se dio como parametro
+                    Statics.Imprimir($"Modificación del inventario del local con código: {codigoDelLocal}");
+                    string cadena = $"select codigoinventario from Inventario where CodigoPuntoVenta = '{codigoDelLocal}'";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
+                        if (reader.FieldCount > 1)
+                        { Statics.Imprimir("Error en el iventario"); return; }
+
                         reader.Read();
                         codigoInventario = reader["CodigoInventario"].ToString();
                     }
                     conn.Close();
-                    foreach (ProductoModel producto in productos)
+
+                    foreach (ProductoModel producto in recibido.productos)
                     {
-                        //Saltar al siguiente producto del foreach si para el producto actual no se recibio alguna cantidad
+                        ///Saltar al siguiente producto del foreach si el producto actual no llego nada en el recibido
                         if (producto.recibido == 0 | producto.recibido == null)
                             continue;
-                        ///La hora no coincidira con la hora de reistro en el equipo donde localmente se registro el 
-                        string cadena0 = $"insert into HistorialIventario(CodigoInventario,CodigoProducto,AumentoDisminucion,Total,CedulaEmpleado,Fecha)values('{codigoInventario}','{producto.codigoProducto}','{producto.recibido}', (select cantidad from InventarioProducto where CodigoInventario={codigoInventario} and CodigoProducto = '{producto.codigoProducto}' )  +  {producto.recibido} ,'{ empleado.cedula}', '{DateTime.Now.ToString("yyyy-MM-dd HH:mm")}' )";
-                        SqlCommand cmd0 = new SqlCommand(cadena0, conn);
-                        conn.Open();
-                        cmd0.ExecuteNonQuery();
-                        conn.Close();
 
                         int? cantidad = producto.recibido;
                         string cadena1 = $"select Cantidad from InventarioProducto where codigoinventario = '{codigoInventario}' and CodigoProducto  = '{producto.codigoProducto}';";
@@ -3070,12 +3035,18 @@ namespace ServerConsole.Utilities
                         using (SqlDataReader reader1 = cmd1.ExecuteReader())
                         {
                             if (reader1.FieldCount > 1)
-                            { Console.WriteLine("Error en el iventario"); return; }
+                            { Statics.Imprimir("Error en el iventario"); return; }
 
                             reader1.Read();
                             if (Int32.TryParse(reader1["Cantidad"].ToString(), out int valor))
                                 cantidad = cantidad + valor;
                         }
+                        conn.Close();
+
+                        string cadena0 = $"insert into HistorialIventario(CodigoInventario,CodigoProducto,AumentoDisminucion,Total,CedulaEmpleado,Fecha)values('{codigoInventario}','{producto.codigoProducto}','{producto.recibido}', '{cantidad}' ,'{ recibido.responsable.cedula}', '{DateTime.Now.ToString("yyyy-MM-dd HH:mm")}' )";
+                        SqlCommand cmd0 = new SqlCommand(cadena0, conn);
+                        conn.Open();
+                        cmd0.ExecuteNonQuery();
                         conn.Close();
 
                         string cadena2 = $"update InventarioProducto set Cantidad = {cantidad} where codigoinventario = {codigoInventario} and CodigoProducto  = '{producto.codigoProducto}';";
@@ -3088,7 +3059,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
             }
         }
 
@@ -3129,7 +3100,7 @@ namespace ServerConsole.Utilities
                 }
                 else
                 {
-                    Console.WriteLine(e.Message);
+                    Statics.Imprimir(e.Message);
                     return "false";
                 }
             }
@@ -3162,7 +3133,7 @@ namespace ServerConsole.Utilities
             catch (Exception e)
             {
 
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return false;
 
             }
@@ -3209,7 +3180,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Statics.Imprimir(e.Message);
                 return null;
             }
         }

@@ -43,24 +43,20 @@ namespace ServerConsole
         /// <returns></returns>
         public object[] ServidorValidarUsuario(string Usuario, string Password)
         {
-            Console.ForegroundColor = ConsoleColor.DarkCyan;
-            Console.Write("\n\t" + DateTime.Now + "--");
-            Console.ForegroundColor = ConsoleColor.White;
+
             object[] resultado = DbConnection.Login(User: Usuario, Password: Password);
             if ((string)resultado[0] == "Registrado")
             {
                 usuarioConectado = ((PersonModel)resultado[1]).cedula + "-" + ((PersonModel)resultado[1]).firstName + " " + ((PersonModel)resultado[1]).lastName;
-                Console.Write(" El usuario " + usuarioConectado + " se ha conectado.");
-                Console.ResetColor();
-                Console.WriteLine("\n");
+                Statics.Imprimir(" El usuario " + usuarioConectado + " se ha conectado.");
+
                 //return resultado;
                 //await Clients.Caller.SendCoreAsync("ClienteValidacion", args: new object[] { Usuario, true });
             }
             else
             {
-                Console.Write(" El usuario " + Usuario + " fallo al conectarse.");
-                Console.ResetColor();
-                Console.WriteLine("\n");
+                Statics.Imprimir(" El usuario " + Usuario + " fallo al conectarse.");
+
                 //return resultado;
                 //await Clients.Caller.SendCoreAsync("ClienteValidacion", args: new object[] { Usuario, false });
 
@@ -74,12 +70,9 @@ namespace ServerConsole
         /// <param name="a">Nombre del usuario que se desconecta.</param>
         public void ClienteDesconectado(string a)
         {
-            Console.ForegroundColor = ConsoleColor.DarkCyan;
-            Console.Write("\n\t" + DateTime.Now + "--");
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine($"El usuario {a} se ha desconectado.\n\n");
-            Console.ResetColor();
 
+            Statics.Imprimir($"El usuario {a} se ha desconectado.\n\n");
+            
         }
 
         /// <summary>
@@ -88,11 +81,9 @@ namespace ServerConsole
         /// <param name="a">Nombre del usuario que se reconecto.</param>
         public void ClienteReconectado(string a)
         {
-            Console.ForegroundColor = ConsoleColor.DarkCyan;
-            Console.Write("\n\t" + DateTime.Now + "--");
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine($"El usuario {a} se ha conectado de nuevo.\n");
-            Console.ResetColor();
+            
+            Statics.Imprimir($"El usuario {a} se ha conectado de nuevo.\n");
+            
 
         }
 
@@ -641,7 +632,7 @@ namespace ServerConsole
             if (atempt == "Cliente ya existe")
             {
                 //await Clients.Caller.SendCoreAsync("ClienteExiste", args: new object[] { "El número de cedula ya esta registrado." });
-                //Console.WriteLine($"Se intento registrar un cliente que ya estaba registrado. CC: {Cliente.Cedula}.\n\n");
+                //Statics.Imprimir($"Se intento registrar un cliente que ya estaba registrado. CC: {Cliente.Cedula}.\n\n");
                 return 0;
             }
             if (atempt == "true")

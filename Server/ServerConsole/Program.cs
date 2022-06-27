@@ -28,7 +28,9 @@ namespace ServerConsole
                 UseStartup<Startup>();
         static void Main(string[] args)
         {
-   
+
+
+
 
             //AppDomain.CurrentDomain.ProcessExit += new EventHandler(OnProcessExit);
             CreateWebHostBuildder(args).Build().Run();    
@@ -38,7 +40,7 @@ namespace ServerConsole
         {
             RetailHUB rh = new RetailHUB();
            await  rh.Desconectado("Desconectado del servidor");
-            Console.WriteLine("Bye :)");
+            Statics.Imprimir("Bye :)");
         }
 
 
