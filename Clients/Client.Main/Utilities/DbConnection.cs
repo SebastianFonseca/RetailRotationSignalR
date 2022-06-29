@@ -147,7 +147,7 @@ namespace Client.Main.Utilities
                             cmd2.Parameters.AddWithValue("@iva", decimal.TryParse(Producto.iva.ToString(), out decimal c) ? c : (object)DBNull.Value);
                             cmd2.Parameters.AddWithValue("@cb", string.IsNullOrEmpty(Producto.codigoBarras) ? (object)DBNull.Value : Producto.codigoBarras);
                             cmd2.Parameters.AddWithValue("@fc", decimal.TryParse(Producto.factorConversion.ToString(), out decimal d) ? d : (object)DBNull.Value);
-                            cmd2.ExecuteNonQuery();                            
+                            cmd2.ExecuteNonQuery();
                             conn.Close();
                             nuevoInventarioProducto(Producto.codigoProducto);
                             return true;
@@ -338,7 +338,7 @@ namespace Client.Main.Utilities
                                 nombre = reader["Nombre"].ToString(),
                                 unidadCompra = reader["UnidadCompra"].ToString(),
                                 unidadVenta = reader["UnidadVenta"].ToString(),
-                                
+
                             };
                             if (decimal.TryParse(reader["PrecioVenta"].ToString(), out decimal precio)) { producto.precioVenta = precio; }
                             else { producto.precioVenta = null; }
@@ -1032,7 +1032,7 @@ namespace Client.Main.Utilities
                     cmd.Parameters.AddWithValue("@telefono", Statics.PrimeraAMayuscula(NuevoLocal.telefono));
                     cmd.Parameters.AddWithValue("@ciudad", Statics.PrimeraAMayuscula(NuevoLocal.ciudad));
                     cmd.Parameters.AddWithValue("@nrocanastillas", Statics.PrimeraAMayuscula(NuevoLocal.numeroDeCanastillas.ToString()));
-                    cmd.Parameters.AddWithValue("@fechaapertura", Statics.PrimeraAMayuscula(NuevoLocal.fechaDeApertura.Date.ToString("yyyy-MM-dd")));                    
+                    cmd.Parameters.AddWithValue("@fechaapertura", Statics.PrimeraAMayuscula(NuevoLocal.fechaDeApertura.Date.ToString("yyyy-MM-dd")));
                     conn.Open();
                     cmd.ExecuteNonQuery();
                     //MessageBox.Show($"Se ha registrado al nuevo local: {NuevoLocal.nombre }");
@@ -1247,7 +1247,7 @@ namespace Client.Main.Utilities
                     cmd.Parameters.AddWithValue("@fecha", existencia.fecha.Date);
                     conn.Open();
                     cmd.ExecuteNonQuery();
-                    string response = InsertarExistenciaProducto(existencia);                    
+                    string response = InsertarExistenciaProducto(existencia);
                     if (response == "Y")
                     {
                         conn.Close();
@@ -1313,7 +1313,9 @@ namespace Client.Main.Utilities
             {
                 if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
                 {
-                    return false;
+                    
+                    ///Este metodo es llamado desde el servidor y la intancia ya ha sido guardada en la base de datos
+                    return true;
                 }
                 else
                 {
@@ -1629,7 +1631,8 @@ namespace Client.Main.Utilities
             {
                 if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
                 {
-                    return false;
+                    ///El pedido ya esta registrado cuado este metodo es llamado desde el servidor
+                    return true;
                 }
                 else
                 {
@@ -1952,7 +1955,8 @@ namespace Client.Main.Utilities
             {
                 if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
                 {
-                    return false;
+                    ///El metodo es llamado desde el servidro pero la compra ya ha sido registrada
+                    return true;
                 }
                 else
                 {
@@ -2520,7 +2524,8 @@ namespace Client.Main.Utilities
 
                 if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
                 {
-                    return false;
+                    ///El envio ya esta registrado entonces no se aroja la excepcion
+                    return true;
                 }
                 else
                 {
@@ -2895,7 +2900,7 @@ namespace Client.Main.Utilities
         /// </summary>
         /// <param name="recibido"></param>
         /// <returns></returns>
-        public static bool NuevoRecibidoBool(RecibidoModel recibido)
+        public static bool NuevoRecibidoBool(RecibidoModel recibido, string tipo)
         {
             try
             {
@@ -2915,7 +2920,7 @@ namespace Client.Main.Utilities
                     string response = InsertarRecibidoProducto(recibido);
                     if (response == "Y")
                     {
-                        updateInventario(recibido);
+                        updateInventario(recibido,tipo);
                         updateEstadoEnvio(recibido.codigo);
                         conn.Close();
                         registrarCambioLocal(Tipo: "Insert", NombreMetodoLocal: "getRecibidoConProductos", PK: $"{recibido.codigo}", NombreMetodoServidor: "ServidorNuevoRecibidoBool", RespuestaExitosaServidor: "true");
@@ -2956,7 +2961,7 @@ namespace Client.Main.Utilities
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
                     string cadena1 = $"select * from Recibido where CodigoRecibido  = '{recibido.codigo}'";
-                    SqlCommand cmd1= new SqlCommand(cadena1, conn);
+                    SqlCommand cmd1 = new SqlCommand(cadena1, conn);
                     conn.Open();
                     SqlDataReader reader = cmd1.ExecuteReader();
                     if (reader.HasRows)
@@ -2977,7 +2982,7 @@ namespace Client.Main.Utilities
                     string response = InsertarRecibidoProducto(recibido);
                     if (response == "Y")
                     {
-                        updateInventario(recibido);
+                        updateInventario(recibido, "Nuevo envio");
                         updateEstadoEnvio(recibido.codigo);
                         conn.Close();
                         return true;
@@ -3201,7 +3206,7 @@ namespace Client.Main.Utilities
         /// </summary>
         /// <param name="recibido"></param>
         /// <returns></returns>
-        public static bool updateRecibido(RecibidoModel recibido)
+        public static bool updateRecibido(RecibidoModel recibido, string tipo)
         {
             try
             {
@@ -3220,8 +3225,12 @@ namespace Client.Main.Utilities
                     string response = updateProductosRecibido(recibido);
                     if (response == "Y")
                     {
+                        ///Las actualizaciones en el inventario se iteran sobre la lista 'productos', la informacion del cambio de inventario esta en
+                        ///'productosActualizados', por eso esta asignacion.                        
+                        recibido.productos = recibido.productosActualizados;
+                        updateInventario(recibido, tipo);
                         conn.Close();
-                        registrarCambioLocal(Tipo: "Update", NombreMetodoLocal: "getRecibidoConProductos", PK: $"{recibido.codigo}", NombreMetodoServidor: "ServidorupdateRecibido", RespuestaExitosaServidor: "true");
+                        registrarCambioLocal(Tipo: "Update", NombreMetodoLocal: "getRecibidoConProductos", PK: $"{recibido.codigo}", NombreMetodoServidor: "ServidorupdateRecibidoNoInventario", RespuestaExitosaServidor: "true");
                         return true;
                     }
                     return false;
@@ -3333,9 +3342,10 @@ namespace Client.Main.Utilities
         /// <summary>
         /// Registra los datos de creacion del nuevo inventario
         /// </summary>
-        /// <param name="nombreLocal"></param>
+        /// <param name="inventario"></param>
         public static bool nuevoInventario(InventarioModel inventario)
         {
+            ///No tiene referencias pues  se llama solamente desde el servidro, ya que los locales nuevos y los inventarios nuevos solo se pueden crear cuando se esta conectao al servidor
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
@@ -3350,8 +3360,8 @@ namespace Client.Main.Utilities
             }
             catch (Exception e)
             {
-                
-               MessageBox.Show("No se guardaron los datos del inventario del nuevo local");
+
+                MessageBox.Show("No se guardaron los datos del inventario del nuevo local");
                 return false;
             }
         }
@@ -3365,16 +3375,16 @@ namespace Client.Main.Utilities
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
-                {                    
+                {
                     BindableCollection<LocalModel> locales = getLocales();
                     foreach (LocalModel local in locales)
                     {
-                        string cadena = $"insert into InventarioProducto(codigoinventario, Codigoproducto,Cantidad) values ((select CodigoInventario from inventario where CodigoPuntoVenta = '{local.codigo}'), '{codigoProducto}',0) ";                        
+                        string cadena = $"insert into InventarioProducto(codigoinventario, Codigoproducto,Cantidad) values ((select CodigoInventario from inventario where CodigoPuntoVenta = '{local.codigo}'), '{codigoProducto}',0) ";
                         SqlCommand cmd = new SqlCommand(cadena, conn);
                         conn.Open();
-                            cmd.ExecuteNonQuery();
+                        cmd.ExecuteNonQuery();
                         conn.Close();
-                    }                
+                    }
                 }
             }
             catch (Exception e)
@@ -3386,13 +3396,13 @@ namespace Client.Main.Utilities
         /// <summary>
         /// Actualiza la cantidad en inventario de la lista de produtos dados como parametro.
         /// </summary>
-        /// <param name="productos"></param>
-        public static void updateInventario(RecibidoModel recibido)
+        /// <param name="recibido"></param>
+        public static void updateInventario(RecibidoModel recibido, string tipo)
         {
 
             string codigoInventario;
             try
-            {                                                                                                                                            
+            {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
                     string codigoDelLocal = recibido.codigo.Split(':')[0].Substring(14);
@@ -3404,38 +3414,48 @@ namespace Client.Main.Utilities
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         if (reader.FieldCount > 1)
-                        { MessageBox.Show("Error en el iventario"); return; }
+                        { MessageBox.Show($"Error en el iventario, mas de un codigo de inventario para el local {codigoDelLocal}"); return; }
 
                         reader.Read();
-                        codigoInventario = reader["CodigoInventario"].ToString();  
+                        codigoInventario = reader["CodigoInventario"].ToString();
                     }
                     conn.Close();
 
                     foreach (ProductoModel producto in recibido.productos)
                     {
                         ///Saltar al siguiente producto del foreach si el producto actual no llego nada en el recibido
-                        if (producto.recibido == 0 | producto.recibido == null) 
+                        if (producto.recibido == 0 | producto.recibido == null)
+                        {
                             continue;
-                       
-                        int? cantidad = producto.recibido;                                            
+                        }
+
+                        int? cantidad = producto.recibido;
                         string cadena1 = $"select Cantidad from InventarioProducto where codigoinventario = '{codigoInventario}' and CodigoProducto  = '{producto.codigoProducto}';";
                         SqlCommand cmd1 = new SqlCommand(cadena1, conn);
                         conn.Open();
                         using (SqlDataReader reader1 = cmd1.ExecuteReader())
                         {
-                            if(reader1.FieldCount > 1)
-                            { MessageBox.Show("Error en el iventario"); return; }    
+                            if (reader1.FieldCount > 1)
+                            { MessageBox.Show("Error en el iventario, se repiten productos en el inventario de un solo local"); return; }
 
                             reader1.Read();
-                            if(Int32.TryParse(reader1["Cantidad"].ToString(), out int valor))
-                            cantidad = cantidad + valor;
+                            if (Int32.TryParse(reader1["Cantidad"].ToString(), out int valor))
+                            {
+                                cantidad = cantidad + valor;
+                            }
                         }
                         conn.Close();
 
-                        string cadena0 = $"insert into HistorialIventario(CodigoInventario,CodigoProducto,AumentoDisminucion,Total,CedulaEmpleado,Fecha)values('{codigoInventario}','{producto.codigoProducto}','{producto.recibido}', '{cantidad}' ,'{ recibido.responsable.cedula}', '{DateTime.Now.ToString("yyyy-MM-dd HH:mm")}' )";
+                        string Id;
+                        string cadena0 = $"insert into HistorialIventario(CodigoInventario,CodigoProducto,Tipo,AumentoDisminucion,Total,CedulaEmpleado,Fecha) OUTPUT INSERTED.Id values('{codigoInventario}','{producto.codigoProducto}','{tipo}','{producto.recibido}', '{cantidad}' ,'{ recibido.responsable.cedula}', '{DateTime.Now.ToString("yyyy-MM-dd HH:mm")}' )";
                         SqlCommand cmd0 = new SqlCommand(cadena0, conn);
                         conn.Open();
-                        cmd0.ExecuteNonQuery();
+                        using (SqlDataReader reader0 = cmd0.ExecuteReader())
+                        {
+                            reader0.Read();
+                            Id = reader0["Id"].ToString();
+
+                        }
                         conn.Close();
 
                         string cadena2 = $"update InventarioProducto set Cantidad = {cantidad} where codigoinventario = {codigoInventario} and CodigoProducto  = '{producto.codigoProducto}';";
@@ -3443,6 +3463,9 @@ namespace Client.Main.Utilities
                         conn.Open();
                         cmd2.ExecuteNonQuery();
                         conn.Close();
+                       registrarCambioLocal(Tipo: "Insert", NombreMetodoLocal: "getCambioInventario", PK: $"{Id}", NombreMetodoServidor: "ServidorNuevoRegistroCambioEnInventario", RespuestaExitosaServidor: "true");
+
+
                     }
                 }
             }
@@ -3451,6 +3474,132 @@ namespace Client.Main.Utilities
                 MessageBox.Show(e.Message);
             }
         }
+
+
+        /// <summary>
+        /// Obtiene el registro de la tabla con los registros de cambios en inventario
+        /// </summary>
+        /// <param name="codigo"></param>
+        /// <returns></returns>
+        public static BindableCollection<InventarioModel> getCambioInventario(string codigo)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<InventarioModel> cInventarios = new BindableCollection<InventarioModel>();
+                    string cadena = $"select * from HistorialIventario where Id = '{codigo}'";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        cInventarios.Clear();
+                        while (reader.Read())
+                        {
+                            InventarioModel inventario = new InventarioModel()
+                            {
+                                
+                                codigo = reader["CodigoInventario"].ToString(),
+                                codigoProducto = reader["CodigoProducto"].ToString(),
+                                tipo = reader["Tipo"].ToString(),                                                                                          
+                                fecha = DateTime.Parse(reader["Fecha"].ToString())
+                            };
+                            Int32.TryParse(reader["Id"].ToString(), out int regis);
+                            inventario.idRegistro = regis;
+                            decimal.TryParse(reader["AumentoDisminucion"].ToString(), out decimal valor);
+                            inventario.aumentoDisminucion = valor;
+                            decimal.TryParse(reader["Total"].ToString(), out decimal tot);
+                            inventario.total = tot;
+                            inventario.responsable.cedula = reader["CedulaEmpleado"].ToString();
+                            cInventarios.Add(inventario);
+                        }
+                    }
+                    conn.Close();
+                    return cInventarios;
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message + "getInventario");
+                return null;
+            }
+
+
+
+        }
+
+        /// <summary>
+        /// Inserta en la base de datos el cambio en el inventario del local dado en el invetario
+        /// </summary>
+        /// <param name="inventario"></param>
+        /// <returns></returns>
+        public static bool NuevoRegistroCambioEnInventario(InventarioModel inventario)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"select * from HistorialIventario where IdRegistroServidor='{inventario.idRegistro}' and CodigoInventario='{inventario.codigo}';";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.HasRows)
+                        { return true; }
+                    }
+                    conn.Close();
+
+                    decimal? cantidad = inventario.aumentoDisminucion;
+                    string cadena1 = $"select Cantidad from InventarioProducto where codigoinventario = '{inventario.codigo}' and CodigoProducto  = '{inventario.codigoProducto}';";
+                    SqlCommand cmd1 = new SqlCommand(cadena1, conn);
+                    conn.Open();
+                    using (SqlDataReader reader1 = cmd1.ExecuteReader())
+                    {
+                        if (reader1.FieldCount > 1)
+                        { MessageBox.Show("Error en el iventario, se repiten productos en el inventario de un solo local"); return false; }
+
+                        reader1.Read();
+                        if (Int32.TryParse(reader1["Cantidad"].ToString(), out int valor))
+                            cantidad = cantidad + valor;
+                    }
+                    conn.Close();
+
+                    string Id;
+                    string cadena0 = $"insert into HistorialIventario(CodigoInventario,CodigoProducto,Tipo,AumentoDisminucion,Total,CedulaEmpleado,Fecha,IdRegistroServidor) OUTPUT INSERTED.Id values('{inventario.codigo}','{inventario.codigoProducto}','{inventario.tipo}',@aumentodisminucion, @cantidad ,'{ inventario.responsable.cedula}', '{DateTime.Now.ToString("yyyy-MM-dd HH:mm")}',{inventario.idRegistro});";
+                    SqlCommand cmd0 = new SqlCommand(cadena0, conn);
+                    cmd0.Parameters.AddWithValue("@aumentodisminucion", inventario.aumentoDisminucion);
+                    cmd0.Parameters.AddWithValue("@cantidad", cantidad);
+                    conn.Open();
+                    using (SqlDataReader reader0 = cmd0.ExecuteReader())
+                    {
+                        reader0.Read();
+                        Id = reader0["Id"].ToString();
+
+                    }
+                    conn.Close();
+
+                    string cadena2 = $"update InventarioProducto set Cantidad = @cantidad where codigoinventario = {inventario.codigo} and CodigoProducto  = '{inventario.codigoProducto}';";
+                    SqlCommand cmd2 = new SqlCommand(cadena2, conn);
+                    cmd2.Parameters.AddWithValue("@cantidad", cantidad);
+                    conn.Open();
+                    cmd2.ExecuteNonQuery();
+                    conn.Close();
+                    return true;
+
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message + " NuevoRegistroCambioEnInventario");
+                return false;
+            }
+
+
+
+        }
+
+
+
 
 
         #endregion
@@ -3839,9 +3988,6 @@ namespace Client.Main.Utilities
         {
             return ConfigurationManager.AppSettings["CodigoDelLocalCambiosInventario"];
         }
-
-
-
 
     }
 }

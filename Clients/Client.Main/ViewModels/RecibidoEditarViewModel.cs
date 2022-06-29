@@ -121,7 +121,7 @@ namespace Client.Main.ViewModels
                 }
                 else if (MainWindowViewModel.Status == "Trabajando localmente")
                 {
-                    if (DbConnection.NuevoRecibidoBool(recibido))
+                    if (DbConnection.NuevoRecibidoBool(recibido, "Nuevo envio"))
                     {
                         MessageBox.Show("Datos del recibido guardados");
                     }

@@ -26,6 +26,7 @@ namespace ServerConsole.Models
 
         public int? compraPorLocal { get; set; }
         public int? recibido { get; set; } = null;
+        public int? cambioInventario { get; set; }
         public ProveedorModel proveedor { get; set; } = new ProveedorModel();
         public string estado { get; set; }
         public DateTime? fechaDePago { get; set; }

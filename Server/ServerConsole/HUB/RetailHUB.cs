@@ -595,10 +595,20 @@ namespace ServerConsole
         /// <param name="recibido"></param>
         /// <returns></returns>
         public string ServidorupdateRecibido(RecibidoModel recibido)
-        {
+        {            
             return DbConnection.updateRecibido(recibido);
         }
 
+
+        /// <summary>
+        /// Actualiza la informacion de un recibido.
+        /// </summary>
+        /// <param name="recibido"></param>
+        /// <returns></returns>
+        public  string ServidorupdateRecibidoNoInventario(RecibidoModel recibido) 
+        {
+            return DbConnection.updateRecibidoNoInventario(recibido);
+        }
 
         #endregion
 
@@ -613,6 +623,28 @@ namespace ServerConsole
         {
             return DbConnection.getInventario(nombreLocal);
         }
+
+        /// <summary>
+        /// Inserta en la base de datos el cambio en el inventario del local dado en el invetario
+        /// </summary>
+        /// <param name="inventario"></param>
+        /// <returns></returns>
+        public string ServidorNuevoRegistroCambioEnInventario(InventarioModel inventario)
+        {
+            return DbConnection.NuevoRegistroCambioEnInventario(inventario);
+        }
+
+        /// <summary>
+        /// Obtiene el registro de la tabla con los registros de cambios en inventario
+        /// </summary>
+        /// <param name="codigo"></param>
+        /// <returns></returns>
+        public  BindableCollection<InventarioModel> ServidorgetCambioInventario(string codigo)
+        {
+            return DbConnection.getCambioInventario(codigo);
+        }
+
+
 
         #endregion
 

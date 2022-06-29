@@ -42,6 +42,9 @@ namespace Client.Main.Utilities
                         ///Deserializa el Json que da como respuesta la llamada al metodo.
                         dynamic[] resultado = (dynamic[])System.Text.Json.JsonSerializer.Deserialize(re.Result.ToString(), Type.GetType("Client.Main.Models." + registro[4]));
 
+                        if (registro[2] == "ServidorgetCambioInventario") 
+                        { }
+
                         ///Crea una instancia de la clase DbConnection que permitira el uso de la refelxion para llamar a los metodos necesarios.
                         DbConnection conexionLocal = new DbConnection();
 
@@ -55,7 +58,7 @@ namespace Client.Main.Utilities
                         foreach (var item in resultado)
                         {
                             ///Se comprueba la clave primaria.
-                            if (item.GetType().GetProperty(registro[6].Trim()).GetValue(item) == registro[3])
+                            if (item.GetType().GetProperty(registro[6].Trim()).GetValue(item).ToString() == registro[3])
                             {
                                 instanciaCorrecta = item;
                                 ///Invoca el metodo con el resultado del llamdo al metodo del servidor.

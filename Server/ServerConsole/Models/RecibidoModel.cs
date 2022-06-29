@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Caliburn.Micro;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -12,6 +13,7 @@ namespace ServerConsole.Models
         public string placas { get; set; }
         public int? numeroCanastillas { get; set; } = null;
         public int? peso { get; set; } = null;
+        public BindableCollection<ProductoModel> productosActualizados { get; set; } = new BindableCollection<ProductoModel>();
 
         public static implicit operator RecibidoModel(EnvioModel v)
         {

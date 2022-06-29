@@ -4,6 +4,7 @@ using Client.Main.Models;
 using Client.Main.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,13 +15,16 @@ namespace Client.Main.ViewModels
     {
         MainWindowViewModel VentanaPrincipal;
         public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
-        public string ctor = "";
         public RecibidoModel recibido;
+        public BindableCollection<ProductoModel> productosAnteriores = new BindableCollection<ProductoModel>();
 
 
         public RecibidoResultadoBusquedaViewModel(MainWindowViewModel argVentana, RecibidoModel Seleccionado)
         {
-            ctor = "new";
+            foreach (ProductoModel producto in Seleccionado.productos)
+            {
+                productosAnteriores.Add(new ProductoModel() {codigoProducto = producto.codigoProducto,recibido = producto.recibido });
+            }
             recibido = Seleccionado;
             VentanaPrincipal = argVentana;
         }
@@ -88,13 +92,28 @@ namespace Client.Main.ViewModels
                     MessageBox.Show($"Verifique la cantidad de {producto.nombre}");
                     return;
                 }
-            }
+
+                try
+                {
+                    ProductoModel productoSinCambios = productosAnteriores.Single<ProductoModel>(p => p.codigoProducto == producto.codigoProducto);
+                    if (producto.recibido != productoSinCambios.recibido)
+                    {
+                        productoSinCambios.recibido = producto.recibido - productoSinCambios.recibido ;
+                        recibido.productosActualizados.Add(productoSinCambios);
+                    }
+
+                }
+                catch (System.InvalidOperationException)
+                {
+                    MessageBox.Show("Error en el inventario, codigos de productos se repiten.");
+                }
+            }            
             if (recibido.nombreConductor == null)
             {
                 MessageBox.Show("Escriba el nombre del conducor");
                 return;
             }
-
+            
             try
             {
                 if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
@@ -110,7 +129,7 @@ namespace Client.Main.ViewModels
                 }
                 else if (MainWindowViewModel.Status == "Trabajando localmente")
                 {
-                    if (DbConnection.updateRecibido(recibido))
+                    if (DbConnection.updateRecibido(recibido, "Cambio envio"))
                     {
                         MessageBox.Show("Datos actualizados");
                     }
@@ -121,10 +140,79 @@ namespace Client.Main.ViewModels
             {
                 MessageBox.Show(e.Message);
             }
-
-
         }
-
-
     }
 }
+
+
+
+
+//public async void Guardar()
+//{
+
+//    foreach (ProductoModel producto in recibido.productos)
+//    {
+//        if (producto.recibido == null)
+//        {
+//            MessageBox.Show($"Complete los datos de: {producto.nombre}");
+//            return;
+//        }
+//        if (producto.unidadVenta == "Kil" && Math.Abs((decimal)(producto.compraPorLocal - producto.recibido)) > 5)
+//        {
+//            MessageBox.Show($"Verifique la cantidad de {producto.nombre}");
+//            return;
+//        }
+//        else if (producto.unidadVenta != "Kil" && producto.compraPorLocal - producto.recibido != 0)
+//        {
+//            MessageBox.Show($"Verifique la cantidad de {producto.nombre}");
+//            return;
+//        }
+
+//        try
+//        {
+//            ProductoModel productoSinCambios = productosAnteriores.Single<ProductoModel>(p => p.codigoProducto == producto.codigoProducto);
+//            if (producto.recibido != productoSinCambios.recibido)
+//            {
+//                productoSinCambios.cambioInventario = producto.recibido - productoSinCambios.recibido;
+//                recibido.productosActualizados.Add(productoSinCambios);
+//            }
+
+//        }
+//        catch (System.InvalidOperationException)
+//        {
+//            MessageBox.Show("Error en el inventario, codigos de productos se repiten.");
+//        }
+//    }
+//    if (recibido.nombreConductor == null)
+//    {
+//        MessageBox.Show("Escriba el nombre del conducor");
+//        return;
+//    }
+
+//    try
+//    {
+//        if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+//        {
+//            Task<object> re = conexion.CallServerMethod("ServidorupdateRecibido", Arguments: new[] { recibido });
+//            await re;
+//            if (re.Result.ToString() == "true")
+//            {
+//                MessageBox.Show("Datos actualizados");
+//            }
+
+//            VentanaPrincipal.ActivateItem(new ListadoCompraViewModel(VentanaPrincipal));
+//        }
+//        else if (MainWindowViewModel.Status == "Trabajando localmente")
+//        {
+//            if (DbConnection.updateRecibido(recibido))
+//            {
+//                MessageBox.Show("Datos actualizados");
+//            }
+//            VentanaPrincipal.ActivateItem(new AdministracionInventarioViewModel(VentanaPrincipal));
+//        }
+//    }
+//    catch (Exception e)
+//    {
+//        MessageBox.Show(e.Message);
+//    }
+////}
