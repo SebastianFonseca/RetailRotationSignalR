@@ -21,13 +21,29 @@ namespace Client.Main.ViewModels
 
         public RecibidoResultadoBusquedaViewModel(MainWindowViewModel argVentana, RecibidoModel Seleccionado)
         {
+            CambiosEnvio = "False";
             foreach (ProductoModel producto in Seleccionado.productos)
             {
-                productosAnteriores.Add(new ProductoModel() {codigoProducto = producto.codigoProducto,recibido = producto.recibido });
+                productosAnteriores.Add(new ProductoModel() {codigoProducto = producto.codigoProducto,recibido = producto.recibido }); 
+                if (producto.compraPorLocal != producto.recibido){CambiosEnvio = "True";}
             }
             recibido = Seleccionado;
             VentanaPrincipal = argVentana;
         }
+
+
+        private string _cambiosEnvio;
+
+        public string CambiosEnvio
+        {
+            get { return _cambiosEnvio; }
+            set 
+            { 
+                _cambiosEnvio = value;
+                NotifyOfPropertyChange(() => CambiosEnvio);
+            }
+        }
+
 
         public BindableCollection<ProductoModel> Productos
         {
@@ -129,7 +145,7 @@ namespace Client.Main.ViewModels
                 }
                 else if (MainWindowViewModel.Status == "Trabajando localmente")
                 {
-                    if (DbConnection.updateRecibido(recibido, "Cambio envio"))
+                    if (DbConnection.updateRecibido(recibido))
                     {
                         MessageBox.Show("Datos actualizados");
                     }

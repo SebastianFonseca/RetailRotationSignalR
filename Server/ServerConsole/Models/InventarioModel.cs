@@ -10,8 +10,12 @@ namespace ServerConsole.Models
         public string tipo { get; set; }
         public decimal? aumentoDisminucion { get; set; }
         public decimal? total { get; set; }
-        public int idRegistro { get; set; }
-        public string idlocalOServidor { get; set; }
+        public int? idRegistroLocal { get; set; }
+
+        public int? idRegistroServidor { get; set; }
+
+        public string codigoDelInventarioDelLocal { get; set; }
+
 
     }
 }

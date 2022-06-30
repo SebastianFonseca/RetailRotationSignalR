@@ -42,8 +42,7 @@ namespace Client.Main.Utilities
                         ///Deserializa el Json que da como respuesta la llamada al metodo.
                         dynamic[] resultado = (dynamic[])System.Text.Json.JsonSerializer.Deserialize(re.Result.ToString(), Type.GetType("Client.Main.Models." + registro[4]));
 
-                        if (registro[2] == "ServidorgetCambioInventario") 
-                        { }
+                     
 
                         ///Crea una instancia de la clase DbConnection que permitira el uso de la refelxion para llamar a los metodos necesarios.
                         DbConnection conexionLocal = new DbConnection();

@@ -44,7 +44,8 @@ namespace Client.Main.ViewModels
         {
             get { return NuevoLocal.nombre; }
             set
-                {
+            {
+                if (decimal.TryParse(value, out decimal a)) { MessageBox.Show("Los caracteres no pueden contener solo números"); }
                 if (NuevoLocal.nombre != value)
                 {
                     NuevoLocal.nombre = value;

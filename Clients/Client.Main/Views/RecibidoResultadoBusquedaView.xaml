@@ -126,7 +126,7 @@
            
             <Separator  Grid.Row="2"  Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Top"  Background="Gray" Margin="15 0 5 0" Panel.ZIndex="1"/>
            
-            <Button Style="{StaticResource GeneralButton}" Width="130" Content="GUARDAR"  FontSize="15" x:Name="Guardar" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" Height="35"/>
+            <Button Style="{StaticResource GeneralButton}" Width="130" Content="GUARDAR"  FontSize="15" x:Name="Guardar" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" Height="35" IsEnabled="{Binding Path=CambiosEnvio}"/>
         </Grid>
     </Border>
 </UserControl>
