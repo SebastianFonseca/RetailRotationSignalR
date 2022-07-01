@@ -559,6 +559,16 @@ namespace ServerConsole
         }
 
         /// <summary>
+        /// Regista en la base de datos la informacion relacionada con el nuevo documento de envio.
+        /// </summary>
+        /// <param name="recibido"></param>
+        /// <returns></returns>
+        public string ServidorNuevoRecibidoBoolNoInventario(RecibidoModel recibido)
+        {
+            return DbConnection.NuevoRecibidoBoolNoInventario(recibido);
+        }
+
+        /// <summary>
         /// Retorna la instancia del recibido con el codigo dado como parametro, incluidos los productos 
         /// </summary>
         /// <param name="Caracteres"></param>
@@ -598,7 +608,6 @@ namespace ServerConsole
         {            
             return DbConnection.updateRecibido(recibido);
         }
-
 
         /// <summary>
         /// Actualiza la informacion de un recibido.

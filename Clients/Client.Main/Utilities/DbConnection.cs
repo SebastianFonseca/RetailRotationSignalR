@@ -1957,6 +1957,7 @@ namespace Client.Main.Utilities
                 if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
                 {
                     ///El metodo es llamado desde el servidro pero la compra ya ha sido registrada
+                    MessageBox.Show("No se insero compra repetida");
                     return true;
                 }
                 else
@@ -2526,6 +2527,8 @@ namespace Client.Main.Utilities
                 if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
                 {
                     ///El envio ya esta registrado entonces no se aroja la excepcion
+                MessageBox.Show("No se insero envio repetido");
+
                     return true;
                 }
                 else
@@ -2923,7 +2926,7 @@ namespace Client.Main.Utilities
                     {
                         updateEstadoEnvio(recibido.codigo);
                         conn.Close();
-                        registrarCambioLocal(Tipo: "Insert", NombreMetodoLocal: "getRecibidoConProductos", PK: $"{recibido.codigo}", NombreMetodoServidor: "ServidorNuevoRecibidoBool", RespuestaExitosaServidor: "true");
+                        registrarCambioLocal(Tipo: "Insert", NombreMetodoLocal: "getRecibidoConProductos", PK: $"{recibido.codigo}", NombreMetodoServidor: "ServidorNuevoRecibidoBoolNoInventario", RespuestaExitosaServidor: "true");
                         return true;
                     }
                     /// Si algo fallo en la insercion de los productos y las cantidades se borra el registro del documento de existencias para que pueda ser exitoso en proximos intentos.
@@ -2965,7 +2968,7 @@ namespace Client.Main.Utilities
                     conn.Open();
                     SqlDataReader reader = cmd1.ExecuteReader();
                     if (reader.HasRows)
-                    { conn.Close(); return true; }
+                    { conn.Close(); MessageBox.Show("No se insero recibido repetido"); return true; }
                     conn.Close();
 
                     string cadena = $"INSERT INTO Recibido(CodigoRecibido,CodigoPuntoVenta,CedulaEmpleado,Fecha,NombreConductor,Peso,PlacasCarro) VALUES (@codigo,@pv,@empleado,@fecha,@conductor,@peso,@placa);";
@@ -3234,7 +3237,7 @@ namespace Client.Main.Utilities
                     cmd.Parameters.AddWithValue("@placas", Statics.PrimeraAMayuscula(recibido.placas.ToUpper()));
                     conn.Open();
                     cmd.ExecuteNonQuery();
-                    string response = updateProductosRecibido(recibido);
+                    string response = updateProductosRecibido(recibido,cambiarInventario:true);
                     if (response == "Y")
                     {                 
                         conn.Close();
@@ -3280,7 +3283,7 @@ namespace Client.Main.Utilities
                     cmd.Parameters.AddWithValue("@placas", Statics.PrimeraAMayuscula(recibido.placas.ToUpper()));
                     conn.Open();
                     cmd.ExecuteNonQuery();
-                    string response = updateProductosRecibido(recibido);
+                    string response = updateProductosRecibido(recibido,cambiarInventario:false);
                     if (response == "Y")
                     {
                         conn.Close();
@@ -3309,7 +3312,7 @@ namespace Client.Main.Utilities
         /// </summary>
         /// <param name="recibido"></param>
         /// <returns></returns>
-        public static string updateProductosRecibido(RecibidoModel recibido)
+        public static string updateProductosRecibido(RecibidoModel recibido, bool cambiarInventario)
         {
             try
             {
@@ -3329,19 +3332,21 @@ namespace Client.Main.Utilities
                     ///Las actualizaciones en el inventario se iteran sobre la lista 'productos', la informacion del cambio de inventario esta en
                     ///'productosActualizados', por eso esta asignacion.      
                     ///recibido.productos = recibido.productosActualizados;
-                    foreach (ProductoModel productoModel in recibido.productosActualizados)
+                    if (cambiarInventario)
                     {
-                        InventarioModel inv = new InventarioModel()
+                        foreach (ProductoModel productoModel in recibido.productosActualizados)
                         {
-                            codigoDelInventarioDelLocal = getIdInventario(recibido.codigo.Split(':')[0].Substring(14)),
-                            tipo = "Cambio envio",
-                            codigoProducto = productoModel.codigoProducto,
-                            aumentoDisminucion = productoModel.recibido
-                        };
-                        inv.responsable.cedula = recibido.responsable.cedula;
-                        NuevoRegistroCambioEnInventario(inv);
+                            InventarioModel inv = new InventarioModel()
+                            {
+                                codigoDelInventarioDelLocal = getIdInventario(recibido.codigo.Split(':')[0].Substring(14)),
+                                tipo = "Cambio envio",
+                                codigoProducto = productoModel.codigoProducto,
+                                aumentoDisminucion = productoModel.recibido
+                            };
+                            inv.responsable.cedula = recibido.responsable.cedula;
+                            NuevoRegistroCambioEnInventario(inv);
+                        }
                     }
-
                     return "Y";
                 }
             }
@@ -3499,7 +3504,9 @@ namespace Client.Main.Utilities
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         if (reader.HasRows)
-                        { return true; }
+                        {
+                            MessageBox.Show("No se insero cambio inventario repetido");
+                            return true; }
                     }
                     conn.Close();
 

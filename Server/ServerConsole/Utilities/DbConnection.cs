@@ -2555,10 +2555,64 @@ namespace ServerConsole.Utilities
                     cmd.Parameters.AddWithValue("@placa", Statics.PrimeraAMayuscula(recibido.placas.ToString()));
                     conn.Open();
                     cmd.ExecuteNonQuery();
-                    string response = InsertarRecibidoProducto(recibido);
+                    string response = InsertarRecibidoProducto(recibido,cambiarInventario:true);
                     if (response == "Y")
                     {
                         updateEstadoEnvio(recibido.codigo);                        
+                        Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo documento: Recibido con fecha {recibido.fechaRecibido.ToString("dd'/'MM'/'yyyy")}.");
+                        conn.Close();
+                        Registrar(Tipo: "Insert", NombreMetodoServidor: "ServidorgetRecibidoConProductos", ClavePrimaria: recibido.codigo, TipoRetornoMetodoServidor: "RecibidoModel[]", NombreMetodoCliente: "NuevoRecibidoBoolServidor", NombrePK: "codigo");
+                        return "true";
+                    }
+                    /// Si algo fallo en la insercion de los productos y las cantidades se borra el registro del documento de existencias para que pueda ser exitoso en proximos intentos.
+                    string cadena0 = $"delete from recibido where CodigoRecibido = '{recibido.codigo}';";
+                    SqlCommand cmd0 = new SqlCommand(cadena0, conn);
+                    cmd0.ExecuteNonQuery();
+                    return "false";
+                }
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
+                {
+                    ///Cuado se llama por segunda vez desde los clientes y el documento ya ha sido registrado
+                    return "true";
+                }
+                else
+                {
+                    return "false";
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// Regista en la base de datos la informacion relacionada con el nuevo documento de envio.
+        /// </summary>
+        /// <param name="recibido"></param>
+        /// <returns></returns>
+        public static string NuevoRecibidoBoolNoInventario(RecibidoModel recibido)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"INSERT INTO Recibido(CodigoRecibido,CodigoPuntoVenta,CedulaEmpleado,Fecha,NombreConductor,Peso,PlacasCarro) VALUES (@codigo,@pv,@empleado,@fecha,@conductor,@peso,@placa);";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codigo", Statics.PrimeraAMayuscula(recibido.codigo));
+                    cmd.Parameters.AddWithValue("@pv", Statics.PrimeraAMayuscula(recibido.puntoVenta.codigo));
+                    cmd.Parameters.AddWithValue("@empleado", Statics.PrimeraAMayuscula(recibido.responsable.cedula));
+                    cmd.Parameters.AddWithValue("@fecha", recibido.fechaRecibido.Date);
+                    cmd.Parameters.AddWithValue("@conductor", Statics.PrimeraAMayuscula(recibido.nombreConductor));
+                    cmd.Parameters.AddWithValue("@peso", Statics.PrimeraAMayuscula(recibido.peso.ToString()));
+                    cmd.Parameters.AddWithValue("@placa", Statics.PrimeraAMayuscula(recibido.placas.ToString()));
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    string response = InsertarRecibidoProducto(recibido,cambiarInventario:false);
+                    if (response == "Y")
+                    {
+                        updateEstadoEnvio(recibido.codigo);
                         Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo documento: Recibido con fecha {recibido.fechaRecibido.ToString("dd'/'MM'/'yyyy")}.");
                         conn.Close();
                         Registrar(Tipo: "Insert", NombreMetodoServidor: "ServidorgetRecibidoConProductos", ClavePrimaria: recibido.codigo, TipoRetornoMetodoServidor: "RecibidoModel[]", NombreMetodoCliente: "NuevoRecibidoBoolServidor", NombrePK: "codigo");
@@ -2592,7 +2646,7 @@ namespace ServerConsole.Utilities
         /// </summary>
         /// <param name="recibido"></param>
         /// <returns></returns>
-        public static string InsertarRecibidoProducto(RecibidoModel recibido)
+        public static string InsertarRecibidoProducto(RecibidoModel recibido,bool cambiarInventario)
         {
             try
             {
@@ -2611,15 +2665,18 @@ namespace ServerConsole.Utilities
                         cmd.Parameters.AddWithValue("@codigoProducto", producto.codigoProducto);
                         cmd.Parameters.AddWithValue("@recibido", string.IsNullOrEmpty(producto.recibido.ToString()) ? (object)DBNull.Value : producto.recibido);
                         cmd.ExecuteNonQuery();
-                        InventarioModel inv = new InventarioModel()
+                        if (cambiarInventario)
                         {
-                            codigoDelInventarioDelLocal = getIdInventario(recibido.codigo.Split(':')[0].Substring(14)),
-                            tipo = "Nuevo envio",
-                            codigoProducto = producto.codigoProducto,
-                            aumentoDisminucion = producto.recibido
-                        };
-                        inv.responsable.cedula = recibido.responsable.cedula;
-                        NuevoRegistroCambioEnInventario(inv);
+                            InventarioModel inv = new InventarioModel()
+                            {
+                                codigoDelInventarioDelLocal = getIdInventario(recibido.codigo.Split(':')[0].Substring(14)),
+                                tipo = "Nuevo envio",
+                                codigoProducto = producto.codigoProducto,
+                                aumentoDisminucion = producto.recibido
+                            };
+                            inv.responsable.cedula = recibido.responsable.cedula;
+                            NuevoRegistroCambioEnInventario(inv);
+                        }
                     }
                     conn.Close();
                     return "Y";
@@ -2805,7 +2862,7 @@ namespace ServerConsole.Utilities
                     cmd.Parameters.AddWithValue("@placas", Statics.PrimeraAMayuscula(recibido.placas.ToUpper()));
                     conn.Open();
                     cmd.ExecuteNonQuery();
-                    string response = updateProductosRecibido(recibido);
+                    string response = updateProductosRecibido(recibido,cambiarInventario:true);
                     if (response == "Y")
                     {                        
                         conn.Close();
@@ -2853,7 +2910,7 @@ namespace ServerConsole.Utilities
                     cmd.Parameters.AddWithValue("@placas", Statics.PrimeraAMayuscula(recibido.placas.ToUpper()));
                     conn.Open();
                     cmd.ExecuteNonQuery();
-                    string response = updateProductosRecibido(recibido);
+                    string response = updateProductosRecibido(recibido, cambiarInventario: false );
                     if (response == "Y")
                     {
                         conn.Close();
@@ -2885,7 +2942,7 @@ namespace ServerConsole.Utilities
         /// </summary>
         /// <param name="recibido"></param>
         /// <returns></returns>
-        public static string updateProductosRecibido(RecibidoModel recibido)
+        public static string updateProductosRecibido(RecibidoModel recibido, bool cambiarInventario)
         {
             try
             {
@@ -2900,18 +2957,23 @@ namespace ServerConsole.Utilities
                         cmd.Parameters.AddWithValue("@codigoProducto", producto.codigoProducto);
                         cmd.Parameters.AddWithValue("@recibido", string.IsNullOrEmpty(producto.recibido.ToString()) ? (object)DBNull.Value : producto.recibido);
                         cmd.ExecuteNonQuery();
-                        InventarioModel inv = new InventarioModel()
-                        {
-                            codigoDelInventarioDelLocal = getIdInventario(recibido.codigo.Split(':')[0].Substring(14)),
-                            tipo = "Cambio envio",
-                            codigoProducto = producto.codigoProducto,
-                            aumentoDisminucion = producto.recibido
-                        };
-                        inv.responsable.cedula = recibido.responsable.cedula;
-                        NuevoRegistroCambioEnInventario(inv);
-
                     }
                     conn.Close();
+                    if (cambiarInventario)
+                    {
+                        foreach (ProductoModel productoModel in recibido.productosActualizados)
+                        {
+                            InventarioModel inv = new InventarioModel()
+                            {
+                                codigoDelInventarioDelLocal = getIdInventario(recibido.codigo.Split(':')[0].Substring(14)),
+                                tipo = "Cambio envio",
+                                codigoProducto = productoModel.codigoProducto,
+                                aumentoDisminucion = productoModel.recibido
+                            };
+                            inv.responsable.cedula = recibido.responsable.cedula;
+                            NuevoRegistroCambioEnInventario(inv);
+                        }
+                    }
                     return "Y";
                 }
             }
@@ -3131,6 +3193,7 @@ namespace ServerConsole.Utilities
                     cmd2.ExecuteNonQuery();
                     conn.Close();
                     Registrar(Tipo: "Insert", NombreMetodoServidor: "ServidorgetCambioInventario", ClavePrimaria: $"{Id}" , TipoRetornoMetodoServidor: "InventarioModel[]", NombreMetodoCliente: "NuevoRegistroCambioEnInventario", NombrePK: "idRegistroServidor");
+                    Statics.Imprimir($"Cambio en inventario. Valor: {inventario.aumentoDisminucion} Producto: {inventario.codigoProducto} Numero de inventario: {inventario.codigoDelInventarioDelLocal}");
                     return "true";
                     
                 }
