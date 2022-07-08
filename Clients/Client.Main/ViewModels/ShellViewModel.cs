@@ -125,7 +125,6 @@ namespace Client.Main.ViewModels
                         });
                         conexion.Connection.On("SetStatusDisconnected", handler: (string a) =>
                         {
-
                             MainWindowViewModel.Status = "Trabajando localmente";
                             MessageBox.Show(a);
                         });

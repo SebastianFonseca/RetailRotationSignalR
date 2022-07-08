@@ -20,12 +20,19 @@ namespace Client.Main.ViewModels
         MainWindowViewModel VentanaPrincipal;
         ProveedorModel NuevoProveedor = new ProveedorModel();
         public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
+        public bool conProductos = true;
 
         public ProveedorNuevoViewModel(MainWindowViewModel argVentana)
         {
             VentanaPrincipal = argVentana;
             getProductosServidor();
 
+        }
+        public ProveedorNuevoViewModel(MainWindowViewModel argVentana,bool conProductos)
+        {
+            VisibilidadProductos = "Hidden";
+            this.conProductos = conProductos;
+            VentanaPrincipal = argVentana;
         }
 
         public async void getProductosServidor()
@@ -50,6 +57,19 @@ namespace Client.Main.ViewModels
                 }
             }
         }
+
+        private string _visibilidadProductos = "Visible";
+
+        public string VisibilidadProductos
+        {
+            get { return _visibilidadProductos; }
+            set 
+            { 
+                _visibilidadProductos = value;
+                NotifyOfPropertyChange(() => VisibilidadProductos);
+            }
+        }
+
 
         public string Nombre
         {
@@ -157,8 +177,15 @@ namespace Client.Main.ViewModels
         }
         public void BackButton()
         {
+            if (conProductos)
+            { 
             Productos.Clear();
             VentanaPrincipal.ActivateItem(new GerenciaAdministrativoViewModel(VentanaPrincipal));
+            }
+            else
+            {
+                VentanaPrincipal.ActivateItem(new MovimientoEfectivoViewModel(VentanaPrincipal));
+            }
         }
 
         public async void Guardar()
@@ -170,7 +197,7 @@ namespace Client.Main.ViewModels
                 !string.IsNullOrWhiteSpace(NuevoProveedor.telefono) &&
                 !string.IsNullOrWhiteSpace(NuevoProveedor.direccion) &&
                 !string.IsNullOrWhiteSpace(NuevoProveedor.ciudad) &&
-                SelectedProductos.Count != 0)
+                ((SelectedProductos.Count != 0)||(SelectedProductos.Count == 0 && !conProductos)))
             {
                 if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
                 {
@@ -187,7 +214,13 @@ namespace Client.Main.ViewModels
                         if (re.Result.ToString() == "Se ha registrado al nuevo proveedor.")
                         {
                             MessageBox.Show(re.Result.ToString());
-                            VentanaPrincipal.ActivateItem(new ProveedorNuevoViewModel(VentanaPrincipal));
+                            if (conProductos)
+                            {
+                            }
+                            else
+                            {
+                                VentanaPrincipal.ActivateItem(new ProveedorNuevoViewModel(VentanaPrincipal,conProductos:false));
+                            }
                             return;
                         }
                         MessageBox.Show(re.Result.ToString());

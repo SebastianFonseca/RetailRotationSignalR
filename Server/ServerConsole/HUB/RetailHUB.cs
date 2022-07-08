@@ -198,6 +198,18 @@ namespace ServerConsole
         {
             return DbConnection.actualizarProveedor(proveedor);
         }
+
+        /// <summary>
+        /// Obtiene los proveedores
+        /// </summary>
+        /// <param name="Caracteres"></param>
+        /// <returns></returns>
+        public BindableCollection<ProveedorModel> ServidorgetNombresProveedores(string Caracteres)
+        {
+            return DbConnection.getNombresProveedores(Caracteres);
+        }
+
+
         #endregion
 
         #region Usuarios
@@ -483,9 +495,15 @@ namespace ServerConsole
            return  DbConnection.getRegistroCompra(codigoCompraCodigoProducto);
         }
 
-
-
-
+        /// <summary>
+        /// Retorna una lista de objetos de la clase ProductoModel con los registros de compra del proveedor o el producto dado como parametro.
+        /// /// </summary>
+        /// <param name="codigoProductoCedula"></param>
+        /// <returns></returns>
+        public BindableCollection<ProductoModel> ServidorgetRegistroCompraCodigoCedula(string codigoProductoCedula)
+        {
+            return DbConnection.getRegistroCompraCodigoCedula(codigoProductoCedula);
+        }
 
         #endregion
 
@@ -544,7 +562,6 @@ namespace ServerConsole
 
 
         #endregion
-
 
         #region Recibido
 
@@ -657,44 +674,143 @@ namespace ServerConsole
 
         #endregion
 
-
         #region Clientes
         /// <summary>
         /// Cuando es llamado desde un 'cliente' registra un nuevo cliente.
         /// </summary>
         /// <param name="Cliente">Instancia de la claseCLientesModel</param>
         /// <returns></returns>
-        public int ServidorAddClient(ClientesModel Cliente)
+        public string ServidorAddClient(ClientesModel Cliente)
         {
-            Console.ForegroundColor = ConsoleColor.DarkCyan;
-            Console.Write("\n\t" + DateTime.Now + "--");
-            Console.ForegroundColor = ConsoleColor.White;
-            String atempt = DbConnection.AddClient(Cliente);
-            if (atempt == "Cliente ya existe")
-            {
-                //await Clients.Caller.SendCoreAsync("ClienteExiste", args: new object[] { "El número de cedula ya esta registrado." });
-                //Statics.Imprimir($"Se intento registrar un cliente que ya estaba registrado. CC: {Cliente.Cedula}.\n\n");
-                return 0;
-            }
-            if (atempt == "true")
-            {
-                Console.Write($" Se registro un nuevo cliente. CC: {Cliente.cedula} Nombre: {Cliente.firstName} {Cliente.lastName} \n\n");
-                Console.ResetColor();
-                return 1;
-            }
-            else
-            {
-                Console.ResetColor();
-                return 2;
-            }
+                return DbConnection.AddClient(Cliente);
+        }
 
+        /// <summary>
+        /// Method that does a select query against the 'Clientes' table at the local database and get the result of searching the coincidences into the cedula, nombre or apellido of the given characters.
+        /// </summary>
+        /// <param name="Caracteres"></param>
+        /// <returns></returns>
+        public  BindableCollection<ClientesModel> ServidorgetClientes(string Caracteres)
+        {
+            return DbConnection.getClientes(Caracteres);
+        }
+        
+        /// <summary>
+        /// Method that does a select query against the 'Clientes' table at the local database and get the result of searching the coincidences into the cedula, nombre or apellido of the given characters.
+        /// </summary>
+        /// <param name="Caracteres"></param>
+        /// <returns></returns>
+        public  BindableCollection<ClientesModel> ServidorgetClienteCedula(string Caracteres)
+        {
+            return DbConnection.getClienteCedula(Caracteres);
+        }
+
+        /// <summary>
+        ///  Elimina el cliente con el número de cédula dado.
+        /// </summary>
+        /// <param name="Cedula">Número de cédula del cliente a eliminar.</param>
+        /// <returns></returns>
+        public  string ServidordeleteCliente(string Cedula)
+        {
+            return DbConnection.deleteCliente(Cedula);
+        }
+       
+        /// <summary>
+        /// Actualiza los datos del usuario dado.
+        /// </summary>
+        /// <param name="Cliente"></param>
+        /// <returns></returns>
+        public  string ServidorActualizarCliente(ClientesModel Cliente)
+        {
+            return DbConnection.ActualizarCliente(Cliente);
         }
 
         #endregion
 
+        #region MovimientoEfectivo
+
+        /// <summary>
+        /// retorna el proximo valor de la coumna indentada ItemsMovimientoEfectivo
+        /// </summary>
+        /// <returns></returns>
+        public string ServidorgetNextIdMovimientoEfectivo()
+        {
+            return DbConnection.getNextIdMovimientoEfectivo();
+        }
+
+        /// <summary>
+        /// Inserta la descripcion y tipo del nuevo itemMovimientoEfectivo
+        /// </summary>
+        /// <param name="movimiento"></param>
+        /// <returns></returns>
+        public string ServidornuevoItemMovimientoEfectivo(ItemMovimientoEfectivoModel movimiento)
+        {
+            return DbConnection.nuevoItemMovimientoEfectivo(movimiento);
+        }
+
+        /// <summary>
+        /// Retorna los items de egresos
+        /// </summary>
+        /// <returns></returns>
+        public BindableCollection<ItemMovimientoEfectivoModel> ServidorgetItemsEgresos() 
+        {
+            return DbConnection.getItemsEgresos();
+        }
 
 
+        /// <summary>
+        /// Retorna los movimientos de efectivo de un local
+        /// </summary>
+        /// <param name="codigoLocal"></param>
+        /// <returns></returns>
+        public  BindableCollection<MovimientoEfectivoModel> ServidorGetMovimientosEfectivoLocal(string codigoLocal)
+        {
+            return DbConnection.GetMovimientosEfectivoLocal(codigoLocal);
+        }
 
+        #endregion
+
+        #region Egreso
+        /// <summary>
+        /// Retorna el valor del codigo del nuevo egreso
+        /// </summary>
+        /// <returns></returns>
+        public string ServidorgetNextIdEgreso() 
+        {
+            return DbConnection.getNextIdEgreso();
+         }
+
+        /// <summary>
+        /// Registra el nuevo egreso y su correspondiente registro en el movimiemto de efectivo
+        /// </summary>
+        /// <param name="egreso"></param>
+        /// <returns></returns>
+        public  string ServidorNuevoEgreso(EgresoModel egreso)
+        {
+            return DbConnection.NuevoEgreso(egreso);
+        }
+
+        /// <summary>
+        /// Retorna la inforamcin de un egreso
+        /// </summary>
+        /// <param name="codigoEgreso"></param>
+        /// <returns></returns>
+        public  BindableCollection<EgresoModel> ServidorgetEgreso(string codigoEgreso)
+        {
+            return DbConnection.getEgreso(codigoEgreso);
+        }
+
+        /// <summary>
+        /// Registra el pago a un proveedor
+        /// </summary>
+        /// <param name="egreso"></param>
+        /// <returns></returns>
+        public string ServidorpagoProveedor(EgresoModel egreso)
+        {
+            return DbConnection.pagoProveedor(egreso);
+        }
+
+        #endregion
 
 
         /// <summary>

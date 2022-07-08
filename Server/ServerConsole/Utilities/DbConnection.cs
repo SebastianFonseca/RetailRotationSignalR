@@ -602,6 +602,51 @@ namespace ServerConsole.Utilities
         }
 
         /// <summary>
+        /// Obtiene los proveedores
+        /// </summary>
+        /// <param name="Caracteres"></param>
+        /// <returns></returns>
+        public static BindableCollection<ProveedorModel> getNombresProveedores(string Caracteres)
+        {
+
+            try
+            {
+                BindableCollection<ProveedorModel> proveedores = new BindableCollection<ProveedorModel>();
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"SELECT Distinct * FROM Proveedor WHERE (( Nombres like '%{Caracteres}%' ) or ( Apellidos like '%{Caracteres}%' )) and Estado = 'Activo' ORDER BY Nombres ";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+
+                    using (SqlDataReader reader0 = cmd.ExecuteReader())
+                    {
+                        while (reader0.Read())
+                        {
+                            ProveedorModel proveedor = new ProveedorModel
+                            {
+                                cedula = reader0["CedulaProveedor"].ToString(),
+                                firstName = reader0["Nombres"].ToString(),
+                                lastName = reader0["Apellidos"].ToString(),
+                                telefono = reader0["Telefono"].ToString(),
+                                ciudad = reader0["Ciudad"].ToString(),
+                                direccion = reader0["Direccion"].ToString()
+                            };
+                            proveedores.Add(proveedor);
+                        }
+                    }
+
+                    conn.Close();
+                    return proveedores;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
         /// Elimina de la base de datos el proveedor con el número de cédula dado.
         /// </summary>
         /// <param name="cedula"></param>
@@ -884,19 +929,26 @@ namespace ServerConsole.Utilities
                         }
                     }
                     string cadena = "INSERT INTO PuntoVenta(Nombres,Direccion,Telefono,Ciudad,NumeroCanastillas,FechaDeApertura,Estado) " +
-                                    "VALUES (@nombre,@direccion,@telefono,@ciudad,@nrocanastillas,@fechaapertura,'Activo')";
+                                    "OUTPUT INSERTED.CodigoPuntoVenta VALUES (@nombre,@direccion,@telefono,@ciudad,@nrocanastillas,@fechaapertura,'Activo')";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
-                    //cmd.Parameters.AddWithValue("@codigo", NuevoIdLocal());
                     cmd.Parameters.AddWithValue("@nombre", Statics.PrimeraAMayuscula(NuevoLocal.nombre));
                     cmd.Parameters.AddWithValue("@direccion", Statics.PrimeraAMayuscula(NuevoLocal.direccion));
                     cmd.Parameters.AddWithValue("@telefono", Statics.PrimeraAMayuscula(NuevoLocal.telefono));
                     cmd.Parameters.AddWithValue("@ciudad", Statics.PrimeraAMayuscula(NuevoLocal.ciudad));
                     cmd.Parameters.AddWithValue("@nrocanastillas", Statics.PrimeraAMayuscula(NuevoLocal.numeroDeCanastillas.ToString()));
                     cmd.Parameters.AddWithValue("@fechaapertura", Statics.PrimeraAMayuscula(NuevoLocal.fechaDeApertura.Date.ToString("yyyy-MM-dd")));
-                    cmd.ExecuteNonQuery();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        reader.Read();
+                        NuevoLocal.codigo = reader["CodigoPuntoVenta"].ToString();
+                    }
+
+
+                    // cmd.ExecuteNonQuery();
                     Statics.Imprimir($"{RetailHUB.usuarioConectado} ha registrado el nuevo local: {NuevoLocal.nombre }");
                     conn.Close();
-                    Registrar("Insert", "ServidorGetLocales", LocalId(NuevoLocal.nombre), "LocalModel[]", "NuevoLocal", "codigo");
+                    Registrar("Insert", "ServidorGetLocales", NuevoLocal.codigo, "LocalModel[]", "NuevoLocal", "codigo");
+                    nuevoPuntoVentaEfectivo(codigoLocal:NuevoLocal.codigo);
                     nuevoInventario(NuevoLocal.nombre);
                     return $"Se ha registrado el nuevo local: {NuevoLocal.nombre }";
 
@@ -2159,6 +2211,62 @@ namespace ServerConsole.Utilities
             }
 
         }
+        
+        /// <summary>
+        /// Retorna una lista de objetos de la clase ProductoModel con los registros de compra del proveedor o el producto dado como parametro.
+        /// /// </summary>
+        /// <param name="codigoProductoCedula"></param>
+        /// <returns></returns>
+        public static BindableCollection<ProductoModel> getRegistroCompraCodigoCedula(string codigoProductoCedula)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<ProductoModel> productos = new BindableCollection<ProductoModel>();
+                    string cadena = $"select RegistroCompra.CodigoCompra, Producto.CodigoProducto, Proveedor.CedulaProveedor, RegistroCompra.CantidadComprada, RegistroCompra.PrecioCompra, Producto.UnidadCompra, compras.fechacompra, RegistroCompra.FechaPagado, RegistroCompra.Soporte, Proveedor.Nombres, Proveedor.Apellidos, Producto.Nombre from RegistroCompra left join Proveedor on RegistroCompra.CedulaProveedor = Proveedor.CedulaProveedor left join Producto on RegistroCompra.CodigoProducto = Producto.CodigoProducto left join Compras on compras.codigocompra = registrocompra.codigocompra where (Proveedor.CedulaProveedor = '{codigoProductoCedula}' or Producto.CodigoProducto = '{codigoProductoCedula}') and registrocompra.Estado='Pendiente'";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        productos.Clear();
+                        while (reader.Read())
+                        {
+                            ProductoModel producto = new ProductoModel
+                            {
+                                codigoProducto = reader["CodigoProducto"].ToString(),
+                                nombre = reader["Nombre"].ToString()
+                            };
+                            producto.codigoCompra = reader["CodigoCompra"].ToString();
+                            producto.proveedor.cedula = reader["CedulaProveedor"].ToString();
+                            producto.proveedor.firstName = reader["Nombres"].ToString();
+                            producto.proveedor.lastName = reader["Apellidos"].ToString();
+                            producto.unidadCompra = reader["UnidadCompra"].ToString().Substring(0, 3);
+                            if (DateTime.TryParse(reader["fechaCompra"].ToString(), out DateTime fecha)) { producto.fechaDeCompra = fecha; }
+                            if (DateTime.TryParse(reader["FechaPagado"].ToString(), out DateTime date))
+                            {
+                                producto.fechaDePago = date;
+                            }
+
+                            producto.soportePago = reader["Soporte"].ToString();
+                            if (Int32.TryParse(reader["CantidadComprada"].ToString(), out int a)) { producto.compra = a; }
+                            else { producto.compra = null; }
+                            if (decimal.TryParse(reader["PrecioCompra"].ToString(), out decimal b)) { producto.precioCompra = b; }
+                            else { producto.precioCompra = null; }
+                            productos.Add(producto);
+                        }
+                    }
+                    conn.Close();
+                    return productos;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+
+        }
 
         #endregion
 
@@ -3099,8 +3207,10 @@ namespace ServerConsole.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
+
+                    Int32.TryParse(nombreLocal_codigoLocal, out int codigoNumerico);
                     string codigo;
-                    string cadena = $"select * from Inventario where CodigoPuntoVenta  = (select codigoPuntoVenta from Puntoventa where Nombres = '{nombreLocal_codigoLocal}') or CodigoPuntoVenta  = '{nombreLocal_codigoLocal}'";
+                    string cadena = $"select * from Inventario where CodigoPuntoVenta  = (select codigoPuntoVenta from Puntoventa where Nombres = '{nombreLocal_codigoLocal}') or CodigoPuntoVenta  = '{codigoNumerico}'";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -3272,7 +3382,7 @@ namespace ServerConsole.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = "INSERT INTO Clientes(Nombres,Apellidos,CedulaCliente,Email,Telefono,Puntos) VALUES (@name,@lastname,@cedula,@correo,@telefono, 100 )";
+                    string cadena = "INSERT INTO Clientes(Nombres,Apellidos,CedulaCliente,Email,Telefono,Puntos,Estado) VALUES (@name,@lastname,@cedula,@correo,@telefono, 100 ,'Activo')";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     cmd.Parameters.AddWithValue("@name", Statics.PrimeraAMayuscula(Cliente.firstName));
                     cmd.Parameters.AddWithValue("@lastname", Statics.PrimeraAMayuscula(Cliente.lastName));
@@ -3282,6 +3392,8 @@ namespace ServerConsole.Utilities
                     conn.Open();
                     cmd.ExecuteNonQuery();
                     conn.Close();
+                    Statics.Imprimir($" Se registro un nuevo cliente. CC: {Cliente.cedula} Nombre: {Cliente.firstName} {Cliente.lastName}");
+                    Registrar(Tipo: "Insert", NombreMetodoServidor: "ServidorgetClienteCedula", ClavePrimaria: Cliente.cedula, TipoRetornoMetodoServidor: "ClientesModel[]", NombreMetodoCliente: "AddClientServidor", NombrePK: "cedula");
                     return "true";
                 }
             }
@@ -3298,6 +3410,588 @@ namespace ServerConsole.Utilities
                 }
             }
         }
+
+        /// <summary>
+        /// Method that does a select query against the 'Clientes' table at the local database and get the result of searching the coincidences into the cedula, nombre or apellido of the given characters.
+        /// </summary>
+        /// <param name="Caracteres"></param>
+        /// <returns></returns>
+        public static BindableCollection<ClientesModel> getClientes(string Caracteres)
+        {
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<ClientesModel> cli = new BindableCollection<ClientesModel>();
+                    string cadena = $"SELECT * FROM Clientes WHERE (( CedulaCliente like '%{Caracteres}%' ) or ( Nombres like '%{Caracteres}%' ) or ( Apellidos like '%{Caracteres}%' )) and Estado = 'Activo'  ";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        cli.Clear();
+                        while (reader.Read())
+                        {
+                            ClientesModel cliente = new ClientesModel
+                            {
+                                firstName = reader["Nombres"].ToString(),
+                                lastName = reader["Apellidos"].ToString(),
+                                cedula = reader["CedulaCliente"].ToString(),
+                                correo = reader["Email"].ToString(),
+                                telefono = reader["Telefono"].ToString(),
+                                puntos = Int32.Parse(reader["Puntos"].ToString()),
+                                estado = reader["Estado"].ToString()
+                            };
+                            cli.Add(cliente);
+                        }
+                    }
+                    conn.Close();
+                    return cli;
+                }
+            }
+            catch (Exception e)
+            {
+                Statics.Imprimir(e.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Method that does a select query against the 'Clientes' table at the local database and get the result of searching the coincidences into the cedula, nombre or apellido of the given characters.
+        /// </summary>
+        /// <param name="Caracteres"></param>
+        /// <returns></returns>
+        public static BindableCollection<ClientesModel> getClienteCedula(string Caracteres)
+        {
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<ClientesModel> cli = new BindableCollection<ClientesModel>();
+                    string cadena = $"SELECT * FROM Clientes WHERE CedulaCliente = @cedula; ";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@cedula", Caracteres);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        cli.Clear();
+                        while (reader.Read())
+                        {
+                            ClientesModel cliente = new ClientesModel
+                            {
+                                firstName = reader["Nombres"].ToString(),
+                                lastName = reader["Apellidos"].ToString(),
+                                cedula = reader["CedulaCliente"].ToString(),
+                                correo = reader["Email"].ToString(),
+                                telefono = reader["Telefono"].ToString(),
+                                puntos = Int32.Parse(reader["Puntos"].ToString()),
+                                estado = reader["Estado"].ToString()
+                            };
+                            cli.Add(cliente);
+                        }
+                    }
+                    conn.Close();
+                    return cli;
+                }
+            }
+            catch (Exception e)
+            {
+                Statics.Imprimir(e.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Actualiza los datos del usuario dado.
+        /// </summary>
+        /// <param name="Cliente"></param>
+        /// <returns></returns>
+        public static string ActualizarCliente(ClientesModel Cliente)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+
+
+                    string cadena = "UPDATE Clientes SET Nombres=@name, Apellidos=@lastname, Estado = @estado, Email=@correo, Telefono=@telefono, Puntos=@puntos WHERE CedulaCliente = @cedula ";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@name", Statics.PrimeraAMayuscula(Cliente.firstName));
+                    cmd.Parameters.AddWithValue("@lastname", Statics.PrimeraAMayuscula(Cliente.lastName));
+                    cmd.Parameters.AddWithValue("@cedula", Cliente.cedula);
+                    cmd.Parameters.AddWithValue("@correo", string.IsNullOrEmpty(Cliente.correo) ? (object)DBNull.Value : Cliente.correo);
+                    cmd.Parameters.AddWithValue("@telefono", string.IsNullOrEmpty(Cliente.telefono) ? (object)DBNull.Value : Cliente.telefono);
+                    cmd.Parameters.AddWithValue("@puntos", Cliente.puntos);
+                    cmd.Parameters.AddWithValue("@estado", Cliente.estado);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                    Registrar(Tipo: "Update", NombreMetodoServidor: "ServidorgetClienteCedula", ClavePrimaria: $"{Cliente.cedula}", TipoRetornoMetodoServidor: "ClientesModel[]", NombreMetodoCliente: "ActualizarClienteServidor", NombrePK: "cedula");
+                    Statics.Imprimir($"{RetailHUB.usuarioConectado}: Ha editado la informacion del cliente con cedula {Cliente.cedula}");
+                    return "true";
+
+                }
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Substring(0, 50) == $"Violation of PRIMARY KEY constraint 'PK_Clientes'.")
+                {
+                    Statics.Imprimir($"La cedula {Cliente.cedula} ya esta registrada.");
+                    return "false";
+                }
+                else
+                {
+                    Statics.Imprimir(e.Message);
+                    return "false";
+                }
+            }
+        }
+
+        /// <summary>
+        ///  Elimina el cliente con el número de cédula dado.
+        /// </summary>
+        /// <param name="Cedula">Número de cédula del cliente a eliminar.</param>
+        /// <returns></returns>
+        public static string deleteCliente(string Cedula)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+
+                    string cadena = $"update Clientes set Estado  = 'Inactivo' Where CedulaCliente = '{Cedula}' ";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                    //Eliminar de la base de datos solo cambia el estado del ciente, por eso es un update
+                    Registrar(Tipo: "Update", NombreMetodoServidor: "ServidorgetClienteCedula", ClavePrimaria: $"{Cedula}", TipoRetornoMetodoServidor: "ClientesModel[]", NombreMetodoCliente: "ActualizarClienteServidor", NombrePK: "cedula");
+                    return "true";
+                }
+            }
+            catch (Exception e)
+            {
+                Statics.Imprimir(e.Message);
+                return "false";
+            }
+
+        }
+
+        #endregion
+
+        #region MovimientoEfectivo
+
+        /// <summary>
+        /// retorna el proximo valor de la coumna indentada ItemsMovimientoEfectivo
+        /// </summary>
+        /// <returns></returns>
+        public static string getNextIdMovimientoEfectivo() 
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string codigo;
+                    string cadena = $"select IDENT_CURRENT( 'ItemsMovimientoEfectivo' ) as Valor";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+
+                        reader.Read();
+                        codigo = reader["Valor"].ToString();
+
+                    }
+                    conn.Close();
+                    return codigo;
+                }
+            }
+            catch (Exception e)
+            {
+                Statics.Imprimir(e.Message);
+                return null;
+            }
+        }        
+
+        /// <summary>
+        /// Inserta la descripcion y tipo del nuevo itemMovimientoEfectivo
+        /// </summary>
+        /// <param name="movimiento"></param>
+        /// <returns></returns>
+        public static string nuevoItemMovimientoEfectivo(ItemMovimientoEfectivoModel item)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"INSERT INTO ItemsMovimientoEfectivo(Descripcion,Tipo) VALUES (@Descripcion,@Tipo);";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@Descripcion", Statics.PrimeraAMayuscula(item.descripcion));
+                    cmd.Parameters.AddWithValue("@Tipo", Statics.PrimeraAMayuscula(item.tipo));
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    return "true";
+     
+                }
+            }
+            catch (Exception e)
+            {
+                Statics.Imprimir(e.Message);
+                if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
+                {
+                    return "false";
+                }
+                else
+                {
+                    return "false";
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// Inserta en la base de datos un nuevo registro para el nuevo local 
+        /// </summary>
+        /// <param name="codigoLocal"></param>
+        public static void nuevoPuntoVentaEfectivo(string codigoLocal)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"INSERT INTO PuntoVentaEfectivo(CodigoPuntoVenta,CantidadEfectivo) VALUES (@codigo, 0);";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codigo", codigoLocal);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    Statics.Imprimir($"Se creo el nuevo registro en la tabla PuntoVentaEfectivo para le nuevo local: {codigoLocal}");
+                }
+            }
+            catch (Exception e)
+            {
+                Statics.Imprimir(e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Retorna los items de egresos
+        /// </summary>
+        /// <returns></returns>
+        public static BindableCollection<ItemMovimientoEfectivoModel> getItemsEgresos() 
+        {
+            BindableCollection<ItemMovimientoEfectivoModel> items = new BindableCollection<ItemMovimientoEfectivoModel>();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = "SELECT Distinct * FROM ItemsMovimientoEfectivo where Tipo = 'Egreso'";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            ItemMovimientoEfectivoModel  item = new ItemMovimientoEfectivoModel();
+                            Int32.TryParse(reader["CodigoItem"].ToString(), out int codigo);
+                            item.codigoItem = codigo;
+                            item.descripcion = reader["Descripcion"].ToString();
+                            items.Add(item);
+                        }
+                    }
+                    conn.Close();
+                    //Statics.Imprimir("Se consultaron los locales.");
+                    return items;
+                }
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Registra el nuevo movimiento de efectivo y ajusta los valores de efectivo en cada local
+        /// </summary>
+        /// <param name="aumentoDisminucion"></param>
+        /// <param name="codigoPuntoVenta"></param>
+        /// <param name="codigoIngreso"></param>
+        /// <param name="codigoEgreso"></param>
+        /// <returns></returns>
+        public static string NuevoMovimientoDeEfectivo(decimal aumentoDisminucion, string codigoPuntoVenta, string codigoIngreso= null,string codigoEgreso = null)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {                    
+                    string cadena = $"insert into movimientosEfectivo(codigoIngreso,codigoEgreso,aumentodisminucion,total,codigopuntoventa) " +
+                                    $"output inserted.total values   (@codIngreso,@codEgreso,@aumentoDisminucion,(select cantidadefectivo from PuntoVentaEfectivo where CodigoPuntoVenta = @pv)+@aumentoDisminucion,@pv);";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codIngreso", codigoIngreso != null ?  codigoIngreso : (object)DBNull.Value );
+                    cmd.Parameters.AddWithValue("@codEgreso", codigoEgreso != null ? codigoEgreso : (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@aumentoDisminucion", aumentoDisminucion);
+                    cmd.Parameters.AddWithValue("@pv", codigoPuntoVenta);
+                    conn.Open();
+                    decimal total;
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        reader.Read();
+                        decimal.TryParse(reader["total"].ToString(), out decimal valor);
+                        total = valor;
+                    }                    
+                    string cadena2 = $"update PuntoVentaEfectivo set CantidadEfectivo = @cantidad where codigoPuntoVenta = @pv;";
+                    SqlCommand cmd2 = new SqlCommand(cadena2, conn);
+                    cmd2.Parameters.AddWithValue("@cantidad", total);
+                    cmd2.Parameters.AddWithValue("@pv", codigoPuntoVenta);                    
+                    cmd2.ExecuteNonQuery();
+                    conn.Close();
+                    return "true";
+                }
+            }
+            catch (Exception e)
+            {
+                Statics.Imprimir(e.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Retorna los movimientos de efectivo de un local
+        /// </summary>
+        /// <param name="codigoLocal"></param>
+        /// <returns></returns>
+        public static BindableCollection<MovimientoEfectivoModel> GetMovimientosEfectivoLocal(string codigoLocal) 
+        {
+            try
+            {
+                BindableCollection<MovimientoEfectivoModel> movimientos = new BindableCollection<MovimientoEfectivoModel>();
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+
+                    string cadena = $"select Distinct * from movimientosefectivo where codigoPuntoVenta = @codigoLocal order by id desc;";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codigoLocal", codigoLocal);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            MovimientoEfectivoModel mov = new MovimientoEfectivoModel();
+                            mov.id = Int32.Parse(reader["ID"].ToString());                            
+                            Int32.TryParse(reader["CodigoEgreso"].ToString(), out int codEgre);
+                            mov.egreso.id = codEgre;
+                            Int32.TryParse(reader["CodigoIngreso"].ToString(), out int codIngre);
+                            mov.codIngreso = codIngre;
+                            mov.aumentoDisminucion = decimal.Parse(reader["AumentoDisminucion"].ToString());
+                            mov.total = decimal.Parse(reader["total"].ToString());
+                            movimientos.Add(mov);
+                        }
+
+                    }
+                    conn.Close();
+                    return movimientos;
+                }
+            }
+            catch (Exception e)
+            {
+                Statics.Imprimir(e.Message);
+                return null;
+            }
+        }
+
+        #endregion
+
+        #region Egresos
+        /// <summary>
+        /// Retorna el valor del codigo del nuevo egreso
+        /// </summary>
+        /// <returns></returns>
+        public static string getNextIdEgreso()
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string codigo;
+                    string cadena = $"select IDENT_CURRENT( 'Egresos' ) as Valor";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+
+                        reader.Read();
+                        codigo = reader["Valor"].ToString();
+
+                    }
+                    conn.Close();
+                    return codigo;
+                }
+            }
+            catch (Exception e)
+            {
+                Statics.Imprimir(e.Message);
+                return null;
+            }
+        } 
+
+        /// <summary>
+        /// Registra el nuevo egreso y su correspondiente registro en el movimiemto de efectivo
+        /// </summary>
+        /// <param name="egreso"></param>
+        /// <returns></returns>
+        public static string NuevoEgreso(EgresoModel egreso)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = "INSERT INTO Egresos(CodigoItemMovimientoEfectivo, CedulaEmpleado, CodigoPuntoVenta, CedulaProveedor,Fecha,Soporte,Valor,Descripcion) " +
+                        "output inserted.codigoEgreso VALUES (@codigoItem,@cedula,@pv,@proveedor,@fecha,@soporte,@valor,@descripcion);";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codigoItem", egreso.itemMovimientoefectivo.codigoItem);
+                    cmd.Parameters.AddWithValue("@cedula", egreso.responsable.cedula);
+                    cmd.Parameters.AddWithValue("@pv", egreso.local.codigo);
+                    cmd.Parameters.AddWithValue("@proveedor", egreso.proveedor.cedula);
+                    cmd.Parameters.AddWithValue("@fecha", egreso.fecha);
+                    cmd.Parameters.AddWithValue("@soporte", egreso.soporte);
+                    cmd.Parameters.AddWithValue("@valor", egreso.valor);
+                    cmd.Parameters.AddWithValue("@descripcion", Statics.PrimeraAMayuscula(egreso.descripcion));
+                    conn.Open();
+                    string codigo;
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        reader.Read();
+                        codigo = reader["CodigoEgreso"].ToString();
+                    }
+                    NuevoMovimientoDeEfectivo(aumentoDisminucion: -(egreso.valor), codigoPuntoVenta: egreso.local.codigo, codigoIngreso:null,codigoEgreso:codigo) ;
+                    Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo egreso.");
+                    Statics.Imprimir($" Valor:${egreso.valor} | Descripcion: {egreso.descripcion} | Item: {egreso.itemMovimientoefectivo.descripcion}");
+                    conn.Close();
+
+                    return "true";
+                  
+                                    
+                }
+            }
+            catch (Exception e)
+            {
+
+               
+                    return e.Message;
+                
+            }
+        }
+
+        /// <summary>
+        /// Retorna la inforamcin de un egreso
+        /// </summary>
+        /// <param name="codigoEgreso"></param>
+        /// <returns></returns>
+        public static BindableCollection<EgresoModel> getEgreso(string codigoEgreso)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<EgresoModel> egresos = new BindableCollection<EgresoModel>();
+                    string cadena = $"select Egresos.CodigoEgreso, Egresos.CodigoItemMovimientoEfectivo,Egresos.CedulaEmpleado,Egresos.CodigoPuntoVenta, egresos.CedulaProveedor, Egresos.Fecha,Egresos.Soporte, Egresos.Valor,Egresos.Descripcion as descripcionegreso,ItemsMovimientoEfectivo.Descripcion as descripcionitem from egresos join ItemsMovimientoEfectivo on ItemsMovimientoEfectivo.CodigoItem = Egresos.CodigoItemMovimientoEfectivo where CodigoEgreso = {codigoEgreso};";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        egresos.Clear();
+                        while (reader.Read())
+                        {
+                            EgresoModel egreso = new EgresoModel();
+                            Int32.TryParse(reader["CodigoEgreso"].ToString(), out int codigo);
+                            egreso.id = codigo;
+                            Int32.TryParse(reader["CodigoItemMovimientoEfectivo"].ToString(), out int item);
+                            egreso.itemMovimientoefectivo.codigoItem = item;
+                            egreso.itemMovimientoefectivo.descripcion = reader["descripcionitem"].ToString();
+                            egreso.responsable.cedula = reader["CedulaEmpleado"].ToString();
+                            egreso.local.codigo = reader["CodigoPuntoVenta"].ToString();
+                            egreso.proveedor.cedula = reader["CedulaProveedor"].ToString();
+                            DateTime.TryParse(reader["Fecha"].ToString(), out DateTime fecha);
+                            egreso.fecha = fecha;
+                            egreso.soporte = reader["Soporte"].ToString();
+                            decimal.TryParse(reader["Valor"].ToString(), out decimal valor);
+                            egreso.valor = valor;
+                            egreso.descripcion = reader["descripcionegreso"].ToString();
+                            egresos.Add(egreso);
+                        }
+                    }
+                    conn.Close();
+                    return egresos;
+                }
+            }
+            catch (Exception e)
+            {
+                Statics.Imprimir(e.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Registra el pago a un proveedor
+        /// </summary>
+        /// <param name="egreso"></param>
+        /// <returns></returns>
+        public static string pagoProveedor(EgresoModel egreso)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = "INSERT INTO PagosProveedores(Fecha,Soporte,CedulaEmpleado,Valor) OUTPUT inserted.id VALUES (@fecha,@soporte,@empleado,@valor);";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@fecha", egreso.fecha); 
+                    cmd.Parameters.AddWithValue("@soporte", egreso.soporte);
+                    cmd.Parameters.AddWithValue("@empleado", egreso.responsable.cedula);
+                    cmd.Parameters.AddWithValue("@valor", egreso.valor);
+                    conn.Open();
+                    string codigo;
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        reader.Read();
+                        codigo = reader["id"].ToString();
+                    }
+
+                    string cadena0 = "INSERT INTO PagosProveedorRegistroCompra (PagoProveedor,CodigoCompra,CodigoProducto) VALUES (@pagoproveedor, @codCompra, @codProd);";
+                    SqlCommand cmd0 = new SqlCommand(cadena0, conn);
+                    cmd0.Parameters.AddWithValue("@pagoproveedor", codigo);
+                    cmd0.Parameters.AddWithValue("@codCompra", egreso.producto.codigoCompra);
+                    cmd0.Parameters.AddWithValue("@codProd", egreso.producto.codigoProducto);
+                    cmd0.ExecuteNonQuery();
+
+                    string cadena1 = $"insert into efectivo values (@valor , ((select total from efectivo where id = (select max(id) from efectivo) ) + @valor));";
+                    SqlCommand cmd1 = new SqlCommand(cadena1, conn);
+                    //El valor del egreso es negativo para restar del total de efectivo
+                    cmd1.Parameters.AddWithValue("@valor", -(egreso.valor));
+                    cmd1.ExecuteNonQuery();
+
+                    string cadena2 = $"update RegistroCompra set Estado = 'Pago' where CodigoCompra = @codigoCompra and CodigoProducto = @codigoProducto ;";
+                    SqlCommand cmd2 = new SqlCommand(cadena2, conn);
+                    cmd2.Parameters.AddWithValue("@codigoCompra", egreso.producto.codigoCompra);
+                    cmd2.Parameters.AddWithValue("@codigoProducto", egreso.producto.codigoProducto);
+                    cmd2.ExecuteNonQuery();
+
+                    Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha registrado un pago de mercancia.");
+                    Statics.Imprimir($" Codigo de la compra:{egreso.producto.codigoCompra} | Producto: {egreso.producto.codigoProducto} | Valor: ${egreso.valor}");
+                    conn.Close();
+
+                    return "true";
+
+
+                }
+            }
+            catch (Exception e)
+            {
+                Statics.Imprimir(e.Message);
+                return e.Message;
+            }
+        }
+
+
         #endregion
 
         /// <summary>

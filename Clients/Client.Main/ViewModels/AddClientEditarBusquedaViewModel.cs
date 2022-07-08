@@ -1,10 +1,12 @@
-﻿using Caliburn.Micro;
+﻿using Autofac;
+using Caliburn.Micro;
 using Client.Main.Models;
 using Client.Main.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace Client.Main.ViewModels
@@ -13,6 +15,7 @@ namespace Client.Main.ViewModels
     {
 
         MainWindowViewModel VentanaPrincipal;
+        public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
 
         ClientesModel resultadoCliente = new ClientesModel();
         string CedulaAntigua;
@@ -84,11 +87,11 @@ namespace Client.Main.ViewModels
 
         public int Puntos
         {
-            get { return resultadoCliente.Puntos; }
+            get { return resultadoCliente.puntos; }
             set
             {
-                if (resultadoCliente.Puntos != value)
-                    resultadoCliente.Puntos = value;
+                if (resultadoCliente.puntos != value)
+                    resultadoCliente.puntos = value;
                 NotifyOfPropertyChange(() => Telefono);
 
             }
@@ -99,7 +102,7 @@ namespace Client.Main.ViewModels
             VentanaPrincipal.ActivateItem(new AddClientBuscarViewModel(VentanaPrincipal));
         }
 
-        public void Editar()
+        public async void Editar()
         {
             if (!string.IsNullOrWhiteSpace(resultadoCliente.firstName) && !string.IsNullOrWhiteSpace(resultadoCliente.lastName) && !string.IsNullOrWhiteSpace(resultadoCliente.cedula))
             {
@@ -114,31 +117,28 @@ namespace Client.Main.ViewModels
 
                 try
                 {
-                    //if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
-                    //{
-                    //    Task<object> re = conexion.CallServerMethod("ServidorAddClient", Arguments: new[] { resultadoCliente });
-                    //    await re;
-                    //    if (Convert.ToInt32(re.Result.ToString()) == 1)
-                    //    {
-                    //        MessageBox.Show($"El cliente {resultadoCliente.FirstName} {resultadoCliente.LastName} se ha registrado en el servidor con 100 puntos.");
-                    //        VentanaPrincipal.ActivateItem(new AddClientViewModel(VentanaPrincipal));
-                    //        return;
-                    //    }
-                    //    if (Convert.ToInt32(re.Result.ToString()) == 0)
-                    //    {
-                    //        MessageBox.Show($"El cliente {resultadoCliente.FirstName} {resultadoCliente.LastName} ya esta registrado.");
-                    //        CC = "";
-                    //        return;
-                    //    }
-                    //}
+                    if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+                    {
+                        Task<object> re = conexion.CallServerMethod("ServidorActualizarCliente", Arguments: new[] { resultadoCliente });
+                        await re;
 
-                    if (DbConnection.ActualizarCliente(Cliente:resultadoCliente, CC:CedulaAntigua))
-                    { 
-                        MessageBox.Show($"Se ha editado la informacion del cliente {resultadoCliente.firstName} {resultadoCliente.lastName}. ");
-                        VentanaPrincipal.ActivateItem(new AddClientBuscarViewModel(VentanaPrincipal));
+                        if (re.Result.ToString() == "true")
+                        {
+                            MessageBox.Show($"Se ha editado la informacion del cliente {resultadoCliente.firstName} {resultadoCliente.lastName}. ");
+                            VentanaPrincipal.ActivateItem(new AddClientBuscarViewModel(VentanaPrincipal));
+                        }
+
                     }
+                    else if (MainWindowViewModel.Status == "Trabajando localmente")
+                    {
 
+                        if (DbConnection.ActualizarCliente(Cliente: resultadoCliente))
+                        {
+                            MessageBox.Show($"Se ha editado la informacion del cliente {resultadoCliente.firstName} {resultadoCliente.lastName}. ");
+                            VentanaPrincipal.ActivateItem(new AddClientBuscarViewModel(VentanaPrincipal));
+                        }
 
+                    }
                 }
                 catch (Exception e)
                 {

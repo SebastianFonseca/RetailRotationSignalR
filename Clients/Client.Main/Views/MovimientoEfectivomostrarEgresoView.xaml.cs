@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -15,19 +14,13 @@ using System.Windows.Shapes;
 namespace Client.Main.Views
 {
     /// <summary>
-    /// Interaction logic for ComprasPagosPagarView.xaml
+    /// Interaction logic for MovimientoEfectivomostrarEgresoView.xaml
     /// </summary>
-    public partial class ComprasPagosPagarView : Window
+    public partial class MovimientoEfectivomostrarEgresoView : UserControl
     {
-        public ComprasPagosPagarView()
+        public MovimientoEfectivomostrarEgresoView()
         {
             InitializeComponent();
-        }
-
-        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
-        {
-            Regex regex = new Regex("[^0-9]+");
-            e.Handled = regex.IsMatch(e.Text);
         }
     }
 }

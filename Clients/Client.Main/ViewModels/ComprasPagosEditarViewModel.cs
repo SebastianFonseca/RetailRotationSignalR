@@ -17,9 +17,11 @@ namespace Client.Main.ViewModels
         public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
         public BindableCollection<PedidoModel> pedidosSeleccionados = new BindableCollection<PedidoModel>();
         private readonly IWindowManager window = new WindowManager();
+        public string codigoCedula;
 
         public ComprasPagosEditarViewModel(MainWindowViewModel argVentana, string codigoCedula)
         {
+            this.codigoCedula = codigoCedula;
             Info = codigoCedula;
             VentanaPrincipal = argVentana;
             getRegistros(codigoCedula);
@@ -29,15 +31,24 @@ namespace Client.Main.ViewModels
         public async void getRegistros(string caracteres)
         {
 
+            if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+            {
+                Task<object> re = conexion.CallServerMethod("ServidorgetRegistroCompraCodigoCedula", Arguments: new object[] { caracteres });
+                await re;
+                Productos = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ProductoModel>>(re.Result.ToString());
+            }
+            else if (MainWindowViewModel.Status == "Trabajando localmente")
+            {
+                Productos = DbConnection.getRegistroCompraCodigoCedula(caracteres);
+            }
 
-            Productos = DbConnection.getRegistroCompraCodigoCedula(caracteres);
             foreach (ProductoModel producto in Productos)
             {
-                producto.precioCompra = producto.precioCompra;
+                // producto.precioCompra = producto.precioCompra;
                 if (producto.precioCompra != null & producto.compra != null)
                     Total = (decimal)(Total + (producto.precioCompra * producto.compra));
             }
-
+            
         }
 
         private decimal _total;
@@ -61,6 +72,7 @@ namespace Client.Main.ViewModels
             set
             {
                 _productos = value;
+
                 NotifyOfPropertyChange(() => Productos);
             }
         }
@@ -90,7 +102,17 @@ namespace Client.Main.ViewModels
 
         public void Click()
         {
-            window.ShowDialog(new ComprasPagosPagarViewModel(Seleccionado));
+            if (Seleccionado.compra==null | Seleccionado.precioCompra==null | Seleccionado.proveedor==null)
+            {
+                MessageBox.Show("Debe editar el documento de compra, datos incompletos");
+            }
+            else 
+            {
+                window.ShowDialog(new ComprasPagosPagarViewModel(producto: Seleccionado,  argVentana: VentanaPrincipal));
+                Total = 0;
+                getRegistros(codigoCedula); 
+            }
+
         }
 
         private ProductoModel _seleccionado;

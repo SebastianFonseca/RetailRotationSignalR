@@ -1,25 +1,28 @@
-﻿using Caliburn.Micro;
+﻿using Autofac;
+using Caliburn.Micro;
 using Client.Main.Models;
 using Client.Main.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace Client.Main.ViewModels
 {
 
-    class AddClientBuscarViewModel : PropertyChangedBase, IDataErrorInfo
+    public class AddClientBuscarViewModel : PropertyChangedBase, IDataErrorInfo
     {
-        MainWindowViewModel VentanaPrincipal;
+        public MainWindowViewModel VentanaPrincipal;
+        public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
+
         public AddClientBuscarViewModel(MainWindowViewModel argVentana)
         {
             VentanaPrincipal = argVentana;
         }
 
         private string _buscarTbx;
-
         public string BuscarTbx
         {
             get { return _buscarTbx; }
@@ -34,28 +37,9 @@ namespace Client.Main.ViewModels
             }
         }
 
-        private ClientesModel _usuarioSeleccionado;
 
-        public ClientesModel UsuarioSeleccionado
-        {
-            get { return _usuarioSeleccionado; }
-            set
-            {
-
-                if (value != null)
-                {
-                    seleccion = value;
-                    BuscarTbx = value.cedula + "-" + value.firstName + " " + value.lastName;
-                }
-                _usuarioSeleccionado = value;
-
-                NotifyOfPropertyChange(() => UsuarioSeleccionado);
-            }
-        }
-        ClientesModel seleccion = new ClientesModel();
 
         private BindableCollection<ClientesModel> _busquedas = new BindableCollection<ClientesModel>();
-
         public BindableCollection<ClientesModel> Busquedas
         {
             get
@@ -70,8 +54,25 @@ namespace Client.Main.ViewModels
         }
 
 
+        private ClientesModel _clienteSeleccionado;
+        public ClientesModel ClienteSeleccionado
+        {
+            get { return _clienteSeleccionado; }
+            set
+            {
+                if (value != null)
+                {
+                 
+                    BuscarTbx = value.cedula + " - " + value.firstName + " " + value.lastName;
+                    _clienteSeleccionado = value;
+                }
 
 
+                NotifyOfPropertyChange(() => ClienteSeleccionado);
+            }
+        }
+
+     
         public void Buscar()
         {
             if (String.IsNullOrEmpty(BuscarTbx))
@@ -80,36 +81,8 @@ namespace Client.Main.ViewModels
             }
             else
             {
-                BindableCollection<ClientesModel> resultado = DbConnection.getClientes(BuscarTbx.Split('-')[0]);
-
-                if (resultado.Count == 0)
-                {
-                    MessageBox.Show("Número de cédula, nombre o apellido no resgistrados");
-                }
-                else
-                {
-                    IEnumerator<ClientesModel> e = resultado.GetEnumerator();
-                    e.Reset();
-                    while (e.MoveNext())
-                    {
-                        if (e.Current.cedula == BuscarTbx.Split('-')[0])
-                        {
-                            VentanaPrincipal.ActivateItem(new AddClientResultadoBusquedaViewModel(VentanaPrincipal, e.Current));
-                        }
-
-
-                    }
-
-                    BusquedasVisibilidad = "Visible";
-                    ComboboxDesplegado = "True";
-                }
-
+                VentanaPrincipal.ActivateItem(new AddClientResultadoBusquedaViewModel(VentanaPrincipal, ClienteSeleccionado));      
             }
-
-
-
-
-
         }
 
         public string Error { get { return null; } }
@@ -125,23 +98,16 @@ namespace Client.Main.ViewModels
                     {
                         if (String.IsNullOrEmpty(BuscarTbx))
                         {
-                            result = "Rellene este campo.";
+                            result = "Escriba algun valor.";
                         }
                     }
                 }
-
                 else { flag += 1; }
-
-
                 return result;
-
             }
         }
 
-
-
         private string _busquedasVisibiliad = "Hidden";
-
         public string BusquedasVisibilidad
         {
             get
@@ -151,37 +117,51 @@ namespace Client.Main.ViewModels
             }
             set { _busquedasVisibiliad = value; NotifyOfPropertyChange(() => BusquedasVisibilidad); }
         }
-
-
-        private string _comboboxDesplegado = "false";
-
-        public string ComboboxDesplegado
+        public async void EscribiendoBusqueda()
         {
-            get { return _comboboxDesplegado; }
-            set
+            Busquedas.Clear();
+  
+            try
             {
-                _comboboxDesplegado = value;
-                NotifyOfPropertyChange(() => ComboboxDesplegado);
+                if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+                {
+                    Task<object> re = conexion.CallServerMethod("ServidorgetClientes", Arguments: new[] { BuscarTbx });
+                    await re;
+                    Busquedas = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ClientesModel>>(re.Result.ToString());
+
+                    if (Busquedas.Count == 0 )
+                    {
+                        BusquedasVisibilidad = "Hidden";
+                    }
+                    else
+                    {
+                        BusquedasVisibilidad = "Visible";
+                    }
+                }
+                else
+                {
+
+                    if (MainWindowViewModel.Status == "Trabajando localmente")
+                    {
+
+                        Busquedas = DbConnection.getClientes(BuscarTbx);
+                        if (Busquedas.Count == 0 )
+                        {
+                            BusquedasVisibilidad = "Hidden";
+                        }
+                        else
+                        {
+                            BusquedasVisibilidad = "Visible";
+                        }
+                    }
+
+
+                }
             }
-        }
-
-
-
-        public void EscribiendoBusqueda()
-        {
-
-            Busquedas = DbConnection.getClientes(BuscarTbx);
-            if (Busquedas == null || Busquedas.Count == 0)
+            catch (Exception e)
             {
-                BusquedasVisibilidad = "Hidden";
+                MessageBox.Show(e.Message);
             }
-            else
-            {
-                BusquedasVisibilidad = "Visible";
-                ComboboxDesplegado = "true";
-
-            }
-
         }
 
 

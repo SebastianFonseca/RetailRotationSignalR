@@ -108,7 +108,7 @@ namespace Client.Main.ViewModels
         #region Administracion
         public void MovimientoDeEfectivo()
         {
-
+            VentanaPrincipal.ActivateItem(new MovimientoEfectivoViewModel(VentanaPrincipal));
         }
 
         public void Inventario()

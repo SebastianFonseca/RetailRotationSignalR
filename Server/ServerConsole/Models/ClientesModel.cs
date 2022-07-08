@@ -7,6 +7,7 @@ namespace ServerConsole.Models
     public class ClientesModel : PersonModel
     {
         public int puntos { get; set; }
+        public string estado { get; set; }
 
     }
 }

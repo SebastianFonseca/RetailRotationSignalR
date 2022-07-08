@@ -39,12 +39,19 @@
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="0 0 2 0"> Código de soporte:</TextBlock>
-            <TextBox Grid.Row="0" Grid.Column="2" Style="{StaticResource GeneralTextBox}" BorderThickness="0 1 0 1"/>
+            <TextBox Grid.Row="0" Grid.Column="2" x:Name="CodigoSoporte" Style="{StaticResource GeneralTextBox}" BorderThickness="0 1 0 1" PreviewTextInput="NumberValidationTextBox"/>
 
             <TextBlock Grid.Row="1" Grid.Column="1" >Valor pagado:</TextBlock>
-            <TextBox Grid.Row="1" Grid.Column="2" Style="{StaticResource GeneralTextBox}" Text="{Binding StringFormat={}${0:#,#}, Path=Valor}"/>
+            <TextBox Grid.Row="1" Grid.Column="2" Style="{StaticResource GeneralTextBox}" Text="{Binding Path=Valor, UpdateSourceTrigger=PropertyChanged}" x:Name="Valor" PreviewTextInput="NumberValidationTextBox"/>
 
-            <Button Grid.Row="2" Grid.Column="1"  Grid.ColumnSpan="2" Style="{StaticResource GeneralButton}" x:Name="Guardar">GUARDAR</Button>
+            <Button Grid.Row="2" Grid.Column="1"  Grid.ColumnSpan="2" Style="{StaticResource GeneralButton}" x:Name="Guardar" Content="GUARDAR">
+                <Button.IsEnabled>
+                    <MultiBinding Converter="{StaticResource Converter }" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                        <Binding ElementName="CodigoSoporte" Path="(Validation.HasError)" />
+                        <Binding ElementName="Valor" Path="(Validation.HasError)" />
+                    </MultiBinding>
+                </Button.IsEnabled>
+            </Button>
 
 
             </Grid>

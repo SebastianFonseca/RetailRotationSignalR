@@ -131,7 +131,7 @@
                                 <TextBlock Grid.Column="1" FontSize="16" Text="{Binding Path=nombre}"   HorizontalAlignment="Left" Margin="20 0 0 0"/>
                                 <TextBlock Grid.Column="2" FontSize="16" Width="60"  Text="{Binding Path=fechaDeCompra, StringFormat=dd-MM}" HorizontalAlignment="Center" TextAlignment="Center"  />
                                 <TextBlock Grid.Column="3" FontSize="16" Width="60"  Text="{Binding Path=compra}" HorizontalAlignment="Center"  TextAlignment="Center"  />
-                                <TextBlock Grid.Column="4" FontSize="16" Width="100" Text="{Binding Path=precioCompra, StringFormat={}${0:0,0}}" HorizontalAlignment="Center" TextAlignment="Center" />
+                                <TextBlock Grid.Column="4" FontSize="16" Width="100" Text="{Binding Path=precioCompra, StringFormat={}${0:#,#}}" HorizontalAlignment="Center" TextAlignment="Center" />
                                 <TextBlock Grid.Column="5" FontSize="16" Width="115" HorizontalAlignment="Center" TextAlignment="Center" >
                                     <TextBlock.Text>
                                         <MultiBinding StringFormat=" {0} {1}">
@@ -176,14 +176,12 @@
                 
                 <Separator  Grid.Row="2"  Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Top"  Background="Gray" Margin="15 0 5 0" Panel.ZIndex="1"/>
                 
-                <Button Grid.Row="2" Grid.Column="2" FontSize="12" Content="Pagar Total" Style="{StaticResource GeneralButton}" Margin="0" Width="100"/>
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="Total:" />
-                <TextBlock Grid.Row="2" Grid.Column="1"  Text="{Binding StringFormat={}${0:#,#}, Path=Total}"/>
-
+                <DockPanel Grid.Row="2" Grid.Column="2" >
+                <TextBlock Text="Total:" />
+                    <TextBlock  Text="{Binding StringFormat={}${0:#,#}, Path=Total}"/>
+                </DockPanel>
 
             </Grid>
-
-            <Button Style="{StaticResource GeneralButton}" Width="130" Content="EDITAR"  FontSize="15" x:Name="Editar" Grid.Row="2" Grid.Column="0" Margin="10" Height="35"  Grid.ColumnSpan="2"/>
 
         </Grid>
     </Border>

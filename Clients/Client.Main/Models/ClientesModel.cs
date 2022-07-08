@@ -11,7 +11,8 @@ namespace Client.Main.Models
 {
     public class ClientesModel : PersonModel
     {
-        public int Puntos { get; set; }
+        public int puntos { get; set; }
+        public string estado { get; set; }
 
     }
 

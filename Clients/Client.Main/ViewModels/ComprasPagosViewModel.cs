@@ -110,7 +110,7 @@ namespace Client.Main.ViewModels
 
 
 
-        public async void Buscar()
+        public void Buscar()
         {
             if (String.IsNullOrEmpty(BuscarTbx))
             {
@@ -118,33 +118,7 @@ namespace Client.Main.ViewModels
             }
             else
             {
-                if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
-                {
-                    try
-                    {
-                        //Task<object> re = conexion.CallServerMethod("ServidorGetProveedor", Arguments: new[] { BuscarTbx.Split('-')[0].Trim() });
-                        //await re;
-                        //ComprasModel[] proveedor = System.Text.Json.JsonSerializer.Deserialize<ComprasModel[]>(re.Result.ToString());
-                        //if (proveedor[0].cedula == null)
-                        //{
-                        //    MessageBox.Show("Número de cédula, nombre o apellido no resgistrados");
-                        //}
-                        //else
-                        //{
-                        //    VentanaPrincipal.ActivateItem(new ProveedorResultadoBusquedaViewModel(VentanaPrincipal, proveedor[0]));
-                        //    BusquedasVisibilidad = "Visible";
-                        //    //                            ComboboxDesplegado = "True";
-                        //}
-                    }
-                    catch (Exception e)
-                    {
-                        MessageBox.Show(e.Message);
-                    }
-                }
-                else
-                {
-                    VentanaPrincipal.ActivateItem(new ComprasPagosEditarViewModel(VentanaPrincipal, codigoCedula));
-                }
+                VentanaPrincipal.ActivateItem(new ComprasPagosEditarViewModel(VentanaPrincipal, codigoCedula));                
             }
         }
 
@@ -188,18 +162,16 @@ namespace Client.Main.ViewModels
             {
                 if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
                 {
-                    BindableCollection<ComprasModel> proveedores = new BindableCollection<ComprasModel>();
-                    Task<object> re = conexion.CallServerMethod("ServidorGetProveedores", Arguments: new[] { BuscarTbx });
+                    Task<object> re = conexion.CallServerMethod("ServidorgetNombresProveedores", Arguments: new[] { BuscarTbx });
                     await re;
-                    //ComprasModel[] mn = System.Text.Json.JsonSerializer.Deserialize<ComprasModel[]>(re.Result.ToString());
+                    BusquedasProveedor = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ProveedorModel>>(re.Result.ToString());
 
-                    proveedores = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ComprasModel>>(re.Result.ToString());
+                    Task<object> re2 = conexion.CallServerMethod("ServidorGetProductos", Arguments: new[] { BuscarTbx });
+                    await re2;
+                    BusquedasProducto = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ProductoModel>>(re2.Result.ToString());
 
-                    if (proveedores.Count != 0)
-                    {
-                        
-                    }
-                    if (BusquedasProducto.Count == 0 & BusquedasProducto.Count == 0)
+
+                    if (BusquedasProveedor.Count == 0 & BusquedasProducto.Count == 0)
                     {
                         BusquedasVisibilidad = "Hidden";
                     }

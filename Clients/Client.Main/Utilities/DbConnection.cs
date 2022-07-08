@@ -661,11 +661,6 @@ namespace Client.Main.Utilities
             }
         }
 
-        /// <summary>
-        /// Elimina de la base de datos el proveedor con el número de cédula dado.
-        /// </summary>
-        /// <param name="cedula"></param>
-        /// <returns></returns>
 
         /// <summary>
         /// Obtiene los proveedores
@@ -711,8 +706,12 @@ namespace Client.Main.Utilities
                 return null;
             }
         }
-
-
+        
+        /// <summary>
+        /// Elimina de la base de datos el proveedor con el número de cédula dado.
+        /// </summary>
+        /// <param name="cedula"></param>
+        /// <returns></returns>
         public static bool deleteProveedor(string Cedula)
         {
             try
@@ -2370,7 +2369,7 @@ namespace Client.Main.Utilities
 
 
         /// <summary>
-        /// Retorna una losta de objetos de la clase ProductoModel con los registros de compra del proveedor o el producto dado como parametro.
+        /// Retorna una lista de objetos de la clase ProductoModel con los registros de compra del proveedor o el producto dado como parametro.
         /// /// </summary>
         /// <param name="codigoProductoCedula"></param>
         /// <returns></returns>
@@ -2381,7 +2380,7 @@ namespace Client.Main.Utilities
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
                     BindableCollection<ProductoModel> productos = new BindableCollection<ProductoModel>();
-                    string cadena = $"select top 100 RegistroCompra.CodigoCompra, Producto.CodigoProducto, Proveedor.CedulaProveedor, RegistroCompra.CantidadComprada, RegistroCompra.PrecioCompra, Producto.UnidadCompra, compras.fechacompra, RegistroCompra.FechaPagado, RegistroCompra.Soporte, Proveedor.Nombres, Proveedor.Apellidos, Producto.Nombre from RegistroCompra left join Proveedor on RegistroCompra.CedulaProveedor = Proveedor.CedulaProveedor left join Producto on RegistroCompra.CodigoProducto = Producto.CodigoProducto left join Compras on compras.codigocompra = registrocompra.codigocompra where Proveedor.CedulaProveedor = '{codigoProductoCedula}' or Producto.CodigoProducto = '{codigoProductoCedula}' ";
+                    string cadena = $"select  RegistroCompra.CodigoCompra, Producto.CodigoProducto, Proveedor.CedulaProveedor, RegistroCompra.CantidadComprada, RegistroCompra.PrecioCompra, Producto.UnidadCompra, compras.fechacompra, RegistroCompra.FechaPagado, RegistroCompra.Soporte, Proveedor.Nombres, Proveedor.Apellidos, Producto.Nombre from RegistroCompra left join Proveedor on RegistroCompra.CedulaProveedor = Proveedor.CedulaProveedor left join Producto on RegistroCompra.CodigoProducto = Producto.CodigoProducto left join Compras on compras.codigocompra = registrocompra.codigocompra where (Proveedor.CedulaProveedor = '{codigoProductoCedula}' or Producto.CodigoProducto = '{codigoProductoCedula}') and registrocompra.Estado='Pendiente'";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -2389,9 +2388,6 @@ namespace Client.Main.Utilities
                         productos.Clear();
                         while (reader.Read())
                         {
-
-
-
                             ProductoModel producto = new ProductoModel
                             {
                                 codigoProducto = reader["CodigoProducto"].ToString(),
@@ -3578,8 +3574,9 @@ namespace Client.Main.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
+                    Int32.TryParse(nombreLocal_codigoLocal, out int codigoNumerico);
                     string codigo;
-                    string cadena = $"select * from Inventario where CodigoPuntoVenta  = (select codigoPuntoVenta from Puntoventa where Nombres = '{nombreLocal_codigoLocal}') or CodigoPuntoVenta  = '{nombreLocal_codigoLocal}'";
+                    string cadena = $"select * from Inventario where CodigoPuntoVenta  = (select codigoPuntoVenta from Puntoventa where Nombres = '{nombreLocal_codigoLocal}') or CodigoPuntoVenta  = '{codigoNumerico}'";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -3615,7 +3612,7 @@ namespace Client.Main.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = "INSERT INTO Clientes(Nombres,Apellidos,CedulaCliente,Email,Telefono,Puntos) VALUES (@name,@lastname,@cedula,@correo,@telefono, 100 )";
+                    string cadena = "INSERT INTO Clientes(Nombres,Apellidos,CedulaCliente,Email,Telefono,Puntos,Estado) VALUES (@name,@lastname,@cedula,@correo,@telefono, 100 ,'Activo')";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     cmd.Parameters.AddWithValue("@name", Statics.PrimeraAMayuscula(Cliente.firstName));
                     cmd.Parameters.AddWithValue("@lastname", Statics.PrimeraAMayuscula(Cliente.lastName));
@@ -3625,6 +3622,7 @@ namespace Client.Main.Utilities
                     conn.Open();
                     cmd.ExecuteNonQuery();
                     conn.Close();
+                    registrarCambioLocal(Tipo: "Insert", NombreMetodoLocal: "getClienteCedula", PK: $"{Cliente.cedula}", NombreMetodoServidor: "ServidorAddClient", RespuestaExitosaServidor: "true");
                     return true;
 
                 }
@@ -3646,9 +3644,45 @@ namespace Client.Main.Utilities
         }
 
         /// <summary>
-        /// Variable que retorna el metodo getClientes().
+        /// Metodo encargado de ejecutar el query insert del nuevo cliente en la base de datos local.
         /// </summary>
-        public static BindableCollection<ClientesModel> cli = new BindableCollection<ClientesModel>();
+        /// <param name="Cliente">Instancia de la clase ClientesModel.</param>
+        /// <returns></returns>        
+        public static bool AddClientServidor(ClientesModel Cliente)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = "INSERT INTO Clientes(Nombres,Apellidos,CedulaCliente,Email,Telefono,Puntos,Estado) VALUES (@name,@lastname,@cedula,@correo,@telefono, 100 ,'Activo')";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@name", Statics.PrimeraAMayuscula(Cliente.firstName));
+                    cmd.Parameters.AddWithValue("@lastname", Statics.PrimeraAMayuscula(Cliente.lastName));
+                    cmd.Parameters.AddWithValue("@cedula", Cliente.cedula);
+                    cmd.Parameters.AddWithValue("@correo", string.IsNullOrEmpty(Cliente.correo) ? (object)DBNull.Value : Cliente.correo);
+                    cmd.Parameters.AddWithValue("@telefono", string.IsNullOrEmpty(Cliente.telefono) ? (object)DBNull.Value : Cliente.telefono);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                    return true;
+
+                }
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Substring(0, 50) == $"Violation of PRIMARY KEY constraint 'PK_Clientes'.")
+                {
+                    /*MessageBox.Show($"La cedula {Cliente.cedula} ya esta registrada.");*/
+                    return true;
+                }
+                else
+                {
+                    MessageBox.Show(e.Message);
+                    return false;
+                }
+            }
+
+        }
 
         /// <summary>
         /// Method that does a select query against the 'Clientes' table at the local database and get the result of searching the coincidences into the cedula, nombre or apellido of the given characters.
@@ -3662,8 +3696,8 @@ namespace Client.Main.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-
-                    string cadena = $"SELECT * FROM Clientes WHERE ( CedulaCliente like '%{Caracteres}%' ) or ( Nombres like '%{Caracteres}%' ) or ( Apellidos like '%{Caracteres}%' )  ";
+                    BindableCollection<ClientesModel> cli = new BindableCollection<ClientesModel>();
+                    string cadena = $"SELECT * FROM Clientes WHERE( ( CedulaCliente like '%{Caracteres}%' ) or ( Nombres like '%{Caracteres}%' ) or ( Apellidos like '%{Caracteres}%' )) and Estado = 'Activo' ";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -3678,7 +3712,8 @@ namespace Client.Main.Utilities
                                 cedula = reader["CedulaCliente"].ToString(),
                                 correo = reader["Email"].ToString(),
                                 telefono = reader["Telefono"].ToString(),
-                                Puntos = Int32.Parse(reader["Puntos"].ToString())
+                                puntos = Int32.Parse(reader["Puntos"].ToString()),
+                                estado = reader["Estado"].ToString()
                             };
                             cli.Add(cliente);
                         }
@@ -3695,12 +3730,58 @@ namespace Client.Main.Utilities
         }
 
         /// <summary>
+        /// Method that does a select query against the 'Clientes' table at the local database and get the result of searching the coincidences into the cedula, nombre or apellido of the given characters.
+        /// </summary>
+        /// <param name="Caracteres"></param>
+        /// <returns></returns>
+        public static BindableCollection<ClientesModel> getClienteCedula(string Caracteres)
+        {
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<ClientesModel> cli = new BindableCollection<ClientesModel>();
+                    string cadena = $"SELECT * FROM Clientes WHERE CedulaCliente = @cedula; ";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@cedula", Caracteres);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        cli.Clear();
+                        while (reader.Read())
+                        {
+                            ClientesModel cliente = new ClientesModel
+                            {
+                                firstName = reader["Nombres"].ToString(),
+                                lastName = reader["Apellidos"].ToString(),
+                                cedula = reader["CedulaCliente"].ToString(),
+                                correo = reader["Email"].ToString(),
+                                telefono = reader["Telefono"].ToString(),
+                                puntos = Int32.Parse(reader["Puntos"].ToString()),
+                                estado = reader["Estado"].ToString()
+                            };
+                            cli.Add(cliente);
+                        }
+                    }
+                    conn.Close();
+                    return cli;
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+                return null;
+            }
+        }
+
+
+        /// <summary>
         /// Actualiza los datos del usuario dado.
         /// </summary>
         /// <param name="Cliente"></param>
-        /// <param name="CC"></param>
         /// <returns></returns>
-        public static bool ActualizarCliente(ClientesModel Cliente, string CC)
+        public static bool ActualizarCliente(ClientesModel Cliente)
         {
             try
             {
@@ -3708,15 +3789,61 @@ namespace Client.Main.Utilities
                 {
 
 
-                    string cadena = "UPDATE Clientes SET Nombres=@name, Apellidos=@lastname, CedulaCliente=@cedula, Email=@correo, Telefono=@telefono, Puntos=@puntos WHERE CedulaCliente = @AntiguaCedula ";
+                    string cadena = "UPDATE Clientes SET Nombres=@name, Apellidos=@lastname, Estado = @estado,  Email=@correo, Telefono=@telefono, Puntos=@puntos WHERE CedulaCliente = @cedula ";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     cmd.Parameters.AddWithValue("@name", Statics.PrimeraAMayuscula(Cliente.firstName));
                     cmd.Parameters.AddWithValue("@lastname", Statics.PrimeraAMayuscula(Cliente.lastName));
                     cmd.Parameters.AddWithValue("@cedula", Cliente.cedula);
                     cmd.Parameters.AddWithValue("@correo", string.IsNullOrEmpty(Cliente.correo) ? (object)DBNull.Value : Cliente.correo);
                     cmd.Parameters.AddWithValue("@telefono", string.IsNullOrEmpty(Cliente.telefono) ? (object)DBNull.Value : Cliente.telefono);
-                    cmd.Parameters.AddWithValue("@puntos", Cliente.Puntos);
-                    cmd.Parameters.AddWithValue("@AntiguaCedula", CC);
+                    cmd.Parameters.AddWithValue("@puntos", Cliente.puntos);
+                    cmd.Parameters.AddWithValue("@estado", Cliente.estado);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                    registrarCambioLocal(Tipo: "Update", NombreMetodoLocal: "getClienteCedula", PK: $"{Cliente.cedula}", NombreMetodoServidor: "ServidorActualizarCliente", RespuestaExitosaServidor: "true");
+
+                    return true;
+
+                }
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Substring(0, 50) == $"Violation of PRIMARY KEY constraint 'PK_Clientes'.")
+                {
+                    MessageBox.Show($"La cedula {Cliente.cedula} ya esta registrada.");
+                    return false;
+                }
+                else
+                {
+                    MessageBox.Show(e.Message);
+                    return false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Actualiza los datos del usuario dado.
+        /// </summary>
+        /// <param name="Cliente"></param>
+        /// <returns></returns>
+        public static bool ActualizarClienteServidor(ClientesModel Cliente)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+
+
+                    string cadena = "UPDATE Clientes SET Nombres=@name, Apellidos=@lastname, Estado = @estado, Email=@correo, Telefono=@telefono, Puntos=@puntos WHERE CedulaCliente = @cedula ";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@name", Statics.PrimeraAMayuscula(Cliente.firstName));
+                    cmd.Parameters.AddWithValue("@lastname", Statics.PrimeraAMayuscula(Cliente.lastName));
+                    cmd.Parameters.AddWithValue("@cedula", Cliente.cedula);
+                    cmd.Parameters.AddWithValue("@correo", string.IsNullOrEmpty(Cliente.correo) ? (object)DBNull.Value : Cliente.correo);
+                    cmd.Parameters.AddWithValue("@telefono", string.IsNullOrEmpty(Cliente.telefono) ? (object)DBNull.Value : Cliente.telefono);
+                    cmd.Parameters.AddWithValue("@puntos", Cliente.puntos);
+                    cmd.Parameters.AddWithValue("@estado", Cliente.estado);
                     conn.Open();
                     cmd.ExecuteNonQuery();
                     conn.Close();
@@ -3751,11 +3878,13 @@ namespace Client.Main.Utilities
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
 
-                    string cadena = $"delete from Clientes Where CedulaCliente = '{Cedula}' ";
+                    string cadena = $"update Clientes set Estado  = 'Inactivo' Where CedulaCliente = '{Cedula}' ";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     cmd.ExecuteNonQuery();
                     conn.Close();
+                    //Eliminar de la base de datos solo cambia el estado del ciente, por eso es un update
+                    registrarCambioLocal(Tipo: "Update", NombreMetodoLocal: "getClienteCedula", PK: $"{Cedula}", NombreMetodoServidor: "ServidorActualizarCliente", RespuestaExitosaServidor: "true");
                     return true;
                 }
             }
@@ -3766,6 +3895,9 @@ namespace Client.Main.Utilities
             }
 
         }
+
+
+   
         #endregion
 
         #region Registros - Sincornizacion

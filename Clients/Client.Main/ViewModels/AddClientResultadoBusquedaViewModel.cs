@@ -1,9 +1,11 @@
-﻿using Caliburn.Micro;
+﻿using Autofac;
+using Caliburn.Micro;
 using Client.Main.Models;
 using Client.Main.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace Client.Main.ViewModels
@@ -11,6 +13,7 @@ namespace Client.Main.ViewModels
     class AddClientResultadoBusquedaViewModel : PropertyChangedBase
     {
         MainWindowViewModel VentanaPrincipal;
+        public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
 
         ClientesModel resultadoCliente = new ClientesModel();       
         public AddClientResultadoBusquedaViewModel(MainWindowViewModel argVentana, ClientesModel resultadoBusqueda)
@@ -77,11 +80,11 @@ namespace Client.Main.ViewModels
         }
         public int Puntos
         {
-            get { return resultadoCliente.Puntos; }
+            get { return resultadoCliente.puntos; }
             set
             {
-                if (resultadoCliente.Puntos != value)
-                    resultadoCliente.Puntos = value;
+                if (resultadoCliente.puntos != value)
+                    resultadoCliente.puntos = value;
                 NotifyOfPropertyChange(() => Telefono);
 
             }
@@ -101,17 +104,41 @@ namespace Client.Main.ViewModels
             VentanaPrincipal.ActivateItem(new AddClientEditarBusquedaViewModel(VentanaPrincipal, resultadoCliente));
         }
 
-        public void Eliminar()
+        public async void Eliminar()
         {
             MessageBoxResult result = MessageBox.Show($"Desea eliminar permanentemente de la base de datos al cliente {resultadoCliente.firstName} {resultadoCliente.lastName}", "", MessageBoxButton.YesNo);
             if (result == MessageBoxResult.Yes)
             {
-                if (DbConnection.deleteCliente(resultadoCliente.cedula))
+               
+                try
                 {
-                    MessageBox.Show($"Se ha eliminado al cliente {resultadoCliente.firstName} {resultadoCliente.lastName}");
-                    VentanaPrincipal.ActivateItem(new AddClientBuscarViewModel(VentanaPrincipal));
+                    if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+                    {
+                        Task<object> re = conexion.CallServerMethod("ServidordeleteCliente", Arguments: new object[] { resultadoCliente.cedula });
+                        await re;
 
+                        if (re.Result.ToString() == "true")
+                        {
+                            MessageBox.Show($"Se ha eliminado al cliente {resultadoCliente.firstName} {resultadoCliente.lastName}");
+                            VentanaPrincipal.ActivateItem(new AddClientBuscarViewModel(VentanaPrincipal));
+                        }
+                    }
+                    if (MainWindowViewModel.Status == "Trabajando localmente")
+                    {
+                        if (DbConnection.deleteCliente(resultadoCliente.cedula))
+                        {
+                            MessageBox.Show($"Se ha eliminado al cliente {resultadoCliente.firstName} {resultadoCliente.lastName}");
+                            VentanaPrincipal.ActivateItem(new AddClientBuscarViewModel(VentanaPrincipal));
+
+                        }
+                    }
                 }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message);
+                }
+
+
             }
 
         }

@@ -45,9 +45,8 @@
             </Grid.RowDefinitions>
 
             <!--Linea 1 Nombres-->
-            <TextBlock Grid.Row="1" Grid.Column="1" >Nombres:</TextBlock>
-            <TextBox  Grid.Row="1" Grid.Column="2" Style="{StaticResource GeneralTextBox}"  x:Name="Name"/>
-
+            <TextBlock Grid.Row="1" Grid.Column="1">Cedula:</TextBlock>
+            <TextBlock Grid.Row="1" Grid.Column="2" x:Name="CC" HorizontalAlignment="Left" FontSize="25" FontWeight="Normal"/>
 
             <!--Linea 2 Apellidos-->
             <TextBlock Grid.Row="2" Grid.Column="1" >Apellidos:</TextBlock>
@@ -55,8 +54,8 @@
 
 
             <!--Linea 3 Cedula-->
-            <TextBlock Grid.Row="3" Grid.Column="1">Cedula:</TextBlock>
-            <TextBox Grid.Row="3" Grid.Column="2" Style="{StaticResource GeneralTextBox}" PreviewTextInput="NumberValidationTextBox" x:Name="CC"/>
+            <TextBlock Grid.Row="3" Grid.Column="1" >Nombres:</TextBlock>
+            <TextBox  Grid.Row="3" Grid.Column="2" Style="{StaticResource GeneralTextBox}"  x:Name="Name"/>
 
 
             <!--Linea 4 Correo-->

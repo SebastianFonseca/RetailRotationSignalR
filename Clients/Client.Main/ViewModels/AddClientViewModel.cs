@@ -17,6 +17,7 @@ namespace Client.Main.ViewModels
     {
         ClientesModel NuevoCliente;
         MainWindowViewModel VentanaPrincipal;
+        public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
 
         public AddClientViewModel(MainWindowViewModel argVentana)
         {
@@ -89,7 +90,7 @@ namespace Client.Main.ViewModels
         }
 
 
-        public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
+
 
         public async void Guardar()
         {
@@ -112,28 +113,30 @@ namespace Client.Main.ViewModels
                     {
                         Task<object> re = conexion.CallServerMethod("ServidorAddClient", Arguments: new[] { NuevoCliente });
                         await re;
-                        if (Convert.ToInt32(re.Result.ToString()) == 1)
+                        if (re.Result.ToString() == "true")
                         {
                             MessageBox.Show($"El cliente {NuevoCliente.firstName} {NuevoCliente.lastName} se ha registrado en el servidor con 100 puntos.");
                             VentanaPrincipal.ActivateItem(new AddClientViewModel(VentanaPrincipal));
                             return;
                         }
-                        if (Convert.ToInt32(re.Result.ToString()) == 0)
+                        if (re.Result.ToString() == "Cliente ya existe")
                         {
                             MessageBox.Show($"El cliente {NuevoCliente.firstName} {NuevoCliente.lastName} ya esta registrado.");
                             CC = "";
                             return;
                         }
                     }
-
-                    if (DbConnection.AddClient(Cliente: NuevoCliente))
+                    else if (MainWindowViewModel.Status == "Trabajando localmente")
                     {
-                        MessageBox.Show($"El cliente {NuevoCliente.firstName} {NuevoCliente.lastName} se ha registrado localmente con 100 puntos.");
-                        VentanaPrincipal.ActivateItem(new AddClientViewModel(VentanaPrincipal));
-                    }
-                    else
-                    {
-                        CC = "";
+                        if (DbConnection.AddClient(Cliente: NuevoCliente))
+                        {
+                            MessageBox.Show($"El cliente {NuevoCliente.firstName} {NuevoCliente.lastName} se ha registrado localmente con 100 puntos.");
+                            VentanaPrincipal.ActivateItem(new AddClientViewModel(VentanaPrincipal));
+                        }
+                        else
+                        {
+                            CC = "";
+                        }
                     }
 
                 }

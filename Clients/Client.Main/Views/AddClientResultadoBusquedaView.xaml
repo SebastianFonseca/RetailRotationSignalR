@@ -45,18 +45,16 @@
             </Grid.RowDefinitions>
 
             <!--Linea 1 Nombres-->
-            <TextBlock Grid.Row="1" Grid.Column="1" >Nombres:</TextBlock>
-            <TextBlock  Grid.Row="1" Grid.Column="2" HorizontalAlignment="Left" FontWeight="Normal" x:Name="Name" FontSize="28"/>
-
+            <TextBlock Grid.Row="1" Grid.Column="1">Cedula:</TextBlock>
+            <TextBlock Grid.Row="1" Grid.Column="2"  HorizontalAlignment="Left" FontWeight="Normal" x:Name="CC" FontSize="25" />
 
             <!--Linea 2 Apellidos-->
             <TextBlock Grid.Row="2" Grid.Column="1" >Apellidos:</TextBlock>
             <TextBlock x:Name="Apellidos" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left" FontWeight="Normal"  FontSize="28" />
 
-
             <!--Linea 3 Cedula-->
-            <TextBlock Grid.Row="3" Grid.Column="1">Cedula:</TextBlock>
-            <TextBlock Grid.Row="3" Grid.Column="2"  HorizontalAlignment="Left" FontWeight="Normal" x:Name="CC" FontSize="28" />
+            <TextBlock Grid.Row="3" Grid.Column="1" >Nombres:</TextBlock>
+            <TextBlock  Grid.Row="3" Grid.Column="2" HorizontalAlignment="Left" FontWeight="Normal" x:Name="Name" FontSize="28"/>
 
 
             <!--Linea 4 Correo-->
