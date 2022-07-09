@@ -130,9 +130,9 @@ namespace Client.Main.ViewModels
         #endregion
 
         #region Cajero
-        public void Cajero()
+        public void Pos()
         {
-
+            window.ShowWindow(new POSViewModel(VentanaPrincipal));
         }
         #endregion
 

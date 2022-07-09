@@ -114,9 +114,9 @@ namespace Client.Main.ViewModels
             VentanaPrincipal.ActivateItem(new ProductoEditarBusquedaViewModel(VentanaPrincipal, Producto));
         }
 
-        public async void EditarPrecio()
+        public  void EditarPrecio()
         {
-
+            VentanaPrincipal.ActivateItem(new ProductoCambiarPrecioViewModel(VentanaPrincipal, Producto));
         }
 
     }

@@ -166,11 +166,8 @@ namespace Client.Main.ViewModels
                     {
                         Seleccionada.sumaPedidos = DbConnection.getProductoCompra(Seleccionada.codigo);
                         VentanaPrincipal.ActivateItem(new ComprasDistribucionPorLocalViewModel(VentanaPrincipal, Seleccionada));
-                    }
-
-                    
-
-            }
+                    }                    
+                }
             }
             catch (Exception e)
             {

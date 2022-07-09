@@ -136,6 +136,16 @@ namespace ServerConsole
         {
             return DbConnection.actualizarProducto(producto);
         }
+        
+        /// <summary>
+        /// Actualiza en la base de datos el precio del producto pasado como parametro.
+        /// </summary>
+        /// <param name="Producto"></param>
+        /// <returns></returns>
+        public  string ServidoractualizarPrecioProducto(ProductoModel Producto) 
+        {
+            return DbConnection.actualizarPrecioProducto(Producto);
+        }
 
         #endregion
 
@@ -505,6 +515,17 @@ namespace ServerConsole
             return DbConnection.getRegistroCompraCodigoCedula(codigoProductoCedula);
         }
 
+        /// <summary>
+        /// Devuelve una instancia de la clase producto con la informacion relacionada con su ultimo registro de compra.
+        /// </summary>
+        /// <param name="codigoCompra"></param>
+        /// <returns></returns>
+        public  BindableCollection<ProductoModel> ServidorgetUltimoRegistroCompraProducto(string codigoProducto)
+        {
+            return DbConnection.getUltimoRegistroCompraProducto(codigoProducto);
+        }
+
+
         #endregion
 
         #region Envios
@@ -558,6 +579,16 @@ namespace ServerConsole
         public  BindableCollection<EnvioModel> ServidorgetTodosLosEnviosPorLocal(string ccEmpleado)
         {
             return DbConnection.getTodosLosEnviosPorLocal(ccEmpleado);
+        }
+        
+        /// <summary>
+        /// Obtiene la suma de envios de la ultima compra del producto con el codigo dado
+        /// </summary>
+        /// <param name="codigoProducto"></param>
+        /// <returns></returns>
+        public int? ServidorgetTotalEnvioProduco(string codigoProducto) 
+        {
+            return DbConnection.getTotalEnvioProduco(codigoProducto);
         }
 
 

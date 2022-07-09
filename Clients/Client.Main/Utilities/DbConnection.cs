@@ -396,6 +396,35 @@ namespace Client.Main.Utilities
 
         }
 
+        /// <summary>
+        /// Actualiza en la base de datos el precio del producto pasado como parametro.
+        /// </summary>
+        /// <param name="Producto"></param>
+        /// <returns></returns>
+        public static bool actualizarPrecioProducto(ProductoModel Producto)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"UPDATE Producto SET  PrecioVenta=@precio where CodigoProducto = @codigo";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codigo", Producto.codigoProducto);
+                    cmd.Parameters.AddWithValue("@precio", Producto.precioVenta);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                    return true;
+                }
+
+            }
+            catch (Exception e)
+            {
+               MessageBox.Show(e.Message);
+                return false;
+            }
+        }
+
         #endregion
 
         #region Proveedor
@@ -2366,7 +2395,6 @@ namespace Client.Main.Utilities
             }
 
         }
-
 
         /// <summary>
         /// Retorna una lista de objetos de la clase ProductoModel con los registros de compra del proveedor o el producto dado como parametro.

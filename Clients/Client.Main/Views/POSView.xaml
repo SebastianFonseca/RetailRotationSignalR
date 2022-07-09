@@ -1,0 +1,265 @@
+﻿<Window x:Class="Client.Main.Views.POSView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Client.Main.Views"
+        xmlns:fa="http://schemas.fontawesome.io/icons/"
+        xmlns:cal="http://www.caliburnproject.org"
+        mc:Ignorable="d" 
+        Title="  " WindowStartupLocation="CenterScreen" Background="#87ac47" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+    <Window.Resources>
+        <Style TargetType="TextBlock" x:Key="TextoGrande">
+            <Setter Property="FontSize" Value="35"/>
+            <Setter Property="FontWeight" Value="DemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="Margin"   Value="0"/>
+        </Style>
+
+        <Style TargetType="TextBlock" x:Key="TextoPequeño">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="DemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="Margin"   Value="0"/>
+        </Style>
+
+
+        <Style TargetType="{x:Type GridViewColumnHeader}">
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="Background" Value="#F3E0D2"/>
+            <Setter Property="BorderBrush" Value="Gray"/>
+            <Setter Property="FontSize" Value="25"/>
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
+                        <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0 0 0 1" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#F3E0D2" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        
+
+
+    </Window.Resources>
+    <!--Linea verde en toda la ventana-->
+    <Border BorderThickness="4"  CornerRadius="8" Background="#F3E0C2"  Focusable="False" Margin="15">
+
+        <Grid ShowGridLines="False">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="17*"/>
+                <RowDefinition Height="65*"/>
+                <RowDefinition Height="18*"/>
+
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" ShowGridLines="False" Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                
+                <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"  Style="{StaticResource TextoGrande}" >Producto:</TextBlock>
+                <TextBox   Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"  Style="{StaticResource GeneralTextBox}" Margin="0 0 10 0" Height="30" />
+                <TextBlock Grid.Column="2" Grid.Row="0" Grid.RowSpan="2"  Style="{StaticResource TextoGrande}">Cantidad:</TextBlock>
+                <TextBox   Grid.Column="3" Grid.Row="0" Grid.RowSpan="2"  Style="{StaticResource GeneralTextBox}" Margin="0 0 10 0" Height="30"/>
+                <Button    Grid.Column="4" Grid.Row="0" Grid.RowSpan="2"  Style="{StaticResource GeneralButton}" Margin="15 0 5 0" x:Name="getWidth">CLIENTES</Button>
+                <TextBlock Grid.Column="5" Grid.Row="0" Style="{StaticResource TextoGrande}" FontSize="20" Text="Juan Diaz"/>
+                <TextBlock Grid.Column="5" Grid.Row="1" Style="{StaticResource TextoGrande}" FontSize="20"  Text="100 Puntos"/>
+
+
+            </Grid>
+
+
+
+
+                
+
+                <!--    Listado de productos        -->
+                <ListView  Grid.Row="1" ItemsSource="{Binding Path=Productos}" Background="#F3E0D2"  DockPanel.Dock="Top" BorderThickness="0 1 0 1" Margin="10 10 10 0">
+
+
+                <ListView.View>
+
+                        <GridView AllowsColumnReorder="True"   >
+                            <GridViewColumn  Width="120" DisplayMemberBinding="{Binding Path=codigoProducto}" Header="Unidad"   />
+                            <GridViewColumn  Width="300" DisplayMemberBinding="{Binding Path=nombre}" Header="Producto" />
+                            <GridViewColumn  Width="120" DisplayMemberBinding="{Binding Path=precioVenta}" Header="Precio" />
+                            <GridViewColumn  Width="120" DisplayMemberBinding="{Binding Path=compra}" Header="Cantidad" />
+                            <GridViewColumn  Width="120" DisplayMemberBinding="{Binding Path=total}" Header="Total" />
+                        </GridView>
+
+                    </ListView.View>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListBoxItem}">
+                        <Setter Property="IsSelected" Value="{Binding isSelected, Mode=TwoWay}" />
+                        <Setter Property="IsTabStop" Value="False"/>
+                        <Setter Property="Cursor" Value="Hand"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                    <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
+                                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="AliceBlue" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                <Setter Property="IsSelected" Value="True" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate  >
+                    <DataTemplate >
+                        <Grid Focusable="False" ShowGridLines="False" Height="30">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="300"/>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="120"/>
+
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" FontSize="17" Text="{Binding Path=unidadVenta}"    HorizontalAlignment="Center" />
+                            <TextBlock Grid.Column="1" FontSize="17" Text="{Binding Path=nombre}"   HorizontalAlignment="Left" Margin="20 0 0 0"/>
+                            <TextBlock Grid.Column="2" FontSize="17" Width="60" Text="{Binding Path=precioVenta}" HorizontalAlignment="Center" TextAlignment="Center"  />
+  
+                            <Separator Grid.Column="0" Grid.ColumnSpan="7" VerticalAlignment="Bottom"  Background="#F7EBD7" Margin="0 0 0 0" Panel.ZIndex="1"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+
+            </ListView>
+
+
+            <Grid Grid.Row="2" ShowGridLines="False" Margin="5 0 5 5" Background="#F3E0D2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                
+                <!--Columna uno-->
+                <TextBlock Grid.Column="0" Grid.Row="0" Style="{StaticResource TextoPequeño}" >Local:</TextBlock>
+                <TextBlock Grid.Column="1" Grid.Row="0" Style="{StaticResource TextoPequeño}"  />
+
+                <TextBlock Grid.Column="0" Grid.Row="1" Style="{StaticResource TextoPequeño}"  FontSize="15">Cajero:</TextBlock>
+                <TextBlock Grid.Column="1" Grid.Row="1" Style="{StaticResource TextoPequeño}"  />
+
+                <TextBlock Grid.Column="0" Grid.Row="2" Style="{StaticResource TextoPequeño}"  FontSize="15">Caja:</TextBlock>
+                <TextBlock Grid.Column="1" Grid.Row="2" Style="{StaticResource TextoPequeño}"  />
+
+
+                <!--Columna dos-->
+                <TextBlock Grid.Column="2" Grid.Row="0" Style="{StaticResource TextoPequeño}"  Grid.ColumnSpan="2" Grid.RowSpan="2" >PLATANO</TextBlock>
+                <TextBlock Grid.Column="2" Grid.Row="2" Style="{StaticResource TextoPequeño}"  Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalAlignment="Top">$5.000 Libra</TextBlock>
+                                                        
+                <!--Columna tres-->                     
+                <TextBlock Grid.Column="4" Grid.Row="0" Style="{StaticResource TextoPequeño}"  >Subtotal:</TextBlock>
+                <TextBlock Grid.Column="5" Grid.Row="0" Style="{StaticResource TextoPequeño}"   />
+                                                        
+                <TextBlock Grid.Column="4" Grid.Row="1" Style="{StaticResource TextoPequeño}"   >I.V.A:</TextBlock>
+                <TextBlock Grid.Column="5" Grid.Row="1" Style="{StaticResource TextoPequeño}"   />
+                                                        
+                <TextBlock Grid.Column="4" Grid.Row="2" Style="{StaticResource TextoPequeño}"   >Descuento:</TextBlock>
+                <TextBlock Grid.Column="5" Grid.Row="2" Style="{StaticResource TextoPequeño}"    />
+                                                        
+                <TextBlock Grid.Column="4" Grid.Row="3" Style="{StaticResource TextoPequeño}"  >Total:</TextBlock>
+                <TextBlock Grid.Column="5" Grid.Row="3" Style="{StaticResource TextoPequeño}"   />
+
+
+
+            </Grid>
+
+
+        </Grid>
+    </Border>
+</Window>
+
+
+<!--<ListView   KeyboardNavigation.TabNavigation="Cycle" ScrollViewer.VerticalScrollBarVisibility="Visible"  ScrollViewer.CanContentScroll="True" x:Name="Productos" Background="#F3E0D2"  
+                            BorderThickness="0"  FlowDirection="LeftToRight"  ItemsSource="{Binding Path=Productos}" Margin="0 3 0 3" SelectedItem="{Binding Path=Seleccionado}"
+                            SelectionMode="Single" >
+    <ListBox.ItemTemplate  >
+        <DataTemplate >
+            <Grid Focusable="False" ShowGridLines="True" Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="10*"/>
+                    <ColumnDefinition Width="30*"/>
+                    <ColumnDefinition Width="20*"/>
+                    <ColumnDefinition Width="20*"/>
+                    <ColumnDefinition Width="20*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" FontSize="17" Text="{Binding Path=unidadVenta}" />
+                <TextBlock Grid.Column="1" FontSize="17" Text="{Binding Path=nombre}"   HorizontalAlignment="Left" />
+                <TextBlock Grid.Column="2" FontSize="17" Width="60" Text="{Binding Path=precioVenta}" HorizontalAlignment="Center" TextAlignment="Center"  />
+                <TextBlock   Grid.Column="3" FontSize="17" Width="60" Text="{Binding compra, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" TextAlignment="Right"  />
+                <TextBlock   Grid.Column="4" FontSize="17" Width="100"    Text="{Binding Path=precioCompra, StringFormat={}${0:#.}, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" TextAlignment="Right" />
+                <Separator Grid.Column="0" Grid.ColumnSpan="8" VerticalAlignment="Bottom" Width="1250" Background="#F7EBD7" Margin="0 0 0 0" Panel.ZIndex="1"/>
+            </Grid>
+        </DataTemplate>
+    </ListBox.ItemTemplate>
+    <ListBox.ItemContainerStyle>
+        <Style TargetType="{x:Type ListBoxItem}">
+            <Setter Property="IsSelected" Value="{Binding isSelected, Mode=TwoWay}" />
+            <Setter Property="IsTabStop" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                        <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#F3E0D2" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                    <Setter Property="IsSelected" Value="True" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </ListBox.ItemContainerStyle>
+</ListView>-->

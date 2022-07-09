@@ -345,6 +345,42 @@ namespace ServerConsole.Utilities
             }
         }
 
+        /// <summary>
+        /// Actualiza en la base de datos el precio del producto pasado como parametro.
+        /// </summary>
+        /// <param name="Producto"></param>
+        /// <returns></returns>
+        public static string actualizarPrecioProducto(ProductoModel Producto)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+
+
+                    string cadena = $"UPDATE Producto SET  PrecioVenta=@precio where CodigoProducto = @codigo";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codigo", Producto.codigoProducto);
+                    cmd.Parameters.AddWithValue("@precio", Producto.precioVenta);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    Statics.Imprimir($"{RetailHUB.usuarioConectado}: Ha Actualizado precio de: {Producto.codigoProducto} - {Producto.nombre} | {Producto.precioVenta} | {Producto.unidadVenta}");
+                    conn.Close();
+                    Registrar(Tipo: "Update", NombreMetodoServidor: "ServidorGetProductos", ClavePrimaria: Producto.codigoProducto, TipoRetornoMetodoServidor: "ProductoModel[]", NombreMetodoCliente: "actualizarPrecioProducto", NombrePK: "codigoProducto"); 
+                    return "true";
+                        
+                    
+                }
+
+            }
+            catch (Exception e)
+            {
+                Statics.Imprimir(e.Message);
+                return e.Message;
+            }
+        }
+
+
         #endregion
 
         #region Proveedor
@@ -2172,7 +2208,7 @@ namespace ServerConsole.Utilities
         }
 
         /// <summary>
-        /// Devuelve una instancia de la clase ComprasModel con un unico producto en la propiedad productos que contiene la informacion relacionada con el registro de la compra del producto dado como parametro.
+        /// Devuelve una instancia de la clase producto con la informacion relacionada con su compra.
         /// </summary>
         /// <param name="codigoCompra"></param>
         /// <returns></returns>
@@ -2211,7 +2247,60 @@ namespace ServerConsole.Utilities
             }
 
         }
-        
+
+        /// <summary>
+        /// Devuelve una instancia de la clase producto con la informacion relacionada con su ultimo registro de compra.
+        /// </summary>
+        /// <param name="codigoCompra"></param>
+        /// <returns></returns>
+        public static BindableCollection<ProductoModel> getUltimoRegistroCompraProducto(string codigoProducto)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<ProductoModel> productos = new BindableCollection<ProductoModel>();
+                    string cadena = $"select RegistroCompra.CodigoCompra,RegistroCompra.CodigoProducto,RegistroCompra.CantidadComprada,RegistroCompra.PrecioCompra,Producto.UnidadCompra,Producto.UnidadVenta,Producto.PrecioVenta, Producto.FactorConversion, Compras.FechaCompra from  RegistroCompra  join Producto on RegistroCompra.CodigoProducto = Producto.CodigoProducto  join Compras on RegistroCompra.CodigoCompra = Compras.CodigoCompra where registrocompra.CodigoCompra = (select codigocompra from compras where id= (select max(id) from compras)) and RegistroCompra.CodigoProducto = @codProducto";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codProducto", codigoProducto);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        productos.Clear();
+                        while (reader.Read())
+                        {
+                            ProductoModel producto = new ProductoModel 
+                            { 
+                                codigoProducto =  reader["CodigoProducto"].ToString(),
+                                codigoCompra = reader["CodigoCompra"].ToString(),
+                                unidadCompra = reader["UnidadCompra"].ToString(),
+                                unidadVenta = reader["UnidadVenta"].ToString(),
+                            };
+                            if (Int32.TryParse(reader["CantidadComprada"].ToString(), out int a)) { producto.compra = a; }
+                            else { producto.compra = null; }
+                            if (decimal.TryParse(reader["PrecioCompra"].ToString(), out decimal b)) { producto.precioCompra = b; }
+                            else { producto.precioCompra = null; }
+                            if (decimal.TryParse(reader["FactorConversion"].ToString(), out decimal c)) { producto.factorConversion = c; }
+                            else { producto.factorConversion = null; }
+                            if (DateTime.TryParse(reader["FechaCompra"].ToString(), out DateTime d)) { producto.fechaDeCompra = d; }
+                            else { producto.fechaDeCompra = null; }
+
+                            productos.Add(producto);
+                        }
+                    }
+                    conn.Close();
+                    return productos;
+                }
+            }
+            catch (Exception e)
+            {
+                Statics.Imprimir(e.Message);
+                return null;
+            }
+
+        }
+
+
         /// <summary>
         /// Retorna una lista de objetos de la clase ProductoModel con los registros de compra del proveedor o el producto dado como parametro.
         /// /// </summary>
@@ -2636,6 +2725,39 @@ namespace ServerConsole.Utilities
                 return null;
             }
         }
+
+        /// <summary>
+        /// Obtiene la suma de envios de la ultima compra del producto con el codigo dado
+        /// </summary>
+        /// <param name="codigoProducto"></param>
+        /// <returns></returns>
+        public static int? getTotalEnvioProduco(string codigoProducto)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {                    
+                    string cadena = $"select sum(Cantidad) as Total from envioproducto where CodigoEnvio in (select CONCAT(CodigoPedido,':',CodigoCompra) as CodigoEnvio from CompraPedido where CodigoCompra = (select codigocompra from compras where id= (select max(id) from compras))) and CodigoProducto = @codProducto; ";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codProducto", codigoProducto);
+                    conn.Open();
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    reader.Read();                        
+                    Int32.TryParse(reader["Total"].ToString(), out int a);
+                    reader.Close();
+                    conn.Close();
+                    return a;
+                }
+            }
+            catch (Exception e)
+            {
+                Statics.Imprimir(e.Message);
+                return null;
+            }
+
+        }
+
+
 
         #endregion
 

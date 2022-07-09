@@ -244,7 +244,7 @@
         <!-- ....................... CAJERO ....................... -->
 
 
-        <Button Grid.Column="1" Grid.Row="2" FontSize="30" Margin="10" Style="{StaticResource OptionsSubMenu}" x:Name="Volver">
+        <Button Grid.Column="1" Grid.Row="2" FontSize="30" Margin="10" Style="{StaticResource OptionsSubMenu}" x:Name="Pos">
             <Button.Resources>
                 <Style TargetType="Border">
                 <Setter Property="CornerRadius" Value="10"/>
@@ -262,7 +262,7 @@
             </Button.Resources>
             <StackPanel>
                 <fa:ImageAwesome Icon="Money" Height="35" Margin="8"/>
-                <TextBlock Margin="5" Text="CAJERO" FontSize="35"/>
+                <TextBlock Margin="5" Text="P.O.S" FontSize="35"/>
             </StackPanel>
         </Button>
 
