@@ -22,22 +22,20 @@ namespace Client.Main.Models
         public int? compra { get; set; }
         public int? compraPorLocal { get; set; }
         public int? recibido { get; set; } = null;
-
         public int? cambioInventario { get; set; }
         public ProveedorModel proveedor { get; set; } = new ProveedorModel();
         public string estado { get; set; }
         public DateTime? fechaDePago { get; set; }
         public DateTime? fechaDeCompra { get; set; }
-
         public string soportePago { get; set; }
-
         public string codigoCompra { get; set; }
+        public decimal? cantidadVenta { get; set; }
+        public decimal? totalValorVenta { get; set; }
 
         /// <summary>
         /// warning si el precio de venta es cero en una venta
         /// </summary>
         public decimal? precioVenta { get; set; }
-
         public decimal? precioCompra  { get; set; }
 
         /// <summary>

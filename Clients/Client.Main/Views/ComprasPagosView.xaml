@@ -67,7 +67,7 @@
                                         <Setter.Value>
                                             <VisualBrush Stretch="None">
                                                 <VisualBrush.Visual>
-                                                    <TextBlock Text="Escriba el nombre de un proveedor o de un producto" Foreground="Gray"/>
+                                                    <TextBlock Text="Escriba el nombre de un proveedor o el nombre o código de un producto" Foreground="Gray"/>
                                                 </VisualBrush.Visual>
                                             </VisualBrush>
                                         </Setter.Value>

@@ -10,7 +10,7 @@ using System.Windows;
 namespace Client.Main.ViewModels
 {
 
-    class MainMenuViewModel : Conductor<object>
+    class MainMenuViewModel :  Window/*Conductor<object>*/
     {
         public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
 
@@ -133,6 +133,9 @@ namespace Client.Main.ViewModels
         public void Pos()
         {
             window.ShowWindow(new POSViewModel(VentanaPrincipal));
+            this.WindowState = WindowState.Minimized;
+
+            
         }
         #endregion
 

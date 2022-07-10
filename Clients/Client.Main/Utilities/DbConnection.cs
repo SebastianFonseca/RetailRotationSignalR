@@ -38,7 +38,7 @@ namespace Client.Main.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = "SELECT *  FROM EMPLEADO where [CedulaEmpleado]=@user";
+                    string cadena = "select empleado.Password, Empleado.CedulaEmpleado,empleado.CodigoPuntoVenta,empleado.Nombres,Empleado.Apellidos,Empleado.FechaContratacion,empleado.Salario,Empleado.Telefono,Empleado.Cargo,Empleado.Direccion, PuntoVenta.Nombres as nombrePuntoVenta from empleado join puntoventa on empleado.codigopuntoventa = puntoventa.codigopuntoventa where [CedulaEmpleado]=@user ";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     cmd.Parameters.AddWithValue("@user", User);
                     conn.Open();
@@ -54,6 +54,7 @@ namespace Client.Main.Utilities
                                     cedula = reader["CedulaEmpleado"].ToString()
                                 };
                                 persona.puntoDeVenta.codigo = reader["CodigoPuntoVenta"].ToString();
+                                persona.puntoDeVenta.nombre = reader["nombrePuntoVenta"].ToString();
                                 persona.firstName = reader["Nombres"].ToString();
                                 persona.lastName = reader["Apellidos"].ToString();
                                 persona.fechaDeContratacion = DateTime.Parse(reader["FechaContratacion"].ToString());
@@ -325,8 +326,9 @@ namespace Client.Main.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = $"SELECT *  FROM Producto where Nombre like '%{caracteres}%' ORDER BY Nombre ";
+                    string cadena = $"SELECT * FROM Producto where Nombre like @caracteres or CodigoProducto like @caracteres ORDER BY Nombre ";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@caracteres", "%"+ caracteres + "%");
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
@@ -337,7 +339,7 @@ namespace Client.Main.Utilities
                                 codigoProducto = reader["CodigoProducto"].ToString(),
                                 nombre = reader["Nombre"].ToString(),
                                 unidadCompra = reader["UnidadCompra"].ToString(),
-                                unidadVenta = reader["UnidadVenta"].ToString(),
+                                unidadVenta = reader["UnidadVenta"].ToString().Substring(0,3)
 
                             };
                             if (decimal.TryParse(reader["PrecioVenta"].ToString(), out decimal precio)) { producto.precioVenta = precio; }

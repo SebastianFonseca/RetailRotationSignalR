@@ -101,7 +101,7 @@ namespace Client.Main.ViewModels
 
                             if ((string)respuesta[0] == "Registrado")
                             {
-                                window.ShowWindow(new MainWindowViewModel((EmpleadoModel)respuesta[1]));
+                                window.ShowWindow(new MainWindowViewModel((EmpleadoModel)respuesta[1]));                                
                                 this.TryClose();
                                 return;
                             }
