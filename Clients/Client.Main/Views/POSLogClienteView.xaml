@@ -1,0 +1,58 @@
+﻿<Window x:Class="Client.Main.Views.POSLogClienteView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Client.Main.Views"
+        xmlns:fa="http://schemas.fontawesome.io/icons/"
+        xmlns:cal="http://www.caliburnproject.org"
+        mc:Ignorable="d" 
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:c="clr-namespace:Client.Main.Utilities"
+        Title="  " Height="216.31" Width="350" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Background="#87ac47">
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="DemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="Margin"   Value="0"/>
+        </Style>
+    </Window.Resources>
+    <!--Linea verde en toda la ventana-->
+    <Border BorderThickness="4"  CornerRadius="8" Background="#F3E0C2"  Focusable="False">
+
+
+        <!-- Grid Principal -->
+        <Grid ShowGridLines="False" Margin="10" c:KeyboardFocus.On="{Binding ElementName=CedulaCliente}" >
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.05*"/>
+                <ColumnDefinition Width="0.25*"/>
+                <ColumnDefinition Width="0.4*"/>
+                <ColumnDefinition Width="0.05*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions  >
+                <RowDefinition Height="0.33*" />
+                <RowDefinition Height="0.33*" />
+                <RowDefinition Height="0.33*" />
+            </Grid.RowDefinitions>
+
+            <ContentControl x:Name="ActiveItem" Grid.Column="0" Grid.Row="0" Focusable="False"   Grid.RowSpan="3" Grid.ColumnSpan="4" Panel.ZIndex="10"/>
+
+            <TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="0 0 4 0" Grid.RowSpan="2"> Cédula cliente:</TextBlock>
+            <TextBox Grid.Row="0" Grid.Column="2" x:Name="CedulaCliente" HorizontalAlignment="Stretch" Style="{StaticResource GeneralTextBox}" Grid.RowSpan="2" Height="50">
+                <i:Interaction.Behaviors>
+                    <c:TabOnEnterBehavior />
+                </i:Interaction.Behaviors>
+            </TextBox>
+            <Button Grid.Row="3" Grid.Column="1"  Grid.ColumnSpan="2" Style="{StaticResource GeneralButton}" x:Name="Guardar">GUARDAR</Button>
+
+
+        </Grid>
+
+    </Border>
+</Window>
+

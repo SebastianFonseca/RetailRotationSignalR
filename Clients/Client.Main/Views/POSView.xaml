@@ -6,9 +6,11 @@
         xmlns:local="clr-namespace:Client.Main.Views"
         xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:cal="http://www.caliburnproject.org"
-        xmlns:c="clr-namespace:Client.Main.Utilities" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:c="clr-namespace:Client.Main.Utilities"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         mc:Ignorable="d" 
-        Title="  " WindowStartupLocation="CenterScreen" Background="#87ac47" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" WindowState="Maximized" ResizeMode="CanResize">
+        cal:Message.Attach="[Event PreviewKeyDown ] = [Action TeclaPresionadaVentana($executionContext)]" 
+        Title="  " WindowStartupLocation="CenterScreen"  Background="#87ac47" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" WindowState="Maximized" ResizeMode="CanResize">
     <Window.Resources>
         <Style TargetType="TextBlock" x:Key="TextoGrande">
             <Setter Property="FontSize" Value="35"/>
@@ -55,7 +57,7 @@
     </Window.Resources>
     
     <!--Linea verde al rededor de la ventana-->
-    <Border BorderThickness="4"  CornerRadius="8" Background="#F3E0C2"  Focusable="False" Margin="15">
+    <Border BorderThickness="4"  CornerRadius="8" Background="#F3E0C2"  Focusable="False" Margin="15"> 
 
         <Grid ShowGridLines="False" c:KeyboardFocus.On="{Binding ElementName=CantidadVenta}">
             <Grid.RowDefinitions>
@@ -78,20 +80,20 @@
             <!--Cantidad-->
             <TextBlock Grid.Column="0" Grid.Row="0" Style="{StaticResource TextoGrande}">Cantidad:</TextBlock>
             <TextBox   Grid.Column="1" Grid.Row="0" Style="{StaticResource GeneralTextBox}" Margin="0 0 10 0" Height="30" x:Name="CantidadVenta">
+                <i:Interaction.Behaviors>
+                    <c:TabOnEnterBehavior />
+                </i:Interaction.Behaviors>
             </TextBox>
 
 
             <!--Producto-->
             <TextBlock Grid.Column="0" Grid.Row="1"  Style="{StaticResource TextoGrande}" >Producto:</TextBlock>
             <StackPanel Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" Grid.ColumnSpan="4" Panel.ZIndex="10" Margin="0 13 0 0">
-               
+
                 <TextBox   
-                    x:Name="BuscarTbx" Margin="0 0 0 0"  BorderThickness="1 1 1 1" BorderBrush="Gray" Padding="30 0 0 0" Height="40"
-                    cal:Message.Attach="[Event KeyDown] = [Action ExecuteFilterView($executionContext)]; [Event TextChanged] = [Action EscribiendoBusqueda]" 
-                    Style="{StaticResource GeneralTextBox}">
-                    <i:Interaction.Behaviors>
-                        <c:TabOnEnterBehavior />
-                    </i:Interaction.Behaviors>
+                    x:Name="BuscarTbx" Margin="0 0 0 0"  BorderThickness="1 1 1 1" BorderBrush="Gray" Padding="30 0 0 0" Height="40" AcceptsReturn="False"
+                    cal:Message.Attach="[Event TextChanged] = [Action EscribiendoBusqueda];[Event PreviewKeyDown ] = [Action TeclaPresionadaControl($executionContext)]"                     
+                    Style="{StaticResource GeneralTextBox}" >
                 </TextBox>
                 
                 <Border BorderThickness="1 0 1.5 1.5" BorderBrush="Black"  Visibility="{Binding Path=BusquedasVisibilidad}"  Background="#F7EBD7">
@@ -108,9 +110,9 @@
                                 ScrollViewer.CanContentScroll="True"                          
                                 Background="Transparent"                                                                
                                 Grid.Row="1" 
+                                SelectionMode="Single"
                                 BorderThickness="0"
                                 VerticalAlignment="Stretch">
-                                
                                 <ListBox.ItemTemplate >
                                     <DataTemplate >
 
@@ -148,6 +150,12 @@
                                         </Setter>
                                     </Style>
                                 </ListBox.ItemContainerStyle>
+
+                                <i:Interaction.Behaviors>
+                                    <c:perListBoxHelper />
+                                </i:Interaction.Behaviors>
+             
+
                             </ListBox>  
                         </DockPanel>
                     </Grid>
@@ -155,15 +163,14 @@
             </StackPanel>
 
             <!--Clientes-->
-            <Button    Grid.Column="4" Grid.Row="0" Style="{StaticResource GeneralButton}" Margin="15 0 5 0" x:Name="imprimir" IsTabStop="False">CLIENTES</Button>
             <Border Grid.Column="5" Grid.Row="0"  Grid.RowSpan="2" Background="#f6d3b4" BorderBrush="Beige" BorderThickness="1" CornerRadius="20" Margin="20 10 20 10">
                 <Grid   VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <TextBlock Margin="0" Grid.Row="0" HorizontalAlignment="Center" FontSize="20" Style="{StaticResource TextoGrande}">Juan Lopez</TextBlock>
-                    <TextBlock x:Name="Puntos" Text="500 PTS" Grid.Row="1" FontSize="20"  HorizontalAlignment="Center" Style="{StaticResource TextoGrande}"/>
+                    <TextBlock x:Name="NombreCliente" Grid.Row="0" HorizontalAlignment="Center" FontSize="20" Style="{StaticResource TextoGrande}" Margin="0"/>
+                    <TextBlock x:Name="PuntosCliente" Grid.Row="1" HorizontalAlignment="Center" FontSize="20" Style="{StaticResource TextoGrande}"/>
                 </Grid>
             </Border>
 
@@ -174,7 +181,7 @@
                 <ListView.View>
                     <GridView AllowsColumnReorder="True"   >
                         <GridViewColumn  Width="120" DisplayMemberBinding="{Binding Path=codigoProducto}" Header="Unidad"  />
-                        <GridViewColumn  Width="710" DisplayMemberBinding="{Binding Path=nombre}" Header="Producto" />
+                        <GridViewColumn  Width="710" DisplayMemberBinding="{Binding Path=nombre}" Header="Productos" />
                         <GridViewColumn  Width="120" DisplayMemberBinding="{Binding Path=precioVenta}" Header="Precio" />
                         <GridViewColumn  Width="120" DisplayMemberBinding="{Binding Path=cantidadVenta}" Header="Cantidad" />
                         <GridViewColumn  Width="200" DisplayMemberBinding="{Binding Path=totalValorVenta}" Header="Total" />
@@ -193,7 +200,7 @@
                         <Setter Property="BorderThickness" Value="0 0 0 1"/>
                         <Setter Property="Foreground" Value="Black"/>
                         <Setter Property="HorizontalContentAlignment" Value="Left"/>
-                        <Setter Property="cal:Message.Attach" Value="[Event MouseDoubleClick] = [Action click($dataContext)]"/>
+                        <Setter Property="cal:Message.Attach" Value="[Event MouseDoubleClick] = [Action EliminarProducto($dataContext)]"/>
                         
                         <Setter Property="Template">
                             <Setter.Value>
@@ -229,8 +236,8 @@
                                 <ColumnDefinition Width="120"/>
                                 <ColumnDefinition Width="200"/>
                             </Grid.ColumnDefinitions>
-                            
-                            <TextBlock Grid.Column="0"  Text="{Binding Path=unidadVenta}" HorizontalAlignment="Center"/>
+
+                            <TextBlock Grid.Column="0"  Text="{Binding Path=unidadVenta,  StringFormat={}{0:}.}" HorizontalAlignment="Center"/>
                             <TextBlock Grid.Column="1"  Text="{Binding Path=nombre}"      HorizontalAlignment="Left"/>
                             <TextBlock Grid.Column="2"  Text="{Binding Path=precioVenta,  StringFormat={}${0:#.}}" HorizontalAlignment="Center"/>
                             <TextBlock Grid.Column="3"  Text="{Binding Path=cantidadVenta}" HorizontalAlignment="Center"/>
@@ -268,22 +275,20 @@
 
 
                 <!--Columna dos. Info del producto seleccionado-->
-                <TextBlock Grid.Column="1" Grid.Row="0" Style="{StaticResource TextoGrande}"  Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalAlignment="Center"  Text="{Binding Path=NombreProductoSeleccioado, UpdateSourceTrigger=PropertyChanged}"/>
-                <TextBlock Grid.Column="1" Grid.Row="2" Style="{StaticResource TextoGrande}"  Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalAlignment="Center"  Text="{Binding Path=PrecioProductoSeleccioado, UpdateSourceTrigger=PropertyChanged,  StringFormat={}${0:#.}}"/>
+                <DockPanel Grid.Column="1" Grid.Row="0" Grid.RowSpan="4" Grid.ColumnSpan="2">
+                    <TextBlock Style="{StaticResource TextoGrande}"  Grid.ColumnSpan="2" Grid.RowSpan="2" DockPanel.Dock="Top" Text="{Binding Path=NombreProductoSeleccioado, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Style="{StaticResource TextoGrande}"  Grid.ColumnSpan="2" Grid.RowSpan="2" DockPanel.Dock="Top" Text="{Binding Path=PrecioProductoSeleccioado, UpdateSourceTrigger=PropertyChanged}"/>
+                </DockPanel>
 
+                <!--Columna tres. Info de la suma de la factura-->
+                <TextBlock Grid.Column="3" Grid.Row="0" Style="{StaticResource TextoGrande}" Grid.RowSpan="2" HorizontalAlignment="Right">Total:</TextBlock>
+                <TextBlock Grid.Column="4" Grid.Row="0" Style="{StaticResource TextoGrande}" Grid.RowSpan="2"  Text="{Binding Path=Total, UpdateSourceTrigger=PropertyChanged, StringFormat={}${0:#.}}" />
 
-                <!--Columna tres. Info de la suma de la factura-->                     
-                <TextBlock Grid.Column="3" Grid.Row="0" Style="{StaticResource TextoPequeño}"  HorizontalAlignment="Right">Subtotal:</TextBlock>
-                <TextBlock Grid.Column="4" Grid.Row="0" Style="{StaticResource TextoPequeño}"   />
+                <TextBlock Grid.Column="3" Grid.Row="2" Style="{StaticResource TextoPequeño}"   HorizontalAlignment="Right">I.V.A:</TextBlock>
+                <TextBlock Grid.Column="4" Grid.Row="2" Style="{StaticResource TextoPequeño}"  Text="{Binding Path=IVA, UpdateSourceTrigger=PropertyChanged, StringFormat={}${0:#.}}" />
 
-                <TextBlock Grid.Column="3" Grid.Row="1" Style="{StaticResource TextoPequeño}"   HorizontalAlignment="Right">I.V.A:</TextBlock>
-                <TextBlock Grid.Column="4" Grid.Row="1" Style="{StaticResource TextoPequeño}"   />
-
-                <TextBlock Grid.Column="3" Grid.Row="2" Style="{StaticResource TextoPequeño}"   HorizontalAlignment="Right">Descuento:</TextBlock>
-                <TextBlock Grid.Column="4" Grid.Row="2" Style="{StaticResource TextoPequeño}"    />
-
-                <TextBlock Grid.Column="3" Grid.Row="3" Style="{StaticResource TextoPequeño}"  HorizontalAlignment="Right">Total:</TextBlock>
-                <TextBlock Grid.Column="4" Grid.Row="3" Style="{StaticResource TextoPequeño}"  Text="{Binding Path=Total, UpdateSourceTrigger=PropertyChanged, StringFormat={}${0:#.}}" />
+                <TextBlock Grid.Column="3" Grid.Row="3" Style="{StaticResource TextoPequeño}"   HorizontalAlignment="Right">Descuento:</TextBlock>
+                <TextBlock Grid.Column="4" Grid.Row="3" Style="{StaticResource TextoPequeño}"    />
 
             </Grid>
               
@@ -301,4 +306,11 @@
                         <Binding  Path="Width" Mode="OneWayToSource" UpdateSourceTrigger="PropertyChanged" />
                     </MultiBinding>
                 </TextBlock.Text>
-            </TextBlock>-->
+            </TextBlock>
+    
+    
+                        <i:Interaction.Behaviors>
+                        <c:TabOnEnterBehavior/>
+                    </i:Interaction.Behaviors>
+    
+    -->

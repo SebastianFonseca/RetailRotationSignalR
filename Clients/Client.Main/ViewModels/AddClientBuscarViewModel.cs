@@ -22,6 +22,8 @@ namespace Client.Main.ViewModels
             VentanaPrincipal = argVentana;
         }
 
+
+
         private string _buscarTbx;
         public string BuscarTbx
         {

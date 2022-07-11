@@ -344,6 +344,8 @@ namespace Client.Main.Utilities
                             };
                             if (decimal.TryParse(reader["PrecioVenta"].ToString(), out decimal precio)) { producto.precioVenta = precio; }
                             else { producto.precioVenta = null; }
+                            if (decimal.TryParse(reader["IVA"].ToString(), out decimal iva)) { producto.iva = iva; }
+                            else { producto.iva = null; }
                             productos.Add(producto);
                         }
                     }
@@ -3804,7 +3806,6 @@ namespace Client.Main.Utilities
                 return null;
             }
         }
-
 
         /// <summary>
         /// Actualiza los datos del usuario dado.

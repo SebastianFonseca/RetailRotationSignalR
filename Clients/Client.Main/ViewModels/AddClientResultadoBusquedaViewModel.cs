@@ -22,6 +22,11 @@ namespace Client.Main.ViewModels
             resultadoCliente = resultadoBusqueda;
         }
 
+
+        public AddClientResultadoBusquedaViewModel(ClientesModel resultadoBusqueda)
+        {
+            resultadoCliente = resultadoBusqueda;
+        }
         public string Name
         {
             get { return resultadoCliente.firstName; }

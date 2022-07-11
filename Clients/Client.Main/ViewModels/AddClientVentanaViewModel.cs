@@ -1,4 +1,4 @@
-﻿ using Caliburn.Micro;
+﻿using Caliburn.Micro;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,19 +10,19 @@ using System.Text.RegularExpressions;
 using Autofac;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
-
 namespace Client.Main.ViewModels
 {
-    public class AddClientViewModel : PropertyChangedBase, IDataErrorInfo
+    public class AddClientVentanaViewModel: Screen
     {
-        ClientesModel NuevoCliente;
+        public ClientesModel cliente = ContainerConfig.scope.Resolve<ClientesModel>();
         MainWindowViewModel VentanaPrincipal;
         public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
 
-        public AddClientViewModel(MainWindowViewModel argVentana)
+        public AddClientVentanaViewModel(MainWindowViewModel argVentana)
         {
+
             VentanaPrincipal = argVentana;
-            NuevoCliente = new ClientesModel();
+            cliente.puntos = 100;
             conexion.Connection.On("ClienteExiste", handler: (string a) =>
             {
 
@@ -34,10 +34,11 @@ namespace Client.Main.ViewModels
 
         public string Name
         {
-            get { return NuevoCliente.firstName; }
-            set{
-                if (NuevoCliente.firstName != value)
-                    NuevoCliente.firstName = value;
+            get { return cliente.firstName; }
+            set
+            {
+                if (cliente.firstName != value)
+                    cliente.firstName = value;
                 NotifyOfPropertyChange(() => Name);
             }
         }
@@ -45,92 +46,95 @@ namespace Client.Main.ViewModels
 
         public string Apellidos
         {
-            get { return NuevoCliente.lastName; }
+            get { return cliente.lastName; }
             set
-            {               
-                if (NuevoCliente.lastName != value)
-                    NuevoCliente.lastName = value;
+            {
+                if (cliente.lastName != value)
+                    cliente.lastName = value;
                 NotifyOfPropertyChange(() => Apellidos);
             }
         }
 
         public string CC
         {
-            get { return NuevoCliente.cedula; }
+            get { return cliente.cedula; }
             set
-            {     
-                if (NuevoCliente.cedula != value)
-                    NuevoCliente.cedula = value;
-                NotifyOfPropertyChange(() => CC);
+            {
+                if (Int32.TryParse(value, out int resul))
+                {
+                    if (cliente.cedula != value)
+                        cliente.cedula = value;
+                    NotifyOfPropertyChange(() => CC);
+                }
+
             }
         }
 
         public string Correo
         {
-            get { return NuevoCliente.correo; }
+            get { return cliente.correo; }
             set
             {
-                if (NuevoCliente.correo != value)
-                    NuevoCliente.correo = value;
+                if (cliente.correo != value)
+                    cliente.correo = value;
                 NotifyOfPropertyChange(() => Correo);
             }
         }
 
         public string Telefono
         {
-            get { return NuevoCliente.telefono; }
+            get { return cliente.telefono; }
             set
             {
-                if (NuevoCliente.telefono != value)
-                    NuevoCliente.telefono = value;
-                NotifyOfPropertyChange(() => Telefono);
-
+                if (Int32.TryParse(value, out int resul))
+                { 
+                    if (cliente.telefono != value)
+                        cliente.telefono = value;
+                    NotifyOfPropertyChange(() => Telefono);
+                }
             }
         }
-
-
-
 
         public async void Guardar()
         {
 
             //DbConnection.SincronizarReplicacionMerge();
-            if (!string.IsNullOrWhiteSpace(NuevoCliente.firstName) && !string.IsNullOrWhiteSpace(NuevoCliente.lastName) && !string.IsNullOrWhiteSpace(NuevoCliente.cedula))
+            if (!string.IsNullOrWhiteSpace(cliente.firstName) && !string.IsNullOrWhiteSpace(cliente.lastName) && !string.IsNullOrWhiteSpace(cliente.cedula))
             {
-                if (string.IsNullOrEmpty(NuevoCliente.correo))
+                if (string.IsNullOrEmpty(cliente.correo))
                 {
-                    NuevoCliente.correo = null;
+                    cliente.correo = null;
                 }
-                if (string.IsNullOrEmpty(NuevoCliente.telefono))
+                if (string.IsNullOrEmpty(cliente.telefono))
                 {
-                    NuevoCliente.telefono = null;
+                    cliente.telefono = null;
                 }
 
                 try
                 {
                     if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
                     {
-                        Task<object> re = conexion.CallServerMethod("ServidorAddClient", Arguments: new[] { NuevoCliente });
+                        Task<object> re = conexion.CallServerMethod("ServidorAddClient", Arguments: new[] { cliente });
                         await re;
                         if (re.Result.ToString() == "true")
                         {
-                            MessageBox.Show($"El cliente {NuevoCliente.firstName} {NuevoCliente.lastName} se ha registrado en el servidor con 100 puntos.");
-                            VentanaPrincipal.ActivateItem(new AddClientViewModel(VentanaPrincipal));
+                            MessageBox.Show($"El cliente {cliente.firstName} {cliente.lastName} se ha registrado en el servidor con 100 puntos.");
+                            this.TryClose();
                             return;
                         }
                         if (re.Result.ToString() == "Cliente ya existe")
                         {
-                            MessageBox.Show($"El cliente {NuevoCliente.firstName} {NuevoCliente.lastName} ya esta registrado.");
+                            MessageBox.Show($"El cliente {cliente.firstName} {cliente.lastName} ya esta registrado.");
                             CC = "";
                             return;
                         }
                     }
                     else if (MainWindowViewModel.Status == "Trabajando localmente")
                     {
-                        if (DbConnection.AddClient(Cliente: NuevoCliente))
+                        if (DbConnection.AddClient(Cliente: cliente))
                         {
-                            MessageBox.Show($"El cliente {NuevoCliente.firstName} {NuevoCliente.lastName} se ha registrado localmente con 100 puntos.");
-                            VentanaPrincipal.ActivateItem(new AddClientViewModel(VentanaPrincipal));
+                            MessageBox.Show($"El cliente {cliente.firstName} {cliente.lastName} se ha registrado localmente con 100 puntos.");
+                            this.TryClose();
                         }
                         else
                         {
@@ -154,7 +158,7 @@ namespace Client.Main.ViewModels
         }
 
         public string Error { get { return null; } }
-        int flag = 0;        
+        int flag = 0;
         public string this[string name]
         {
             get
@@ -169,7 +173,7 @@ namespace Client.Main.ViewModels
                             result = "Rellene este campo.";
                         }
                     }
-                    else if(name == "Name")
+                    else if (name == "Name")
                     {
                         if (String.IsNullOrEmpty(Name))
                         {
@@ -197,7 +201,7 @@ namespace Client.Main.ViewModels
 
                     }
                 }
-                
+
                 else { flag += 1; }
 
 
@@ -205,15 +209,5 @@ namespace Client.Main.ViewModels
 
             }
         }
-
-
-
-
-
     }
-
-
-
 }
-
-

@@ -34,7 +34,7 @@ namespace Client.Main.Utilities
 
             if (target == null)
                 return;
-
+            
             frameworkElement.Loaded += (s, e) => Keyboard.Focus(target);
         }
     }

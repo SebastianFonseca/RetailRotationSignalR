@@ -132,8 +132,8 @@ namespace Client.Main.ViewModels
         #region Cajero
         public void Pos()
         {
-            window.ShowWindow(new POSViewModel(VentanaPrincipal));
             this.WindowState = WindowState.Minimized;
+            window.ShowWindow(new POSViewModel(VentanaPrincipal));
 
             
         }
