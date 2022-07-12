@@ -23,13 +23,17 @@ namespace Client.Main.ViewModels
         MainWindowViewModel VentanaCliente;
         public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
         public ClientesModel cliente = ContainerConfig.scope.Resolve<ClientesModel>();
+        public FacturaModel factura = new FacturaModel();
 
         ///Objeto responsable de la administracion de las ventanas.
         private readonly IWindowManager window = new WindowManager();
 
         public POSViewModel(MainWindowViewModel argVentana)
         {
-            VentanaCliente = new MainWindowViewModel(argVentana.usuario);
+            factura.productos = Productos;
+            factura.cliente = cliente;
+            factura.responsable = argVentana.usuario;
+            VentanaCliente = argVentana;
         }
 
         private BindableCollection<ProductoModel> _productos = new BindableCollection<ProductoModel>();
@@ -62,21 +66,26 @@ namespace Client.Main.ViewModels
                     _poductoAgregar = value;
                     NotifyOfPropertyChange(() => PrecioProductoSeleccioado);
                     NotifyOfPropertyChange(() => NombreProductoSeleccioado);
+
                 }
             }
         }
 
+        // Es string para que no aparezca nada en la pantalla al incio y se pueda evitar que se agreguen letras con el tryparse 
         private string _cantidadVenta;
         public string CantidadVenta
         {
             get => _cantidadVenta;
             set
             {
-                if (decimal.TryParse(value, out decimal valor))
+                if (decimal.TryParse(value, out decimal valor) | value==null)
                 {
                     ProductoAgregar.cantidadVenta = valor;
                     _cantidadVenta = value;
                     NotifyOfPropertyChange(() => CantidadVenta);
+                    NotifyOfPropertyChange(() => PrecioProductoSeleccioado);
+                    NotifyOfPropertyChange(() => NombreProductoSeleccioado);
+
                 }
 
             }
@@ -116,7 +125,11 @@ namespace Client.Main.ViewModels
         {
             get
             {
-                if (ProductoAgregar != null) { return ProductoAgregar.nombre; }
+                if (ProductoAgregar != null)
+                {
+                    return ProductoAgregar.nombre + $" {ProductoAgregar.precioVenta:$0#,#} {ProductoAgregar.unidadVenta} \n"+
+                    $"{CantidadVenta} valen { decimal.Parse(CantidadVenta) * ProductoAgregar.precioVenta:$0#,#}";  
+                }
                 else { return null; }
             }
             set { _nombreProductoSeleccioado = value; NotifyOfPropertyChange(() => NombreProductoSeleccioado); }
@@ -127,7 +140,11 @@ namespace Client.Main.ViewModels
         {
             get
             {
-                if (ProductoAgregar != null) { return $"{ProductoAgregar.precioVenta:$0#,#} {ProductoAgregar.unidadVenta}."; }
+                if (ProductoAgregar != null && ProductoAgregar.precioVentaConDescuento != null)
+                {
+                    return $" Con Descuento {ProductoAgregar.precioVentaConDescuento:$0#,#} {ProductoAgregar.unidadVenta} \n" +
+                        $"{CantidadVenta} valen {decimal.Parse(CantidadVenta) * ProductoAgregar.precioVentaConDescuento:$0#,#} ";                                           
+                }
                 else { return null; }
             }
             set { _precioProductoSeleccioado = value; NotifyOfPropertyChange(() => PrecioProductoSeleccioado); }
@@ -139,6 +156,23 @@ namespace Client.Main.ViewModels
             get => _total;
             set { _total = value; NotifyOfPropertyChange(() => Total); }
         }
+
+
+        private decimal? _subtotal = 0;
+
+        public decimal? Subtotal
+        {
+            get { return _subtotal; }
+            set { _subtotal = value; NotifyOfPropertyChange(() => Subtotal); }
+        }
+
+        private decimal? _descuento = 0;
+        public decimal? Descuento
+        {
+            get => _descuento;
+            set { _descuento = value; NotifyOfPropertyChange(() => Descuento); }
+        }
+
 
         private decimal? _iva = 0;
 
@@ -213,7 +247,11 @@ namespace Client.Main.ViewModels
                         {
                             BusquedasProducto[0].isSelected = true;
                             BusquedasVisibilidad = "Visible";
+                            //NotifyOfPropertyChange(() => PrecioProductoSeleccioado);
+                            //NotifyOfPropertyChange(() => NombreProductoSeleccioado);
+                            //NotifyOfPropertyChange(() => ConsultaPrecio);
                         }
+
                     }
                 }
             }
@@ -234,44 +272,85 @@ namespace Client.Main.ViewModels
 
             if (keyArgs != null && keyArgs.Key == Key.Enter)
             {
-                if (CantidadVenta == null)
-                {
-                    MessageBox.Show("Ingrese la cantidad");
-                    return;
-                }
+                ///Evita que se intente agregar a la factura un producto sin cantidad
+                if (CantidadVenta == null){MessageBox.Show("Ingrese la cantidad");return;}
+
+                ///Evita que se intente agregar a la factura cuando no hay un producto seleccionado o cuado el seleccionado contunua siendo el anterior
                 if (string.IsNullOrEmpty(BuscarTbx)) { return; }
+
+                ///Evita que se intente cobrar cuando hay un precio de 0
                 if (ProductoAgregar.precioVenta == 0) { MessageBox.Show("Error en el sistema. Precio de venta. Notifique a un administrador.");return; };
+
+                ///Multiplica la cantidad por el precio para mostarlo en la pantalla y para sumar el total, se calcula primero porque de cualquier manera deeb calcularse para halla el descuento
                 ProductoAgregar.cantidadVenta = decimal.Parse(CantidadVenta);
                 ProductoAgregar.totalValorVenta = ProductoAgregar.cantidadVenta * ProductoAgregar.precioVenta;
 
+                if (ProductoAgregar.porcentajePromocion != null && ProductoAgregar.porcentajePromocion != 0 && ProductoAgregar.precioVentaConDescuento != null )
+                {
+                    //decimal a = 100;
+                    ///Encuentra el precio de venta con promocion
+                    ProductoAgregar.precioVentaConDescuento = decimal.Subtract( (decimal)ProductoAgregar.precioVenta , decimal.Multiply((decimal)ProductoAgregar.precioVenta , ((decimal)ProductoAgregar.porcentajePromocion / 100 )));
+
+                    ///Encuentra el valor de descuento total teniendo cuenta el valor calculado antes con precio full                  
+                    Descuento = Descuento + (ProductoAgregar.totalValorVenta - (ProductoAgregar.cantidadVenta * ProductoAgregar.precioVentaConDescuento));
+
+                    ///Modifica el valor total de la venta teniendo en cuenta el descuento
+                    ProductoAgregar.totalValorVenta = ProductoAgregar.cantidadVenta * ProductoAgregar.precioVentaConDescuento;
+                } 
+              
+                ///Suma al total el valo del nuevo producto
                 Total = Total + ProductoAgregar.totalValorVenta;
+
+                ///El valor de subtotal 
+                Subtotal = Total + Descuento;
+
+                ///Calcula el valor del iva cobrado si es el caso
                 if (ProductoAgregar.iva != null && ProductoAgregar.iva != 0)
                 {
                     IVA = IVA + (ProductoAgregar.totalValorVenta - (ProductoAgregar.totalValorVenta / (1 + (ProductoAgregar.iva / 100))));
                 }
+
+                ///Flag para evitar agrefar dos veces un mismo producto 
                 bool agregar=true;
+
+                ///Se busca si el producto ya fue agregado para sumar la cantidad al mismo
                 foreach (ProductoModel productoRepetido in Productos.Where<ProductoModel>(p => p.codigoProducto == ProductoAgregar.codigoProducto))
                 {
+                    ///Ya que se encontro un producto que ya se habia agregado se le suma la nueva cantidad y el nuevo total
                     productoRepetido.cantidadVenta = productoRepetido.cantidadVenta + ProductoAgregar.cantidadVenta;
                     productoRepetido.totalValorVenta = productoRepetido.totalValorVenta + ProductoAgregar.totalValorVenta;
+                   ///Evita que se agregrue denuevo el product, pues ya estaba agregado y lo que se hizo fue sumar la nueva cantidad
                     agregar = false;
                 }
+
+                ///Si el producto no estaba agregado se agrega
                 if (agregar) { Productos.Add(ProductoAgregar); }
 
-
+                ///Se notifica de los cambios para que se refresque la pantalla
+                NotifyOfPropertyChange(() => Descuento);
                 NotifyOfPropertyChange(() => Productos);
                 NotifyOfPropertyChange(() => Total);
                 NotifyOfPropertyChange(() => IVA);
+                NotifyOfPropertyChange(() => Subtotal);
+
+                ///Se borran los valores de la caja de texto para la nueva busqueda
                 BuscarTbx = "";
+               
+                ///La cantidad se pone en null para la nuev busqueda, se  notifica a la propiedad para refrescar la pantalla
                 _cantidadVenta = null;
                 NotifyOfPropertyChange(() => CantidadVenta);
+
+                ///Para agregar un nuevo producto y notificar
                 ProductoAgregar = null;
                 NotifyOfPropertyChange(() => ProductoAgregar);
+                
+                ///Se limpian los productos encontrados anteriormente
                 BusquedasProducto.Clear();
             }
 
             if (keyArgs != null && keyArgs.Key == Key.Down)
             {
+                ///Permite que cuado se oprima la tecla se bajar cambie la seleccion del producto
                 int indice = BusquedasProducto.IndexOf(BusquedasProducto.First<ProductoModel>(p => p.isSelected == true));
                 BusquedasProducto.All(prod => prod.isSelected = false);
                 if (indice == BusquedasProducto.Count - 1)
@@ -284,6 +363,8 @@ namespace Client.Main.ViewModels
 
             if (keyArgs != null && keyArgs.Key == Key.Up)
             {
+                ///Permite que cuado se oprima la tecla se subir cambie la seleccion del producto
+
                 int indice = BusquedasProducto.IndexOf(BusquedasProducto.First<ProductoModel>(p => p.isSelected == true));
                 BusquedasProducto.All(prod => prod.isSelected = false);
                 if (indice == 0)

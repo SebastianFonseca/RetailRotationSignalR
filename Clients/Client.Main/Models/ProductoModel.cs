@@ -32,6 +32,7 @@ namespace Client.Main.Models
         
         private decimal? _cantidadVenta;
         public decimal? precioVenta { get; set; }
+        public decimal? precioVentaConDescuento { get; set; }
         public decimal? precioCompra  { get; set; }
         public int? porcentajePromocion { get; set; }
 

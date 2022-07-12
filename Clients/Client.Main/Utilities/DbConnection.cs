@@ -339,7 +339,7 @@ namespace Client.Main.Utilities
                                 codigoProducto = reader["CodigoProducto"].ToString(),
                                 nombre = reader["Nombre"].ToString(),
                                 unidadCompra = reader["UnidadCompra"].ToString(),
-                                unidadVenta = reader["UnidadVenta"].ToString().Substring(0,3),
+                                unidadVenta = reader["UnidadVenta"].ToString().Substring(0,3) + ".",
                                 seccion = reader["Seccion"].ToString(),
                                 codigoBarras = reader["CodigoBarras"].ToString()
 
@@ -352,7 +352,11 @@ namespace Client.Main.Utilities
                             else { producto.factorConversion = null; }
                             if (reader["FechaVencimiento"].ToString() == "") { producto.fechaVencimiento = DateTime.MinValue; }
                             else { producto.fechaVencimiento = DateTime.Parse(reader["FechaVencimiento"].ToString()); }
-                            if (int.TryParse(reader["PorcentajePromocion"].ToString(), out int porcentajePromocion)) { producto.porcentajePromocion = porcentajePromocion; }
+                            if (int.TryParse(reader["PorcentajePromocion"].ToString(), out int porcentajePromocion))
+                            { 
+                                producto.porcentajePromocion = porcentajePromocion;
+                                producto.precioVentaConDescuento = decimal.Subtract((decimal)producto.precioVenta, decimal.Multiply((decimal)producto.precioVenta, ((decimal)producto.porcentajePromocion / 100)));
+                            }
                             else { producto.porcentajePromocion = null; }
                             productos.Add(producto);
                         }
