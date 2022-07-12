@@ -22,6 +22,7 @@ namespace Client.Main.ViewModels
         {
             VentanaPrincipal = argVentana;
             Producto = prod;
+            this.Promocion =  Producto.porcentajePromocion.ToString();
             try
             {
                 getUltimoRegistroCompra(Producto.codigoProducto);
@@ -146,6 +147,49 @@ namespace Client.Main.ViewModels
         {
             get { return _envioTotal; }
             set { _envioTotal = value; NotifyOfPropertyChange(() => EnvioTotal); }
+        }
+
+        private bool _activar;
+
+        public bool Activar
+        {
+            get { return _activar; }
+            set
+            {
+                if (value) Producto.porcentajePromocion = Int32.Parse(Promocion); 
+                _activar = value;
+                NotifyOfPropertyChange(() => Activar);
+
+            }
+        }
+
+        private bool _desactivar;
+
+        public bool Desactivar
+        {
+            get { return _desactivar; }
+            set
+            {
+                if (value) Producto.porcentajePromocion = null;
+                _desactivar = value;
+                NotifyOfPropertyChange(() => Desactivar);
+
+            }
+        }
+
+        private string _promocion;
+
+        public string Promocion
+        {
+            get { return _promocion; }
+            set
+            {
+                if (Int32.TryParse(value, out int result))
+                {
+                    _promocion = value;
+                    NotifyOfPropertyChange(() => Promocion);
+                }
+            }
         }
 
         public async void Guardar()

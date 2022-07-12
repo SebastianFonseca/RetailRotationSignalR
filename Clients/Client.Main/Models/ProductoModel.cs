@@ -29,14 +29,24 @@ namespace Client.Main.Models
         public DateTime? fechaDeCompra { get; set; }
         public string soportePago { get; set; }
         public string codigoCompra { get; set; }
-        public decimal? cantidadVenta { get; set; }
-        public decimal? totalValorVenta { get; set; }
-
-        /// <summary>
-        /// warning si el precio de venta es cero en una venta
-        /// </summary>
+        
+        private decimal? _cantidadVenta;
         public decimal? precioVenta { get; set; }
         public decimal? precioCompra  { get; set; }
+        public int? porcentajePromocion { get; set; }
+
+        public decimal? cantidadVenta
+        {
+            get { return _cantidadVenta; }
+            set { _cantidadVenta = value; NotifyOfPropertyChange(() => cantidadVenta); }
+        }
+
+        private decimal? _totalValorVenta;
+        public decimal? totalValorVenta
+        {
+            get { return _totalValorVenta; }
+            set { _totalValorVenta = value; NotifyOfPropertyChange(() => totalValorVenta); }
+        }
 
         /// <summary>
         ///Propiedad necesaria para el binding de datos en las listbox con el productoseleccionado.

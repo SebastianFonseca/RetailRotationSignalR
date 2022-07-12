@@ -204,7 +204,7 @@ namespace Client.Main.Utilities
                         else
                         {
                             reader.Close();
-                            string cadena = $"UPDATE Producto SET  Nombre=@nombre, UnidadVenta=@univenta,	UnidadCompra=@unicompra, PrecioVenta=@precio, Seccion=@seccion, FechaVencimiento=@fv, IVA=@iva, CodigoBarras=@cb, FactorConversion = @fc WHERE CodigoProducto = '{Producto.codigoProducto}' ";
+                            string cadena = $"UPDATE Producto SET  Nombre=@nombre, UnidadVenta=@univenta, PorcentajePromocion = @porcentajePromocion, UnidadCompra=@unicompra, PrecioVenta=@precio, Seccion=@seccion, FechaVencimiento=@fv, IVA=@iva, CodigoBarras=@cb, FactorConversion = @fc WHERE CodigoProducto = '{Producto.codigoProducto}' ";
                             SqlCommand cmd = new SqlCommand(cadena, conn);
                             cmd.Parameters.AddWithValue("@codigo", Statics.PrimeraAMayuscula(Producto.codigoProducto));
                             cmd.Parameters.AddWithValue("@nombre", Statics.PrimeraAMayuscula(Producto.nombre));
@@ -216,6 +216,7 @@ namespace Client.Main.Utilities
                             cmd.Parameters.AddWithValue("@iva", Producto.iva);
                             cmd.Parameters.AddWithValue("@cb", string.IsNullOrEmpty(Producto.codigoBarras) ? (object)DBNull.Value : Producto.codigoBarras);
                             cmd.Parameters.AddWithValue("@fc", Producto.factorConversion);
+                            cmd.Parameters.AddWithValue("@porcentajePromocion", Producto.porcentajePromocion == null ? (object)DBNull.Value : Producto.porcentajePromocion);
                             cmd.ExecuteNonQuery();
                             conn.Close();
                             return true;
@@ -312,7 +313,6 @@ namespace Client.Main.Utilities
 
         }
 
-
         /// <summary>
         /// Devuielve los productos con coincidencias de los carateres dados como parametro y los nombres de los productos
         /// </summary>
@@ -326,7 +326,7 @@ namespace Client.Main.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = $"SELECT * FROM Producto where Nombre like @caracteres or CodigoProducto like @caracteres ORDER BY Nombre ";
+                    string cadena = $"SELECT * FROM Producto where (Nombre like @caracteres or CodigoProducto like @caracteres)  AND Estado = 'Activo' ORDER BY Nombre ";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     cmd.Parameters.AddWithValue("@caracteres", "%"+ caracteres + "%");
                     conn.Open();
@@ -339,13 +339,21 @@ namespace Client.Main.Utilities
                                 codigoProducto = reader["CodigoProducto"].ToString(),
                                 nombre = reader["Nombre"].ToString(),
                                 unidadCompra = reader["UnidadCompra"].ToString(),
-                                unidadVenta = reader["UnidadVenta"].ToString().Substring(0,3)
+                                unidadVenta = reader["UnidadVenta"].ToString().Substring(0,3),
+                                seccion = reader["Seccion"].ToString(),
+                                codigoBarras = reader["CodigoBarras"].ToString()
 
                             };
                             if (decimal.TryParse(reader["PrecioVenta"].ToString(), out decimal precio)) { producto.precioVenta = precio; }
                             else { producto.precioVenta = null; }
                             if (decimal.TryParse(reader["IVA"].ToString(), out decimal iva)) { producto.iva = iva; }
                             else { producto.iva = null; }
+                            if (decimal.TryParse(reader["FactorConversion"].ToString(), out decimal FactorConversion)) { producto.factorConversion = FactorConversion; }
+                            else { producto.factorConversion = null; }
+                            if (reader["FechaVencimiento"].ToString() == "") { producto.fechaVencimiento = DateTime.MinValue; }
+                            else { producto.fechaVencimiento = DateTime.Parse(reader["FechaVencimiento"].ToString()); }
+                            if (int.TryParse(reader["PorcentajePromocion"].ToString(), out int porcentajePromocion)) { producto.porcentajePromocion = porcentajePromocion; }
+                            else { producto.porcentajePromocion = null; }
                             productos.Add(producto);
                         }
                     }
@@ -411,10 +419,11 @@ namespace Client.Main.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = $"UPDATE Producto SET  PrecioVenta=@precio where CodigoProducto = @codigo";
+                    string cadena = $"UPDATE Producto SET  PrecioVenta=@precio, PorcentajePromocion = @porcentajePromocion  where CodigoProducto = @codigo";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     cmd.Parameters.AddWithValue("@codigo", Producto.codigoProducto);
                     cmd.Parameters.AddWithValue("@precio", Producto.precioVenta);
+                    cmd.Parameters.AddWithValue("@porcentajePromocion", Producto.porcentajePromocion == null ? (object)DBNull.Value : Producto.porcentajePromocion);
                     conn.Open();
                     cmd.ExecuteNonQuery();
                     conn.Close();

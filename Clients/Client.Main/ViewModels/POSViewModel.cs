@@ -240,6 +240,7 @@ namespace Client.Main.ViewModels
                     return;
                 }
                 if (string.IsNullOrEmpty(BuscarTbx)) { return; }
+                if (ProductoAgregar.precioVenta == 0) { MessageBox.Show("Error en el sistema. Precio de venta. Notifique a un administrador.");return; };
                 ProductoAgregar.cantidadVenta = decimal.Parse(CantidadVenta);
                 ProductoAgregar.totalValorVenta = ProductoAgregar.cantidadVenta * ProductoAgregar.precioVenta;
 
@@ -248,11 +249,15 @@ namespace Client.Main.ViewModels
                 {
                     IVA = IVA + (ProductoAgregar.totalValorVenta - (ProductoAgregar.totalValorVenta / (1 + (ProductoAgregar.iva / 100))));
                 }
+                bool agregar=true;
+                foreach (ProductoModel productoRepetido in Productos.Where<ProductoModel>(p => p.codigoProducto == ProductoAgregar.codigoProducto))
+                {
+                    productoRepetido.cantidadVenta = productoRepetido.cantidadVenta + ProductoAgregar.cantidadVenta;
+                    productoRepetido.totalValorVenta = productoRepetido.totalValorVenta + ProductoAgregar.totalValorVenta;
+                    agregar = false;
+                }
+                if (agregar) { Productos.Add(ProductoAgregar); }
 
-                
-
-
-                Productos.Add(ProductoAgregar);
 
                 NotifyOfPropertyChange(() => Productos);
                 NotifyOfPropertyChange(() => Total);
@@ -291,7 +296,7 @@ namespace Client.Main.ViewModels
         }
 
         public void TeclaPresionadaVentana(ActionExecutionContext context)
-        {
+            {
 
             var keyArgs = context.EventArgs as KeyEventArgs;
 

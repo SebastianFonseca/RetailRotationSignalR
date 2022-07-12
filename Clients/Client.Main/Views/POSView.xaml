@@ -183,8 +183,8 @@
                         <GridViewColumn  Width="120" DisplayMemberBinding="{Binding Path=codigoProducto}" Header="Unidad"  />
                         <GridViewColumn  Width="710" DisplayMemberBinding="{Binding Path=nombre}" Header="Productos" />
                         <GridViewColumn  Width="120" DisplayMemberBinding="{Binding Path=precioVenta}" Header="Precio" />
-                        <GridViewColumn  Width="120" DisplayMemberBinding="{Binding Path=cantidadVenta}" Header="Cantidad" />
-                        <GridViewColumn  Width="200" DisplayMemberBinding="{Binding Path=totalValorVenta}" Header="Total" />
+                        <GridViewColumn  Width="120" DisplayMemberBinding="{Binding Path=cantidadVenta, UpdateSourceTrigger=PropertyChanged}" Header="Cantidad" />
+                        <GridViewColumn  Width="200" DisplayMemberBinding="{Binding Path=totalValorVenta, UpdateSourceTrigger=PropertyChanged}" Header="Total" />
                     </GridView>
                 </ListView.View>
                 
@@ -276,19 +276,19 @@
 
                 <!--Columna dos. Info del producto seleccionado-->
                 <DockPanel Grid.Column="1" Grid.Row="0" Grid.RowSpan="4" Grid.ColumnSpan="2">
-                    <TextBlock Style="{StaticResource TextoGrande}"  Grid.ColumnSpan="2" Grid.RowSpan="2" DockPanel.Dock="Top" Text="{Binding Path=NombreProductoSeleccioado, UpdateSourceTrigger=PropertyChanged}"/>
-                    <TextBlock Style="{StaticResource TextoGrande}"  Grid.ColumnSpan="2" Grid.RowSpan="2" DockPanel.Dock="Top" Text="{Binding Path=PrecioProductoSeleccioado, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Style="{StaticResource TextoGrande}"  Grid.ColumnSpan="2" Grid.RowSpan="2" Margin="0" DockPanel.Dock="Top" Text="{Binding Path=NombreProductoSeleccioado, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Style="{StaticResource TextoGrande}"  Grid.ColumnSpan="2" Grid.RowSpan="2" Margin="0" DockPanel.Dock="Top" Text="{Binding Path=PrecioProductoSeleccioado, UpdateSourceTrigger=PropertyChanged}"/>
                 </DockPanel>
 
                 <!--Columna tres. Info de la suma de la factura-->
                 <TextBlock Grid.Column="3" Grid.Row="0" Style="{StaticResource TextoGrande}" Grid.RowSpan="2" HorizontalAlignment="Right">Total:</TextBlock>
                 <TextBlock Grid.Column="4" Grid.Row="0" Style="{StaticResource TextoGrande}" Grid.RowSpan="2"  Text="{Binding Path=Total, UpdateSourceTrigger=PropertyChanged, StringFormat={}${0:#.}}" />
 
-                <TextBlock Grid.Column="3" Grid.Row="2" Style="{StaticResource TextoPequeño}"   HorizontalAlignment="Right">I.V.A:</TextBlock>
+                <TextBlock Grid.Column="3" Grid.Row="2" Style="{StaticResource TextoPequeño}"   HorizontalAlignment="Right">IVA:</TextBlock>
                 <TextBlock Grid.Column="4" Grid.Row="2" Style="{StaticResource TextoPequeño}"  Text="{Binding Path=IVA, UpdateSourceTrigger=PropertyChanged, StringFormat={}${0:#.}}" />
 
                 <TextBlock Grid.Column="3" Grid.Row="3" Style="{StaticResource TextoPequeño}"   HorizontalAlignment="Right">Descuento:</TextBlock>
-                <TextBlock Grid.Column="4" Grid.Row="3" Style="{StaticResource TextoPequeño}"    />
+                <TextBlock Grid.Column="4" Grid.Row="3" Style="{StaticResource TextoPequeño}" />
 
             </Grid>
               

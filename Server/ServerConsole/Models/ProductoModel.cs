@@ -35,12 +35,23 @@ namespace ServerConsole.Models
         public string soportePago { get; set; }
 
         public string codigoCompra { get; set; }
-
-        /// <summary>
-        /// warning si el precio de venta es cero en una venta
-        /// </summary>
         public decimal? precioVenta { get; set; }
         public decimal? precioCompra { get; set; }
+        public int? porcentajePromocion { get; set; }
+
+        private decimal? _cantidadVenta;
+        public decimal? cantidadVenta
+        {
+            get { return _cantidadVenta; }
+            set { _cantidadVenta = value; }
+        }
+
+        private decimal? _totalValorVenta;
+        public decimal? totalValorVenta
+        {
+            get { return _totalValorVenta; }
+            set { _totalValorVenta = value; }
+        }
 
     }
 }

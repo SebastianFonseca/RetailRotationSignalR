@@ -75,6 +75,8 @@
                     <RowDefinition/>
                     <RowDefinition/>
                     <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" >Código:</TextBlock>
                 <TextBlock Grid.Row="0" Grid.Column="1"  x:Name="Codigo" FontWeight="Normal"  Grid.ColumnSpan="2" HorizontalAlignment="Left" />
@@ -83,7 +85,7 @@
                 <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Grid.ColumnSpan="2">Precio actual:</TextBlock>
                 <TextBlock Grid.Row="1" Grid.Column="2" x:Name="PrecioActual" HorizontalAlignment="Left"  FontWeight="Normal" Text="{Binding Path=PrecioActual,StringFormat={}${0:#,#}}"/>
                 <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" Grid.ColumnSpan="2">Nuevo precio:</TextBlock>
-                <TextBox   Grid.Row="2" Grid.Column="2"  x:Name="NuevoPrecio" Grid.ColumnSpan="2" Text="{Binding UpdateSourceTrigger=PropertyChanged, Path=NuevoPrecio, StringFormat={}${0:#,#}}" FontWeight="Normal" HorizontalAlignment="Stretch" Margin="10 0 30 0" Padding="3 0 3 0">
+                <TextBox   Grid.Row="2" Grid.Column="2"  x:Name="NuevoPrecio" Grid.ColumnSpan="2" Text="{Binding UpdateSourceTrigger=PropertyChanged, Path=NuevoPrecio, StringFormat={}${0:#,#}}" FontWeight="Normal" HorizontalAlignment="Stretch"  Padding="3 0 3 0">
                     <TextBox.Style>
                         <Style TargetType="TextBox" BasedOn="{StaticResource GeneralTextBox}">
                             <Style.Triggers>
@@ -122,6 +124,17 @@
                         </Style>
                     </TextBox.Style>
                 </TextBox>
+                <TextBlock Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" Grid.ColumnSpan="2">Promocion:</TextBlock>
+                <DockPanel Grid.Row="3" Grid.Column="2" VerticalAlignment="Center">
+                    <TextBox   x:Name="Promocion"  Style="{StaticResource GeneralTextBox}"  FontWeight="Normal"  HorizontalAlignment="Stretch"  Width="40" MaxLength="3" TextAlignment="Center"/>
+                    <TextBlock Text="%" Margin="-60 0 0 0"/>
+                </DockPanel>
+                <DockPanel Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="2" VerticalAlignment="Center">
+                    <RadioButton Margin="1" x:Name="Activar">Activar</RadioButton>
+                    <RadioButton Margin="1" x:Name="Desactivar">Desactivar</RadioButton>
+                </DockPanel>
+
+
             </Grid>
 
             <!--Tabla con productos-->

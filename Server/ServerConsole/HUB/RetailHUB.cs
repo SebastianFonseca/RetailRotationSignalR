@@ -48,7 +48,7 @@ namespace ServerConsole
             if ((string)resultado[0] == "Registrado")
             {
                 usuarioConectado = ((PersonModel)resultado[1]).cedula + "-" + ((PersonModel)resultado[1]).firstName + " " + ((PersonModel)resultado[1]).lastName;
-                Statics.Imprimir(" El usuario " + usuarioConectado + " se ha conectado.");
+                Statics.Imprimir(" El usuario " + usuarioConectado + " se ha conectado. Holi :)");
 
                 //return resultado;
                 //await Clients.Caller.SendCoreAsync("ClienteValidacion", args: new object[] { Usuario, true });
