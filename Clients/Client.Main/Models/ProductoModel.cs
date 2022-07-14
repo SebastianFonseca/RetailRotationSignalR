@@ -16,13 +16,13 @@ namespace Client.Main.Models
         public DateTime fechaVencimiento { get; set; } = DateTime.Today;
         public decimal? iva { get; set; }
         public string codigoBarras { get; set; }
-        public int? existencia { get; set; }
-        public int? pedido { get; set; }
-        public int? sumaPedido { get; set; }
-        public int? compra { get; set; }
-        public int? compraPorLocal { get; set; }
-        public int? recibido { get; set; } = null;
-        public int? cambioInventario { get; set; }
+        public decimal? existencia { get; set; }
+        public decimal? pedido { get; set; }
+        public decimal? sumaPedido { get; set; }
+        public decimal? compra { get; set; }
+        public decimal? compraPorLocal { get; set; }
+        public decimal? recibido { get; set; } = null;
+        public decimal? cambioInventario { get; set; }
         public ProveedorModel proveedor { get; set; } = new ProveedorModel();
         public string estado { get; set; }
         public DateTime? fechaDePago { get; set; }
@@ -30,11 +30,12 @@ namespace Client.Main.Models
         public string soportePago { get; set; }
         public string codigoCompra { get; set; }
         
-        private decimal? _cantidadVenta;
         public decimal? precioVenta { get; set; }
         public decimal? precioVentaConDescuento { get; set; }
         public decimal? precioCompra  { get; set; }
-        public int? porcentajePromocion { get; set; }
+        public decimal? porcentajePromocion { get; set; }
+
+        private decimal? _cantidadVenta = 0;
 
         public decimal? cantidadVenta
         {
@@ -42,7 +43,7 @@ namespace Client.Main.Models
             set { _cantidadVenta = value; NotifyOfPropertyChange(() => cantidadVenta); }
         }
 
-        private decimal? _totalValorVenta;
+        private decimal? _totalValorVenta = 0;
         public decimal? totalValorVenta
         {
             get { return _totalValorVenta; }

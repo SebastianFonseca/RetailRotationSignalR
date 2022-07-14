@@ -86,7 +86,7 @@ namespace Client.Main.Views
                 short a;
                 if (Int16.TryParse(value, out a))
                 {
-                    if (Int16.Parse(value) < DateTime.Now.Day)
+                    if (Int32.Parse(value) < DateTime.Now.Day)
                     {
                         _dia = value;
                         NotifyOfPropertyChange(() => Dia);
@@ -107,7 +107,7 @@ namespace Client.Main.Views
                 short a;
                 if (Int16.TryParse(value, out a))
                 {
-                    if (Int16.Parse(value) <= DateTime.Now.Month)
+                    if (Int32.Parse(value) <= DateTime.Now.Month)
                     {
                         _mes = value;
                         NotifyOfPropertyChange(() => Mes);
@@ -126,7 +126,7 @@ namespace Client.Main.Views
                 short a;
                 if (Int16.TryParse(value, out a))
                 {
-                    if (Int16.Parse(value) < DateTime.Now.Year)
+                    if (Int32.Parse(value) < DateTime.Now.Year)
                     {
                         _año = value;
                         NotifyOfPropertyChange(() => Año);
@@ -157,7 +157,7 @@ namespace Client.Main.Views
         {
             try
             {
-                existencias.fecha = new DateTime(Int16.Parse(Año), Int16.Parse(Mes), Int16.Parse(Dia));
+                existencias.fecha = new DateTime(Int32.Parse(Año), Int32.Parse(Mes), Int32.Parse(Dia));
 
             }
             catch (Exception e)

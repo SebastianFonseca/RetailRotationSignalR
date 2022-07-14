@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Caliburn.Micro;
 using Client.Main.Models;
+using Client.Main.Utilities;
 using Client.Main.ViewModels;
 using Microsoft.AspNetCore.SignalR.Client;
 using System;
@@ -21,6 +22,7 @@ namespace Client.Main
             builder.RegisterType<Connect>().SingleInstance();
             builder.RegisterType<MainWindowViewModel>().SingleInstance();
             builder.RegisterType<ClientesModel>().SingleInstance();
+            builder.RegisterType<SharedConfirmClass>().SingleInstance();
 
             return builder.Build();
 

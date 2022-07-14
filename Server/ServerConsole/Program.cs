@@ -10,9 +10,13 @@ using Microsoft.IdentityModel.Tokens;
 using Owin;
 using ServerConsole.Utilities;
 using System;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Markup;
 
 //using Microsoft.AspNetCore.Http;
 //using Microsoft.AspNetCore.SignalR;
@@ -28,7 +32,11 @@ namespace ServerConsole
                 UseStartup<Startup>();
         static void Main(string[] args)
         {
-
+            ///Se establece la cult-info IMPORTANTE pues cuado se hacen operaciones con decimales estos parametros son decisivos
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
+            FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(
+                        XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.Name)));
 
 
 

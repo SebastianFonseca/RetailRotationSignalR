@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using Autofac;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
+
 namespace Client.Main.ViewModels
 {
     public class AddClientVentanaViewModel: Screen

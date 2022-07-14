@@ -1,0 +1,84 @@
+﻿<Window x:Class="Client.Main.Views.POSAutorizarEliminarProductosView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:pwbx="clr-namespace:Client.Main"
+        xmlns:gif="http://wpfanimatedgif.codeplex.com"
+        xmlns:c="clr-namespace:Client.Main.Utilities"
+        mc:Ignorable="d"
+        Title="  " Height="400" Width="247.2" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Background="#87ac47">
+    <Window.Resources>
+        <Style TargetType="TextBlock" >
+            <Setter Property="FontSize" Value="28"/>
+            <Setter Property="FontWeight" Value="DemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="Margin"   Value="0"/>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid x:Name="MainGrid" c:KeyboardFocus.On="{Binding ElementName=User}" ShowGridLines="False" >
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"   />
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"   />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions  >
+            <RowDefinition Height="0.2*"/>
+            <RowDefinition Height="2.3*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="4*"/>
+            <RowDefinition Height="1.5*"/>
+        </Grid.RowDefinitions>
+        
+        <Border Grid.Column="0" Grid.Row="0"  Grid.RowSpan="7" Grid.ColumnSpan="4" Background="#f6d3b4" BorderThickness="1" CornerRadius="20" Margin="7"/>
+
+        <!--Auto-->
+        <TextBlock   Grid.Row="1" Grid.Column="1"  VerticalAlignment="Center"  FontWeight="DemiBold" x:Name="InsesionTb"   TextAlignment="Center" FontSize="25"   Grid.ColumnSpan="2" >AUTORIZACIÓN <LineBreak/> REQUERIDA</TextBlock>
+        <Separator   Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"  VerticalAlignment="Bottom"  BorderBrush="Black"  BorderThickness="0.5"  />
+
+        <!--Fila 2.Usuario-->
+        <TextBlock   Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right"  Margin="0 0 5 0" x:Name="UsuarioTb"    VerticalAlignment="Center" FontSize="16"  FontFamily="Corbel" FontWeight="Normal"   Text="Usuario:" Panel.ZIndex="10"/>
+        <TextBox  Grid.Row="2" Grid.Column="2"  FontSize="16"  HorizontalAlignment="Center"  x:Name="Usuario" BorderThickness="0 0 0 1" MinWidth="100"  Style="{StaticResource GeneralTextBox}" VerticalAlignment="Center" />
+   
+
+        <!--Fila 3.Contraseña-->
+        <TextBlock Grid.Row="3" Grid.Column="1"  HorizontalAlignment="Right" x:Name="ContraseñaTb" VerticalAlignment="Center" FontSize="16" Margin="0 0 5 0"  FontFamily="Corbel" FontWeight="Normal"  Text="Contraseña:"/>
+        
+        <PasswordBox pwbx:PasswordBoxAssistant.BoundPassword="{Binding Contraseña, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True, ValidatesOnDataErrors=True}" 
+                     Grid.Row="3" Grid.Column="2" Background="#F3E0D2" Height="22" HorizontalAlignment="Center"   BorderBrush="Black"  MinWidth="100"   x:Name="Contraseña"  BorderThickness="0 0 0 1"/>
+        <Separator   Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Top"  BorderBrush="Black"  BorderThickness="0.5" />
+
+        
+        <!--DockPanel con la info del producto -->
+        <DockPanel  Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBlock Text="{Binding Path=Nombre}" DockPanel.Dock="Top" />
+            <TextBlock Text="{Binding Path=Valor}" DockPanel.Dock="Top" />
+        </DockPanel>
+               
+        <!--Fila 5.Boton de entrar-->
+        <Button  Grid.Row="6" Grid.Column="1" HorizontalAlignment="Center" x:Name="Entrar"    VerticalAlignment="Top"  FontFamily="Corbel" Content="BORRAR"                           
+            BorderThickness="0"   Height="35"    Grid.ColumnSpan="2" Cursor="Hand" Style="{StaticResource GeneralButton}" Width="120">
+            
+            <Button.IsEnabled>
+                <MultiBinding Converter="{StaticResource Converter }" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                    <Binding ElementName="User" Path="(Validation.HasError)" />
+                    <Binding ElementName="UserPassword" Path="(Validation.HasError)" />
+                </MultiBinding>
+            </Button.IsEnabled>
+        </Button>
+
+
+        <!--WaitingGIF-->
+        <!-- <Image Grid.Column="0"  Grid.Row="1" Grid.RowSpan="4" Grid.ColumnSpan="4"  Visibility="{Binding  Path=StackVisibility}"  Height="80"  Width="150" gif:ImageBehavior.AnimatedSource="D:\RetailRotationSignalR\Clients\Client.Main\Resources\waiting.gif" Margin="0 0 0 0" />-->
+
+
+    </Grid>
+</Window>

@@ -139,7 +139,7 @@ namespace Client.Main.Utilities
                         if (resultado.Result.ToString() == regis[5].Trim())
                         {
                             ///Se actualiza localmente el numero del ultimo registro actualizado.
-                            DbConnection.registroSubidoAlServidor(Int16.Parse(regis[0]));
+                            DbConnection.registroSubidoAlServidor(Int32.Parse(regis[0]));
                         }
                        // return true;
                     }

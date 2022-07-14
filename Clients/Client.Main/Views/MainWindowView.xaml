@@ -7,7 +7,7 @@
         xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:cal="http://www.caliburnproject.org"
         mc:Ignorable="d"
-        Title="" Height="480" Width="800"  MinHeight="480" WindowStartupLocation="CenterScreen" cal:Message.Attach="[Event Closing] = [Action OnClose($eventArgs)]" >
+        Title="" Height="480" Width="800"  MinHeight="480" WindowStartupLocation="CenterScreen" cal:Message.Attach="[Event Closing] = [Action OnClose($eventArgs)];[Event PreviewKeyDown ] = [Action TeclaPresionadaVentana($executionContext)]" >
     <Window.Resources>
         <Style x:Key="MenuButton" TargetType="{x:Type Button}" >
             <Setter Property="HorizontalContentAlignment" Value="Center"/>

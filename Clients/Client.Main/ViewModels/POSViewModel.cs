@@ -8,8 +8,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Configuration;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
@@ -20,9 +22,11 @@ namespace Client.Main.ViewModels
 
     public class POSViewModel : Screen
     {
-        MainWindowViewModel VentanaCliente;
+        MainWindowViewModel Ventana;
         public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
         public ClientesModel cliente = ContainerConfig.scope.Resolve<ClientesModel>();
+        public SharedConfirmClass sharedConfirmClass = ContainerConfig.scope.Resolve<SharedConfirmClass>();
+
         public FacturaModel factura = new FacturaModel();
 
         ///Objeto responsable de la administracion de las ventanas.
@@ -33,14 +37,14 @@ namespace Client.Main.ViewModels
             factura.productos = Productos;
             factura.cliente = cliente;
             factura.responsable = argVentana.usuario;
-            VentanaCliente = argVentana;
+            Ventana = argVentana;
         }
 
         private BindableCollection<ProductoModel> _productos = new BindableCollection<ProductoModel>();
         public BindableCollection<ProductoModel> Productos
         {
             get => _productos;
-            set { _productos = value; NotifyOfPropertyChange(() => Productos); }
+            set { _productos = value; factura.productos = value ; NotifyOfPropertyChange(() => Productos); }
         }
 
         private BindableCollection<ProductoModel> _busquedasProducto = new BindableCollection<ProductoModel>();
@@ -78,21 +82,25 @@ namespace Client.Main.ViewModels
             get => _cantidadVenta;
             set
             {
-                if (decimal.TryParse(value, out decimal valor) | value==null)
-                {
-                    ProductoAgregar.cantidadVenta = valor;
-                    _cantidadVenta = value;
-                    NotifyOfPropertyChange(() => CantidadVenta);
-                    NotifyOfPropertyChange(() => PrecioProductoSeleccioado);
-                    NotifyOfPropertyChange(() => NombreProductoSeleccioado);
+                if (string.IsNullOrEmpty(value))
+                { _cantidadVenta = null; return; } 
+                if (value == ".") { _cantidadVenta = value; return; }
+                if(value[0] == '.') { value = 0 + value; }
 
-                }
+                NumberStyles style;
+                CultureInfo culture;
+                style = NumberStyles.AllowDecimalPoint | NumberStyles.Float ;
+                culture = CultureInfo.CreateSpecificCulture("en-US");
+                if (decimal.TryParse(value,style,culture,out decimal m)) { _cantidadVenta = value; /*MessageBox.Show(m.ToString());*/ }
+
 
             }
         }
-        public string Cajero => VentanaCliente.usuario.firstName + " " + VentanaCliente.usuario.lastName;
-        public string Local => VentanaCliente.usuario.puntoDeVenta.nombre;
-        public string Caja => ConfigurationManager.AppSettings["Caja"];
+
+
+        public string Cajero => Ventana.usuario.firstName + " " + Ventana.usuario.lastName;
+        public string Local => Ventana.usuario.puntoDeVenta.nombre;
+        public string Caja => ConfigurationManager.AppSettings["Caja"].Split(':')[1];
 
         private string _nombreCliente;
         public string NombreCliente
@@ -108,8 +116,8 @@ namespace Client.Main.ViewModels
             }
         }
 
-        private int _puntosCliente;
-        public int PuntosCliente
+        private decimal _puntosCliente;
+        public decimal PuntosCliente
         {
             get => cliente.puntos;
             set
@@ -125,10 +133,11 @@ namespace Client.Main.ViewModels
         {
             get
             {
-                if (ProductoAgregar != null)
+                if (ProductoAgregar != null && CantidadVenta!= null)
                 {
+                    
                     return ProductoAgregar.nombre + $" {ProductoAgregar.precioVenta:$0#,#} {ProductoAgregar.unidadVenta} \n"+
-                    $"{CantidadVenta} valen { decimal.Parse(CantidadVenta) * ProductoAgregar.precioVenta:$0#,#}";  
+                    $"{CantidadVenta} vale(n) { decimal.Multiply(  decimal.Parse(CantidadVenta) , (decimal) ProductoAgregar.precioVenta):$0#,#}";  
                 }
                 else { return null; }
             }
@@ -140,10 +149,11 @@ namespace Client.Main.ViewModels
         {
             get
             {
-                if (ProductoAgregar != null && ProductoAgregar.precioVentaConDescuento != null)
+                if (ProductoAgregar != null && ProductoAgregar.precioVentaConDescuento != null && CantidadVenta != null)
                 {
+                    decimal.TryParse(CantidadVenta, out decimal cantidad);
                     return $" Con Descuento {ProductoAgregar.precioVentaConDescuento:$0#,#} {ProductoAgregar.unidadVenta} \n" +
-                        $"{CantidadVenta} valen {decimal.Parse(CantidadVenta) * ProductoAgregar.precioVentaConDescuento:$0#,#} ";                                           
+                        $"{CantidadVenta} vale(n) { cantidad * ProductoAgregar.precioVentaConDescuento:$0#,#} ";                                           
                 }
                 else { return null; }
             }
@@ -154,9 +164,8 @@ namespace Client.Main.ViewModels
         public decimal? Total
         {
             get => _total;
-            set { _total = value; NotifyOfPropertyChange(() => Total); }
+            set { _total = value; factura.valorTotal = value; NotifyOfPropertyChange(() => Total); }
         }
-
 
         private decimal? _subtotal = 0;
 
@@ -210,50 +219,23 @@ namespace Client.Main.ViewModels
             set { _busquedasVisibiliad = value; NotifyOfPropertyChange(() => BusquedasVisibilidad); }
         }
 
-        public async void EscribiendoBusqueda()
+        public void EscribiendoBusqueda()
         {
             BusquedasProducto.Clear();
             try
-            {
-                if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+            {                   
+                BusquedasProducto = DbConnection.getProductos(caracteres: BuscarTbx);
+                if (BusquedasProducto.Count == 0)
                 {
-
-                    Task<object> re2 = conexion.CallServerMethod("ServidorGetProductos", Arguments: new[] { BuscarTbx });
-                    await re2;
-                    BusquedasProducto = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ProductoModel>>(re2.Result.ToString());
-
-
-                    if (BusquedasProducto.Count == 0)
-                    {
-                        BusquedasVisibilidad = "Hidden";
-                    }
-                    else
-                    {
-                        BusquedasVisibilidad = "Visible";
-                    }
+                    _poductoAgregar = null;
+                    BusquedasVisibilidad = "Hidden";
                 }
                 else
                 {
-
-                    if (MainWindowViewModel.Status == "Trabajando localmente")
-                    {
-                        BusquedasProducto = DbConnection.getProductos(caracteres: BuscarTbx);
-                        if (BusquedasProducto.Count == 0)
-                        {
-                            _poductoAgregar = null;
-                            BusquedasVisibilidad = "Hidden";
-                        }
-                        else
-                        {
-                            BusquedasProducto[0].isSelected = true;
-                            BusquedasVisibilidad = "Visible";
-                            //NotifyOfPropertyChange(() => PrecioProductoSeleccioado);
-                            //NotifyOfPropertyChange(() => NombreProductoSeleccioado);
-                            //NotifyOfPropertyChange(() => ConsultaPrecio);
-                        }
-
-                    }
+                    BusquedasProducto[0].isSelected = true;
+                    BusquedasVisibilidad = "Visible";
                 }
+                                   
             }
             catch (Exception e)
             {
@@ -383,9 +365,42 @@ namespace Client.Main.ViewModels
 
             if (keyArgs != null && keyArgs.Key == Key.F1)
             {
-                window.ShowDialog(new POSLogClienteViewModel(VentanaCliente));
+                window.ShowDialog(new POSLogClienteViewModel(Ventana, cliente));
                 NotifyOfPropertyChange(() => NombreCliente);
                 NotifyOfPropertyChange(() => PuntosCliente);
+                return;
+            }
+
+            if (keyArgs != null && keyArgs.Key == Key.F5)
+            {
+                if (factura.productos.Count == 0) { MessageBox.Show("Ingrese productos."); return; }
+                window.ShowDialog(new POSPagarViewModel(factura));
+                if (sharedConfirmClass.done) 
+                {
+                    factura = new FacturaModel();
+                    factura.responsable = Ventana.usuario;
+                    Productos.Clear();
+                    factura.productos = Productos;
+                    cliente.firstName = "" ;
+                    cliente.lastName = "";
+                    cliente.cedula = "";
+                    cliente.puntos = 0;
+                    ProductoAgregar = new ProductoModel();
+                    BusquedasProducto.Clear();
+                    CantidadVenta = null;
+                    NombreCliente = null;
+                    PuntosCliente = 0;
+                    NombreProductoSeleccioado = null;
+                    PrecioProductoSeleccioado = null;
+                    Total = 0;
+                    Subtotal = 0;
+                    Descuento = 0;
+                    IVA = 0;
+                    BuscarTbx = "";
+                    BusquedasVisibilidad = "Hidden";
+                    //NotifyOfPropertyChange(() => NombreCliente);
+                    //NotifyOfPropertyChange(() => PuntosCliente);
+                }
                 return;
             }
             if (keyArgs != null && keyArgs.Key == Key.Escape)
@@ -396,10 +411,10 @@ namespace Client.Main.ViewModels
 
         }
 
-
         public void EliminarProducto(ProductoModel prod)
         {
-            MessageBox.Show(prod.nombre);
+            window.ShowDialog(new POSAutorizarEliminarProductosViewModel(factura: factura, producto: prod));
+            return;
         }
 
     }

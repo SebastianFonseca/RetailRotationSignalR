@@ -7,6 +7,9 @@ using Client.Main.ViewModels;
 using Client.Main.Views;
 using Autofac;
 using Autofac.Core.Lifetime;
+using System.Threading;
+using System.Globalization;
+using System.Windows.Markup;
 
 namespace Client.Main
 {
@@ -21,6 +24,12 @@ namespace Client.Main
         {            
 
             DisplayRootViewFor<ShellViewModel>();
+
+            ///Se establece la cult-info IMPORTANTE pues cuado se hacen operaciones con decimales estos parametros son decisivos
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
+            FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(
+                        XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.Name)));
 
         }
 

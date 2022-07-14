@@ -9,7 +9,7 @@ namespace Client.Main.Models
     {
 
         public int? numeroCanastillas { get; set; } = null;
-        public int? peso { get; set; } = null;
+        public decimal? peso { get; set; } = null;
 
         /// <summary>
         /// Lista con los pedidos que componen el documento de compras.

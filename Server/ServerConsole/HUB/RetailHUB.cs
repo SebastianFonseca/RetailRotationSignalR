@@ -586,7 +586,7 @@ namespace ServerConsole
         /// </summary>
         /// <param name="codigoProducto"></param>
         /// <returns></returns>
-        public int? ServidorgetTotalEnvioProduco(string codigoProducto) 
+        public decimal? ServidorgetTotalEnvioProduco(string codigoProducto) 
         {
             return DbConnection.getTotalEnvioProduco(codigoProducto);
         }
@@ -755,6 +755,22 @@ namespace ServerConsole
         {
             return DbConnection.ActualizarCliente(Cliente);
         }
+
+        #endregion
+
+        #region Facturas
+
+        /// <summary>
+        /// Registra en la base de datos la informacion relacionada con la nueva factura
+        /// </summary>
+        /// <param name="factura">Datos de la factura que se va a registrar</param>
+        /// <returns></returns>
+        public string ServidorNuevaFacturaBool(FacturaModel factura) 
+        {
+            return DbConnection.NuevaFacturaBool(factura);
+        }
+
+
 
         #endregion
 

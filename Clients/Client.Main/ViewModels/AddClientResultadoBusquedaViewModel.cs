@@ -83,7 +83,7 @@ namespace Client.Main.ViewModels
 
             }
         }
-        public int Puntos
+        public decimal Puntos
         {
             get { return resultadoCliente.puntos; }
             set

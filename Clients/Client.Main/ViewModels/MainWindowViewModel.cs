@@ -11,18 +11,26 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Windows;
+using System.Windows.Input;
 
 namespace Client.Main.ViewModels
 {
     public class MainWindowViewModel : Conductor<object>
     {
         Connect conexion = ContainerConfig.scope.Resolve<Connect>();
+        private readonly IWindowManager window = new WindowManager();
+        public EmpleadoModel usuario = new EmpleadoModel();
 
-        public async void OnClose(CancelEventArgs e)
+        public MainWindowViewModel(EmpleadoModel usuario)
         {
-            await conexion.CallServerMethod("ClienteDesconectado", Arguments: new[] { Usuario });
-        }
 
+            this.usuario = usuario;
+            //MessageBox.Show(_cargo);
+            ActivateItem(new MainMenuViewModel(this));
+            base.OnActivate();
+            DisplayName = " ";
+
+        }
 
         public string Usuario
         {
@@ -46,16 +54,6 @@ namespace Client.Main.ViewModels
             }
         }
 
-        public static event PropertyChangedEventHandler StaticPropertyChanged;
-
-        private static void NotifyPropertyChange<T>(Expression<Func<T>> property)
-        {
-            string propertyName = (((MemberExpression)property.Body).Member as PropertyInfo).Name;
-            StaticPropertyChanged?.Invoke(null, new PropertyChangedEventArgs(propertyName));
-        }
-
-        //private static string _cargo;
-
         public  string Cargo
         {
             get { return usuario.cargo ; }
@@ -66,25 +64,40 @@ namespace Client.Main.ViewModels
             }
             
         }
-        public EmpleadoModel usuario = new EmpleadoModel();
-
-        public MainWindowViewModel(EmpleadoModel usuario)
-        {
-
-            this.usuario = usuario;
-            //MessageBox.Show(_cargo);
-            ActivateItem(new MainMenuViewModel(this));
-            base.OnActivate();
-            DisplayName = " ";
-           
-        }
 
 
 
         public void ButtonMainMenu()
-        {
+        {            
             ActivateItem(new MainMenuViewModel(this));            
         }
+
+
+        public static event PropertyChangedEventHandler StaticPropertyChanged;
+
+        private static void NotifyPropertyChange<T>(Expression<Func<T>> property)
+        {
+            string propertyName = (((MemberExpression)property.Body).Member as PropertyInfo).Name;
+            StaticPropertyChanged?.Invoke(null, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void TeclaPresionadaVentana(ActionExecutionContext context)
+        {
+
+            var keyArgs = context.EventArgs as KeyEventArgs;
+
+            if (keyArgs != null && keyArgs.Key == Key.F1)
+            {
+                window.ShowWindow(new POSViewModel(this));
+                return;
+            }
+        }
+
+        public async void OnClose(CancelEventArgs e)
+        {
+            await conexion.CallServerMethod("ClienteDesconectado", Arguments: new[] { Usuario });
+        }
+
 
     }
 }

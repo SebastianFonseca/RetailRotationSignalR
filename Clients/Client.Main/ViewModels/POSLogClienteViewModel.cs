@@ -14,11 +14,12 @@ namespace Client.Main.ViewModels
         ///Objeto responsable de la administracion de las ventanas.
         private readonly IWindowManager window = new WindowManager();
         public MainWindowViewModel VentanaCliente;
-        public ClientesModel cliente = ContainerConfig.scope.Resolve<ClientesModel>();
+        public ClientesModel cliente;
 
 
-        public POSLogClienteViewModel(MainWindowViewModel argVentana)
+        public POSLogClienteViewModel(MainWindowViewModel argVentana, ClientesModel cliente)
         {
+            this.cliente = cliente;
             VentanaCliente = argVentana;
         }
 

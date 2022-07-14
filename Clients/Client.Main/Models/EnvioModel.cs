@@ -11,7 +11,7 @@ namespace Client.Main.Models
         public string nombreConductor { get; set; }
         public string placasCarro { get; set; }
         public int? numeroCanastillas { get; set; } = null;
-        public int? peso { get; set; } = null;
+        public decimal? peso { get; set; } = null;
 
         public static implicit operator EnvioModel(PedidoModel v)
         {

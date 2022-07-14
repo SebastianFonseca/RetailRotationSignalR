@@ -56,8 +56,8 @@
         </Button>
 
 
-        <!--WaitingGIF--><!--        
-         <Image Grid.Column="0"  Grid.Row="1" Grid.RowSpan="4" Grid.ColumnSpan="4"  Visibility="{Binding  Path=StackVisibility}"  Height="80"  Width="150" gif:ImageBehavior.AnimatedSource="D:\RetailRotationSignalR\Clients\Client.Main\Resources\waiting.gif" Margin="0 0 0 0" />-->
+        <!--WaitingGIF-->
+   <!-- <Image Grid.Column="0"  Grid.Row="1" Grid.RowSpan="4" Grid.ColumnSpan="4"  Visibility="{Binding  Path=StackVisibility}"  Height="80"  Width="150" gif:ImageBehavior.AnimatedSource="D:\RetailRotationSignalR\Clients\Client.Main\Resources\waiting.gif" Margin="0 0 0 0" />-->
 
         <!--Grid background-->
         <Grid.Background>

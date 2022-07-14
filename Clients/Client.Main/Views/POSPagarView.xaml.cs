@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -14,22 +13,13 @@ using System.Windows.Shapes;
 namespace Client.Main.Views
 {
     /// <summary>
-    /// Interaction logic for POSView.xaml
+    /// Interaction logic for POSPagarView.xaml
     /// </summary>
-    public partial class POSView : Window
+    public partial class POSPagarView : Window
     {
-        public POSView()
+        public POSPagarView()
         {
             InitializeComponent();
         }
-
-        private void LetterValidationTextBox(object sender, TextCompositionEventArgs e)
-        {
-            Regex regex = new Regex("[^a-zA-Z]+$");
-            e.Handled = regex.IsMatch(e.Text);
-        }
-
-
-
     }
 }

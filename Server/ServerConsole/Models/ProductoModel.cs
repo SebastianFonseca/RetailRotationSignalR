@@ -16,17 +16,17 @@ namespace ServerConsole.Models
 
         public decimal? iva { get; set; }
         public string codigoBarras { get; set; }
-        public int? existencia { get; set; }
+        public decimal? existencia { get; set; }
 
-        public int? pedido { get; set; }
+        public decimal? pedido { get; set; }
 
-        public int? sumaPedido { get; set; }
+        public decimal? sumaPedido { get; set; }
 
-        public int? compra { get; set; }
+        public decimal? compra { get; set; }
 
-        public int? compraPorLocal { get; set; }
-        public int? recibido { get; set; } = null;
-        public int? cambioInventario { get; set; }
+        public decimal? compraPorLocal { get; set; }
+        public decimal? recibido { get; set; } = null;
+        public decimal? cambioInventario { get; set; }
         public ProveedorModel proveedor { get; set; } = new ProveedorModel();
         public string estado { get; set; }
         public DateTime? fechaDePago { get; set; }
@@ -36,10 +36,12 @@ namespace ServerConsole.Models
 
         public string codigoCompra { get; set; }
         public decimal? precioVenta { get; set; }
-        public decimal? precioCompra { get; set; }
-        public int? porcentajePromocion { get; set; }
 
-        private decimal? _cantidadVenta;
+        public decimal? precioVentaConDescuento { get; set; }
+        public decimal? precioCompra { get; set; }
+        public decimal? porcentajePromocion { get; set; }
+
+        private decimal? _cantidadVenta = 0;
         public decimal? cantidadVenta
         {
             get { return _cantidadVenta; }

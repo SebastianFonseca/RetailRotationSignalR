@@ -23,6 +23,7 @@ namespace Client.Main.ViewModels
             VentanaPrincipal = argVentana;
             Producto = prod;
             this.Promocion =  Producto.porcentajePromocion.ToString();
+            if (Producto.porcentajePromocion == null) { Activar = false;  } else { Activar = true; }
             try
             {
                 getUltimoRegistroCompra(Producto.codigoProducto);
@@ -46,9 +47,10 @@ namespace Client.Main.ViewModels
                     await re;
 
                     BindableCollection<ProductoModel> ultimoRegistroProducto = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ProductoModel>>(re.Result.ToString());
-                    productoUltimoRegistro = ultimoRegistroProducto[0];
-                    UltimaCompra = $"{ultimoRegistroProducto[0].compra} {ultimoRegistroProducto[0].unidadCompra} × {ultimoRegistroProducto[0].precioCompra:$0#,#} = {ultimoRegistroProducto[0].compra * ultimoRegistroProducto[0].precioCompra:$0#,#}";
-
+                    if(ultimoRegistroProducto.Count>0)  productoUltimoRegistro = ultimoRegistroProducto[0];
+                    if (productoUltimoRegistro.compra != null & productoUltimoRegistro.precioCompra != null)
+                        UltimaCompra = $"{productoUltimoRegistro.compra} {productoUltimoRegistro.unidadCompra} × {productoUltimoRegistro.precioCompra:$0#,#} = {productoUltimoRegistro.compra * productoUltimoRegistro.precioCompra:$0#,#}";
+                    else UltimaCompra = "Sin informacion de la última compra";
                 }
                 if (MainWindowViewModel.Status == "Trabajando localmente")
                 {
@@ -71,10 +73,17 @@ namespace Client.Main.ViewModels
                     Task<object> re = conexion.CallServerMethod("ServidorgetTotalEnvioProduco", Arguments: new object[] { Producto.codigoProducto });
                     await re;
                     decimal.TryParse(re.Result.ToString(), out decimal total);
-                    EnvioTotal = $"Envio total: {re.Result.ToString()} {productoUltimoRegistro.unidadVenta}. Precio de compra: {(productoUltimoRegistro.compra * productoUltimoRegistro.precioCompra) / total:$0#,#}";
-                    decimal margen  = 1.3m ;
-                    NuevoPrecio = Decimal.Multiply ((decimal)(productoUltimoRegistro.compra * productoUltimoRegistro.precioCompra) / total, margen);
-
+                    if (total != 0 & productoUltimoRegistro.compra != null & productoUltimoRegistro.precioCompra != null)
+                    {
+                        EnvioTotal = $"Envio total: {re.Result.ToString()} {productoUltimoRegistro.unidadVenta}. Precio de compra: {(productoUltimoRegistro.compra * productoUltimoRegistro.precioCompra) / total:$0#,#}";
+                        decimal margen = 1.3m;
+                        NuevoPrecio = Decimal.Multiply((decimal)(productoUltimoRegistro.compra * productoUltimoRegistro.precioCompra) / total, margen);
+                    }
+                    else
+                    {
+                        EnvioTotal = "";
+                        NuevoPrecio = 0;
+                    }
                 }
                 if (MainWindowViewModel.Status == "Trabajando localmente")
                 {
@@ -156,7 +165,7 @@ namespace Client.Main.ViewModels
             get { return _activar; }
             set
             {
-                if (value) Producto.porcentajePromocion = Int32.Parse(Promocion); 
+                if (value) Producto.porcentajePromocion = decimal.Parse(Promocion); 
                 _activar = value;
                 NotifyOfPropertyChange(() => Activar);
 
@@ -194,7 +203,10 @@ namespace Client.Main.ViewModels
 
         public async void Guardar()
         {
-            Producto.precioVenta = NuevoPrecio;
+            if (NuevoPrecio != null && NuevoPrecio != 0)
+            { Producto.precioVenta = NuevoPrecio; }
+            else
+            { MessageBox.Show("Ingrese un precio."); return; }
             try
             {
                 if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))

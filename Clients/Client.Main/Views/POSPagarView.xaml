@@ -1,0 +1,119 @@
+﻿<Window x:Class="Client.Main.Views.POSPagarView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Client.Main.Views"
+        xmlns:fa="http://schemas.fontawesome.io/icons/"
+        xmlns:cal="http://www.caliburnproject.org"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:c="clr-namespace:Client.Main.Utilities"
+        mc:Ignorable="d" 
+        Title="  " Height="450" Width="800"  ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Background="#87ac47"
+        cal:Message.Attach="[Event PreviewKeyDown] = [Action TeclaPresionadaVentana($executionContext)]" >
+    <Window.Resources>
+        <Style TargetType="TextBlock" x:Key="TextoGrande">
+            <Setter Property="FontSize" Value="40"/>
+            <Setter Property="FontWeight" Value="DemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="TextAlignment" Value="Right"/>
+            <Setter Property="Margin"   Value="0 0 10 0"/>
+        </Style>
+
+        <Style TargetType="TextBox" >
+            <Setter Property="FontSize" Value="40"/>
+            <Setter Property="FontWeight" Value="DemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="TextAlignment" Value="Right"/>
+            <Setter Property="Margin"   Value="0 0 0 0"/>
+        </Style>
+
+        <Style TargetType="TextBlock" x:Key="TextoPequeño">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="DemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="Margin"   Value="0"/>
+        </Style>
+
+
+        <Style TargetType="RadioButton">
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="DemiBold"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Margin"   Value="0"/>
+            <Setter Property="IsTabStop" Value="False"/>
+        </Style>
+
+    </Window.Resources>
+    <!--Linea verde en toda la ventana-->
+
+
+<!-- Grid Principal -->
+
+    <Grid ShowGridLines="False" Margin="10" c:KeyboardFocus.On="{Binding ElementName=ValorPagado}" >
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.05*"/>
+            <ColumnDefinition Width="0.2*"/>
+            <ColumnDefinition Width="0.45*"/>
+            <ColumnDefinition Width="0.05*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions  >
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition  Height="2*"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Column="0" Grid.Row="0" Grid.RowSpan="6" Grid.ColumnSpan="4" Background="#F3E0C2" BorderBrush="Gray" BorderThickness="1" CornerRadius="20" Margin="-5" />
+
+
+        <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Grid.ColumnSpan="2">
+            <TextBlock Style="{StaticResource TextoGrande}" HorizontalAlignment="Center"> PAGAR</TextBlock>
+            <Separator VerticalAlignment="Bottom"  BorderBrush="Gray"  BorderThickness="1"   />
+        </Grid>
+        
+        <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource TextoGrande}"> Total:</TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="2" x:Name="Total" Style="{StaticResource TextoGrande}" HorizontalAlignment="Left" />
+
+        <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource TextoGrande}" Margin="0 -11 10 0">Cambio:</TextBlock>
+        <TextBlock  Grid.Row="2" Grid.Column="2" x:Name="Cambio" Text="{Binding Cambio,StringFormat={}${0:#,#}, UpdateSourceTrigger=PropertyChanged}"  HorizontalAlignment="Left" Height="50" Style="{StaticResource TextoGrande}"/>
+
+        <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource TextoGrande}">Pago:</TextBlock>
+        <TextBox c:NumberOnlyBehaviour.Mode="WholeNumber" Grid.Row="3" Grid.Column="2" Style="{StaticResource GeneralTextBox}" x:Name="ValorPagado" FontWeight="DemiBold"  FontSize="38" Text="{Binding Path= ValorPagado,  StringFormat={}${0:#,#}, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Height="50">
+            <i:Interaction.Behaviors>
+                <c:TabOnEnterBehavior />
+                <c:SelectAllFocusBehavior/>
+            </i:Interaction.Behaviors>
+        </TextBox>
+
+
+        <DockPanel Grid.Row="4" Grid.Column="2" VerticalAlignment="Center" >
+            <RadioButton Margin="1" x:Name="Efectivo" DockPanel.Dock="Top" >(E) Efectivo </RadioButton>
+            <RadioButton Margin="1" x:Name="Tarjeta"  DockPanel.Dock="Top">(T) Tarjeta </RadioButton>
+            <RadioButton Margin="1" x:Name="Cheque"  >
+                <RadioButton.Content>
+                    (C) Cheque 
+                </RadioButton.Content>
+            </RadioButton>
+        </DockPanel>
+
+
+        <Button Grid.Row="5" Grid.Column="1"  Grid.ColumnSpan="2" Style="{StaticResource GeneralButton}" x:Name="Pagar">PAGAR</Button>
+
+
+    </Grid>
+     
+
+</Window>
+
+
+
+

@@ -51,7 +51,7 @@ namespace Client.Main.ViewModels
                 short a;
                 if (Int16.TryParse(value, out a))
                 {
-                    if (Int16.Parse(value) < DateTime.Now.Day)
+                    if (Int32.Parse(value) < DateTime.Now.Day)
                     {
                         _dia = value;
                         NotifyOfPropertyChange(() => Dia);
@@ -72,7 +72,7 @@ namespace Client.Main.ViewModels
                 short a;
                 if (Int16.TryParse(value, out a))
                 {
-                    if (Int16.Parse(value) <= DateTime.Now.Month)
+                    if (Int32.Parse(value) <= DateTime.Now.Month)
                     {
                         _mes = value;
                         NotifyOfPropertyChange(() => Mes);
@@ -93,7 +93,7 @@ namespace Client.Main.ViewModels
                 short a;
                 if (Int16.TryParse(value, out a))
                 {
-                    if (Int16.Parse(value) < DateTime.Now.Year)
+                    if (Int32.Parse(value) < DateTime.Now.Year)
                     {
                         _año = value;
                         NotifyOfPropertyChange(() => Año);

@@ -1484,7 +1484,7 @@ namespace Client.Main.Utilities
                                 codigoProducto = reader["codigoproducto"].ToString(),
                                 nombre = reader["nombre"].ToString(),
                                 unidadVenta = reader["unidadventa"].ToString(),
-                                existencia = Int32.Parse(reader["cantidad"].ToString())
+                                existencia = decimal.Parse(reader["cantidad"].ToString())
                             };
 
                             productos.Add(producto);
@@ -1803,8 +1803,8 @@ namespace Client.Main.Utilities
                                 unidadVenta = reader["unidadventa"].ToString(),
                                 unidadCompra = reader["unidadcompra"].ToString(),
                                 factorConversion = decimal.Parse(reader["factorconversion"].ToString()),
-                                existencia = Int32.Parse(reader["ExistenciaCantidad"].ToString()),
-                                pedido = Int32.Parse(reader["cantidad"].ToString()),
+                                existencia = decimal.Parse(reader["ExistenciaCantidad"].ToString()),
+                                pedido = decimal.Parse(reader["cantidad"].ToString()),
 
                             };
                             //Int32.TryParse(reader["CantidadEnviada"].ToString(), out int a);
@@ -2198,7 +2198,7 @@ namespace Client.Main.Utilities
                             comp.fecha = DateTime.Parse(reader["FechaCompra"].ToString());
                             Int32.TryParse(reader["NumeroCanastillas"].ToString(), out int i);
                             comp.numeroCanastillas = i;
-                            Int32.TryParse(reader["peso"].ToString(), out int a);
+                            decimal.TryParse(reader["peso"].ToString(), out decimal a);
                             comp.codPedidos = getPedidosCompra(comp.codigo);
                             comp.peso = a;
 
@@ -2252,7 +2252,7 @@ namespace Client.Main.Utilities
                             comp.fecha = DateTime.Parse(reader["FechaCompra"].ToString());
                             Int32.TryParse(reader["NumeroCanastillas"].ToString(), out int i);
                             comp.numeroCanastillas = i;
-                            Int32.TryParse(reader["peso"].ToString(), out int a);
+                            decimal.TryParse(reader["peso"].ToString(), out decimal a);
                             comp.peso = a;
                             comp.sumaPedidos = getProductoCompra(Caracteres);
                             comp.codPedidos = getPedidosCompra(Caracteres);
@@ -2296,10 +2296,10 @@ namespace Client.Main.Utilities
                                 codigoProducto = reader["codigoproducto"].ToString(),
                                 nombre = reader["nombre"].ToString(),
                                 unidadCompra = reader["unidadcompra"].ToString(),
-                                sumaPedido = Int32.Parse(reader["pedido"].ToString())
+                                sumaPedido = decimal.Parse(reader["pedido"].ToString())
                             };
 
-                            if (Int32.TryParse(reader["CantidadComprada"].ToString(), out int a))
+                            if (decimal.TryParse(reader["CantidadComprada"].ToString(), out decimal a))
                             {
                                 producto.compra = a;
                             }
@@ -2392,7 +2392,7 @@ namespace Client.Main.Utilities
 
                             ComprasModel compra = new ComprasModel { codigo = reader["CodigoCompra"].ToString() };
                             ProductoModel producto = new ProductoModel { codigoProducto = reader["CodigoProducto"].ToString() };
-                            if (Int32.TryParse(reader["CantidadComprada"].ToString(), out int a)) { producto.compra = a; }
+                            if (decimal.TryParse(reader["CantidadComprada"].ToString(), out decimal a)) { producto.compra = a; }
                             else { producto.compra = null; }
                             if (decimal.TryParse(reader["PrecioCompra"].ToString(), out decimal b)) { producto.precioCompra = b; }
                             else { producto.precioCompra = null; }
@@ -2450,7 +2450,7 @@ namespace Client.Main.Utilities
                             }
 
                             producto.soportePago = reader["Soporte"].ToString();
-                            if (Int32.TryParse(reader["CantidadComprada"].ToString(), out int a)) { producto.compra = a; }
+                            if (decimal.TryParse(reader["CantidadComprada"].ToString(), out decimal a)) { producto.compra = a; }
                             else { producto.compra = null; }
                             if (decimal.TryParse(reader["PrecioCompra"].ToString(), out decimal b)) { producto.precioCompra = b; }
                             else { producto.precioCompra = null; }
@@ -2652,10 +2652,10 @@ namespace Client.Main.Utilities
                                 nombre = reader["nombre"].ToString(),
                                 unidadVenta = reader["unidadventa"].ToString().Substring(0, 3),
                                 unidadCompra = reader["unidadcompra"].ToString().Substring(0, 3),
-                                pedido = Int32.Parse(reader["Cantidad"].ToString()),
+                                pedido = decimal.Parse(reader["Cantidad"].ToString()),
 
                             };
-                            Int32.TryParse(reader["EnvioCantidad"].ToString(), out int a);
+                            decimal.TryParse(reader["EnvioCantidad"].ToString(), out decimal a);
                             producto.compraPorLocal = a;
                             productos.Add(producto);
                         }
@@ -2958,7 +2958,7 @@ namespace Client.Main.Utilities
                     cmd.Parameters.AddWithValue("@empleado", Statics.PrimeraAMayuscula(recibido.responsable.cedula));
                     cmd.Parameters.AddWithValue("@fecha", recibido.fechaRecibido.Date);
                     cmd.Parameters.AddWithValue("@conductor", Statics.PrimeraAMayuscula(recibido.nombreConductor));
-                    cmd.Parameters.AddWithValue("@peso", Statics.PrimeraAMayuscula(recibido.peso.ToString()));
+                    cmd.Parameters.AddWithValue("@peso", string.IsNullOrEmpty(recibido.peso.ToString()) ? (object)DBNull.Value : recibido.peso);
                     cmd.Parameters.AddWithValue("@placa", Statics.PrimeraAMayuscula(recibido.placas.ToString()));
                     conn.Open();
                     cmd.ExecuteNonQuery();
@@ -3019,7 +3019,7 @@ namespace Client.Main.Utilities
                     cmd.Parameters.AddWithValue("@empleado", Statics.PrimeraAMayuscula(recibido.responsable.cedula));
                     cmd.Parameters.AddWithValue("@fecha", recibido.fechaRecibido.Date);
                     cmd.Parameters.AddWithValue("@conductor", Statics.PrimeraAMayuscula(recibido.nombreConductor));
-                    cmd.Parameters.AddWithValue("@peso", Statics.PrimeraAMayuscula(recibido.peso.ToString()));
+                    cmd.Parameters.AddWithValue("@peso", string.IsNullOrEmpty(recibido.peso.ToString()) ? (object)DBNull.Value : recibido.peso);
                     cmd.Parameters.AddWithValue("@placa", Statics.PrimeraAMayuscula(recibido.placas.ToString()));
                     conn.Open();
                     cmd.ExecuteNonQuery();
@@ -3082,7 +3082,8 @@ namespace Client.Main.Utilities
                             InventarioModel inv = new InventarioModel()
                             {
                                 codigoDelInventarioDelLocal = getIdInventario(recibido.codigo.Split(':')[0].Substring(14)),
-                                tipo = "Nuevo envio",
+                                tipo = $"Nuevo recibido",
+                                recibido = recibido.codigo,
                                 codigoProducto = producto.codigoProducto,
                                 aumentoDisminucion = producto.recibido
                             };
@@ -3102,7 +3103,7 @@ namespace Client.Main.Utilities
                 }
                 else
                 {
-                    return "Server " + e.Message;
+                    return "Cliente " + e.Message;
                 }
             }
         }
@@ -3238,9 +3239,9 @@ namespace Client.Main.Utilities
                                 unidadVenta = reader["unidadventa"].ToString().Substring(0, 3),
                                 unidadCompra = reader["unidadcompra"].ToString().Substring(0, 3)
                             };
-                            Int32.TryParse(reader["Cantidad"].ToString(), out int b);
+                            decimal.TryParse(reader["Cantidad"].ToString(), out decimal b);
                             producto.compraPorLocal = b;
-                            Int32.TryParse(reader["recibidoCantidad"].ToString(), out int a);
+                            decimal.TryParse(reader["recibidoCantidad"].ToString(), out decimal a);
                             producto.recibido = a;
                             productos.Add(producto);
                         }
@@ -3380,7 +3381,8 @@ namespace Client.Main.Utilities
                             InventarioModel inv = new InventarioModel()
                             {
                                 codigoDelInventarioDelLocal = getIdInventario(recibido.codigo.Split(':')[0].Substring(14)),
-                                tipo = "Cambio envio",
+                                tipo = $"Cambio recibido",
+                                recibido = recibido.codigo,
                                 codigoProducto = productoModel.codigoProducto,
                                 aumentoDisminucion = productoModel.recibido
                             };
@@ -3485,11 +3487,12 @@ namespace Client.Main.Utilities
                         {
                             InventarioModel inventario = new InventarioModel()
                             {
-
                                 codigoDelInventarioDelLocal = reader["CodigoInventario"].ToString(),
                                 codigoProducto = reader["CodigoProducto"].ToString(),
                                 tipo = reader["Tipo"].ToString(),                                                                                          
-                                fecha = DateTime.Parse(reader["Fecha"].ToString())
+                                fecha = DateTime.Parse(reader["Fecha"].ToString()),
+                                factura = reader["Factura"].ToString(),
+                                recibido = reader["Recibido"].ToString()
                             };
                             Int32.TryParse(reader["Id"].ToString(), out int regis);
                             inventario.idRegistroLocal = regis;
@@ -3546,7 +3549,7 @@ namespace Client.Main.Utilities
                     {
                         if (reader.HasRows)
                         {
-                            MessageBox.Show("No se insero cambio inventario repetido");
+                            //MessageBox.Show("No se inserto cambio inventario repetido");
                             return true; }
                     }
                     conn.Close();
@@ -3563,16 +3566,19 @@ namespace Client.Main.Utilities
                         if (reader1.FieldCount > 1) { MessageBox.Show("Error en el iventario, se repiten productos en el inventario de un solo local"); return false; }
 
                         reader1.Read();
-                        if (Int32.TryParse(reader1["Cantidad"].ToString(), out int valor))
+                        if (decimal.TryParse(reader1["Cantidad"].ToString(), out decimal valor))
                             cantidad = cantidad + valor;
                     }
                     conn.Close();
 
                     string Id;
-                    string cadena0 = $"insert into HistorialIventario(CodigoInventario,CodigoProducto,Tipo,AumentoDisminucion,Total,CedulaEmpleado,Fecha,IdRegistroServidor) OUTPUT INSERTED.Id values('{inventario.codigoDelInventarioDelLocal}','{inventario.codigoProducto}','{inventario.tipo}',@aumentodisminucion, @cantidad ,'{ inventario.responsable.cedula}', '{DateTime.Now.ToString("yyyy-MM-dd HH:mm")}',{inventario.idRegistroServidor});";
+                    string cadena0 = $"insert into HistorialIventario(CodigoInventario,CodigoProducto,Tipo,AumentoDisminucion,Total,CedulaEmpleado,Fecha,IdRegistroServidor,Factura,Recibido) OUTPUT INSERTED.Id values('{inventario.codigoDelInventarioDelLocal}','{inventario.codigoProducto}','{inventario.tipo}',@aumentodisminucion, @cantidad ,'{ inventario.responsable.cedula}', '{DateTime.Now.ToString("yyyy-MM-dd HH:mm")}',{inventario.idRegistroServidor},@factura,@recibido);";
                     SqlCommand cmd0 = new SqlCommand(cadena0, conn);
                     cmd0.Parameters.AddWithValue("@aumentodisminucion", inventario.aumentoDisminucion);
                     cmd0.Parameters.AddWithValue("@cantidad", cantidad);
+                    cmd0.Parameters.AddWithValue("@factura", string.IsNullOrEmpty(inventario.factura) ? (object)DBNull.Value : inventario.factura);
+                    cmd0.Parameters.AddWithValue("@recibido", string.IsNullOrEmpty(inventario.recibido) ? (object)DBNull.Value : inventario.recibido);
+
                     conn.Open();
                     using (SqlDataReader reader0 = cmd0.ExecuteReader())
                     {
@@ -3591,7 +3597,7 @@ namespace Client.Main.Utilities
 
                     ///Evitar que se registre en el registro de cambios locales la variacion en el inventario a fin de evitar que al conectarce al servidor se genere un bucle 
                     if(inventario.idRegistroServidor == 0 | inventario.idRegistroServidor == null)
-                    registrarCambioLocal(NombreMetodoLocal: "getCambioInventario", PK: $"{Id}", NombreMetodoServidor: "ServidorNuevoRegistroCambioEnInventario", RespuestaExitosaServidor: "true", Tipo: "Insert");
+                        registrarCambioLocal(NombreMetodoLocal: "getCambioInventario", PK: $"{Id}", NombreMetodoServidor: "ServidorNuevoRegistroCambioEnInventario", RespuestaExitosaServidor: "true", Tipo: "Insert");
 
                     return true;
 
@@ -3941,8 +3947,213 @@ namespace Client.Main.Utilities
         }
 
 
-   
+
         #endregion
+
+        #region Facturas
+        /// <summary>
+        /// Registra en la base de datos la informacion relacionada con la nueva factura
+        /// </summary>
+        /// <param name="factura">Datos de la factura que se va a registrar</param>
+        /// <returns></returns>
+        public static bool NuevaFacturaBool(FacturaModel factura)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"INSERT INTO FacturasVenta (CodigoFactura,CedulaCliente,CedulaEmpleado,CodigoPuntoPago,Fecha,ValorTotal) VALUES (@codigoFactura,@cliente,@empleado,@puntoPago,@fecha,@total);";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codigoFactura", factura.codigo);
+                    cmd.Parameters.AddWithValue("@cliente", string.IsNullOrEmpty(factura.cliente.cedula) ? (object) DBNull.Value : factura.cliente.cedula);
+                    cmd.Parameters.AddWithValue("@empleado", factura.responsable.cedula);
+                    cmd.Parameters.AddWithValue("@puntoPago", factura.puntoDePago);
+                    cmd.Parameters.AddWithValue("@fecha", factura.fecha);
+                    cmd.Parameters.AddWithValue("@total", factura.valorTotal);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    string response = InsertarFacturaProductos(factura:factura);
+                    if (response == "Y")
+                    {
+                        conn.Close();
+                        registrarCambioLocal(Tipo: "Insert", NombreMetodoLocal: "getFacturaConProductos", PK: $"{factura.codigo}", NombreMetodoServidor: "ServidorNuevaFacturaBool", RespuestaExitosaServidor: "true");
+                        return true;
+                    }
+                    else { return false; }
+                }
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
+                {
+                    MessageBox.Show("Error: Ya se ha registrado este id de factura. Informe a un administrador.");
+                    return false;
+                }
+                else
+                {
+                    MessageBox.Show(e.Message);
+
+                    return false;
+                }
+
+            }
+        }
+        /// <summary>
+        /// Inserta en la base de datos los datos de cada uno de los productos listados en la factura
+        /// </summary>
+        /// <param name="factura"></param>
+        /// <returns></returns>
+        public static string InsertarFacturaProductos(FacturaModel factura)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    foreach (ProductoModel producto in factura.productos)
+                    {
+                        string cadena = $"insert into FacturaVentaProducto(codigoFactura,CodigoProducto,Cantidad) values (@codigoFactura,@codigoProducto,@cantidad);";
+                        SqlCommand cmd = new SqlCommand(cadena, conn);
+                        cmd.Parameters.AddWithValue("@codigoFactura", factura.codigo);
+                        cmd.Parameters.AddWithValue("@codigoProducto", producto.codigoProducto);
+                        cmd.Parameters.AddWithValue("@cantidad", producto.cantidadVenta);
+                        conn.Open();
+                        cmd.ExecuteNonQuery();
+                        conn.Close();
+                        InventarioModel inv = new InventarioModel()
+                        {
+                            codigoDelInventarioDelLocal = getIdInventario(factura.puntoVenta.codigo),
+                            tipo = $"Factura Venta",
+                            factura = factura.codigo,
+                            codigoProducto = producto.codigoProducto,
+                            ///Es negativo pues disminuye el valor del inventario del producto
+                            aumentoDisminucion = -(producto.cantidadVenta)
+                        };
+                        inv.responsable.cedula = factura.responsable.cedula;
+                        NuevoRegistroCambioEnInventario(inv);
+                        
+                    }
+                    conn.Close();
+                    return "Y";
+                }
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
+                {
+                    return "Ya registrado.";
+                }
+                else
+                {
+                    MessageBox.Show(e.Message);
+
+                    return "Cliente " + e.Message;
+                }
+            }
+        }
+        /// <summary>
+        /// Obtiene los datos de la factura cuyo codigo es dado com parametro
+        /// </summary>
+        /// <param name="codigoFactura"></param>
+        /// <returns></returns>
+        public static BindableCollection<FacturaModel> getFacturaConProductos(string codigoFactura) 
+        {
+            try
+            {
+                
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<FacturaModel> cFactura = new BindableCollection<FacturaModel>();
+                    string cadena = $" select Distinct * from FacturasVenta where CodigoFactura = @codigoFactura order by Fecha;";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codigoFactura", codigoFactura);
+                    conn.Open();
+                    bool soloUnValor = true;
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (!soloUnValor) { MessageBox.Show("Error: Código de factura repetido. Contacte a un administrador."); return null; }
+                        cFactura.Clear();
+                        while (reader.Read())
+                        {
+                            soloUnValor = false;
+                            FacturaModel factura = new FacturaModel
+                            {
+                                codigo = reader["CodigoFactura"].ToString(),
+                            };
+                            factura.cliente.cedula = reader["CedulaCliente"].ToString();
+                            factura.responsable.cedula = reader["CedulaEmpleado"].ToString();
+                            factura.puntoDePago = reader["CodigoPuntoPago"].ToString();
+                            ///El inventario se actualiza en el servidor en el local con este codigo de local, 
+                            ///que corresponde al codigo del local donde esta fisicamente la maquina donde se registro el cambio en el inventario
+                            factura.puntoVenta.codigo = factura.puntoDePago.Split(':')[0];
+                            factura.fecha = DateTime.Parse(reader["Fecha"].ToString());
+                            decimal.TryParse(reader["ValorTotal"].ToString(), out decimal total);
+                            factura.valorTotal = total;
+                            factura.productos = getProductosFactura(factura.codigo);
+                            cFactura.Add(factura);
+                        }
+                    }
+                    conn.Close();
+                    return cFactura;
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+        /// <summary>
+        /// Obtiene los datos de los productos de la factura con el codigo dado como parametro
+        /// </summary>
+        /// <param name="codigoFactura"></param>
+        /// <returns></returns>
+        public static BindableCollection<ProductoModel> getProductosFactura(string codigoFactura)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<ProductoModel> productos = new BindableCollection<ProductoModel>();
+
+                    string cadena = $"select * from FacturaVentaProducto  where CodigoFactura = @codigoFactura;";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codigoFactura", codigoFactura);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        productos.Clear();
+                        while (reader.Read())
+                        {
+                            ProductoModel producto = new ProductoModel
+                            {
+                                codigoProducto = reader["codigoproducto"].ToString(),
+                            };
+                            Decimal.TryParse(reader["Cantidad"].ToString(), out decimal b);
+                            producto.cantidadVenta = b;
+                            productos.Add(producto);
+                        }
+                    }
+                    conn.Close();
+                    return productos;
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+
+                Console.WriteLine(e.Message);
+                return null;
+            }
+
+        }
+
+
+
+        #endregion
+
 
         #region Registros - Sincornizacion
         /// <summary>

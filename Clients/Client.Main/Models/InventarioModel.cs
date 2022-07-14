@@ -17,6 +17,14 @@ namespace Client.Main.Models
 
         public string codigoDelInventarioDelLocal { get; set; }
 
+        public string recibido { get; set; }
+
+
+        public string factura { get; set; }
+
+
+
+
  
     }
 }

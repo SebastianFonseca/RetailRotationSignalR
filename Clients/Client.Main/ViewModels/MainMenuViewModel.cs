@@ -6,15 +6,14 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
+using System.Windows.Input;
 
 namespace Client.Main.ViewModels
 {
 
-    class MainMenuViewModel :  Window/*Conductor<object>*/
+    class MainMenuViewModel :  Conductor<object>/*Conductor<object>*/
     {
         public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
-
-
         private readonly IWindowManager window = new WindowManager();
 
         MainWindowViewModel VentanaPrincipal;
@@ -132,10 +131,7 @@ namespace Client.Main.ViewModels
         #region Cajero
         public void Pos()
         {
-            this.WindowState = WindowState.Minimized;
-            window.ShowWindow(new POSViewModel(VentanaPrincipal));
-
-            
+            window.ShowWindow(new POSViewModel(VentanaPrincipal));            
         }
         #endregion
 
@@ -148,6 +144,10 @@ namespace Client.Main.ViewModels
             //MessageBox.Show(MainWindowViewModel.Status);
         }
         #endregion
+
+
+
+
 
     }
 

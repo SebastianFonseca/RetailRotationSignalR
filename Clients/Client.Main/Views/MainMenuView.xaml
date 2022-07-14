@@ -5,7 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:fa="http://schemas.fontawesome.io/icons/"
              mc:Ignorable="d" 
-             Height="auto" Width="auto">
+             Height="auto" Width="auto"
+             xmlns:cal="http://www.caliburnproject.org">
 
     <UserControl.Resources>
 
