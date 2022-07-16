@@ -77,7 +77,7 @@ namespace Client.Main.Utilities
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
-                return new[] { "Exception" };
+                return new[] { e.Message };
             }
 
 
@@ -3962,14 +3962,18 @@ namespace Client.Main.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = $"INSERT INTO FacturasVenta (CodigoFactura,CedulaCliente,CedulaEmpleado,CodigoPuntoPago,Fecha,ValorTotal) VALUES (@codigoFactura,@cliente,@empleado,@puntoPago,@fecha,@total);";
+                    string cadena = $"INSERT INTO FacturasVenta (CodigoFactura,CedulaCliente,CedulaEmpleado,CodigoPuntoPago,Fecha,ValorTotal,IVA,Descuento) VALUES (@codigoFactura,@cliente,@empleado,@puntoPago,@fecha,@total,@iva,@dto);";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     cmd.Parameters.AddWithValue("@codigoFactura", factura.codigo);
                     cmd.Parameters.AddWithValue("@cliente", string.IsNullOrEmpty(factura.cliente.cedula) ? (object) DBNull.Value : factura.cliente.cedula);
                     cmd.Parameters.AddWithValue("@empleado", factura.responsable.cedula);
                     cmd.Parameters.AddWithValue("@puntoPago", factura.puntoDePago);
-                    cmd.Parameters.AddWithValue("@fecha", factura.fecha);
+                    /*La hora de creacion de la factura que queda registrada en el codigo es la hora de instanciacion de la clase, la hora que se registra aqui corresponde 
+                     con el instante en que la factura es registrada en la base de datos, es MUY importante pues de esta hora depende la generacion de los ingresos*/
+                    cmd.Parameters.AddWithValue("@fecha", DateTime.Now);
                     cmd.Parameters.AddWithValue("@total", factura.valorTotal);
+                    cmd.Parameters.AddWithValue("@iva", factura.ivaTotal);
+                    cmd.Parameters.AddWithValue("@dto", factura.descuentoTotal);
                     conn.Open();
                     cmd.ExecuteNonQuery();
                     string response = InsertarFacturaProductos(factura:factura);
@@ -4150,9 +4154,523 @@ namespace Client.Main.Utilities
 
         }
 
+        /// <summary>
+        /// Registra en la base de datos la informacion relacionada con la  factura borrada
+        /// </summary>
+        /// <param name="factura">Datos de la factura que se va a registrar</param>
+        /// <returns></returns>
+        public static bool NuevaFacturaBorradaBool(FacturaModel factura)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"INSERT INTO FacturasVentaBorradas (CodigoFactura,CedulaCliente,CedulaCajero,CedulaSupervisor,CodigoPuntoPago,Fecha,ValorTotal,Descripcion) VALUES (@codigoFactura,@cliente,@empleadoCajero,@empleadoSupervisor,@puntoPago,@fecha,@total,@obs);";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codigoFactura", factura.codigo);
+                    cmd.Parameters.AddWithValue("@cliente", string.IsNullOrEmpty(factura.cliente.cedula) ? (object)DBNull.Value : factura.cliente.cedula);
+                    cmd.Parameters.AddWithValue("@empleadoCajero", factura.responsable.cedula);
+                    cmd.Parameters.AddWithValue("@empleadoSupervisor", factura.superAuto.cedula);
+                    cmd.Parameters.AddWithValue("@puntoPago", factura.puntoDePago);
+                    cmd.Parameters.AddWithValue("@fecha", DateTime.Now);
+                    cmd.Parameters.AddWithValue("@total", factura.valorTotal);
+                    cmd.Parameters.AddWithValue("@obs", factura.observaciones);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    string response = InsertarFacturaBorradaProductos(factura: factura);
+                    if (response == "Y")
+                    {
+                        conn.Close();
+                        registrarCambioLocal(Tipo: "Insert", NombreMetodoLocal: "getFacturaBorradaConProductos", PK: $"{factura.codigo}", NombreMetodoServidor: "ServidorNuevaFacturaBorradaBool", RespuestaExitosaServidor: "true");
+                        return true;
+                    }
+                    else { return false; }
+                }
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
+                {
+                    MessageBox.Show("Error: Ya se ha registrado este id de factura. Informe a un administrador.");
+                    return false;
+                }
+                else
+                {
+                    MessageBox.Show(e.Message);
+
+                    return false;
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// Inserta en la base de datos los datos de cada uno de los productos listados en la factura
+        /// </summary>
+        /// <param name="factura"></param>
+        /// <returns></returns>
+        public static string InsertarFacturaBorradaProductos(FacturaModel factura)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    foreach (ProductoModel producto in factura.productos)
+                    {
+                        string cadena = $"insert into FacturaVentaBorradaProducto(codigoFactura,CodigoProducto,Cantidad) values (@codigoFactura,@codigoProducto,@cantidad);";
+                        SqlCommand cmd = new SqlCommand(cadena, conn);
+                        cmd.Parameters.AddWithValue("@codigoFactura", factura.codigo);
+                        cmd.Parameters.AddWithValue("@codigoProducto", producto.codigoProducto);
+                        cmd.Parameters.AddWithValue("@cantidad", producto.cantidadVenta);
+                        conn.Open();
+                        cmd.ExecuteNonQuery();
+                        conn.Close();
+                    }
+                    conn.Close();
+                    return "Y";
+                }
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
+                {
+                    return "Ya registrado.";
+                }
+                else
+                {
+                    MessageBox.Show(e.Message);
+
+                    return "Cliente " + e.Message;
+                }
+            }
+        }
+        /// <summary>
+        /// Obtiene los datos de la factura cuyo codigo es dado com parametro
+        /// </summary>
+        /// <param name="codigoFactura"></param>
+        /// <returns></returns>
+        public static BindableCollection<FacturaModel> getFacturaBorradaConProductos(string codigoFactura)
+        {
+            try
+            {
+
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<FacturaModel> cFactura = new BindableCollection<FacturaModel>();
+                    string cadena = $" select Distinct * from FacturasVentaBorradas where CodigoFactura = @codigoFactura order by Fecha;";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codigoFactura", codigoFactura);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        cFactura.Clear();
+                        while (reader.Read())
+                        {
+                            FacturaModel factura = new FacturaModel
+                            {
+                                codigo = reader["CodigoFactura"].ToString(),
+                            };
+                            factura.cliente.cedula = reader["CedulaCliente"].ToString();
+                            factura.responsable.cedula = reader["CedulaCajero"].ToString();
+                            factura.superAuto.cedula = reader["CedulaSupervisor"].ToString();
+                            factura.puntoDePago = reader["CodigoPuntoPago"].ToString();
+                            factura.puntoVenta.codigo = factura.puntoDePago.Split(':')[0];
+                            factura.fecha = DateTime.Parse(reader["Fecha"].ToString());
+                            decimal.TryParse(reader["ValorTotal"].ToString(), out decimal total);
+                            factura.valorTotal = total;
+                            factura.observaciones = reader["Descripcion"].ToString();
+                            factura.productos = getProductosFactura(factura.codigo);
+                            cFactura.Add(factura);
+                        }
+                    }
+                    conn.Close();
+                    return cFactura;
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+        /// <summary>
+        /// Obtiene los datos de los productos de la factura con el codigo dado como parametro
+        /// </summary>
+        /// <param name="codigoFactura"></param>
+        /// <returns></returns>
+        public static BindableCollection<ProductoModel> getProductosBorradosFactura(string codigoFactura)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<ProductoModel> productos = new BindableCollection<ProductoModel>();
+
+                    string cadena = $"select * from FacturasVentaBorradas  where CodigoFactura = @codigoFactura;";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codigoFactura", codigoFactura);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        productos.Clear();
+                        while (reader.Read())
+                        {
+                            ProductoModel producto = new ProductoModel
+                            {
+                                codigoProducto = reader["codigoproducto"].ToString(),
+                            };
+                            Decimal.TryParse(reader["Cantidad"].ToString(), out decimal b);
+                            producto.cantidadVenta = b;
+                            productos.Add(producto);
+                        }
+                    }
+                    conn.Close();
+                    return productos;
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+
+                Console.WriteLine(e.Message);
+                return null;
+            }
+
+        }
+         
+        /// <summary>
+        /// Registra el id de la que sera la primera factura para el arqueo de caja
+        /// </summary>
+        /// <param name="codigoFactura"></param>
+        /// <returns></returns>
+        public static bool primeraFactura(string codigoFactura, string inicioFinal)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"INSERT INTO PrimeraFactura (CodigoFactura, InicioFinal,FechaHora) VALUES ('{codigoFactura}','{inicioFinal}',@fechahora);";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@fechaHora", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
+                {
+                    return false;
+                }
+                else
+                {
+                    MessageBox.Show(e.Message);
+
+                    return false;
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// Verifica el último registro a tener en cuenta para la suma de facturas del ingeso, tambien es necesario en el funcionamento del POS
+        /// </summary>
+        /// <returns></returns>
+        public static bool arqueoPendiente()
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<ProductoModel> productos = new BindableCollection<ProductoModel>();
+
+                    string cadena = $"select * from PrimeraFactura where id = (Select max(id) from PrimeraFactura);";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    string[] rta = new string[3];
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            rta =  new string[] { reader["Id"].ToString() , reader["CodigoFactura"].ToString(), reader["InicioFinal"].ToString()  };
+                        }
+                    }
+                    conn.Close();
+
+                    if (rta[2] == "Inicio") return true;
+                    if (rta[2] == "Final") return false;
+                    return true;
+
+
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+
+                Console.WriteLine(e.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Verifica si se han creado facturas despues de la fecha y hora registrada como ultima
+        /// </summary>
+        /// <returns></returns>
+        public static bool faturasPendientes()
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<ProductoModel> productos = new BindableCollection<ProductoModel>();
+
+                    string cadena = $"select CodigoFactura as Codigo from FacturasVenta where fecha > (select MAX(fechahora) from PrimeraFactura );";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        //string rta = "";
+                        while (reader.Read())
+                        {
+                            return true;
+                           // rta = (string)reader["Codigo"];
+                        }
+                        
+                       // if (rta != null) { return true; }
+                        conn.Close();
+                        return false;
+                    }
+ 
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+
+                Console.WriteLine(e.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Suma el valor de las facturas pendientes para ergistrarlo como el nuevo ingreso
+        /// </summary>
+        /// <returns></returns>
+        public static decimal? valorTotalFacturas()
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<ProductoModel> productos = new BindableCollection<ProductoModel>();
+
+                    string cadena = $"select sum(ValorTotal) as Total from FacturasVenta where fecha > (select fechahora from PrimeraFactura where id  = (select max(id) from PrimeraFactura));";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();                    
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        reader.Read();
+                        if (string.IsNullOrEmpty(reader["Total"].ToString())) return 0;
+                        decimal? resultado = decimal.Parse(reader["Total"].ToString()); 
+                        conn.Close();
+                        return resultado;                    
+                    }
+                    
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+
+                Console.WriteLine(e.Message);
+                return 0;
+            }
+
+
+        }
+
+        #endregion
+
+
+        #region Ingresos
+
+
+        /// <summary>
+        /// Registra el nuevo ingreso
+        /// </summary>
+        /// <param name="Ingreso"></param>
+        /// <returns></returns>
+        public static bool NuevoIngreso(IngresoModel Ingreso)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string cadena = $"INSERT INTO Ingresos (CodigoIngreso,CodigoPuntoPago,Fecha,Valor,Empleado,PuntoVenta,Efectivo,Diferencia,Supervisor) VALUES (@codigo,@puntoPago,@fecha,@valor,@empleado,@puntoVenta,@efectivo,@diferencia,@supervisor);";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codigo", Ingreso.id);
+                    cmd.Parameters.AddWithValue("@puntoPago", Ingreso.puntoPago);
+                    cmd.Parameters.AddWithValue("@fecha", Ingreso.fecha);
+                    cmd.Parameters.AddWithValue("@valor", Ingreso.valor); 
+                    cmd.Parameters.AddWithValue("@empleado", Ingreso.Cajero.cedula);
+                    cmd.Parameters.AddWithValue("@puntoVenta", Ingreso.puntoVenta.codigo);
+                    cmd.Parameters.AddWithValue("@efectivo", Ingreso.valor);
+                    cmd.Parameters.AddWithValue("@diferencia", Ingreso.diferencia);
+                    cmd.Parameters.AddWithValue("@supervisor", Ingreso.supervisor.cedula);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+
+                    ///Registra las facturas que componen el ingreso
+                    string cadena0 = "insert into ingresoFacturas select dbo.Ingresos.CodigoIngreso, dbo.FacturasVenta.CodigoFactura as f from FacturasVenta, Ingresos where  CodigoIngreso = @ingreso and dbo.FacturasVenta.fecha > (select fechahora from PrimeraFactura where id  = (select max(id) from PrimeraFactura))";
+                    SqlCommand cmd0 = new SqlCommand(cadena0, conn);
+                    cmd0.Parameters.AddWithValue("@ingreso", Ingreso.id);
+                    cmd0.ExecuteNonQuery();
+
+
+                    ///Registra la ultima factura para el proximo arqueo
+                    string cadena1 = "insert into PrimeraFactura(CodigoFactura, InicioFinal, FechaHora) values (( select CodigoFactura from FacturasVenta where fecha =  (select MAX(Fecha) from facturasVenta where fecha  > (select fechahora from PrimeraFactura where id  = (select max(id) from PrimeraFactura))) ),'Final', @fechaHora); ";
+                    SqlCommand cmd1 = new SqlCommand(cadena1, conn);
+                    cmd1.Parameters.AddWithValue("@fechaHora", DateTime.Now);
+                    cmd1.ExecuteNonQuery();
+
+
+                    conn.Close();
+                    return true;
+
+
+
+                    //registrarCambioLocal(Tipo: "Insert", NombreMetodoLocal: "getFacturaConProductos", PK: $"{factura.codigo}", NombreMetodoServidor: "ServidorNuevaFacturaBool", RespuestaExitosaServidor: "true");
+
+                }
+            }
+            catch (Exception e)
+            {
+
+                if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
+                {
+                    MessageBox.Show("Error: registrando el ingreso.");
+                    return false;
+                }
+                else
+                {
+                    MessageBox.Show("Error: Local. NuevoIngreso " + e.Message);
+
+                    return false;
+                }
+
+            }
+        }
+
+
+        public static BindableCollection<IngresoModel> getIngresoConFacturas(string codigoIngreso)
+        {
+            try
+            {
+
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<IngresoModel> cIngresos = new BindableCollection<IngresoModel>();
+                    string cadena = $" select Distinct * from Ingresos where CodigoIngreso = @codigoIngreso order by Fecha;";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codigoIngreso", codigoIngreso);
+                    conn.Open();
+                    bool soloUnValor = true;
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (!soloUnValor) { MessageBox.Show("Error: Código de ingreso repetido. Contacte a un administrador."); return null; }
+                        cIngresos.Clear();
+                        while (reader.Read())
+                        {
+                            soloUnValor = false;
+                            IngresoModel ingreso = new IngresoModel
+                            {
+                                id = reader["CodigoIngreso"].ToString(),   
+                                puntoPago = reader["CodigoPuntoPago"].ToString()
+                            };
+                            ingreso.fecha = DateTime.Parse(reader["Fecha"].ToString());
+                            decimal.TryParse(reader["Valor"].ToString(), out decimal total);
+                            ingreso.valor = total;
+                            ingreso.Cajero.cedula = reader["Empleado"].ToString();
+                            ingreso.puntoVenta.codigo = reader["PuntoVenta"].ToString();
+                            decimal.TryParse(reader["Efectivo"].ToString(), out decimal efectivo);
+                            ingreso.efectivo = efectivo;
+                            decimal.TryParse(reader["Diferencia"].ToString(), out decimal diferencia);
+                            ingreso.diferencia = diferencia;
+                            ingreso.supervisor.cedula = reader["Supervisor"].ToString(); 
+                            ingreso.facturas = getFacturasIngreso(ingreso.id);
+                            cIngresos.Add(ingreso);
+                        }
+                    }
+                    conn.Close();
+                    return cIngresos;
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Obtiene los datos de los productos de la factura con el codigo dado como parametro
+        /// </summary>
+        /// <param name="codigoFactura"></param>
+        /// <returns></returns>
+        public static BindableCollection<FacturaModel> getFacturasIngreso(string codigoFactura)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<FacturaModel> facturas = new BindableCollection<FacturaModel>();
+
+                    string cadena = $"select * from ingresofacturas  where CodigoIngreso = @codigoIngreso;";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codigoFactura", codigoFactura);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        facturas.Clear();
+                        while (reader.Read())
+                        {
+                            FacturaModel factura = new FacturaModel
+                            {
+                                codigo = reader["factura"].ToString(),
+                            };
+                            facturas.Add(factura);
+                        }
+                    }
+                    conn.Close();
+                    return facturas;
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+
+                Console.WriteLine(e.Message);
+                return null;
+            }
+
+        }
+
+
+
+
 
 
         #endregion
+
 
 
         #region Registros - Sincornizacion
@@ -4227,7 +4745,7 @@ namespace Client.Main.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = $"select * from RegistrosCambiosLocales where ID > (select MAX(IdUltimoRegistroSubidoServidor) from RegistrosSubidosServidor )";
+                    string cadena = $"select * from RegistrosCambiosLocales where ID > (select MAX(IdUltimoRegistroSubidoServidor) from RegistrosSubidosServidor ) order BY Id";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
                     BindableCollection<string[]> resultado = new BindableCollection<string[]>();

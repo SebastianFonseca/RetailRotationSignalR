@@ -9,6 +9,7 @@ using System.Windows.Controls;
 
 namespace Client.Main.Models
 {
+
     public class ClientesModel : PersonModel
     {
         public decimal puntos { get; set; }

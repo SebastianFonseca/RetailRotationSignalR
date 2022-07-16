@@ -20,5 +20,14 @@ namespace ServerConsole.Models
 
         public decimal? valorTotal { get; set; }
 
+        public decimal? ivaTotal { get; set; } = 0;
+
+
+        public decimal? descuentoTotal { get; set; } = 0;
+
+        public EmpleadoModel superAuto { get; set; } = new EmpleadoModel();
+        public string observaciones { get; set; }
+
+
     }
 }

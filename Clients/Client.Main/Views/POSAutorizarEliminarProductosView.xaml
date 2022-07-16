@@ -7,6 +7,9 @@
         xmlns:gif="http://wpfanimatedgif.codeplex.com"
         xmlns:c="clr-namespace:Client.Main.Utilities"
         mc:Ignorable="d"
+        xmlns:cal="http://www.caliburnproject.org"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        cal:Message.Attach="[Event PreviewKeyDown ] = [Action TeclaPresionadaVentana($executionContext)]" 
         Title="  " Height="400" Width="247.2" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Background="#87ac47">
     <Window.Resources>
         <Style TargetType="TextBlock" >
@@ -37,8 +40,8 @@
             <RowDefinition Height="4*"/>
             <RowDefinition Height="1.5*"/>
         </Grid.RowDefinitions>
-        
-        <Border Grid.Column="0" Grid.Row="0"  Grid.RowSpan="7" Grid.ColumnSpan="4" Background="#f6d3b4" BorderThickness="1" CornerRadius="20" Margin="7"/>
+
+        <Border Grid.Column="0" Grid.Row="0"  Grid.RowSpan="7" Grid.ColumnSpan="4" Background="#F3E0D2" BorderThickness="1" CornerRadius="20" Margin="7"/>
 
         <!--Auto-->
         <TextBlock   Grid.Row="1" Grid.Column="1"  VerticalAlignment="Center"  FontWeight="DemiBold" x:Name="InsesionTb"   TextAlignment="Center" FontSize="25"   Grid.ColumnSpan="2" >AUTORIZACIÓN <LineBreak/> REQUERIDA</TextBlock>
@@ -46,21 +49,21 @@
 
         <!--Fila 2.Usuario-->
         <TextBlock   Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right"  Margin="0 0 5 0" x:Name="UsuarioTb"    VerticalAlignment="Center" FontSize="16"  FontFamily="Corbel" FontWeight="Normal"   Text="Usuario:" Panel.ZIndex="10"/>
-        <TextBox  Grid.Row="2" Grid.Column="2"  FontSize="16"  HorizontalAlignment="Center"  x:Name="Usuario" BorderThickness="0 0 0 1" MinWidth="100"  Style="{StaticResource GeneralTextBox}" VerticalAlignment="Center" />
+        <TextBox  Grid.Row="2" Grid.Column="2"  FontSize="16" Background="#F3E0C2" HorizontalAlignment="Center"  x:Name="Usuario" BorderThickness="0 0 0 0" MinWidth="100"  Style="{StaticResource GeneralTextBox}" VerticalAlignment="Center" />
    
 
         <!--Fila 3.Contraseña-->
         <TextBlock Grid.Row="3" Grid.Column="1"  HorizontalAlignment="Right" x:Name="ContraseñaTb" VerticalAlignment="Center" FontSize="16" Margin="0 0 5 0"  FontFamily="Corbel" FontWeight="Normal"  Text="Contraseña:"/>
-        
-        <PasswordBox pwbx:PasswordBoxAssistant.BoundPassword="{Binding Contraseña, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True, ValidatesOnDataErrors=True}" 
-                     Grid.Row="3" Grid.Column="2" Background="#F3E0D2" Height="22" HorizontalAlignment="Center"   BorderBrush="Black"  MinWidth="100"   x:Name="Contraseña"  BorderThickness="0 0 0 1"/>
+        <PasswordBox pwbx:PasswordBoxAssistant.BoundPassword="{Binding Contraseña, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True, ValidatesOnDataErrors=True}" Grid.Row="3" Grid.Column="2" Background="#F3E0C2" Height="22"  HorizontalAlignment="Center"   BorderThickness="0" MaxWidth="100" MinWidth="100" Margin="5 0 0 0" x:Name="Contraseña" >
+        </PasswordBox>
+
         <Separator   Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Top"  BorderBrush="Black"  BorderThickness="0.5" />
 
         
         <!--DockPanel con la info del producto -->
-        <DockPanel  Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <DockPanel  Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center"  Panel.ZIndex="10">
             <TextBlock Text="{Binding Path=Nombre}" DockPanel.Dock="Top" />
-            <TextBlock Text="{Binding Path=Valor}" DockPanel.Dock="Top" />
+            <TextBlock Text="{Binding Path=Valor,StringFormat={}${0:#.}}" DockPanel.Dock="Top" />
         </DockPanel>
                
         <!--Fila 5.Boton de entrar-->

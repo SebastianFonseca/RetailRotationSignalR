@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
+/*using Caliburn;*/
 namespace Client.Main.Models
 {
     public class PedidoModel : DocumentoModel

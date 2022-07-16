@@ -770,7 +770,15 @@ namespace ServerConsole
             return DbConnection.NuevaFacturaBool(factura);
         }
 
-
+        /// <summary>
+        /// Registra en la base de datos la informacion relacionada con la  factura borrada
+        /// </summary>
+        /// <param name="factura">Datos de la factura que se va a registrar</param>
+        /// <returns></returns>
+        public  string ServidorNuevaFacturaBorradaBool(FacturaModel factura)
+        {
+            return DbConnection.NuevaFacturaBorradaBool(factura);
+        }
 
         #endregion
 

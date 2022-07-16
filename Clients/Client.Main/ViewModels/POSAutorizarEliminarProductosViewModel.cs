@@ -51,15 +51,19 @@ namespace Client.Main.ViewModels
             set { _contraseña = value; }
         }
 
-        string Nombre => producto.nombre;
-        string Valor => producto.totalValorVenta.ToString();
+       public string Nombre => producto.nombre;
+       public decimal? Valor => producto.totalValorVenta;
+
+ 
 
         public void Entrar()
         {
+            if (string.IsNullOrEmpty(Usuario) | string.IsNullOrEmpty(Contraseña)) { MessageBox.Show("Escriba el usuario y la contraeña"); return; }
             object[] respuesta = DbConnection.Login(Usuario,Contraseña);
             if ((string)respuesta[0] == "Contraseña incorrecta.")
             {
-                MessageBox.Show("Contraseña o usuario incorrectos");
+                MessageBox.Show("Usuario o contraseña incorrectos");
+                this.TryClose();
                 return;
             }
             if (respuesta.Length == 2)
@@ -67,13 +71,53 @@ namespace Client.Main.ViewModels
                 dynamic persona = respuesta[1] as EmpleadoModel;
                 if(persona.cargo == " Gerente general" || persona.cargo == " Administrador de sede")
                 {
-                    ProductoModel p = factura.productos.First<ProductoModel>(p => p.codigoProducto == producto.codigoProducto);
-                    if (producto != null)
+                    ProductoModel p = factura.productos.FirstOrDefault<ProductoModel>(p => p.codigoProducto == producto.codigoProducto);
+
+                    if (p != null)
                     {
+                        FacturaModel facturaBorrada = new FacturaModel() 
+                        {
+                            codigo = factura.codigo,
+                            cliente = factura.cliente,
+                            responsable = factura.responsable,
+                            superAuto = persona,
+                            puntoDePago = factura.puntoDePago,
+                            fecha = factura.fecha,
+                            valorTotal = factura.valorTotal                            
+
+                        };
+                        facturaBorrada.productos = new BindableCollection<ProductoModel>() { p };
+
+                        facturaBorrada.observaciones = "Borrado";
+                        if (!DbConnection.NuevaFacturaBorradaBool(facturaBorrada)) { MessageBox.Show("Error: Error en el registro de la factura, informe a un administrador."); /*No registra el borrado pero continua la facturacion*/ };
+
+                        factura.valorTotal = factura.valorTotal - p.totalValorVenta;
+
+                        p.totalValorVenta = p.cantidadVenta * p.precioVenta;
+                        if (p.porcentajePromocion != null && p.porcentajePromocion != 0 && p.precioVenta != null)
+                        {
+                            ///Encuentra el valor de descuento total teniendo cuenta el valor calculado antes con precio full                  
+                            factura.descuentoTotal = factura.descuentoTotal - ( p.totalValorVenta - (p.cantidadVenta * p.precioVentaConDescuento));
+                        }
+
+
+                        ///Calcula el valor del iva cobrado si es el caso
+                        if (p.iva != null && p.iva != 0)
+                        {
+                            factura.ivaTotal = factura.ivaTotal - (p.totalValorVenta - (p.totalValorVenta / (1 + (p.iva / 100))));
+                        }
+
+
+                        //Elimina el producto de la facura actual
                         factura.productos.Remove(p);
-                        MessageBox.Show("Producto eliminado");
+                        MessageBox.Show("Producto borrado");
                         factura.productos.Refresh();
                         this.TryClose();
+                        return;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Error borrando. Producto no encontrado?");
                     }
                 }
                 else
@@ -82,10 +126,21 @@ namespace Client.Main.ViewModels
                     this.TryClose();
                 }
             }
-
-
+            MessageBox.Show("No se elimino el producto. Error de Login " + respuesta[0]);
+            this.TryClose();
         }
 
+
+        public void TeclaPresionadaVentana(ActionExecutionContext context)
+        {
+            var keyArgs = context.EventArgs as KeyEventArgs;
+            if (keyArgs != null && keyArgs.Key == Key.Escape)
+            {
+                this.TryClose();
+                return;
+            }
+
+        }
 
 
         ///Codigo necesario para la validacion de los datos ingresados en las cajas de texto del formulario.
@@ -118,11 +173,5 @@ namespace Client.Main.ViewModels
                 return result;
             }
         }
-
-
-
-
-
-        /*            ,             , */
     }
 }

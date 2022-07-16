@@ -60,7 +60,7 @@ namespace Client.Main.Models
             set
             {
                 _isSelected = value;
-                NotifyOfPropertyChange();
+               NotifyOfPropertyChange();
             }
         }
 

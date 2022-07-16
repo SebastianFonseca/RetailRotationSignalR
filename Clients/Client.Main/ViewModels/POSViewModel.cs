@@ -23,28 +23,52 @@ namespace Client.Main.ViewModels
     public class POSViewModel : Screen
     {
         MainWindowViewModel Ventana;
+
         public Connect conexion = ContainerConfig.scope.Resolve<Connect>();
+
         public ClientesModel cliente = ContainerConfig.scope.Resolve<ClientesModel>();
+
         public SharedConfirmClass sharedConfirmClass = ContainerConfig.scope.Resolve<SharedConfirmClass>();
 
-        public FacturaModel factura = new FacturaModel();
+        public FacturaModel factura;
 
         ///Objeto responsable de la administracion de las ventanas.
         private readonly IWindowManager window = new WindowManager();
-
         public POSViewModel(MainWindowViewModel argVentana)
         {
+            this.Activated += OnActivated;
+            factura = new FacturaModel();
             factura.productos = Productos;
             factura.cliente = cliente;
             factura.responsable = argVentana.usuario;
             Ventana = argVentana;
         }
 
+        public void OnActivated(object sender, ActivationEventArgs activatoinArgs)
+        {
+            bool arqueospedientes = DbConnection.arqueoPendiente();
+            bool facturasPendientes = DbConnection.faturasPendientes();
+
+            if (facturasPendientes)
+            {
+                MessageBox.Show("Arqueos pendientes.");
+                return;
+            }  
+            
+            if (!arqueospedientes)
+            {
+                //Necesario para llevar el registro de las facturas que hacen parte del ingreso
+                if (!DbConnection.primeraFactura(factura.codigo, "Inicio")) { return; }
+            }
+            
+        }
+
+
         private BindableCollection<ProductoModel> _productos = new BindableCollection<ProductoModel>();
         public BindableCollection<ProductoModel> Productos
         {
             get => _productos;
-            set { _productos = value; factura.productos = value ; NotifyOfPropertyChange(() => Productos); }
+            set { _productos = value; factura.productos = value; NotifyOfPropertyChange(() => Productos); }
         }
 
         private BindableCollection<ProductoModel> _busquedasProducto = new BindableCollection<ProductoModel>();
@@ -74,8 +98,7 @@ namespace Client.Main.ViewModels
                 }
             }
         }
-
-        // Es string para que no aparezca nada en la pantalla al incio y se pueda evitar que se agreguen letras con el tryparse 
+        
         private string _cantidadVenta;
         public string CantidadVenta
         {
@@ -83,21 +106,19 @@ namespace Client.Main.ViewModels
             set
             {
                 if (string.IsNullOrEmpty(value))
-                { _cantidadVenta = null; return; } 
+                { _cantidadVenta = null; return; }
                 if (value == ".") { _cantidadVenta = value; return; }
-                if(value[0] == '.') { value = 0 + value; }
+                if (value[0] == '.') { value = 0 + value; }
 
                 NumberStyles style;
                 CultureInfo culture;
-                style = NumberStyles.AllowDecimalPoint | NumberStyles.Float ;
+                style = NumberStyles.AllowDecimalPoint | NumberStyles.Float;
                 culture = CultureInfo.CreateSpecificCulture("en-US");
-                if (decimal.TryParse(value,style,culture,out decimal m)) { _cantidadVenta = value; /*MessageBox.Show(m.ToString());*/ }
+                if (decimal.TryParse(value, style, culture, out decimal m)) { _cantidadVenta = value; /*MessageBox.Show(m.ToString());*/ }
 
 
             }
         }
-
-
         public string Cajero => Ventana.usuario.firstName + " " + Ventana.usuario.lastName;
         public string Local => Ventana.usuario.puntoDeVenta.nombre;
         public string Caja => ConfigurationManager.AppSettings["Caja"].Split(':')[1];
@@ -133,11 +154,11 @@ namespace Client.Main.ViewModels
         {
             get
             {
-                if (ProductoAgregar != null && CantidadVenta!= null)
+                if (ProductoAgregar != null && CantidadVenta != null)
                 {
-                    
-                    return ProductoAgregar.nombre + $" {ProductoAgregar.precioVenta:$0#,#} {ProductoAgregar.unidadVenta} \n"+
-                    $"{CantidadVenta} vale(n) { decimal.Multiply(  decimal.Parse(CantidadVenta) , (decimal) ProductoAgregar.precioVenta):$0#,#}";  
+
+                    return ProductoAgregar.nombre + $" {ProductoAgregar.precioVenta:$0#,#} {ProductoAgregar.unidadVenta} \n" +
+                    $"{CantidadVenta} vale(n) { decimal.Multiply(decimal.Parse(CantidadVenta), (decimal)ProductoAgregar.precioVenta):$0#,#}";
                 }
                 else { return null; }
             }
@@ -153,42 +174,21 @@ namespace Client.Main.ViewModels
                 {
                     decimal.TryParse(CantidadVenta, out decimal cantidad);
                     return $" Con Descuento {ProductoAgregar.precioVentaConDescuento:$0#,#} {ProductoAgregar.unidadVenta} \n" +
-                        $"{CantidadVenta} vale(n) { cantidad * ProductoAgregar.precioVentaConDescuento:$0#,#} ";                                           
+                        $"{CantidadVenta} vale(n) { cantidad * ProductoAgregar.precioVentaConDescuento:$0#,#} ";
                 }
                 else { return null; }
             }
             set { _precioProductoSeleccioado = value; NotifyOfPropertyChange(() => PrecioProductoSeleccioado); }
         }
-
-        private decimal? _total = 0;
-        public decimal? Total
-        {
-            get => _total;
-            set { _total = value; factura.valorTotal = value; NotifyOfPropertyChange(() => Total); }
-        }
+        public decimal? Total => factura.valorTotal;
+        public decimal? Descuento => factura.descuentoTotal;
+        public decimal? IVA => factura.ivaTotal;
 
         private decimal? _subtotal = 0;
-
         public decimal? Subtotal
         {
-            get { return _subtotal; }
+            get => _subtotal;
             set { _subtotal = value; NotifyOfPropertyChange(() => Subtotal); }
-        }
-
-        private decimal? _descuento = 0;
-        public decimal? Descuento
-        {
-            get => _descuento;
-            set { _descuento = value; NotifyOfPropertyChange(() => Descuento); }
-        }
-
-
-        private decimal? _iva = 0;
-
-        public decimal? IVA
-        {
-            get => _iva;
-            set { _iva = value; NotifyOfPropertyChange(() => IVA); }
         }
 
         private string _buscarTbx;
@@ -223,7 +223,7 @@ namespace Client.Main.ViewModels
         {
             BusquedasProducto.Clear();
             try
-            {                   
+            {
                 BusquedasProducto = DbConnection.getProductos(caracteres: BuscarTbx);
                 if (BusquedasProducto.Count == 0)
                 {
@@ -235,12 +235,48 @@ namespace Client.Main.ViewModels
                     BusquedasProducto[0].isSelected = true;
                     BusquedasVisibilidad = "Visible";
                 }
-                                   
+
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
             }
+        }
+
+        public void EliminarProducto(ProductoModel prod)
+        {
+            window.ShowDialog(new POSAutorizarEliminarProductosViewModel(factura: factura, producto: prod));
+            Subtotal = factura.valorTotal + factura.descuentoTotal;
+            NotifyOfPropertyChange(() => Descuento);
+            NotifyOfPropertyChange(() => IVA);
+            NotifyOfPropertyChange(() => Total);
+            NotifyOfPropertyChange(() => Subtotal);
+
+            return;
+        }
+
+        private void comprobarInicio()
+        {
+
+        }
+              
+        public override void CanClose(Action<bool> callback)
+        {
+            if (Productos.Count != 0)
+            {
+                factura.superAuto = factura.responsable;
+                factura.observaciones = "Intenta cerrar sin guardar";
+                DbConnection.NuevaFacturaBorradaBool(factura);
+                MessageBox.Show("No cierre la ventana sin registrar la factura");
+                return;
+            }
+            else
+            {
+                callback(true);
+            }
+
+
+
         }
 
         public void TeclaPresionadaControl(ActionExecutionContext context)
@@ -255,45 +291,48 @@ namespace Client.Main.ViewModels
             if (keyArgs != null && keyArgs.Key == Key.Enter)
             {
                 ///Evita que se intente agregar a la factura un producto sin cantidad
-                if (CantidadVenta == null){MessageBox.Show("Ingrese la cantidad");return;}
+                if (CantidadVenta == null) { MessageBox.Show("Ingrese la cantidad"); return; }
 
                 ///Evita que se intente agregar a la factura cuando no hay un producto seleccionado o cuado el seleccionado contunua siendo el anterior
                 if (string.IsNullOrEmpty(BuscarTbx)) { return; }
 
                 ///Evita que se intente cobrar cuando hay un precio de 0
-                if (ProductoAgregar.precioVenta == 0) { MessageBox.Show("Error en el sistema. Precio de venta. Notifique a un administrador.");return; };
+                if (ProductoAgregar.precioVenta == 0) { MessageBox.Show("Error en el sistema. Precio de venta. Notifique a un administrador."); return; };
 
                 ///Multiplica la cantidad por el precio para mostarlo en la pantalla y para sumar el total, se calcula primero porque de cualquier manera deeb calcularse para halla el descuento
                 ProductoAgregar.cantidadVenta = decimal.Parse(CantidadVenta);
                 ProductoAgregar.totalValorVenta = ProductoAgregar.cantidadVenta * ProductoAgregar.precioVenta;
 
-                if (ProductoAgregar.porcentajePromocion != null && ProductoAgregar.porcentajePromocion != 0 && ProductoAgregar.precioVentaConDescuento != null )
+                if (ProductoAgregar.porcentajePromocion != null && ProductoAgregar.porcentajePromocion != 0 && ProductoAgregar.precioVenta != null)
                 {
-                    //decimal a = 100;
                     ///Encuentra el precio de venta con promocion
-                    ProductoAgregar.precioVentaConDescuento = decimal.Subtract( (decimal)ProductoAgregar.precioVenta , decimal.Multiply((decimal)ProductoAgregar.precioVenta , ((decimal)ProductoAgregar.porcentajePromocion / 100 )));
+
+                    ProductoAgregar.precioVentaConDescuento = decimal.Subtract((decimal)ProductoAgregar.precioVenta, decimal.Multiply((decimal)ProductoAgregar.precioVenta, ((decimal)ProductoAgregar.porcentajePromocion / 100)));
 
                     ///Encuentra el valor de descuento total teniendo cuenta el valor calculado antes con precio full                  
-                    Descuento = Descuento + (ProductoAgregar.totalValorVenta - (ProductoAgregar.cantidadVenta * ProductoAgregar.precioVentaConDescuento));
+                    factura.descuentoTotal = factura.descuentoTotal + (ProductoAgregar.totalValorVenta - (ProductoAgregar.cantidadVenta * ProductoAgregar.precioVentaConDescuento));
 
                     ///Modifica el valor total de la venta teniendo en cuenta el descuento
                     ProductoAgregar.totalValorVenta = ProductoAgregar.cantidadVenta * ProductoAgregar.precioVentaConDescuento;
-                } 
-              
-                ///Suma al total el valo del nuevo producto
-                Total = Total + ProductoAgregar.totalValorVenta;
+                }
+
+                ///Suma al total el valor del nuevo producto
+                factura.valorTotal = factura.valorTotal + ProductoAgregar.totalValorVenta;
 
                 ///El valor de subtotal 
-                Subtotal = Total + Descuento;
+                Subtotal = factura.valorTotal + factura.descuentoTotal;
 
                 ///Calcula el valor del iva cobrado si es el caso
                 if (ProductoAgregar.iva != null && ProductoAgregar.iva != 0)
                 {
-                    IVA = IVA + (ProductoAgregar.totalValorVenta - (ProductoAgregar.totalValorVenta / (1 + (ProductoAgregar.iva / 100))));
+                    factura.ivaTotal = factura.ivaTotal + (ProductoAgregar.totalValorVenta - (ProductoAgregar.totalValorVenta / (1 + (ProductoAgregar.iva / 100))));
                 }
 
+                ///por default el prudcto seleccionado sera el que se va agrgando cada vez
+                ProductoAgregar.isSelected = true;
+
                 ///Flag para evitar agrefar dos veces un mismo producto 
-                bool agregar=true;
+                bool agregar = true;
 
                 ///Se busca si el producto ya fue agregado para sumar la cantidad al mismo
                 foreach (ProductoModel productoRepetido in Productos.Where<ProductoModel>(p => p.codigoProducto == ProductoAgregar.codigoProducto))
@@ -301,7 +340,7 @@ namespace Client.Main.ViewModels
                     ///Ya que se encontro un producto que ya se habia agregado se le suma la nueva cantidad y el nuevo total
                     productoRepetido.cantidadVenta = productoRepetido.cantidadVenta + ProductoAgregar.cantidadVenta;
                     productoRepetido.totalValorVenta = productoRepetido.totalValorVenta + ProductoAgregar.totalValorVenta;
-                   ///Evita que se agregrue denuevo el product, pues ya estaba agregado y lo que se hizo fue sumar la nueva cantidad
+                    ///Evita que se agregrue denuevo el product, pues ya estaba agregado y lo que se hizo fue sumar la nueva cantidad
                     agregar = false;
                 }
 
@@ -317,7 +356,7 @@ namespace Client.Main.ViewModels
 
                 ///Se borran los valores de la caja de texto para la nueva busqueda
                 BuscarTbx = "";
-               
+
                 ///La cantidad se pone en null para la nuev busqueda, se  notifica a la propiedad para refrescar la pantalla
                 _cantidadVenta = null;
                 NotifyOfPropertyChange(() => CantidadVenta);
@@ -325,7 +364,7 @@ namespace Client.Main.ViewModels
                 ///Para agregar un nuevo producto y notificar
                 ProductoAgregar = null;
                 NotifyOfPropertyChange(() => ProductoAgregar);
-                
+
                 ///Se limpian los productos encontrados anteriormente
                 BusquedasProducto.Clear();
             }
@@ -333,33 +372,40 @@ namespace Client.Main.ViewModels
             if (keyArgs != null && keyArgs.Key == Key.Down)
             {
                 ///Permite que cuado se oprima la tecla se bajar cambie la seleccion del producto
-                int indice = BusquedasProducto.IndexOf(BusquedasProducto.First<ProductoModel>(p => p.isSelected == true));
-                BusquedasProducto.All(prod => prod.isSelected = false);
-                if (indice == BusquedasProducto.Count - 1)
+                if (BusquedasProducto.Count < 1) { return; }
+                if (BusquedasProducto.Any<ProductoModel>(p => p.isSelected == true))
                 {
-                    BusquedasProducto[0].isSelected = true;
-                    return;
+                    int indice = BusquedasProducto.IndexOf(BusquedasProducto.First<ProductoModel>(p => p.isSelected == true));
+                    BusquedasProducto.All(prod => prod.isSelected = false);
+                    if (indice == BusquedasProducto.Count - 1)
+                    {
+                        BusquedasProducto[0].isSelected = true;
+                        return;
+                    }
+                    BusquedasProducto[indice + 1].isSelected = true;
                 }
-                BusquedasProducto[indice + 1].isSelected = true;
             }
 
             if (keyArgs != null && keyArgs.Key == Key.Up)
             {
                 ///Permite que cuado se oprima la tecla se subir cambie la seleccion del producto
-
-                int indice = BusquedasProducto.IndexOf(BusquedasProducto.First<ProductoModel>(p => p.isSelected == true));
-                BusquedasProducto.All(prod => prod.isSelected = false);
-                if (indice == 0)
+                if (BusquedasProducto.Count < 1) { return; }
+                if (BusquedasProducto.Any<ProductoModel>(p => p.isSelected == true))
                 {
-                    BusquedasProducto[BusquedasProducto.Count - 1].isSelected = true;
-                    return;
+                    int indice = BusquedasProducto.IndexOf(BusquedasProducto.First<ProductoModel>(p => p.isSelected == true));
+                    BusquedasProducto.All(prod => prod.isSelected = false);
+                    if (indice == 0)
+                    {
+                        BusquedasProducto[BusquedasProducto.Count - 1].isSelected = true;
+                        return;
+                    }
+                    BusquedasProducto[indice - 1].isSelected = true;
                 }
-                BusquedasProducto[indice - 1].isSelected = true;
             }
         }
 
         public void TeclaPresionadaVentana(ActionExecutionContext context)
-            {
+        {
 
             var keyArgs = context.EventArgs as KeyEventArgs;
 
@@ -375,13 +421,13 @@ namespace Client.Main.ViewModels
             {
                 if (factura.productos.Count == 0) { MessageBox.Show("Ingrese productos."); return; }
                 window.ShowDialog(new POSPagarViewModel(factura));
-                if (sharedConfirmClass.done) 
+                if (sharedConfirmClass.done)
                 {
                     factura = new FacturaModel();
                     factura.responsable = Ventana.usuario;
                     Productos.Clear();
                     factura.productos = Productos;
-                    cliente.firstName = "" ;
+                    cliente.firstName = "";
                     cliente.lastName = "";
                     cliente.cedula = "";
                     cliente.puntos = 0;
@@ -392,17 +438,44 @@ namespace Client.Main.ViewModels
                     PuntosCliente = 0;
                     NombreProductoSeleccioado = null;
                     PrecioProductoSeleccioado = null;
-                    Total = 0;
+                    factura.valorTotal = 0;
                     Subtotal = 0;
-                    Descuento = 0;
-                    IVA = 0;
+                    factura.descuentoTotal = 0;
+                    factura.ivaTotal = 0;
                     BuscarTbx = "";
                     BusquedasVisibilidad = "Hidden";
-                    //NotifyOfPropertyChange(() => NombreCliente);
-                    //NotifyOfPropertyChange(() => PuntosCliente);
+                    NotifyOfPropertyChange(() => Total);
+                    NotifyOfPropertyChange(() => Subtotal);
+                    NotifyOfPropertyChange(() => Descuento);
+                    NotifyOfPropertyChange(() => IVA);
                 }
                 return;
             }
+
+            if (keyArgs != null && keyArgs.Key == Key.F9)
+            {
+                if (DbConnection.faturasPendientes())
+                {
+                    if (Productos.Count == 0)
+                    {
+                        window.ShowDialog(new POSArqueoViewModel(Ventana.usuario));
+                        ///IMPORTANTE! Cerrar la ventana para que deba abrirse de nuevo y se genere un nuevo inicio de facturas
+                        if (!DbConnection.arqueoPendiente()) { this.TryClose(); return; }
+                    }
+                    else 
+                    { 
+                        MessageBox.Show("Registre la factura actual"); 
+                        //this.TryClose(); 
+                    }
+                    return;
+                }
+                else
+                {
+                    MessageBox.Show("No ha registrado ninguna factura");
+                    return;
+                }             
+            }
+
             if (keyArgs != null && keyArgs.Key == Key.Escape)
             {
                 this.TryClose();
@@ -411,11 +484,52 @@ namespace Client.Main.ViewModels
 
         }
 
-        public void EliminarProducto(ProductoModel prod)
+        public void TeclaPresionadaListbox(ActionExecutionContext context, ProductoModel prod)
         {
-            window.ShowDialog(new POSAutorizarEliminarProductosViewModel(factura: factura, producto: prod));
-            return;
+            var keyArgs = context.EventArgs as KeyEventArgs;
+            if (keyArgs != null && keyArgs.Key == Key.Enter)
+            {
+                window.ShowDialog(new POSAutorizarEliminarProductosViewModel(factura: factura, producto: prod));
+                return;
+
+            }
+
+            //if (keyArgs != null && keyArgs.Key == Key.Down)
+            //{
+            //    ///Permite que cuado se oprima la tecla se bajar cambie la seleccion del producto
+            //    if (Productos.Count < 1) { return; }
+            //    if (Productos.Any<ProductoModel>(p => p.isSelected == true))
+            //    {
+            //        int indice = Productos.IndexOf(Productos.First<ProductoModel>(p => p.isSelected == true));
+            //        Productos.All(prod => prod.isSelected = false);
+            //        if (indice == Productos.Count - 1)
+            //        {
+            //            Productos[0].isSelected = true;
+            //            return;
+            //        }
+            //        Productos[indice + 1].isSelected = true;
+            //    }
+            //}
+
+            //if (keyArgs != null && keyArgs.Key == Key.Up)
+            //{
+            //    ///Permite que cuado se oprima la tecla se subir cambie la seleccion del producto
+            //    if (Productos.Count < 1) { return; }
+            //    if (Productos.Any<ProductoModel>(p => p.isSelected==true))
+            //    {
+            //        int indice = Productos.IndexOf(Productos.First<ProductoModel>(p => p.isSelected == true));
+            //        Productos.All(prod => prod.isSelected = false);
+            //        if (indice == 0)
+            //        {
+            //            Productos[Productos.Count - 1].isSelected = true;
+            //            return;
+            //        }
+            //        Productos[indice - 1].isSelected = true;
+            //    }
+            //}
+
         }
+
 
     }
 }

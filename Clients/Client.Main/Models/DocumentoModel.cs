@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Client.Main.Models
 {
-    public abstract class DocumentoModel : Screen
+    public abstract class DocumentoModel:Screen
     {
         public string codigo { get; set; }
         public DateTime fecha { get; set; }
