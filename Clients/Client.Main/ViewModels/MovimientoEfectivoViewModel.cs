@@ -86,12 +86,13 @@ namespace Client.Main.ViewModels
             { VentanaPrincipal.ActivateItem(new MovimientoEfectivoNuevoEgresoViewModel(VentanaPrincipal)); }
             else { MessageBox.Show("Solo se puede agregar un egreso si esta conectado al servidor"); }
         }
-        public void NuevoIngreso() { }
+
+        /*public void NuevoIngreso() { }*/
 
 
         public async void click(MovimientoEfectivoModel mov)
         {
-            if (mov.egreso.id != 0)
+            if (!string.IsNullOrEmpty(mov.egreso.id))
             {
                 try
                 {
@@ -101,7 +102,7 @@ namespace Client.Main.ViewModels
                         await re;
                         BindableCollection<EgresoModel> egresos = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<EgresoModel>>(re.Result.ToString());
                         VentanaPrincipal.ActivateItem(new MovimientoEfectivomostrarEgresoViewModel(VentanaPrincipal,egresos[0]));
-
+                        return;
                     }
                 }
                 catch (Exception)
@@ -110,6 +111,26 @@ namespace Client.Main.ViewModels
                     throw;
                 }
             }
+            if (!string.IsNullOrEmpty(mov.ingreso.id))
+            {
+                try
+                {
+                    if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+                    {
+                        Task<object> re = conexion.CallServerMethod("ServidorgetIngresoConFacturas", Arguments: new object[] { mov.ingreso.id });
+                        await re;
+                        BindableCollection<IngresoModel> ingresos = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<IngresoModel>>(re.Result.ToString());
+                        VentanaPrincipal.ActivateItem(new MovimientoEfectivoMostrarIngresoViewModel(VentanaPrincipal, ingresos[0]));
+                        return;
+                    }
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+            }
+
+
         }
 
 

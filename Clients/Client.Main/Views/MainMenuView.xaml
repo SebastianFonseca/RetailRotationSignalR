@@ -104,7 +104,6 @@
                         <RowDefinition/>
                         <RowDefinition/>
                         <RowDefinition/>
-                        <RowDefinition/>
                     </Grid.RowDefinitions>
 
                     <Button Margin="0" Content="GESTION DE PRODUCTOS" FontSize="15" HorizontalAlignment="Stretch"  HorizontalContentAlignment="Center" Grid.Row="0" Style="{StaticResource OptionsSubMenu}" x:Name="GestionDeProductos">
@@ -114,9 +113,8 @@
                             </Style>
                         </Button.Resources>
                     </Button>
-                    <Button Margin="0" Content="FACTURAS DE COMPRA" FontSize="15"  HorizontalAlignment="Stretch" Grid.Row="1" Style="{StaticResource OptionsSubMenu}"/>
-                    <Button Margin="0" Content="INFORMES" FontSize="15"  HorizontalAlignment="Stretch" Grid.Row="2" Style="{StaticResource OptionsSubMenu}"/>
-                    <Button Margin="0" Content="ADMINISTRATIVO" FontSize="15"  HorizontalAlignment="Stretch" Grid.Row="3" Style="{StaticResource OptionsSubMenu}" x:Name="Administrativo">
+                    <Button Margin="0" Content="INFORMES" FontSize="15"  HorizontalAlignment="Stretch" Grid.Row="1" Style="{StaticResource OptionsSubMenu}"/>
+                    <Button Margin="0" Content="ADMINISTRATIVO" FontSize="15"  HorizontalAlignment="Stretch" Grid.Row="2" Style="{StaticResource OptionsSubMenu}" x:Name="Administrativo">
                         <Button.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="0 0 10 10"/>

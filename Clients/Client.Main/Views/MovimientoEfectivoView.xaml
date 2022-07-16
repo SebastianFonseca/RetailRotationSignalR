@@ -64,15 +64,15 @@
                 <!--Encabezado de la tabla con el nombre de las columnas-->
                 <Grid Grid.Row="0" Background="#F3E0D2" Grid.ColumnSpan="2">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="80"/>
-                        <ColumnDefinition Width="100"/>
                         <ColumnDefinition Width="150"/>
                         <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="175"/>
+                        <ColumnDefinition Width="175"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0" Text="Egreso" />
                     <TextBlock Grid.Column="1" Text="Ingreso" />
-                    <TextBlock Grid.Column="2" Text="Valor" />
-                    <TextBlock Grid.Column="3" Text="Saldo"/>
+                    <TextBlock Grid.Column="2" Text="Valor" HorizontalAlignment="Right"/>
+                    <TextBlock Grid.Column="3" Text="Saldo" HorizontalAlignment="Right"/>
                 </Grid>
                 <Separator Grid.Row="0" VerticalAlignment="Bottom" Background="Gray" Margin="0"/>
                 <!--    Listado de productos        -->
@@ -82,16 +82,15 @@
                         <DataTemplate >
                             <Grid Focusable="False" ShowGridLines="False">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="80"/>
-                                    <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="150"/>
-                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="150" MaxWidth="150"/>
+                                    <ColumnDefinition Width="150" MaxWidth="150"/>
+                                    <ColumnDefinition Width="175" MinWidth="150"/>
+                                    <ColumnDefinition Width="175" MinWidth="150"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0" Text="{Binding Path=egreso.id}"  FontSize="18" HorizontalAlignment="Center" />
-                                <TextBlock Grid.Column="1" Text="{Binding Path=codIngreso}" HorizontalAlignment="Center"  TextAlignment="Center" FontSize="18" />
-                                <TextBlock Grid.Column="2" Text="{Binding Path=aumentoDisminucion, StringFormat={}${0:#,#}}" HorizontalAlignment="Center" TextAlignment="Center" FontSize="18"  />
-                                <TextBlock Grid.Column="3" Text="{Binding Path=total, StringFormat={}${0:#,#}}" HorizontalAlignment="Center" TextAlignment="Center" FontSize="18"  />
-                                
+                                <TextBlock Grid.Column="1" Text="{Binding Path=ingreso.id}" HorizontalAlignment="Center" TextTrimming="WordEllipsis" TextAlignment="Center" FontSize="18" />
+                                <TextBlock Grid.Column="2" Text="{Binding Path=aumentoDisminucion, StringFormat={}${0:#.#}}" HorizontalAlignment="Right" TextAlignment="Right"  FontSize="18"  />
+                                <TextBlock Grid.Column="3" Text="{Binding Path=total, StringFormat={}${0:#.#}}" HorizontalAlignment="Right" TextAlignment="Right" FontSize="18"  />
                                 <Separator Grid.Column="0" Grid.ColumnSpan="4" VerticalAlignment="Bottom"  Background="#F7EBD7"  Panel.ZIndex="1"/>
                             </Grid>
                         </DataTemplate>
@@ -114,7 +113,7 @@
                                         </Border>
                                         <ControlTemplate.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="#F3E0D2" />
+                                                <Setter Property="Background" Value="#F7EBD7" />
                                             </Trigger>
                                         </ControlTemplate.Triggers>
                                     </ControlTemplate>
@@ -129,7 +128,7 @@
                 <Button Style="{StaticResource GeneralButton}" Width="140" Content="NUEVO ÍTEM"   x:Name="NuevoItem" FontSize="15"  Height="35" Margin="0 0 5 0"/>
                 <Button Style="{StaticResource GeneralButton}" Width="170" Content="NUEVO PROVEEDOR"   x:Name="NuevoProveedor" FontSize="15"  Height="35" Margin="0 0 5 0"/>
                 <Button Style="{StaticResource GeneralButton}" Width="140" Content="NUEVO EGRESO" x:Name="NuevoEgreso" FontSize="15"  Height="35" Margin="0 0 5 0"/>
-                <Button Style="{StaticResource GeneralButton}" Width="150" Content="NUEVO INGRESO"      x:Name="NuevoIngreso"  FontSize="15"  Height="35" Margin="0 0 5 0"/>
+                <!--<Button Style="{StaticResource GeneralButton}" Width="150" Content="NUEVO INGRESO"      x:Name="NuevoIngreso"  FontSize="15"  Height="35" Margin="0 0 5 0"/>-->
             </DockPanel>
         </Grid>
     </Border>

@@ -12,7 +12,7 @@ using System.Windows;
 
 namespace Client.Main.ViewModels
 {
-    public class ShellViewModel : Conductor<object>, IDataErrorInfo
+    public class ShellViewModel : Conductor<object>/*, IDataErrorInfo*/
     {
         ///Objeto responsable de la administracion de las ventanas.
         private readonly IWindowManager window = new WindowManager();
@@ -79,6 +79,11 @@ namespace Client.Main.ViewModels
 
         public async void Entrar()
         {
+            if (UserPassword == null | User  == null)
+            {
+                MessageBox.Show("Ingrese un usuario y una contraseña");
+                return;
+            }
 
             try
             {
@@ -177,35 +182,35 @@ namespace Client.Main.ViewModels
         }
 
         ///Codigo necesario para la validacion de los datos ingresados en las cajas de texto del formulario.
-        public string Error { get { return null; } }
-        int flag = 0;
-        public string this[string name]
-        {
-            get
-            {
-                string result = null;
-                if (flag == 3)
-                {
-                    if (name == "User")
-                    {
-                        if (String.IsNullOrEmpty(User))
-                        {
-                            result = "Escriba un usuario.";
-                        }
-                    }
-                    else if (name == "UserPassword")
-                    {
-                        if (String.IsNullOrEmpty(UserPassword))
-                        {
-                            result = "Escriba una contaseña.";
-                        }
-                    }
+        //public string Error { get { return null; } }
+        //int flag = 0;
+        //public string this[string name]
+        //{
+        //    get
+        //    {
+        //        string result = null;
+        //        if (flag == 3)
+        //        {
+        //            if (name == "User")
+        //            {
+        //                if (String.IsNullOrEmpty(User))
+        //                {
+        //                    result = "Escriba un usuario.";
+        //                }
+        //            }
+        //            else if (name == "UserPassword")
+        //            {
+        //                if (String.IsNullOrEmpty(UserPassword))
+        //                {
+        //                    result = "Escriba una contaseña.";
+        //                }
+        //            }
 
-                }
-                else { flag += 1; }
-                return result;
-            }
-        }
+        //        }
+        //        else { flag += 1; }
+        //        return result;
+        //    }
+        //}
 
     }
 }

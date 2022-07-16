@@ -4498,9 +4498,7 @@ namespace Client.Main.Utilities
 
         #endregion
 
-
         #region Ingresos
-
 
         /// <summary>
         /// Registra el nuevo ingreso
@@ -4519,9 +4517,9 @@ namespace Client.Main.Utilities
                     cmd.Parameters.AddWithValue("@puntoPago", Ingreso.puntoPago);
                     cmd.Parameters.AddWithValue("@fecha", Ingreso.fecha);
                     cmd.Parameters.AddWithValue("@valor", Ingreso.valor); 
-                    cmd.Parameters.AddWithValue("@empleado", Ingreso.Cajero.cedula);
+                    cmd.Parameters.AddWithValue("@empleado", Ingreso.cajero.cedula);
                     cmd.Parameters.AddWithValue("@puntoVenta", Ingreso.puntoVenta.codigo);
-                    cmd.Parameters.AddWithValue("@efectivo", Ingreso.valor);
+                    cmd.Parameters.AddWithValue("@efectivo", Ingreso.efectivo);
                     cmd.Parameters.AddWithValue("@diferencia", Ingreso.diferencia);
                     cmd.Parameters.AddWithValue("@supervisor", Ingreso.supervisor.cedula);
                     conn.Open();
@@ -4542,11 +4540,12 @@ namespace Client.Main.Utilities
 
 
                     conn.Close();
+
+                    registrarCambioLocal(Tipo: "Insert", NombreMetodoLocal: "getIngresoConFacturas", PK: $"{Ingreso.id}", NombreMetodoServidor: "ServidorNuevoIngreso", RespuestaExitosaServidor: "true");
                     return true;
 
 
 
-                    //registrarCambioLocal(Tipo: "Insert", NombreMetodoLocal: "getFacturaConProductos", PK: $"{factura.codigo}", NombreMetodoServidor: "ServidorNuevaFacturaBool", RespuestaExitosaServidor: "true");
 
                 }
             }
@@ -4568,7 +4567,11 @@ namespace Client.Main.Utilities
             }
         }
 
-
+        /// <summary>
+        /// Obtiene el ingreso registrado con las correspondientes facturas
+        /// </summary>
+        /// <param name="codigoIngreso"></param>
+        /// <returns></returns>
         public static BindableCollection<IngresoModel> getIngresoConFacturas(string codigoIngreso)
         {
             try
@@ -4597,14 +4600,14 @@ namespace Client.Main.Utilities
                             ingreso.fecha = DateTime.Parse(reader["Fecha"].ToString());
                             decimal.TryParse(reader["Valor"].ToString(), out decimal total);
                             ingreso.valor = total;
-                            ingreso.Cajero.cedula = reader["Empleado"].ToString();
+                            ingreso.cajero.cedula = reader["Empleado"].ToString();
                             ingreso.puntoVenta.codigo = reader["PuntoVenta"].ToString();
                             decimal.TryParse(reader["Efectivo"].ToString(), out decimal efectivo);
                             ingreso.efectivo = efectivo;
                             decimal.TryParse(reader["Diferencia"].ToString(), out decimal diferencia);
                             ingreso.diferencia = diferencia;
                             ingreso.supervisor.cedula = reader["Supervisor"].ToString(); 
-                            ingreso.facturas = getFacturasIngreso(ingreso.id);
+                            ingreso.facturas = getFacturasIngreso(codigoIngreso);
                             cIngresos.Add(ingreso);
                         }
                     }
@@ -4626,7 +4629,7 @@ namespace Client.Main.Utilities
         /// </summary>
         /// <param name="codigoFactura"></param>
         /// <returns></returns>
-        public static BindableCollection<FacturaModel> getFacturasIngreso(string codigoFactura)
+        public static BindableCollection<FacturaModel> getFacturasIngreso(string codigoIngreso)
         {
             try
             {
@@ -4634,9 +4637,9 @@ namespace Client.Main.Utilities
                 {
                     BindableCollection<FacturaModel> facturas = new BindableCollection<FacturaModel>();
 
-                    string cadena = $"select * from ingresofacturas  where CodigoIngreso = @codigoIngreso;";
+                    string cadena = $"select * from ingresofacturas  where Ingreso = @codigoIngreso;";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
-                    cmd.Parameters.AddWithValue("@codigoFactura", codigoFactura);
+                    cmd.Parameters.AddWithValue("@codigoIngreso", codigoIngreso);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
@@ -4664,14 +4667,7 @@ namespace Client.Main.Utilities
 
         }
 
-
-
-
-
-
         #endregion
-
-
 
         #region Registros - Sincornizacion
         /// <summary>

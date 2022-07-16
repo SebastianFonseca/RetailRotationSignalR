@@ -6,7 +6,7 @@ namespace ServerConsole.Models
 {
     public class EgresoModel
     {
-        public int id { get; set; }
+        public string id { get; set; }
         public decimal valor { get; set; }
         public ProveedorModel proveedor { get; set; } = new ProveedorModel();
         public string descripcion { get; set; }

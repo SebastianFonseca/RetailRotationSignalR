@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Client.Main.Views.MovimientoEfectivomostrarEgresoView"
+﻿<UserControl x:Class="Client.Main.Views.MovimientoEfectivoMostrarIngresoView"
             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -40,22 +40,21 @@
                 <ColumnDefinition/>
                 <ColumnDefinition Width="0.1*"/>
             </Grid.ColumnDefinitions>
-           
+
             <Grid.RowDefinitions>
                 <RowDefinition Height="1.6*" />
                 <RowDefinition Height="8.4*"/>
                 <RowDefinition Height="1.6*" />
-
             </Grid.RowDefinitions>
-            
+
             <!--Boton atras-->
             <Button x:Name="BackButton" Grid.Column="0" Grid.Row="0" Margin="5" Style="{StaticResource GeneralButton}" VerticalAlignment="Top">
                 <fa:ImageAwesome Icon="ArrowLeft" Height="25"/>
             </Button>
 
 
-                <!--Formulario principal-->
-            <Grid Background="Transparent" ShowGridLines="False"  c:KeyboardFocus.On="{Binding ElementName=Nombre}" Grid.Column="1" Grid.Row="1" VerticalAlignment="Stretch" >
+            <!--Formulario principal-->
+            <Grid Background="Transparent" ShowGridLines="False" c:KeyboardFocus.On="{Binding ElementName=Nombre}" Grid.Column="1" Grid.Row="1" VerticalAlignment="Stretch" >
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0.4*"/>
@@ -79,41 +78,42 @@
                 <Border Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" Grid.RowSpan="10" Background="#F3E0D2" BorderBrush="Black" BorderThickness="0.5" CornerRadius="20"  />
 
 
-                <!--Linea 1-->
+                <!--Linea 0-->
                 <TextBlock Grid.Row="0" Grid.Column="0" Margin="0 0 0 -3" HorizontalAlignment="Right">ID:</TextBlock>
                 <TextBlock  x:Name="Id"  TextAlignment="Left" HorizontalAlignment="Left" FontWeight="Normal" Grid.Row="0" Grid.Column="2"/>
 
-
+                <!--Linea 1-->
+                <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right">Cajero:</TextBlock>
+                <TextBlock x:Name="Cajero" HorizontalAlignment="Left" FontWeight="Normal" Grid.Row="1" Grid.Column="2"/>
+                                
                 <!--Linea 2-->
-                <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right">Item:</TextBlock>
-                <TextBlock Grid.Row="1" Grid.Column="2"  x:Name="Item" HorizontalAlignment="Left" FontWeight="Normal"/>
+                <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right">Punto de pago:</TextBlock>
+                <TextBlock Grid.Row="2" Grid.Column="2"  x:Name="PuntoPago" HorizontalAlignment="Left" FontWeight="Normal"/>
 
                 <!--Linea 3-->
-                <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Bottom" FontSize="21" HorizontalAlignment="Right">Empleado:</TextBlock>
-                <TextBlock  Grid.Row="2" Grid.Column="2"  x:Name="Empleado"  HorizontalAlignment="Left" FontWeight="Normal"/>
+                <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Bottom" FontSize="21" HorizontalAlignment="Right">Punto de venta:</TextBlock>
+                <TextBlock  Grid.Row="3" Grid.Column="2"  x:Name="PuntoVenta"  HorizontalAlignment="Left" FontWeight="Normal"/>
 
 
                 <!--linea 4-->
-                <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Bottom" HorizontalAlignment="Right">Local:</TextBlock>
-                <TextBlock x:Name="Local" HorizontalAlignment="Left" FontWeight="Normal" Grid.Row="3" Grid.Column="2"  />
+                <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Bottom" HorizontalAlignment="Right">Fecha:</TextBlock>
+                <TextBlock x:Name="Fecha" HorizontalAlignment="Left" FontWeight="Normal" Grid.Row="4" Grid.Column="2"  />
 
                 <!--Linea 5-->
-                <TextBlock Grid.Row="4" Grid.Column="0"  HorizontalAlignment="Right">Proveedor:</TextBlock>
-                <TextBlock x:Name="Proveedor" HorizontalAlignment="Left" FontWeight="Normal" Grid.Row="4" Grid.Column="2"  />
+                <TextBlock Grid.Row="5" Grid.Column="0"  HorizontalAlignment="Right">Total:</TextBlock>
+                <TextBlock x:Name="Total"  Text="{Binding Total, StringFormat={}${0:#.#}}" HorizontalAlignment="Left" FontWeight="Normal" Grid.Row="5" Grid.Column="2"  />
 
                 <!--Linea 6-->
-                <TextBlock Grid.Row="6" Grid.Column="0" VerticalAlignment="Bottom" HorizontalAlignment="Right">Fecha:</TextBlock>
-                <TextBlock x:Name="Fecha"  Grid.Row="6" Grid.Column="2" HorizontalAlignment="Left" FontWeight="Normal"/>
+                <TextBlock Grid.Row="6" Grid.Column="0" VerticalAlignment="Bottom" HorizontalAlignment="Right">Efectivo:</TextBlock>
+                <TextBlock Text="{Binding Efectivo, StringFormat={}${0:#.#}}" Grid.Row="6" Grid.Column="2" HorizontalAlignment="Left" FontWeight="Normal"/>
 
                 <!--Linea 7-->
-                <TextBlock Grid.Row="7" Grid.Column="0" HorizontalAlignment="Right">Soporte:</TextBlock>
-                <TextBlock x:Name="Soporte" HorizontalAlignment="Left" FontWeight="Normal" Grid.Row="7" Grid.Column="2"  />
+                <TextBlock Grid.Row="7" Grid.Column="0" HorizontalAlignment="Right">Diferencia:</TextBlock>
+                <TextBlock Text="{Binding Diferencia, StringFormat={}${0:#.#}}" HorizontalAlignment="Left" FontWeight="Normal" Grid.Row="7" Grid.Column="2"  />
                 <!--Linea 8-->
-                <TextBlock Grid.Row="8" Grid.Column="0" HorizontalAlignment="Right">Valor:</TextBlock>
-                <TextBlock x:Name="Valor" Text="{Binding Path=Valor, StringFormat={}${0:#.#} }" HorizontalAlignment="Left" FontWeight="Normal" Grid.Row="8" Grid.Column="2"  />
-                <!--Linea 9-->
-                <TextBlock Grid.Row="5" Grid.Column="0" HorizontalAlignment="Right">Descripcion:</TextBlock>
-                <TextBlock x:Name="Descripcion" HorizontalAlignment="Left" FontWeight="Normal" Grid.Row="5" Grid.Column="2"  />
+                <TextBlock Grid.Row="8" Grid.Column="0" HorizontalAlignment="Right">Supervisor:</TextBlock>
+                <TextBlock x:Name="Supervisor"  HorizontalAlignment="Left" FontWeight="Normal" Grid.Row="8" Grid.Column="2"  />
+
 
 
             </Grid>

@@ -16,14 +16,14 @@ namespace Client.Main.ViewModels
         public POSArqueoViewModel(EmpleadoModel cajero)
         {
             Ingreso.valor = DbConnection.valorTotalFacturas();
-            Ingreso.Cajero = cajero;
+            Ingreso.cajero = cajero;
         }
 
         public decimal? Total => Ingreso.valor;
         public decimal? Efectivo { get {return Ingreso.efectivo; } set { Ingreso.efectivo = value; NotifyOfPropertyChange(() => Efectivo); NotifyOfPropertyChange(() => Diferencia); } }
         public decimal? Diferencia { get { if (Ingreso.valor != 0 && Ingreso.efectivo != 0) return Ingreso.valor - Ingreso.efectivo; else return null; } }
         public string Usuario { set { Ingreso.supervisor.cedula = value ; } }
-        public string Responsable { get { return Ingreso.Cajero.firstName +" "+  Ingreso.Cajero.lastName; } }
+        public string Responsable { get { return Ingreso.cajero.firstName +" "+  Ingreso.cajero.lastName; } }
 
         private string _contraseña;
         public string Contraseña
@@ -53,7 +53,7 @@ namespace Client.Main.ViewModels
                     Ingreso.diferencia = Ingreso.valor - Ingreso.efectivo;
                     if (DbConnection.NuevoIngreso(Ingreso))
                     {
-                        MessageBox.Show($"Registrado. \nProcesó: {Ingreso.supervisor.cedula} \nCaja: {Ingreso.Cajero.cedula} ");
+                        MessageBox.Show($"Registrado. \nProcesó: {Ingreso.supervisor.cedula + " - " +  Ingreso.supervisor.firstName +  " "  + Ingreso.supervisor.lastName} \nCaja: { Ingreso.cajero.cedula + " - "+ Ingreso.cajero.firstName + " " +Ingreso.cajero.lastName} ");
                         this.TryClose();
                         return;
                     }

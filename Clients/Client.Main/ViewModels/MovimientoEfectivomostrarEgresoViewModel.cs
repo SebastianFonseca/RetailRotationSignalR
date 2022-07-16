@@ -19,17 +19,16 @@ namespace Client.Main.ViewModels
 
         public MovimientoEfectivomostrarEgresoViewModel(MainWindowViewModel argVentana, EgresoModel egreso)
         {
-
             this.egreso = egreso;
             VentanaPrincipal = argVentana;
         }
 
-        public string Id => egreso.id.ToString();
+        public string Id => egreso.id;
         public string Item => egreso.itemMovimientoefectivo.codigoItem.ToString() + " - " + egreso.itemMovimientoefectivo.descripcion;
         public string Empleado => egreso.responsable.cedula.ToString();
         public string Local { get { return egreso.local.codigo; } }
         public string Proveedor { get { return egreso.proveedor.cedula; } } 
-        public string   Fecha { get { return egreso.fecha.ToString("dd-MM-yyyy"); } }
+        public string Fecha { get { return egreso.fecha.ToString("dd-MM-yyyy"); } }
         public string Soporte { get { return egreso.soporte; } }
         public decimal Valor { get { return egreso.valor; } }
         public string Descripcion { get { return egreso.descripcion; } }

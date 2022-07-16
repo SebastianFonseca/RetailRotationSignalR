@@ -4013,7 +4013,6 @@ namespace ServerConsole.Utilities
 
         #endregion
 
-
         #region Ingresos
 
 
@@ -4022,7 +4021,7 @@ namespace ServerConsole.Utilities
         /// </summary>
         /// <param name="Ingreso"></param>
         /// <returns></returns>
-        public static bool NuevoIngreso(IngresoModel Ingreso)
+        public static string NuevoIngreso(IngresoModel Ingreso)
         {
             try
             {
@@ -4034,34 +4033,23 @@ namespace ServerConsole.Utilities
                     cmd.Parameters.AddWithValue("@puntoPago", Ingreso.puntoPago);
                     cmd.Parameters.AddWithValue("@fecha", Ingreso.fecha);
                     cmd.Parameters.AddWithValue("@valor", Ingreso.valor);
-                    cmd.Parameters.AddWithValue("@empleado", Ingreso.Cajero.cedula);
+                    cmd.Parameters.AddWithValue("@empleado", Ingreso.cajero.cedula);
                     cmd.Parameters.AddWithValue("@puntoVenta", Ingreso.puntoVenta.codigo);
                     cmd.Parameters.AddWithValue("@efectivo", Ingreso.valor);
                     cmd.Parameters.AddWithValue("@diferencia", Ingreso.diferencia);
                     cmd.Parameters.AddWithValue("@supervisor", Ingreso.supervisor.cedula);
                     conn.Open();
                     cmd.ExecuteNonQuery();
-
-                    ///Registra las facturas que componen el ingreso
-                    string cadena0 = "insert into ingresoFacturas select dbo.Ingresos.CodigoIngreso, dbo.FacturasVenta.CodigoFactura as f from FacturasVenta, Ingresos where  CodigoIngreso = @ingreso and dbo.FacturasVenta.fecha > (select fechahora from PrimeraFactura where id  = (select max(id) from PrimeraFactura))";
-                    SqlCommand cmd0 = new SqlCommand(cadena0, conn);
-                    cmd0.Parameters.AddWithValue("@ingreso", Ingreso.id);
-                    cmd0.ExecuteNonQuery();
-
-
-                    ///Registra la ultima factura para el proximo arqueo
-                    string cadena1 = "insert into PrimeraFactura(CodigoFactura, InicioFinal, FechaHora) values (( select CodigoFactura from FacturasVenta where fecha =  (select MAX(Fecha) from facturasVenta where fecha  > (select fechahora from PrimeraFactura where id  = (select max(id) from PrimeraFactura))) ),'Final', @fechaHora); ";
-                    SqlCommand cmd1 = new SqlCommand(cadena1, conn);
-                    cmd1.Parameters.AddWithValue("@fechaHora", DateTime.Now);
-                    cmd1.ExecuteNonQuery();
-
-
-                    conn.Close();
-                    return true;
-
-
-
-                    //registrarCambioLocal(Tipo: "Insert", NombreMetodoLocal: "getFacturaConProductos", PK: $"{factura.codigo}", NombreMetodoServidor: "ServidorNuevaFacturaBool", RespuestaExitosaServidor: "true");
+                    string response = InsertarFacturasIngreso(ingreso: Ingreso);
+                    if (response == "Y")
+                    {
+                        conn.Close();
+                        NuevoMovimientoDeEfectivo(aumentoDisminucion: Ingreso.efectivo, codigoPuntoVenta: Ingreso.puntoVenta.codigo, codigoIngreso: Ingreso.id, codigoEgreso: null);
+                        Statics.Imprimir($"{RetailHUB.usuarioConectado}:Ha registrado un  nuevo ingreso => Cod. {Ingreso.id} | Valor: {Ingreso.valor}");
+                        Statics.Imprimir($"Punto de pago: {Ingreso.puntoPago} | Punto de venta: {Ingreso.puntoVenta.codigo} | Caja:{Ingreso.cajero.cedula}");
+                        return "true";
+                    }
+                    else { return "false"; }
 
                 }
             }
@@ -4070,20 +4058,63 @@ namespace ServerConsole.Utilities
 
                 if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
                 {
-                    MessageBox.Show("Error: registrando el ingreso.");
-                    return false;
+                    Statics.Imprimir("Error: registrando el ingreso.");
+                    return "false";
                 }
                 else
                 {
-                    MessageBox.Show("Error: Local. NuevoIngreso " + e.Message);
+                    Statics.Imprimir("Error: Servidor. NuevoIngreso " + e.Message);
 
-                    return false;
+                    return "false";
                 }
 
             }
         }
 
+        /// <summary>
+        /// Registra las facturas que hacen parte del nuevo ingreso
+        /// </summary>
+        /// <param name="ingreso"></param>
+        /// <returns></returns>
+        public static string InsertarFacturasIngreso(IngresoModel ingreso)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    foreach (FacturaModel factura in ingreso.facturas)
+                    {
+                        string cadena = $"insert into ingresofacturas(Ingreso,Factura) values ('{ingreso.id}', @codigoFactura);";
+                        SqlCommand cmd = new SqlCommand(cadena, conn);
+                        cmd.Parameters.AddWithValue("@codigoFactura", factura.codigo);
+                        conn.Open();
+                        cmd.ExecuteNonQuery();
+                        conn.Close();     
+                    }
+                    conn.Close();
+                    return "Y";
+                }
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
+                {
+                    return "Ya registrado.";
+                }
+                else
+                {
+                    Statics.Imprimir(e.Message);
 
+                    return "Cliente " + e.Message;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Obtiene el ingreso registrado con las correspondientes facturas
+        /// </summary>
+        /// <param name="codigoIngreso"></param>
+        /// <returns></returns>
         public static BindableCollection<IngresoModel> getIngresoConFacturas(string codigoIngreso)
         {
             try
@@ -4099,7 +4130,7 @@ namespace ServerConsole.Utilities
                     bool soloUnValor = true;
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
-                        if (!soloUnValor) { MessageBox.Show("Error: Código de ingreso repetido. Contacte a un administrador."); return null; }
+                        if (!soloUnValor) { Statics.Imprimir("Error: Código de ingreso repetido. Contacte a un administrador."); return null; }
                         cIngresos.Clear();
                         while (reader.Read())
                         {
@@ -4112,7 +4143,7 @@ namespace ServerConsole.Utilities
                             ingreso.fecha = DateTime.Parse(reader["Fecha"].ToString());
                             decimal.TryParse(reader["Valor"].ToString(), out decimal total);
                             ingreso.valor = total;
-                            ingreso.Cajero.cedula = reader["Empleado"].ToString();
+                            ingreso.cajero.cedula = reader["Empleado"].ToString();
                             ingreso.puntoVenta.codigo = reader["PuntoVenta"].ToString();
                             decimal.TryParse(reader["Efectivo"].ToString(), out decimal efectivo);
                             ingreso.efectivo = efectivo;
@@ -4129,7 +4160,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
+                Statics.Imprimir(e.Message);
 
                 Console.WriteLine(e.Message);
                 return null;
@@ -4141,7 +4172,7 @@ namespace ServerConsole.Utilities
         /// </summary>
         /// <param name="codigoFactura"></param>
         /// <returns></returns>
-        public static BindableCollection<FacturaModel> getFacturasIngreso(string codigoFactura)
+        public static BindableCollection<FacturaModel> getFacturasIngreso(string codigoIngreso)
         {
             try
             {
@@ -4149,9 +4180,9 @@ namespace ServerConsole.Utilities
                 {
                     BindableCollection<FacturaModel> facturas = new BindableCollection<FacturaModel>();
 
-                    string cadena = $"select * from ingresofacturas  where CodigoIngreso = @codigoIngreso;";
+                    string cadena = $"select * from ingresofacturas  where Ingreso = @codigoIngreso;";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
-                    cmd.Parameters.AddWithValue("@codigoFactura", codigoFactura);
+                    cmd.Parameters.AddWithValue("@CodigoIngreso", codigoIngreso);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
@@ -4171,7 +4202,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
+                Statics.Imprimir(e.Message);
 
                 Console.WriteLine(e.Message);
                 return null;
@@ -4179,15 +4210,7 @@ namespace ServerConsole.Utilities
 
         }
 
-
-
-
-
-
         #endregion
-
-
-
 
         #region MovimientoEfectivo
 
@@ -4327,7 +4350,7 @@ namespace ServerConsole.Utilities
         /// <param name="codigoIngreso"></param>
         /// <param name="codigoEgreso"></param>
         /// <returns></returns>
-        public static string NuevoMovimientoDeEfectivo(decimal aumentoDisminucion, string codigoPuntoVenta, string codigoIngreso= null,string codigoEgreso = null)
+        public static string NuevoMovimientoDeEfectivo(decimal? aumentoDisminucion, string codigoPuntoVenta, string codigoIngreso= null,string codigoEgreso = null)
         {
             try
             {
@@ -4377,7 +4400,7 @@ namespace ServerConsole.Utilities
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
 
-                    string cadena = $"select Distinct * from movimientosefectivo where codigoPuntoVenta = @codigoLocal order by id desc;";
+                    string cadena = $"select Distinct * from movimientosefectivo where codigoPuntoVenta = @codigoLocal order by id;";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     cmd.Parameters.AddWithValue("@codigoLocal", codigoLocal);
                     conn.Open();
@@ -4387,10 +4410,9 @@ namespace ServerConsole.Utilities
                         {
                             MovimientoEfectivoModel mov = new MovimientoEfectivoModel();
                             mov.id = Int32.Parse(reader["ID"].ToString());                            
-                            Int32.TryParse(reader["CodigoEgreso"].ToString(), out int codEgre);
-                            mov.egreso.id = codEgre;
-                            Int32.TryParse(reader["CodigoIngreso"].ToString(), out int codIngre);
-                            mov.codIngreso = codIngre;
+                            /*Int32.TryParse(reader["CodigoEgreso"].ToString(), out int codEgre);*/
+                            mov.egreso.id = reader["CodigoEgreso"].ToString();
+                            mov.ingreso.id = reader["CodigoIngreso"].ToString();
                             mov.aumentoDisminucion = decimal.Parse(reader["AumentoDisminucion"].ToString());
                             mov.total = decimal.Parse(reader["total"].ToString());
                             movimientos.Add(mov);
@@ -4421,19 +4443,19 @@ namespace ServerConsole.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string codigo;
-                    string cadena = $"select IDENT_CURRENT( 'Egresos' ) as Valor";
-                    SqlCommand cmd = new SqlCommand(cadena, conn);
-                    conn.Open();
-                    using (SqlDataReader reader = cmd.ExecuteReader())
-                    {
+                    //string codigo;
+                    //string cadena = $"select IDENT_CURRENT( 'Egresos' ) as Valor";
+                    //SqlCommand cmd = new SqlCommand(cadena, conn);
+                    //conn.Open();
+                    //using (SqlDataReader reader = cmd.ExecuteReader())
+                    //{
 
-                        reader.Read();
-                        codigo = reader["Valor"].ToString();
+                    //    reader.Read();
+                    //    codigo = reader["Valor"].ToString();
 
-                    }
-                    conn.Close();
-                    return codigo;
+                    //}
+                    //conn.Close();
+                    return DateTime.Now.ToString("ddMMyyyyHHmmssffff");
                 }
             }
             catch (Exception e)
@@ -4454,9 +4476,10 @@ namespace ServerConsole.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = "INSERT INTO Egresos(CodigoItemMovimientoEfectivo, CedulaEmpleado, CodigoPuntoVenta, CedulaProveedor,Fecha,Soporte,Valor,Descripcion) " +
-                        "output inserted.codigoEgreso VALUES (@codigoItem,@cedula,@pv,@proveedor,@fecha,@soporte,@valor,@descripcion);";
+                    string cadena = "INSERT INTO Egresos(CodigoEgreso,CodigoItemMovimientoEfectivo, CedulaEmpleado, CodigoPuntoVenta, CedulaProveedor,Fecha,Soporte,Valor,Descripcion) " +
+                        "output inserted.codigoEgreso VALUES (@codigoEgreso,@codigoItem,@cedula,@pv,@proveedor,@fecha,@soporte,@valor,@descripcion);";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@codigoEgreso", egreso.id);
                     cmd.Parameters.AddWithValue("@codigoItem", egreso.itemMovimientoefectivo.codigoItem);
                     cmd.Parameters.AddWithValue("@cedula", egreso.responsable.cedula);
                     cmd.Parameters.AddWithValue("@pv", egreso.local.codigo);
@@ -4485,8 +4508,8 @@ namespace ServerConsole.Utilities
             catch (Exception e)
             {
 
-               
-                    return e.Message;
+                Statics.Imprimir(e.Message);
+                return e.Message;
                 
             }
         }
@@ -4503,8 +4526,9 @@ namespace ServerConsole.Utilities
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
                     BindableCollection<EgresoModel> egresos = new BindableCollection<EgresoModel>();
-                    string cadena = $"select Egresos.CodigoEgreso, Egresos.CodigoItemMovimientoEfectivo,Egresos.CedulaEmpleado,Egresos.CodigoPuntoVenta, egresos.CedulaProveedor, Egresos.Fecha,Egresos.Soporte, Egresos.Valor,Egresos.Descripcion as descripcionegreso,ItemsMovimientoEfectivo.Descripcion as descripcionitem from egresos join ItemsMovimientoEfectivo on ItemsMovimientoEfectivo.CodigoItem = Egresos.CodigoItemMovimientoEfectivo where CodigoEgreso = {codigoEgreso};";
-                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    string cadena = $"select Egresos.CodigoEgreso, Egresos.CodigoItemMovimientoEfectivo,Egresos.CedulaEmpleado,Egresos.CodigoPuntoVenta, egresos.CedulaProveedor, Egresos.Fecha,Egresos.Soporte, Egresos.Valor,Egresos.Descripcion as descripcionegreso,ItemsMovimientoEfectivo.Descripcion as descripcionitem from egresos join ItemsMovimientoEfectivo on ItemsMovimientoEfectivo.CodigoItem = Egresos.CodigoItemMovimientoEfectivo where CodigoEgreso = @cod;";
+                    SqlCommand cmd = new SqlCommand(cadena, conn); 
+                    cmd.Parameters.AddWithValue("@cod", codigoEgreso);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
@@ -4512,8 +4536,8 @@ namespace ServerConsole.Utilities
                         while (reader.Read())
                         {
                             EgresoModel egreso = new EgresoModel();
-                            Int32.TryParse(reader["CodigoEgreso"].ToString(), out int codigo);
-                            egreso.id = codigo;
+                            /*Int32.TryParse(reader["CodigoEgreso"].ToString(), out int codigo);*/
+                            egreso.id = reader["CodigoEgreso"].ToString();
                             Int32.TryParse(reader["CodigoItemMovimientoEfectivo"].ToString(), out int item);
                             egreso.itemMovimientoefectivo.codigoItem = item;
                             egreso.itemMovimientoefectivo.descripcion = reader["descripcionitem"].ToString();
@@ -4599,7 +4623,6 @@ namespace ServerConsole.Utilities
                 return e.Message;
             }
         }
-
 
         #endregion
 

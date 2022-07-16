@@ -782,6 +782,31 @@ namespace ServerConsole
 
         #endregion
 
+        #region Ingresos
+        /// <summary>
+        /// Registra el nuevo ingreso
+        /// </summary>
+        /// <param name="Ingreso"></param>
+        /// <returns></returns>
+        public string ServidorNuevoIngreso(IngresoModel Ingreso)
+        {
+            return DbConnection.NuevoIngreso(Ingreso);
+        }
+
+        /// <summary>
+        /// Obtiene el ingreso registrado con las correspondientes facturas
+        /// </summary>
+        /// <param name="codigoIngreso"></param>
+        /// <returns></returns>
+        public  BindableCollection<IngresoModel> ServidorgetIngresoConFacturas(string codigoIngreso)
+        {
+            return DbConnection.getIngresoConFacturas(codigoIngreso);
+        }
+
+
+
+        #endregion
+
         #region MovimientoEfectivo
 
         /// <summary>

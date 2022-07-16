@@ -32,8 +32,7 @@ namespace Client.Main.Models
         public decimal? diferencia { get; set; }
 
         public EmpleadoModel supervisor { get; set; } = new EmpleadoModel();
-        public EmpleadoModel Cajero { get; set; } = new EmpleadoModel();
-
+        public EmpleadoModel cajero { get; set; } = new EmpleadoModel();
         public BindableCollection<FacturaModel> facturas { get; set; } = new BindableCollection<FacturaModel>();
 
     }

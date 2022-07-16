@@ -4,6 +4,7 @@ using Client.Main.Models;
 using Client.Main.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -56,7 +57,9 @@ namespace Client.Main.ViewModels
             {
                 Task<object> re = conexion.CallServerMethod("ServidorgetNextIdEgreso", Arguments: new object[] { });
                 await re;
-                Id = re.Result.ToString();
+                
+                Id = ConfigurationManager.AppSettings["Caja"].Split(':')[0] + ":" +  re.Result.ToString();
+                egreso.id = Id;
             }
         }
 

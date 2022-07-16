@@ -40,7 +40,6 @@
                 <RowDefinition/>
                 <RowDefinition/>
                 <RowDefinition/>
-                <RowDefinition/>
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="0"  Grid.Column="2" Grid.ColumnSpan="2" HorizontalAlignment="Center">ARQUEO</TextBlock>
@@ -55,19 +54,19 @@
             <TextBox   Grid.Row="1" Grid.Column="4"  Text="{Binding Path=Efectivo}" Style="{StaticResource GeneralTextBox}" Height="30" />
 
             <!--Fila 2-->
-            <TextBlock Grid.Row="3" Grid.Column="1"  Text="Responsable:"/>
-            <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding Path=Responsable}" FontSize="18" FontWeight="Normal"/>
-
-            <TextBlock Grid.Row="3" Grid.Column="3"  Text="Diferencia:"/>
-            <TextBlock Grid.Row="3" Grid.Column="4" Text="{Binding Path=Diferencia, StringFormat={}${0:#.}}" FontSize="18" FontWeight="Normal"/>
+            <TextBlock Grid.Row="2" Grid.Column="1"  Text="Responsable:"/>
+            <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding Path=Responsable}" FontSize="18" FontWeight="Normal"/>
+                                 
+            <TextBlock Grid.Row="2" Grid.Column="3"  Text="Diferencia:"/>
+            <TextBlock Grid.Row="2" Grid.Column="4" Text="{Binding Path=Diferencia, StringFormat={}${0:#.}}" FontSize="18" FontWeight="Normal"/>
 
             <!--Fila 3-->
-            <TextBlock Grid.Row="4" Grid.Column="1"  Text="Usuario:" />
-            <TextBox   Grid.Row="4" Grid.Column="2"  x:Name="Usuario" Style="{StaticResource GeneralTextBox}" Height="30" SpellCheck.IsEnabled="False"/>
+            <TextBlock Grid.Row="3" Grid.Column="1"  Text="Usuario:" />
+            <TextBox   Grid.Row="3" Grid.Column="2"  x:Name="Usuario" Style="{StaticResource GeneralTextBox}" Height="30" SpellCheck.IsEnabled="False"/>
 
             <!--Fila 4-->
-            <TextBlock   Grid.Row="4" Grid.Column="3"  Text="Contraseña:"/>
-            <StackPanel Grid.Row="4" Grid.Column="4"  VerticalAlignment="Center">
+            <TextBlock  Grid.Row="3" Grid.Column="3"  Text="Contraseña:"/>
+            <StackPanel Grid.Row="3" Grid.Column="4"  VerticalAlignment="Center">
                 <PasswordBox  Height="30" Margin="0" VerticalContentAlignment="Center" pwbx:PasswordBoxAssistant.BoundPassword="{Binding Contraseña, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True, ValidatesOnDataErrors=True}" Background="#F3E0D2" BorderThickness="0" x:Name="Contraseña" />
                 <Separator Grid.Row="0"  Grid.Column="2" Grid.ColumnSpan="2" VerticalAlignment="Bottom"  BorderBrush="Black"  BorderThickness="1.5"  />
             </StackPanel>
