@@ -525,6 +525,14 @@ namespace ServerConsole
             return DbConnection.getUltimoRegistroCompraProducto(codigoProducto);
         }
 
+        /// <summary>
+        /// Retorna informacion de las compras pendietes por pagar, y del número total de compras
+        /// </summary>
+        /// <returns></returns>
+        public decimal[] ServidorinfoRegistros()
+        {
+            return DbConnection.infoRegistros();
+        }
 
         #endregion
 

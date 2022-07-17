@@ -9,7 +9,7 @@ using System.Windows;
 
 namespace Client.Main.ViewModels
 {
-    public class InformesBuscarClientesViewModel:Screen
+    public class InformesBuscarClientesViewModel : Screen
     {
 
         public MainWindowViewModel VentanaPrincipal;
@@ -45,7 +45,7 @@ namespace Client.Main.ViewModels
                 MessageBox.Show(e.Message);
             }
         }
- 
+
         public decimal? Promedio { get; set; }
         public decimal? Facturas { get; set; }
         public decimal? Clientes { get; set; }
@@ -54,7 +54,7 @@ namespace Client.Main.ViewModels
         private string _buscarTbx;
         public string BuscarTbx
         {
-            get { return _buscarTbx; }
+            get => _buscarTbx;
             set
             {
                 if (value == null)
@@ -71,10 +71,7 @@ namespace Client.Main.ViewModels
         private BindableCollection<ClientesModel> _busquedas = new BindableCollection<ClientesModel>();
         public BindableCollection<ClientesModel> Busquedas
         {
-            get
-            {
-                return _busquedas;
-            }
+            get => _busquedas;
             set
             {
                 _busquedas = value;
@@ -86,7 +83,7 @@ namespace Client.Main.ViewModels
         private ClientesModel _clienteSeleccionado;
         public ClientesModel ClienteSeleccionado
         {
-            get { return _clienteSeleccionado; }
+            get => _clienteSeleccionado;
             set
             {
                 if (value != null)
@@ -103,7 +100,11 @@ namespace Client.Main.ViewModels
 
         public void BackButton()
         {
-            if (Busquedas.Count != 0) Busquedas.Clear();
+            if (Busquedas.Count != 0)
+            {
+                Busquedas.Clear();
+            }
+
             VentanaPrincipal.ActivateItem(new InformesViewModel(VentanaPrincipal));
         }
 
@@ -120,7 +121,7 @@ namespace Client.Main.ViewModels
             }
         }
 
-        public string Error { get { return null; } }
+        public string Error => null;
         int flag = 0;
         public string this[string name]
         {
@@ -172,7 +173,7 @@ namespace Client.Main.ViewModels
                     {
                         BusquedasVisibilidad = "Visible";
                     }
-                }                
+                }
             }
             catch (Exception e)
             {

@@ -36,13 +36,15 @@ namespace Client.Main.ViewModels
                     object[] respuesta = System.Text.Json.JsonSerializer.Deserialize<object[]>(re.Result.ToString());
                     this.resultadoCliente.facturas = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<FacturaModel>>(respuesta[0].ToString());
 
-                    decimal.TryParse(respuesta[1].ToString(), out decimal promdias);
-                    PromedioDiasCompras = promdias;
-
-                    if (resultadoCliente.facturas != null) 
+                    if (respuesta[1].ToString() != null)
+                    {
+                        decimal.TryParse(respuesta[1].ToString(), out decimal promdias);
+                        PromedioDiasCompras = promdias;
+                    }
+                    if (resultadoCliente.facturas != null && resultadoCliente.facturas.Count > 0 ) 
                     { 
-                    UltimaCompra = $" {resultadoCliente.facturas[0].fecha.ToString("dd-MM-yyyy")}, {(DateTime.Today - resultadoCliente.facturas[0].fecha).Days} día(s) atras. ";
-                    ComprasTotal = resultadoCliente.facturas.Sum<FacturaModel>(f => f.valorTotal);
+                        UltimaCompra = $"{resultadoCliente.facturas[0].fecha.ToString("dd-MM-yyyy")}, {(DateTime.Today - resultadoCliente.facturas[0].fecha).Days} día(s) atras. N. facturas: {resultadoCliente.facturas.Count}.";
+                        ComprasTotal = resultadoCliente.facturas.Sum<FacturaModel>(f => f.valorTotal);
                     }
 
 

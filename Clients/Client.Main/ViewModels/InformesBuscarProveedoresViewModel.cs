@@ -16,8 +16,38 @@ namespace Client.Main.ViewModels
         public InformesBuscarProveedoresViewModel(MainWindowViewModel ventanaPrincipal)
         {
             this.VentanaPrincipal = ventanaPrincipal;
+            getInfo();
         }
 
+        public async void getInfo()
+        {
+            try
+            {
+                if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+                {
+
+                    Task<object> re = conexion.CallServerMethod("ServidorinfoRegistros", Arguments: new object[] {  });
+                    await re;
+
+                    decimal?[] respuesta = System.Text.Json.JsonSerializer.Deserialize<decimal?[]>(re.Result.ToString());
+                    Total = respuesta[0];
+                    Pendientes = (int)respuesta[2];
+                    Registros =(int)respuesta[1];
+                }
+                if (MainWindowViewModel.Status == "Trabajando localmente")
+                {
+                    MessageBox.Show("No esta conectado al servidor");
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+        }
+
+        public decimal? Total { get; set; }
+        public int Registros { get; set; }
+        public int Pendientes { get; set; }
 
         private string _buscarTbx;
         public string BuscarTbx
@@ -99,7 +129,7 @@ namespace Client.Main.ViewModels
                         }
                         else
                         {
-                            VentanaPrincipal.ActivateItem(new ProveedorResultadoBusquedaViewModel(VentanaPrincipal, proveedor[0]));
+                            VentanaPrincipal.ActivateItem(new InformesBuscarProveedoresResultadoBusquedaViewModel(VentanaPrincipal, proveedor[0]));
                             BusquedasVisibilidad = "Visible";
                             //                            ComboboxDesplegado = "True";
                         }

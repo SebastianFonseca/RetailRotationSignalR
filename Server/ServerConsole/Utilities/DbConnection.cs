@@ -2366,6 +2366,53 @@ namespace ServerConsole.Utilities
 
         }
 
+        /// <summary>
+        /// Retorna informacion de las compras pendietes por pagar, y del número total de compras
+        /// </summary>
+        /// <returns></returns>
+        public static decimal[] infoRegistros()
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                { 
+                    decimal Total;
+                    decimal TotalRegistros;
+                    decimal TotalRegistrosPendientes;
+                    string cadena = $"select sum(CantidadComprada * PrecioCompra ) as total, count(CodigoCompra) as registros from RegistroCompra where Estado = 'Pendiente'";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        reader.Read();
+                        decimal.TryParse(reader["total"].ToString(), out decimal tot);
+                        Total = tot;
+                        decimal.TryParse(reader["registros"].ToString(), out decimal regsPen);
+                        TotalRegistrosPendientes = regsPen;
+                    }
+
+                    string cadena0 = $"select count(codigocompra) from RegistroCompra";
+                    SqlCommand cmd0 = new SqlCommand(cadena0, conn);
+                    using (SqlDataReader reader0 = cmd0.ExecuteReader())
+                    {
+                        reader0.Read();
+                        decimal.TryParse(reader0[""].ToString(), out decimal regs);
+                        TotalRegistros = regs;
+                    }
+
+
+                    conn.Close();
+                    return new decimal[] { Total, TotalRegistros, TotalRegistrosPendientes };
+                }
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
         #endregion
 
         #region Envios
@@ -4045,7 +4092,7 @@ namespace ServerConsole.Utilities
         }
 
         /// <summary>
-        /// Obtiene los datos de las facturas del cliente dado como parametro
+        /// Obtiene los datos de las facturas del cliente dado como parametro, ademas del promedio de dias en que el cliente visita el local
         /// </summary>
         /// <param name="cedulaCliente"></param>
         /// <returns></returns>
