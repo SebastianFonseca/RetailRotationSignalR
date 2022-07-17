@@ -58,13 +58,9 @@ namespace Client.Main.ViewModels
 
         }
 
-        public void FacturasDeCompras()
-        {
-
-        }
-
         public void Informes()
         {
+            VentanaPrincipal.ActivateItem(new InformesViewModel(VentanaPrincipal));
 
         }
 

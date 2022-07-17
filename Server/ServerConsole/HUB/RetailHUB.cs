@@ -756,6 +756,18 @@ namespace ServerConsole
             return DbConnection.ActualizarCliente(Cliente);
         }
 
+        /// <summary>
+        /// Devuelve el promedio de clientes que registraron su factura para el local dado en las ultimas 500 facturas
+        /// </summary>
+        /// <param name="idLocal"></param>
+        /// <returns></returns>
+        public  decimal[] ServidorpromediofacturasRegistradas(string? idLocal)
+        {
+            return DbConnection.promediofacturasRegistradas(idLocal);
+        }
+
+
+
         #endregion
 
         #region Facturas
@@ -779,6 +791,24 @@ namespace ServerConsole
         {
             return DbConnection.NuevaFacturaBorradaBool(factura);
         }
+
+
+        /// <summary>
+        /// Obtiene los datos de las facturas del cliente dado como parametro
+        /// </summary>
+        /// <param name="cedulaCliente"></param>
+        /// <returns></returns>
+        public  object[] ServidorgetFacturasCliente(string cedulaCliente)
+        {
+          return  DbConnection.getFacturasCliente(cedulaCliente);
+        }
+
+
+
+
+
+
+
 
         #endregion
 

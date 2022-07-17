@@ -3,7 +3,6 @@ using ServerConsole.Models;
 using System;
 using System.Configuration;
 using System.Data.SqlClient;
-using ServerConsole.Utilities;
 
 namespace ServerConsole.Utilities
 {
@@ -3689,6 +3688,39 @@ namespace ServerConsole.Utilities
         }
 
         /// <summary>
+        /// Actualiza los puntos del cliente dado.
+        /// </summary>
+        /// <param name="Cliente"></param>
+        /// <returns></returns>
+        public static bool ActualizarPuntosCliente(ClientesModel Cliente, decimal? puntos)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+
+
+                    string cadena = "UPDATE Clientes SET Puntos = Puntos + @puntos WHERE CedulaCliente = @cedula ";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@cedula", Cliente.cedula);
+                    cmd.Parameters.AddWithValue("@puntos", puntos);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                    return true;
+
+                }
+            }
+            catch (Exception e)
+            {
+
+                Statics.Imprimir(e.Message);
+                return false;
+
+            }
+        }
+
+        /// <summary>
         ///  Elimina el cliente con el número de cédula dado.
         /// </summary>
         /// <param name="Cedula">Número de cédula del cliente a eliminar.</param>
@@ -3718,6 +3750,97 @@ namespace ServerConsole.Utilities
 
         }
 
+        /// <summary>
+        /// Devuelve el promedio de clientes que registraron su factura para el local dado en las ultimas 500 facturas
+        /// </summary>
+        /// <param name="idLocal"></param>
+        /// <returns></returns>
+        public static decimal[] promediofacturasRegistradas(string? idLocal = null)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    if(idLocal == null)
+                    {
+                        decimal Promedio;
+                        decimal totalFacturas;
+                        decimal totalClientes;
+                        string cadena = $"select (select TOP 500 count(codigofactura) from FacturasVenta where CedulaCliente is null)  /  ((select TOP 500 cast(count(codigofactura) AS DECIMAL(7,2)) from FacturasVenta)) * 100 as Promedio";
+                        SqlCommand cmd = new SqlCommand(cadena, conn);
+                        conn.Open();
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            reader.Read();
+                            decimal.TryParse(reader["Promedio"].ToString(), out decimal promedio);
+                            Promedio = promedio;
+                        }
+
+                        string cadena0 = $"SELECT COUNT(CodigoFactura) as Facturas FROM FacturasVenta";
+                        SqlCommand cmd0 = new SqlCommand(cadena0, conn);
+                        using (SqlDataReader reader0 = cmd0.ExecuteReader())
+                        {
+                            reader0.Read();
+                            decimal.TryParse(reader0["Facturas"].ToString(), out decimal facts);
+                            totalFacturas = facts;
+                        }
+
+                        string cadena1 = $"SELECT COUNT(CedulaCliente) as Clientes FROM Clientes";
+                        SqlCommand cmd1 = new SqlCommand(cadena1, conn);
+                        using (SqlDataReader reader1 = cmd1.ExecuteReader())
+                        {
+                            reader1.Read();
+                            decimal.TryParse(reader1["Clientes"].ToString(), out decimal client);
+                            totalClientes = client;
+                        }
+
+                        conn.Close();
+                                                                                              
+                        return new decimal[] {Promedio, totalFacturas, totalClientes };
+                    }
+                    else
+                    {
+                        decimal Promedio;
+                        decimal totalFacturas;
+                        string cadena = $"select (select TOP 500 count(codigofactura) from FacturasVenta where CedulaCliente is null and CodigoPuntoPago like @local)  /  ((select TOP 500  cast(count(codigofactura) AS DECIMAL(7,2))  from FacturasVenta where CodigoPuntoPago like @local )) * 100 as prom";
+                        SqlCommand cmd = new SqlCommand(cadena, conn);
+                        cmd.Parameters.AddWithValue("@local", idLocal + ":%" );
+                        conn.Open();
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+
+                            reader.Read();
+                            decimal.TryParse(reader["Promedio"].ToString(), out decimal promedio);
+                            Promedio = promedio;
+                        }
+
+                        string cadena0 = $"SELECT COUNT(CodigoFactura) as Facturas FROM FacturasVenta where CodigoPuntoPago like @local";
+                        SqlCommand cmd0 = new SqlCommand(cadena0, conn);
+                        cmd0.Parameters.AddWithValue("@local", idLocal + ":%"  );
+                        using (SqlDataReader reader0 = cmd0.ExecuteReader())
+                        {
+                            reader0.Read();
+                            decimal.TryParse(reader0["Facturas"].ToString(), out decimal facts);
+                            totalFacturas = facts;
+                        }
+
+                        conn.Close();
+                        return  new decimal[] { Promedio, totalFacturas};
+                        
+                    }
+
+                }
+            }
+            catch (Exception e)
+            {
+                Statics.Imprimir(e.Message);
+                return null;
+            }
+        }
+
+
+
+
         #endregion
 
         #region Facturas
@@ -3744,6 +3867,7 @@ namespace ServerConsole.Utilities
                     conn.Open();
                     cmd.ExecuteNonQuery();
                     string response = InsertarFacturaProductos(factura: factura);
+                    if(factura.cliente.cedula != null)  ActualizarPuntosCliente(Cliente: factura.cliente, puntos: factura.valorTotal / 1000);
                     if (response == "Y")
                     {
                         conn.Close();
@@ -3826,7 +3950,7 @@ namespace ServerConsole.Utilities
         /// <summary>
         /// Obtiene los datos de la factura cuyo codigo es dado com parametro
         /// </summary>
-        /// <param name="codigoFactura"></param>
+        /// <param name="codigoFacturaCedulaCliente"></param>
         /// <returns></returns>
         public static BindableCollection<FacturaModel> getFacturaConProductos(string codigoFactura)
         {
@@ -3918,6 +4042,65 @@ namespace ServerConsole.Utilities
                 return null;
             }
 
+        }
+
+        /// <summary>
+        /// Obtiene los datos de las facturas del cliente dado como parametro
+        /// </summary>
+        /// <param name="cedulaCliente"></param>
+        /// <returns></returns>
+        public static object[] getFacturasCliente(string cedulaCliente)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<FacturaModel> cFacturas = new BindableCollection<FacturaModel>();
+                    string cadena = $" select Distinct * from FacturasVenta where CedulaCliente = @cedulaCliente order by Fecha desc;";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@cedulaCliente", cedulaCliente);
+                    conn.Open();
+                    DateTime fechaAnterior = DateTime.Today;
+                    decimal? sumaDias = 0;
+                    int cuenta = 0;
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        cFacturas.Clear();
+                        while (reader.Read())
+                        {
+                            FacturaModel factura = new FacturaModel
+                            {
+                                codigo = reader["CodigoFactura"].ToString(),
+                            };
+                            factura.cliente.cedula = reader["CedulaCliente"].ToString();
+                            factura.responsable.cedula = reader["CedulaEmpleado"].ToString();
+                            factura.puntoDePago = reader["CodigoPuntoPago"].ToString();
+                            ///El inventario se actualiza en el servidor en el local con este codigo de local, 
+                            ///que corresponde al codigo del local donde esta fisicamente la maquina donde se registro el cambio en el inventario
+                            factura.puntoVenta.codigo = factura.puntoDePago.Split(':')[0];
+                            factura.fecha = DateTime.Parse(reader["Fecha"].ToString());
+                            if (fechaAnterior != DateTime.Today && fechaAnterior != factura.fecha)
+                            { sumaDias = sumaDias  + (fechaAnterior - factura.fecha).Days;  cuenta += 1; }
+                            fechaAnterior = factura.fecha;
+                            decimal.TryParse(reader["ValorTotal"].ToString(), out decimal total);
+                            factura.valorTotal = total; 
+                            cFacturas.Add(factura);
+                        }
+                    }
+                    conn.Close();
+                    decimal? promedio = 0;
+                    if (sumaDias * cuenta != 0) 
+                        promedio = (sumaDias / cuenta);
+                    return new object[] {cFacturas,  promedio};
+                }
+            }
+            catch (Exception e)
+            {
+                Statics.Imprimir(e.Message);
+
+
+                return null;
+            }
         }
 
         /// <summary>

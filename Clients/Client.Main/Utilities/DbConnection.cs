@@ -3873,7 +3873,7 @@ namespace Client.Main.Utilities
         }
 
         /// <summary>
-        /// Actualiza los datos del usuario dado.
+        /// Actualiza los datos del cliente dado.
         /// </summary>
         /// <param name="Cliente"></param>
         /// <returns></returns>
@@ -3913,6 +3913,39 @@ namespace Client.Main.Utilities
                     MessageBox.Show(e.Message);
                     return false;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Actualiza los puntos del cliente dado.
+        /// </summary>
+        /// <param name="Cliente"></param>
+        /// <returns></returns>
+        public static bool ActualizarPuntosCliente(ClientesModel Cliente, decimal? puntos)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+
+
+                    string cadena = "UPDATE Clientes SET Puntos = Puntos + @puntos WHERE CedulaCliente = @cedula ";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@cedula", Cliente.cedula);
+                    cmd.Parameters.AddWithValue("@puntos", puntos);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                    return true;
+
+                }
+            }
+            catch (Exception e)
+            {
+  
+                MessageBox.Show(e.Message);
+                return false;
+                
             }
         }
 
@@ -3977,6 +4010,7 @@ namespace Client.Main.Utilities
                     conn.Open();
                     cmd.ExecuteNonQuery();
                     string response = InsertarFacturaProductos(factura:factura);
+                    if (factura.cliente.cedula != null)  ActualizarPuntosCliente( Cliente: factura.cliente, puntos: factura.valorTotal / 1000);
                     if (response == "Y")
                     {
                         conn.Close();

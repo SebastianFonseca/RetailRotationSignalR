@@ -1,0 +1,159 @@
+﻿<UserControl x:Class="Client.Main.Views.InformesView"
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:local="clr-namespace:Client.Main.Views"
+             xmlns:cal="http://www.caliburnproject.org"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+
+        <!--Estilo de los botones pricipales-->
+
+        <Style x:Key="MainOptions" TargetType="{x:Type Border}" >
+
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="Background" Value="#F3E0C2"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="CornerRadius" Value="20"/>
+
+        </Style>
+        <!--Estilo de los botones en los submenus, cambio de color de fondo IsMouseOver-->
+
+        <Style x:Key="OptionsSubMenu" TargetType="{x:Type Button}" >
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="#F3E0C2"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#c1d92e"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+
+        <!--Estilos cuando entra o sale el puntero, para hacer que el submenu aparezca-->
+
+        <Style TargetType="{x:Type Grid}" x:Key="Submenu">
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="Control.MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard >
+                            <DoubleAnimation Duration="0:0:0.3" To="1" Storyboard.TargetProperty="Opacity"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="Control.MouseLeave">
+                    <BeginStoryboard>
+                        <Storyboard >
+                            <DoubleAnimation Duration="0:0:0.3" To="0.0" Storyboard.TargetProperty="Opacity"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+
+    <!--Grid principal con los tres botones-->
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+
+        <!-- ....................... Puntos de venta ..................... -->
+
+        <Border Style="{StaticResource MainOptions}" Grid.Column="0">
+            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Panel.ZIndex="0">
+                    <fa:ImageAwesome Icon="Building" Height="30" Grid.Row="0" VerticalAlignment="Bottom"/>
+                    <TextBlock Margin="5"  Text="Locales" FontSize="29" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+                </StackPanel>
+                <Grid Panel.ZIndex="1"  Style="{StaticResource Submenu}" Opacity="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Button Margin="0" Content="Buscar" FontSize="15" HorizontalAlignment="Stretch"  HorizontalContentAlignment="Center" Grid.Row="0" Style="{StaticResource OptionsSubMenu}" x:Name="BuscarLocales">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="20 20 0 0"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                </Grid>
+
+            </Grid>
+        </Border>
+
+        <!-- ....................... Proveedores ....................... -->
+
+        <Border Style="{StaticResource MainOptions}" Grid.Column="1">
+            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Panel.ZIndex="0">
+                    <fa:ImageAwesome Icon="ShoppingBasket" Height="30" Grid.Row="0" VerticalAlignment="Bottom"/>
+                    <TextBlock Margin="5"  Text="Proveedores" FontSize="29" Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+
+                </StackPanel>
+                <Grid Panel.ZIndex="1"  Style="{StaticResource Submenu}" Opacity="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Button Margin="0" Content="Buscar" FontSize="15" HorizontalAlignment="Stretch"  HorizontalContentAlignment="Center" Grid.Row="0" Style="{StaticResource OptionsSubMenu}" x:Name="BuscarProveedores">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="20 20 0 0"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                </Grid>
+
+            </Grid>
+        </Border>
+
+        <!-- ....................... Clientes  ....................... -->
+
+        <Border Style="{StaticResource MainOptions}" Grid.Column="2">
+            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Panel.ZIndex="0">
+                    <fa:ImageAwesome Icon="AddressBook" Height="30"/>
+                    <TextBlock Margin="5"  Text="Clientes" FontSize="24"/>
+                </StackPanel>
+                <Grid Panel.ZIndex="1"  Style="{StaticResource Submenu}" Opacity="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Button Margin="0" Content="Buscar" FontSize="15" HorizontalAlignment="Stretch"  HorizontalContentAlignment="Center" Grid.Row="0" Style="{StaticResource OptionsSubMenu}" x:Name="BuscarClientes">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="20 20 0 0"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                </Grid>
+
+            </Grid>
+        </Border>
+    </Grid>
+
+</UserControl>
+

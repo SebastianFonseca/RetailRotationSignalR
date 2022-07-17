@@ -1,0 +1,124 @@
+﻿<UserControl x:Class="Client.Main.Views.InformesBuscarLocalesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:local="clr-namespace:Client.Main.Views"
+             xmlns:cal="http://www.caliburnproject.org"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="30"/>
+            <Setter Property="FontWeight" Value="DemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Margin"   Value="0"/>
+        </Style>
+
+    </UserControl.Resources>
+
+    <Border Background="#F3E0C2" CornerRadius="10">
+        <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9" Focusable="False" >
+            <Grid.ColumnDefinitions>
+
+                <ColumnDefinition Width="1.5*"/>
+                <ColumnDefinition Width="4*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*"/>
+
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.4*"/>
+                <RowDefinition Height="0.3*"/>
+                <RowDefinition Height="0.3*"/>
+                <RowDefinition Height="0.1*"/>
+            </Grid.RowDefinitions>
+
+            <!--Boton ATRAS-->
+            <Button x:Name="BackButton" Grid.Column="0" Grid.Row="0" Margin="5" Style="{StaticResource GeneralButton}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="80">
+                <fa:ImageAwesome Icon="ArrowLeft" Height="25"/>
+            </Button>
+
+
+            <!--Style="{StaticResource GeneralTextBox}"-->
+            <StackPanel Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" >
+                <TextBox   x:Name="BuscarTbx" Height="50"  Margin="10 10 10 0"  BorderThickness="1 1 1 1" BorderBrush="Gray" cal:Message.Attach="[Event TextChanged] = [Action EscribiendoBusqueda]"  VerticalAlignment="Top">
+                    <!---->
+                    <TextBox.Style>
+                        <Style TargetType="TextBox" BasedOn="{StaticResource GeneralTextBox}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Text}" Value="">
+                                    <Setter Property="Background">
+                                        <Setter.Value>
+                                            <VisualBrush Stretch="None">
+                                                <VisualBrush.Visual>
+                                                    <TextBlock Text="Escriba el codígo de un local o un nombre." Foreground="Gray"/>
+                                                </VisualBrush.Visual>
+                                            </VisualBrush>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Text}" Value="{x:Null}">
+                                    <Setter Property="Background">
+                                        <Setter.Value>
+                                            <VisualBrush Stretch="None">
+                                                <VisualBrush.Visual>
+                                                    <TextBlock Text="Enter value" Foreground="Gray"/>
+                                                </VisualBrush.Visual>
+                                            </VisualBrush>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsFocused}" Value="True">
+                                    <Setter Property="Foreground" Value="Black"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="Background">
+                                        <Setter.Value>
+                                            <VisualBrush Stretch="None">
+                                            </VisualBrush>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+
+                <ComboBox HorizontalAlignment="Stretch" Margin="10 -51 11 0" x:Name="Busquedas" Foreground="Black"  Template="{StaticResource ComboBoxDesplegado}" 
+                        Visibility="{Binding Path=BusquedasVisibilidad}"  IsDropDownOpen="{Binding Path=ComboboxDesplegado}" SelectedItem="{Binding Path=UsuarioSeleccionado}">
+                    <!-- Template="{StaticResource ComboBoxDesplegado}" cal:Message.Attach="[Event SelectionChanged] = [Action ItemSeleccionado]"-->
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate >
+                            <TextBlock>
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat=" {0} - {1}">
+                                        <Binding Path="codigo"/>
+                                        <Binding Path="nombre"/>
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+
+            <!--Boton BUSCAR-->
+            <Button Style="{StaticResource GeneralButton}"  Grid.Column="2" Grid.Row="1"   x:Name="Buscar" Height="50" Margin="10"  VerticalAlignment="Top">
+                <fa:ImageAwesome Icon="Search" Height="25"/>
+                <Button.IsEnabled>
+                    <MultiBinding Converter="{StaticResource Converter }" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                        <Binding ElementName="BuscarTbx" Path="(Validation.HasError)" />
+                    </MultiBinding>
+                </Button.IsEnabled>
+            </Button>
+
+
+        </Grid>
+    </Border>
+</UserControl>
