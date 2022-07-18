@@ -7,19 +7,18 @@
              xmlns:c="clr-namespace:Client.Main.Utilities"    
              xmlns:fa="http://schemas.fontawesome.io/icons/"
              mc:Ignorable="d" 
-                     xmlns:cal="http://www.caliburnproject.org"
-
+             xmlns:cal="http://www.caliburnproject.org"
              d:DesignHeight="450" d:DesignWidth="800" Focusable="False">
     <UserControl.Resources>
 
         <c:InverseAndBooleansToBooleanConverter x:Key="InverseAndBooleansToBooleanConverter"/>
 
         <Style TargetType="TextBlock">
-            <Setter Property="FontSize" Value="25"/>
-            <Setter Property="FontWeight" Value="DemiBold"/>
+            <Setter Property="FontWeight" Value="Normal"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
             <Setter Property="Margin"   Value="0"/>
+            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
         </Style>
 
         <Style TargetType="{x:Type GridViewColumnHeader}">
@@ -52,85 +51,86 @@
     <Border Background="#F3E0C2" CornerRadius="10">
         <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9" Focusable="False" c:KeyboardFocus.On="{Binding ElementName=Name}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="0.2*"/>
-                <ColumnDefinition Width="0.13*"/>
-                <ColumnDefinition Width="0.3*"/>
-                <ColumnDefinition Width="0.3*"/>
-                <ColumnDefinition Width="0.3*"/>
+                <ColumnDefinition Width="0.15*"/>
+                <ColumnDefinition Width="0.6*"/>
+                <ColumnDefinition Width="0.25*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-
-                <RowDefinition/>
+                <RowDefinition Height="1.5*"/>
+                <RowDefinition Height="1.5*"/>
+                <RowDefinition  Height="7*"/>
             </Grid.RowDefinitions>
 
-            <!-- Recuadro puntos -->
-            <Border Background="#f6d3b4" BorderBrush="Beige" Margin="5" BorderThickness="1" CornerRadius="10" Grid.Row="0" Grid.Column="4" Grid.RowSpan="2">
-                <StackPanel Grid.Row="3" Grid.Column="3" Grid.RowSpan="2" VerticalAlignment="Center">
-                    <TextBlock Margin="0" FontSize="18">PUNTOS</TextBlock>
-                    <TextBlock x:Name="Puntos"/>
-                </StackPanel>
-            </Border>
-
             <!--Boton atras-->
-            <Button x:Name="BackButton" Grid.Column="0" Grid.Row="0" Margin="5" Style="{StaticResource GeneralButton}" VerticalAlignment="Center" HorizontalAlignment="Left" Width="80" Grid.RowSpan="2">
+            <Button x:Name="BackButton" Grid.Column="0" Grid.Row="0" Margin="5" Style="{StaticResource GeneralButton}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="80" Grid.RowSpan="2">
                 <fa:ImageAwesome Icon="ArrowLeft" Height="25"/>
             </Button>
 
-            <!--Linea 1 Cedula-->
-            <TextBlock x:Name="CC" Grid.Row="0" Grid.Column="1"  Grid.ColumnSpan="3"  HorizontalAlignment="Left" FontWeight="Normal"  FontSize="25" />
+            <!--Linea 1 Nombre-->
+            <TextBlock Text="{Binding Path=Nombre, StringFormat='{}{0}'}" Grid.Row="0" Grid.Column="1"  HorizontalAlignment="Center" FontWeight="Normal"  FontSize="25" />
+            <Separator Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"  VerticalAlignment="Bottom"  BorderBrush="Gray" BorderThickness="0.5"  Margin="0 0 10 0" />
 
-            <!--Linea Nombres-->
-            <TextBlock x:Name="Name" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"  HorizontalAlignment="Left" FontWeight="Normal"  FontSize="28"/>
-            <Separator Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Bottom"  BorderBrush="Gray" BorderThickness="0.5"  Margin="0 0 10 0" />
+            <!--Linea Incompletos-->
+            <TextBlock  Grid.Row="0" Grid.Column="4" HorizontalAlignment="Center" TextAlignment="Center" Margin="0 0 0 0" FontWeight="Normal"  FontSize="16">
+                     Registros incompletos <LineBreak/> <Bold><Run Text="{Binding Path =RegistrosIncompletos, StringFormat='{}{0}' }" /></Bold>
+            </TextBlock>
 
-
-            <Border BorderThickness="0.5" Margin="2" BorderBrush="Black"  Background="Transparent" CornerRadius="10" Grid.Row="2" Grid.Column="0"  Grid.ColumnSpan="5" Grid.RowSpan="7" HorizontalAlignment="Stretch"/>
-
-
-            <!--Linea Ultima compra-->
-            <TextBlock Grid.Row="2" Grid.Column="0"  HorizontalAlignment="Left" Margin="20 0 0 0" FontWeight="Normal" Grid.ColumnSpan="2" Text="ÚLTIMA COMPRA:" FontSize="20"/>
-            <TextBlock Grid.Row="2" Grid.Column="2"  HorizontalAlignment="Left" Margin="0 0 0 0" FontWeight="Normal" Grid.ColumnSpan="2" Text="{ Binding Path = UltimaCompra }" FontSize="20"/>
-
-            <!--Linea  Promedio-->
-            <TextBlock Grid.Row="3" Grid.Column="0"  HorizontalAlignment="Left"  Margin="20 0 0 0" FontWeight="Normal" Grid.ColumnSpan="3"   x:Name="PromedioDiasCompras"  Text="{Binding Path=PromedioDiasCompras,StringFormat={} El cliente nos visita cada {0:#.#} día(s)}" FontSize="20"/>
-
-
-            <!--Linea  Compras-->
-            <TextBlock Grid.Row="3" Grid.Column="3"  HorizontalAlignment="Right" FontWeight="Normal" Text="COMPRAS:" FontSize="20"/>
-            <TextBlock Grid.Row="3" Grid.Column="4"  HorizontalAlignment="Left" FontWeight="Normal" Text="{Binding Path=ComprasTotal, StringFormat='{} ${0:#,#}'}" FontSize="20"/>
-
+            <!--Linea  total pagado-->
+            <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Center" Orientation="Horizontal" Margin="5 0 0 0">
+                <TextBlock  HorizontalAlignment="Left" Margin="0 0 0 0" FontWeight="Normal" Grid.ColumnSpan="2"  FontSize="16">
+                     Total: <Bold><Run Text="{Binding Path =TotalComprado, StringFormat=' ${0:#,#} ' }" /></Bold>
+                </TextBlock>
+                <TextBlock  HorizontalAlignment="Left" Margin="5 0 0 0" FontWeight="Normal" Grid.ColumnSpan="2"  FontSize="16" >
+                      Pendiente: <Bold><Run Text="{Binding Path=Pendiente, StringFormat='{} ${0:#,#}', Mode=OneWay}"  /></Bold>
+                </TextBlock>
+                <TextBlock  HorizontalAlignment="Left" Margin="5 0 0 0" FontWeight="Normal" Grid.ColumnSpan="2"  FontSize="16">
+                     Pagado: <Bold><Run Text="{Binding Path =TotalPagado, StringFormat=' ${0:#,#}', Mode=OneWay}" /></Bold>
+                </TextBlock>
+            </StackPanel>
+            <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Bottom"  BorderBrush="Gray" BorderThickness="0.5"  Margin="0 0 10 0" />
+ 
             <!--Compras-->
 
-            <ListView Grid.Row="4" SelectionMode="Single"   ItemsSource="{Binding Path=Facturas, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="6" Background="#F3E0D2"  Grid.RowSpan="4" BorderThickness="0 1 0 1" Margin="10 0 10 0">
+            <ListView Grid.Row="4" SelectionMode="Single"   ItemsSource="{Binding Path=Productos, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="6" Background="#F3E0D2"  Grid.RowSpan="4" BorderThickness="0 1 0 1" Margin="10">
 
                 <ListView.View>
                     <GridView AllowsColumnReorder="False" >
-                        <GridViewColumn Width="210" DisplayMemberBinding="{Binding Path=codigo}" Header="Código"/>
-                        <GridViewColumn Width="220" DisplayMemberBinding="{Binding Path=fecha}" Header="Fecha" />
-                        <GridViewColumn Width="220" DisplayMemberBinding="{Binding Path=valorTotal, UpdateSourceTrigger=PropertyChanged}" Header="Valor"/>
+                        <GridViewColumn Width="40"  Header="Und"/>
+                        <GridViewColumn Width="160" Header="Nombre" />
+                        <GridViewColumn Width="100" Header="F.compra"/>
+                        <GridViewColumn Width="100" Header="F.pago"/>
+                        <GridViewColumn Width="60"  Header="Cantidad" />
+                        <GridViewColumn Width="85"  Header="Precio"/>
+                        <GridViewColumn Width="50"  Header="Estado"/>
+                        <GridViewColumn Width="60"  Header="Soporte" />
                     </GridView>
                 </ListView.View>
 
-                <ListBox.ItemTemplate  >
+                <ListBox.ItemTemplate >
                     <DataTemplate >
-                        <Grid Focusable="False" ShowGridLines="False" Height="30" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+                        <Grid Focusable="False" ShowGridLines="False" Height="30">
+
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="210"/>
-                                <ColumnDefinition Width="220"/>
-                                <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="40"/>
+                                <ColumnDefinition Width="160"/>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="60"/>
+                                <ColumnDefinition Width="85"/>
+                                <ColumnDefinition Width="50"/>
+                                <ColumnDefinition Width="60"/>
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Grid.Column="0"  Text="{Binding Path=codigo}" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="1"  Text="{Binding Path=fecha, StringFormat={}{0:dd-MM-yyyy}}" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="2"  Text="{Binding Path=valorTotal, StringFormat='{}${0:#,#}'}"  HorizontalAlignment="Right"/>
+                            <TextBlock Grid.Column="0" FontSize="16" Text="{Binding Path=unidadCompra}"    HorizontalAlignment="Center" />
+                            <TextBlock Grid.Column="1" FontSize="16" Text="{Binding Path=nombre}"   HorizontalAlignment="Left" Margin="5 0 0 0"/>
+                            <TextBlock Grid.Column="2" FontSize="16" Text="{Binding Path=fechaDeCompra, StringFormat=dd-MM-yyyy}" />
+                            <TextBlock Grid.Column="3" FontSize="16" Text="{Binding Path=fechaDePago, StringFormat='{}{0:dd-MM-yyyy}'}" HorizontalAlignment="Center" TextAlignment="Center" />
+                            <TextBlock Grid.Column="4" FontSize="16" Text="{Binding Path=compra, StringFormat='{}{0:#}'}" HorizontalAlignment="Center"  TextAlignment="Center" />
+                            <TextBlock Grid.Column="5" FontSize="16" Text="{Binding Path=precioCompra, StringFormat='{}${0:#,#}'}" HorizontalAlignment="Center" TextAlignment="Center" />
+                            <TextBlock Grid.Column="6" FontSize="16" Text="{Binding Path=estado, StringFormat='{}{0}'}" HorizontalAlignment="Center" TextAlignment="Center" />
+                            <TextBlock Grid.Column="7" FontSize="16" Text="{Binding Path=soportePago, StringFormat='{}{0}'}" HorizontalAlignment="Center" TextAlignment="Center" />
+
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
@@ -185,3 +185,5 @@
         </Grid>
     </Border>
 </UserControl>
+
+

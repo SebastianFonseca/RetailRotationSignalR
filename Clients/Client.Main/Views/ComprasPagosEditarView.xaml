@@ -101,10 +101,10 @@
                 <StackPanel Grid.Row="0" Orientation="Horizontal" Background="#F3E0D2" Grid.ColumnSpan="3">
                     <TextBlock Text="Und."      Margin="6 0 0 0"/>
                     <TextBlock Text="Producto"  Margin="6 0 0 0"/>
-                    <TextBlock Text="Fecha"    Margin="125 0 0 0"/>
-                    <TextBlock Text="Cantidad"  Margin="6 0 0 0"/>
-                    <TextBlock Text="Precio"    Margin="6 0 0 0"/>
-                    <TextBlock Text="Proveedor" Margin="35 0 0 0"/>
+                    <TextBlock Text="Fecha"    Margin="85 0 0 0"/>
+                    <TextBlock Text="Cnt."  Margin="19 0 0 0"/>
+                    <TextBlock Text="Precio"    Margin="34 0 0 0"/>
+                    <TextBlock Text="Proveedor" Margin="60 0 0 0"/>
                 </StackPanel>
                 
                 <Separator Grid.Row="0" VerticalAlignment="Bottom" Background="Gray" Margin="0"  Grid.ColumnSpan="3"/>
@@ -119,19 +119,19 @@
 
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="40"/>
-                                    <ColumnDefinition Width="190"/>
+                                    <ColumnDefinition Width="170"/>
+                                    <ColumnDefinition Width="60"/>
+                                    <ColumnDefinition Width="60"/>
                                     <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="40"/>
-                                    <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="120"/>
+                                    <ColumnDefinition Width="170"/>
                                     <ColumnDefinition Width="60"/>
                                 </Grid.ColumnDefinitions>
 
                                 <TextBlock Grid.Column="0" FontSize="16" Text="{Binding Path=unidadCompra}"    HorizontalAlignment="Center" />
                                 <TextBlock Grid.Column="1" FontSize="16" Text="{Binding Path=nombre}"   HorizontalAlignment="Left" Margin="20 0 0 0"/>
                                 <TextBlock Grid.Column="2" FontSize="16" Width="60"  Text="{Binding Path=fechaDeCompra, StringFormat=dd-MM}" HorizontalAlignment="Center" TextAlignment="Center"  />
-                                <TextBlock Grid.Column="3" FontSize="16" Width="60"  Text="{Binding Path=compra}" HorizontalAlignment="Center"  TextAlignment="Center"  />
-                                <TextBlock Grid.Column="4" FontSize="16" Width="100" Text="{Binding Path=precioCompra, StringFormat={}${0:#,#}}" HorizontalAlignment="Center" TextAlignment="Center" />
+                                <TextBlock Grid.Column="3" FontSize="16" Width="170"  Text="{Binding Path=compra, StringFormat='{}{0:#.}'}" HorizontalAlignment="Center"  TextAlignment="Center"  />
+                                <TextBlock Grid.Column="4" FontSize="16" Width="100" Text="{Binding Path=precioCompra, StringFormat='{}${0:#,#}'}" HorizontalAlignment="Center" TextAlignment="Center" />
                                 <TextBlock Grid.Column="5" FontSize="16" Width="115" HorizontalAlignment="Center" TextAlignment="Center" >
                                     <TextBlock.Text>
                                         <MultiBinding StringFormat=" {0} {1}">
@@ -178,7 +178,7 @@
                 
                 <DockPanel Grid.Row="2" Grid.Column="2" >
                 <TextBlock Text="Total:" />
-                    <TextBlock  Text="{Binding StringFormat={}${0:#,#}, Path=Total}"/>
+                    <TextBlock  Text="{Binding StringFormat='{}${0:#,#}', Path=Total}"/>
                 </DockPanel>
 
             </Grid>

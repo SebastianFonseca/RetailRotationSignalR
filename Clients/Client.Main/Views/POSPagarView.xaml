@@ -84,10 +84,10 @@
         <TextBlock Grid.Row="1" Grid.Column="2" x:Name="Total" Style="{StaticResource TextoGrande}" HorizontalAlignment="Left" />
 
         <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource TextoGrande}" Margin="0 -11 10 0">Cambio:</TextBlock>
-        <TextBlock  Grid.Row="2" Grid.Column="2" x:Name="Cambio" Text="{Binding Cambio,StringFormat={}${0:#,#}, UpdateSourceTrigger=PropertyChanged}"  HorizontalAlignment="Left" Height="50" Style="{StaticResource TextoGrande}"/>
+        <TextBlock  Grid.Row="2" Grid.Column="2" x:Name="Cambio" Text="{Binding Cambio,StringFormat='{}${0:#,#}', UpdateSourceTrigger=PropertyChanged}"  HorizontalAlignment="Left" Height="50" Style="{StaticResource TextoGrande}"/>
 
         <TextBlock Grid.Row="3" Grid.Column="1" Style="{StaticResource TextoGrande}">Pago:</TextBlock>
-        <TextBox c:NumberOnlyBehaviour.Mode="WholeNumber" Grid.Row="3" Grid.Column="2" Style="{StaticResource GeneralTextBox}" x:Name="ValorPagado" FontWeight="DemiBold"  FontSize="38" Text="{Binding Path= ValorPagado,  StringFormat={}${0:#,#}, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Height="50">
+        <TextBox c:NumberOnlyBehaviour.Mode="WholeNumber" Grid.Row="3" Grid.Column="2" Style="{StaticResource GeneralTextBox}" x:Name="ValorPagado" FontWeight="DemiBold"  FontSize="38" Text="{Binding Path= ValorPagado,  StringFormat='{}${0:#,#}', UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Height="50">
             <i:Interaction.Behaviors>
                 <c:TabOnEnterBehavior />
                 <c:SelectAllFocusBehavior/>

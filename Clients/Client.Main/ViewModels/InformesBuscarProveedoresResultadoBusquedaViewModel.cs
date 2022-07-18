@@ -22,23 +22,62 @@ namespace Client.Main.ViewModels
         {
             this.proveedor = proveedor;
             this.VentanaPrincipal = ventanaPrincipal;
-      
+            getInfo(proveedor.cedula);
+        }
+
+        public async void getInfo(string cedula)
+        {
+            try
+            {
+                if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+                {
+
+                    Task<object> re = conexion.CallServerMethod("ServidorgetTodosLosRegistrosDeCompraCedula", Arguments: new object[] { cedula });
+                    await re;
+                    proveedor.productos = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<ProductoModel>>(re.Result.ToString());
+
+                    if(proveedor.productos != null)
+                    {
+                        foreach (ProductoModel p in proveedor.productos)
+                        {
+                            if (p.precioCompra == null | p.compra == null | p.precioCompra == 0 | p.compra == 0)
+                            { RegistrosIncompletos += 1; continue; }
+                            TotalComprado += p.compra * p.precioCompra;
+                            if (p.estado == "Pendiente") Pendiente += p.compra * p.precioCompra; 
+                        }
+                    }
+                    NotifyOfPropertyChange(() => Productos);
+                    NotifyOfPropertyChange(()=> Pendiente);
+                    NotifyOfPropertyChange(() => TotalComprado);
+                    NotifyOfPropertyChange(() => TotalPagado);
+                    NotifyOfPropertyChange(() => Productos);
+                    NotifyOfPropertyChange(() => RegistrosIncompletos);
+                }
+                if (MainWindowViewModel.Status == "Trabajando localmente")
+                {
+                    MessageBox.Show("No esta conectado al servidor");
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+        }
+
+        public BindableCollection<ProductoModel> Productos { get { return proveedor.productos; } }
+        public string Nombre { get { return $"{proveedor.firstName} {proveedor.lastName}"; } }
+        public int RegistrosIncompletos { get; set; } = 0;
+        public decimal? TotalComprado { get; set; } = 0;
+        public decimal? TotalPagado { get { return TotalComprado - Pendiente; } }
+        public decimal? Pendiente { get; set; } = 0;
+
+
+        public void BackButton()
+        {
+
+            VentanaPrincipal.ActivateItem(new InformesBuscarProveedoresViewModel(VentanaPrincipal));
         }
 
     }
 }
 
-
-/*
-			select rc.CantidadComprada, rc.CedulaProveedor,rc.CodigoProducto,rc.Estado, rc.PrecioCompra, p.Nombre, p.UnidadCompra,c.FechaCompra as fehacompra, pp.fecha as fechapago, pp.soporte, pp.valor from 
-			(select CodigoProducto, CantidadComprada, PrecioCompra, Estado,CodigoCompra, CedulaProveedor from RegistroCompra where CedulaProveedor = '5565') rc
-			left join 
-			Producto p on rc.CodigoProducto = p.CodigoProducto
-			left join 
-			compras c on c.CodigoCompra = rc.CodigoCompra
-		    left join 
-			pagosproveedorregistrocompra as pr on rc.CodigoCompra = pr.codigocompra and pr.codigoproducto = rc.codigoproducto
-			left join 
-			pagosproveedores as pp on pp.id = pr.pagoproveedor order by rc.Estado, c.FechaCompra 
-
- */

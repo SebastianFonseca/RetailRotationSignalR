@@ -25,7 +25,7 @@ namespace ServerConsole.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = "SELECT *  FROM EMPLEADO where [CedulaEmpleado]=@user";
+                    string cadena = "select empleado.Password, Empleado.CedulaEmpleado,empleado.CodigoPuntoVenta,empleado.Nombres,Empleado.Apellidos,Empleado.FechaContratacion,empleado.Salario,Empleado.Telefono,Empleado.Cargo,Empleado.Direccion, PuntoVenta.Nombres as nombrePuntoVenta from empleado join puntoventa on empleado.codigopuntoventa = puntoventa.codigopuntoventa where [CedulaEmpleado]=@user and empleado.Estado = 'Activo'";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     cmd.Parameters.AddWithValue("@user", User);
                     conn.Open();
@@ -39,6 +39,7 @@ namespace ServerConsole.Utilities
                                 EmpleadoModel persona = new EmpleadoModel();
                                 persona.cedula = reader["CedulaEmpleado"].ToString();
                                 persona.puntoDeVenta.codigo = reader["CodigoPuntoVenta"].ToString();
+                                persona.puntoDeVenta.nombre = reader["nombrePuntoVenta"].ToString();
                                 persona.firstName = reader["Nombres"].ToString();
                                 persona.lastName = reader["Apellidos"].ToString();
                                 persona.fechaDeContratacion = DateTime.Parse(reader["FechaContratacion"].ToString());
@@ -764,6 +765,62 @@ namespace ServerConsole.Utilities
                 }
             }
         }
+
+
+        /// <summary>
+        /// Retorna una lista de objetos de la clase ProductoModel con todos los registros de compra del proveedor dado como parametro.
+        /// /// </summary>
+        /// <param name="Cedula"></param>
+        /// <returns></returns>
+        public static BindableCollection<ProductoModel> getTodosLosRegistrosDeCompraCedula(string Cedula)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    BindableCollection<ProductoModel> productos = new BindableCollection<ProductoModel>();
+                    string cadena = $"select rc.CantidadComprada, rc.CedulaProveedor,rc.CodigoProducto,rc.Estado, rc.PrecioCompra, p.Nombre, p.UnidadCompra,c.FechaCompra as fehacompra, pp.fecha as fechapago, pp.soporte, pp.valor from  (select CodigoProducto, CantidadComprada, PrecioCompra, Estado,CodigoCompra, CedulaProveedor from RegistroCompra where CedulaProveedor = @cedula) rc left join Producto p on rc.CodigoProducto = p.CodigoProducto	left join 	compras c on c.CodigoCompra = rc.CodigoCompra  left join pagosproveedorregistrocompra as pr on rc.CodigoCompra = pr.codigocompra and pr.codigoproducto = rc.codigoproducto left join pagosproveedores as pp on pp.id = pr.pagoproveedor order by rc.Estado, c.FechaCompra";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@cedula", Cedula);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        productos.Clear();
+                        while (reader.Read())
+                        {
+                            ProductoModel producto = new ProductoModel
+                            {
+                                nombre = reader["Nombre"].ToString(),
+                                unidadCompra = reader["UnidadCompra"].ToString().Substring(0, 3),
+                                codigoProducto = reader["CodigoProducto"].ToString(),
+                                estado = reader["Estado"].ToString()
+                            };
+                            producto.proveedor.cedula = reader["CedulaProveedor"].ToString(); 
+                            if (DateTime.TryParse(reader["fehacompra"].ToString(), out DateTime fecha)) { producto.fechaDeCompra = fecha; }
+                            if (DateTime.TryParse(reader["FechaPago"].ToString(), out DateTime date)){ producto.fechaDePago = date; }
+                            producto.soportePago = reader["Soporte"].ToString();
+                            if (decimal.TryParse(reader["CantidadComprada"].ToString(), out decimal a)) { producto.compra = a; }
+                            else { producto.compra = null; }
+                            if (decimal.TryParse(reader["PrecioCompra"].ToString(), out decimal b)) { producto.precioCompra = b; }
+                            else { producto.precioCompra = null; }
+                            productos.Add(producto);
+                        }
+                    }
+                    conn.Close();
+                    return productos;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+
+        }
+
+
+
+
 
         #endregion
 
@@ -2258,7 +2315,7 @@ namespace ServerConsole.Utilities
         }
 
         /// <summary>
-        /// Devuelve una instancia de la clase producto con la informacion relacionada con su ultimo registro de compra.
+        /// Devuelve una instancia de la clase producto con la informacion relacionada con su ultimo registro de compra, se utiliza para los cambios de precio.
         /// </summary>
         /// <param name="codigoCompra"></param>
         /// <returns></returns>
@@ -2308,7 +2365,6 @@ namespace ServerConsole.Utilities
             }
 
         }
-
 
         /// <summary>
         /// Retorna una lista de objetos de la clase ProductoModel con los registros de compra del proveedor o el producto dado como parametro.
@@ -4855,6 +4911,89 @@ namespace ServerConsole.Utilities
         }
 
         #endregion
+
+        /// <summary>
+        /// Obtiene ingormacion general a cerca de todos los locales
+        /// </summary>
+        /// <returns></returns>
+        public static decimal[] getTotal()
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+
+                    decimal ingresos;
+                    decimal egresos;
+                    decimal totalCompras;
+                    decimal totalComprasPagas;
+                    decimal totalComprasPendientes;
+
+                    string cadena = $"select sum(valor) ingresos from ingresos";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        reader.Read();
+                        decimal.TryParse(reader["ingresos"].ToString(), out decimal ing);
+                        ingresos = ing;
+                    }
+
+                    string cadena0 = $"select sum(valor) egresos from egresos";
+                    SqlCommand cmd0 = new SqlCommand(cadena0, conn);
+                    using (SqlDataReader reader0 = cmd0.ExecuteReader())
+                    {
+                        reader0.Read();
+                        decimal.TryParse(reader0["egresos"].ToString(), out decimal egr);
+                        egresos = egr;
+                    }
+
+                    string cadena1 = $"select sum(CantidadComprada * PrecioCompra) as totalCompras from RegistroCompra";
+                    SqlCommand cmd1 = new SqlCommand(cadena1, conn);
+                    using (SqlDataReader reader1 = cmd1.ExecuteReader())
+                    {
+                        reader1.Read();
+                        decimal.TryParse(reader1["totalCompras"].ToString(), out decimal totalC);
+                        totalCompras = totalC;
+                    }
+
+                    string cadena2 = $"select sum(CantidadComprada * PrecioCompra) as totalComprasCanceladas from RegistroCompra where Estado = 'Pago' ";
+                    SqlCommand cmd2 = new SqlCommand(cadena2, conn);
+                    using (SqlDataReader reader2 = cmd2.ExecuteReader())
+                    {
+                        reader2.Read();
+                        decimal.TryParse(reader2["totalComprasCanceladas"].ToString(), out decimal totalComprasCan);
+                        totalComprasPagas = totalComprasCan;
+                    }
+
+
+                    string cadena3 = $"select sum(CantidadComprada * PrecioCompra) as totalComprasPendientes from RegistroCompra where Estado = 'Pendiente'";
+                    SqlCommand cmd3 = new SqlCommand(cadena3, conn);
+                    using (SqlDataReader reader3 = cmd3.ExecuteReader())
+                    {
+                        reader3.Read();
+                        decimal.TryParse(reader3["totalComprasPendientes"].ToString(), out decimal totalComprasPen);
+                        totalComprasPendientes = totalComprasPen;
+                    }
+
+                    conn.Close();
+
+                    return new decimal[] { ingresos, egresos, totalCompras, totalComprasPagas, totalComprasPendientes };
+                    
+                    
+
+                }
+            }
+            catch (Exception e)
+            {
+                Statics.Imprimir(e.Message);
+                return null;
+            }
+        }
+
+
+
+
 
         /// <summary>
         /// Crea los registros en la base de datos local de los cambios realizados para que los clientes puedan despues replicarlos.

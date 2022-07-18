@@ -89,8 +89,8 @@
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0" Text="{Binding Path=egreso.id}"  FontSize="18" HorizontalAlignment="Center" />
                                 <TextBlock Grid.Column="1" Text="{Binding Path=ingreso.id}" HorizontalAlignment="Center" TextTrimming="WordEllipsis" TextAlignment="Center" FontSize="18" />
-                                <TextBlock Grid.Column="2" Text="{Binding Path=aumentoDisminucion, StringFormat={}${0:#.#}}" HorizontalAlignment="Right" TextAlignment="Right"  FontSize="18"  />
-                                <TextBlock Grid.Column="3" Text="{Binding Path=total, StringFormat={}${0:#.#}}" HorizontalAlignment="Right" TextAlignment="Right" FontSize="18"  />
+                                <TextBlock Grid.Column="2" Text="{Binding Path=aumentoDisminucion, StringFormat='{}${0:#,#}'}" HorizontalAlignment="Right" TextAlignment="Right"  FontSize="18"  />
+                                <TextBlock Grid.Column="3" Text="{Binding Path=total, StringFormat='{}${0:#,#}'}" HorizontalAlignment="Right" TextAlignment="Right" FontSize="18"  />
                                 <Separator Grid.Column="0" Grid.ColumnSpan="4" VerticalAlignment="Bottom"  Background="#F7EBD7"  Panel.ZIndex="1"/>
                             </Grid>
                         </DataTemplate>

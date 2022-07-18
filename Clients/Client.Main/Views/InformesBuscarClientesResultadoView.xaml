@@ -52,11 +52,10 @@
     <Border Background="#F3E0C2" CornerRadius="10">
         <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9" Focusable="False" c:KeyboardFocus.On="{Binding ElementName=Name}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="0.2*"/>
-                <ColumnDefinition Width="0.13*"/>
+                <ColumnDefinition Width="0.15*"/>
                 <ColumnDefinition Width="0.3*"/>
                 <ColumnDefinition Width="0.3*"/>
-                <ColumnDefinition Width="0.3*"/>
+                <ColumnDefinition Width="0.25*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition/>
@@ -84,32 +83,24 @@
                 <fa:ImageAwesome Icon="ArrowLeft" Height="25"/>
             </Button>
 
-            <!--Linea 1 Cedula-->
-            <TextBlock x:Name="CC" Grid.Row="0" Grid.Column="1"  Grid.ColumnSpan="3"  HorizontalAlignment="Left" FontWeight="Normal"  FontSize="25" />
-
             <!--Linea Nombres-->
-            <TextBlock x:Name="Name" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"  HorizontalAlignment="Left" FontWeight="Normal"  FontSize="28"/>
-            <Separator Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Bottom"  BorderBrush="Gray" BorderThickness="0.5"  Margin="0 0 10 0" />
-
-
-            <Border BorderThickness="0.5" Margin="2" BorderBrush="Black"  Background="Transparent" CornerRadius="10" Grid.Row="2" Grid.Column="0"  Grid.ColumnSpan="5" Grid.RowSpan="7" HorizontalAlignment="Stretch"/>
+            <TextBlock x:Name="Name" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"  HorizontalAlignment="Center" FontWeight="Normal"  FontSize="28"/>
+            <Separator Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="5" VerticalAlignment="Bottom"  BorderBrush="Gray" BorderThickness="0.5"  Margin="20 0 20 0" />
+            <Separator Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Bottom"  BorderBrush="Gray" BorderThickness="0.5"  Margin="20 0 20 0" />
 
 
             <!--Linea Ultima compra-->
-            <TextBlock Grid.Row="2" Grid.Column="0"  HorizontalAlignment="Left" Margin="20 0 0 0" FontWeight="Normal" Grid.ColumnSpan="2" Text="ÚLTIMA COMPRA:" FontSize="20"/>
-            <TextBlock Grid.Row="2" Grid.Column="2"  HorizontalAlignment="Left" Margin="0 0 0 0" FontWeight="Normal" Grid.ColumnSpan="2" Text="{ Binding Path = UltimaCompra }" FontSize="20"/>
+            <TextBlock Grid.Row="1" Grid.Column="1"  HorizontalAlignment="Center" Margin="0 0 0 0" FontWeight="Normal" Grid.ColumnSpan="2" Text="{ Binding Path = UltimaCompra, StringFormat='{} {0}' }" FontSize="20"/>
 
             <!--Linea  Promedio-->
-            <TextBlock Grid.Row="3" Grid.Column="0"  HorizontalAlignment="Left"  Margin="20 0 0 0" FontWeight="Normal" Grid.ColumnSpan="3"   x:Name="PromedioDiasCompras"  Text="{Binding Path=PromedioDiasCompras,StringFormat={} El cliente nos visita cada {0:#.#} día(s)}" FontSize="20"/>
+            <TextBlock Grid.Row="2" Grid.Column="1"  HorizontalAlignment="Right"  Margin="20 0 0 0" FontWeight="Normal"  x:Name="PromedioDiasCompras"  Text="{Binding Path=PromedioDiasCompras,StringFormat='{} Frecuencia: {0:#.#} día(s)'}" FontSize="20"/>
 
 
             <!--Linea  Compras-->
-            <TextBlock Grid.Row="3" Grid.Column="3"  HorizontalAlignment="Right" FontWeight="Normal" Text="COMPRAS:" FontSize="20"/>
-            <TextBlock Grid.Row="3" Grid.Column="4"  HorizontalAlignment="Left" FontWeight="Normal" Text="{Binding Path=ComprasTotal, StringFormat='{} ${0:#,#}'}" FontSize="20"/>
+            <TextBlock Grid.Row="2" Grid.Column="2"  Margin="5 0 15 0" HorizontalAlignment="Left" FontWeight="Normal" Text="{Binding Path=ComprasTotal, StringFormat='{} Total: ${0:#,#}'}" FontSize="20"/>
 
-            <!--Compras-->
-
-            <ListView Grid.Row="4" SelectionMode="Single"   ItemsSource="{Binding Path=Facturas, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="6" Background="#F3E0D2"  Grid.RowSpan="4" BorderThickness="0 1 0 1" Margin="10 0 10 0">
+            <!--Facturas-->
+            <ListView Grid.Row="3" SelectionMode="Single"   ItemsSource="{Binding Path=Facturas, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="6" Background="#F3E0D2"  Grid.RowSpan="6" BorderThickness="0 1 0 1" Margin="10 5 10 5">
 
                 <ListView.View>
                     <GridView AllowsColumnReorder="False" >

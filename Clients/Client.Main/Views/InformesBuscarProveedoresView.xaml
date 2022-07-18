@@ -14,7 +14,7 @@
 
         <Style TargetType="TextBlock">
             <Setter Property="FontSize" Value="22"/>
-            <Setter Property="FontWeight" Value="DemiBold"/>
+            <Setter Property="FontWeight" Value="Normal"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
             <Setter Property="Margin"   Value="0"/>
@@ -49,18 +49,18 @@
 
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="0.2*"/>
-                <RowDefinition Height="0.8*"/>
+                <RowDefinition Height="0.22*"/>
+                <RowDefinition Height="0.78*"/>
             </Grid.RowDefinitions>
 
             <!--Boton ATRAS-->
-            <Button x:Name="BackButton" Grid.Column="0" Grid.Row="0" Margin="5" Style="{StaticResource GeneralButton}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="80">
+            <Button x:Name="BackButton" Grid.Column="0" Grid.Row="0" Background="#F3E0D2" Margin="5" Style="{StaticResource GeneralButton}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="80">
                 <fa:ImageAwesome Icon="ArrowLeft" Height="25"/>
             </Button>
 
             <!--TextBox principal para realizar las busquedas-->
             <StackPanel Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Panel.ZIndex="10">
-                <TextBox   x:Name="BuscarTbx" Height="50"  Margin="10 10 10 0"  BorderThickness="1 1 1 1" BorderBrush="Gray" cal:Message.Attach="[Event TextChanged] = [Action EscribiendoBusqueda]"  VerticalAlignment="Top">
+                <TextBox   x:Name="BuscarTbx" Height="50"  Margin="10 10 10 0" Background="#F3E0D2"  BorderThickness="1 1 1 1" BorderBrush="Gray" cal:Message.Attach="[Event TextChanged] = [Action EscribiendoBusqueda]"  VerticalAlignment="Top">
                     <TextBox.Style>
                         <Style TargetType="TextBox" BasedOn="{StaticResource GeneralTextBox}">
                             <Style.Triggers>
@@ -69,7 +69,7 @@
                                         <Setter.Value>
                                             <VisualBrush Stretch="None">
                                                 <VisualBrush.Visual>
-                                                    <TextBlock Text="Escriba número de cédula, nombre de proveedor o producto" Foreground="Gray"/>
+                                                    <TextBlock Text="Nombre o cédula" Foreground="Black"/>
                                                 </VisualBrush.Visual>
                                             </VisualBrush>
                                         </Setter.Value>
@@ -80,7 +80,7 @@
                                         <Setter.Value>
                                             <VisualBrush Stretch="None">
                                                 <VisualBrush.Visual>
-                                                    <TextBlock Text="Enter value" Foreground="Gray"/>
+                                                    <TextBlock Text="Nombre o cédula" Foreground="Gray"/>
                                                 </VisualBrush.Visual>
                                             </VisualBrush>
                                         </Setter.Value>
@@ -152,29 +152,36 @@
             </Button>
 
             <!--Info-->
-            <Border BorderThickness="0.8" Margin="10 5 5 5" BorderBrush="Black"  Background="#F7EBD7" CornerRadius="10" Grid.Row="1" Grid.Column="0"  Grid.ColumnSpan="3"  HorizontalAlignment="Stretch">
-                <StackPanel Margin="20 15 20 20" >
-
+            <Border BorderThickness="0 0.5 0 0.5"  BorderBrush="Black" Margin="10 0 10 10" Background="#F3E0D2"   Grid.Row="1" Grid.Column="0"  Grid.ColumnSpan="3"  HorizontalAlignment="Stretch">
+                <StackPanel Margin="10 5 10 0">
+                    
+                    <Separator BorderBrush="Beige" BorderThickness="1" Opacity="1"  />
+                    <Separator BorderBrush="Gray" BorderThickness="1" Opacity="1"  Margin="30 0 30 0"/>
+                    
                     <StackPanel  Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top"  Margin="20">
                         <fa:ImageAwesome Icon="Circle" Height="12" Foreground="Beige" VerticalAlignment="Center"/>
                         <TextBlock Text="{Binding Path=Total, StringFormat='{}Los registros pendientes suman ${0:#,#}'}" Margin="10 0 0 0" HorizontalAlignment="Center"/>
                     </StackPanel>
+
+                    <Separator BorderBrush="Beige" BorderThickness="1" Opacity="1"  />
 
                     <StackPanel  Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top"  Margin="20">
                         <fa:ImageAwesome Icon="Circle" Height="12" Foreground="Beige" VerticalAlignment="Center"/>
                         <TextBlock Text="{Binding Path=Registros, StringFormat='{}Hay {0:#.#} registros'}" Margin="10 0 0 0" HorizontalAlignment="Center"/>
                     </StackPanel>
 
+                    <Separator BorderBrush="Beige" BorderThickness="1" Opacity="1"  />
+
                     <StackPanel  Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top"  Margin="20">
                         <fa:ImageAwesome Icon="Circle" Height="12" Foreground="Beige" VerticalAlignment="Center"/>
                         <TextBlock Text="{Binding Path=Pendientes, StringFormat='{} Hay {0} registros pendientes'}" Margin="10 0 0 0" HorizontalAlignment="Center"/>
                     </StackPanel>
-
+                    
+                    <Separator BorderBrush="Gray" BorderThickness="1" Opacity="1"  Margin="30 0 30 0"/>
+                    <Separator BorderBrush="Beige" BorderThickness="1" Opacity="1"  />
+                                        
                 </StackPanel>
             </Border>
-
-
-
 
         </Grid>
     </Border>

@@ -219,6 +219,17 @@ namespace ServerConsole
             return DbConnection.getNombresProveedores(Caracteres);
         }
 
+        /// <summary>
+        /// Retorna una lista de objetos de la clase ProductoModel con todos los registros de compra del proveedor dado como parametro.
+        /// /// </summary>
+        /// <param name="Cedula"></param>
+        /// <returns></returns>
+        public  BindableCollection<ProductoModel> ServidorgetTodosLosRegistrosDeCompraCedula(string Cedula)
+        {
+            return DbConnection.getTodosLosRegistrosDeCompraCedula(Cedula);
+        }
+
+
 
         #endregion
 
@@ -929,6 +940,16 @@ namespace ServerConsole
         }
 
         #endregion
+
+        /// <summary>
+        /// Obtiene ingormacion general a cerca de todos los locales
+        /// </summary>
+        /// <returns></returns>
+        public decimal[] ServidorgetTotal()
+        {
+            return DbConnection.getTotal();
+        }
+
 
 
         /// <summary>

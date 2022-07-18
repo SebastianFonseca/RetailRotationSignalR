@@ -115,7 +115,7 @@
                                 <TextBlock Grid.Column="1" FontSize="17" Text="{Binding Path=nombre}"   HorizontalAlignment="Left" Margin="20 0 0 0"/>
                                 <TextBlock Grid.Column="2" FontSize="17" Width="60"  Text="{Binding Path=sumaPedido}" HorizontalAlignment="Center" TextAlignment="Center"  />
                                 <TextBlock Grid.Column="3" FontSize="17" Width="60"  Text="{Binding Path=compra}" HorizontalAlignment="Center"  TextAlignment="Center"  />
-                                <TextBlock Grid.Column="4" FontSize="17" Width="100" Text="{Binding Path=precioCompra, StringFormat={}${0:#,#}}" HorizontalAlignment="Center" TextAlignment="Center" />
+                                <TextBlock Grid.Column="4" FontSize="17" Width="100" Text="{Binding Path=precioCompra, StringFormat='{}${0:#,#}'}" HorizontalAlignment="Center" TextAlignment="Center" />
                                 <TextBlock Grid.Column="5" FontSize="17" Width="115" HorizontalAlignment="Center" TextAlignment="Center" >
                                     <TextBlock.Text>
                                         <MultiBinding StringFormat=" {0} {1}">

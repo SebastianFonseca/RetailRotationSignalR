@@ -83,9 +83,9 @@
                 <TextBlock Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" >Producto:</TextBlock>
                 <TextBlock Grid.Row="0" Grid.Column="3" x:Name="ProductoNombre" FontWeight="Normal" Grid.ColumnSpan="2" HorizontalAlignment="Left"/>
                 <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Grid.ColumnSpan="2">Precio actual:</TextBlock>
-                <TextBlock Grid.Row="1" Grid.Column="2" x:Name="PrecioActual" HorizontalAlignment="Left"  FontWeight="Normal" Text="{Binding Path=PrecioActual,StringFormat={}${0:#,#}}"/>
+                <TextBlock Grid.Row="1" Grid.Column="2" x:Name="PrecioActual" HorizontalAlignment="Left"  FontWeight="Normal" Text="{Binding Path=PrecioActual,StringFormat='{}${0:#,#}'}"/>
                 <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" Grid.ColumnSpan="2">Nuevo precio:</TextBlock>
-                <TextBox   Grid.Row="2" Grid.Column="2"  x:Name="NuevoPrecio" Grid.ColumnSpan="2" Text="{Binding UpdateSourceTrigger=PropertyChanged, Path=NuevoPrecio, StringFormat={}${0:#,#}}" FontWeight="Normal" HorizontalAlignment="Stretch"  Padding="3 0 3 0">
+                <TextBox   Grid.Row="2" Grid.Column="2"  x:Name="NuevoPrecio" Grid.ColumnSpan="2" Text="{Binding UpdateSourceTrigger=PropertyChanged, Path=NuevoPrecio, StringFormat='{}${0:#,#}'}" FontWeight="Normal" HorizontalAlignment="Stretch"  Padding="3 0 3 0">
                     <TextBox.Style>
                         <Style TargetType="TextBox" BasedOn="{StaticResource GeneralTextBox}">
                             <Style.Triggers>
@@ -94,7 +94,7 @@
                                         <Setter.Value>
                                             <VisualBrush Stretch="None">
                                                 <VisualBrush.Visual>
-                                                    <TextBlock Text="{Binding Path=NuevoPrecio,StringFormat={}${0:#,#}}" Foreground="Gray"/>
+                                                    <TextBlock Text="{Binding Path=NuevoPrecio,StringFormat='{}${0:#,#}'}" Foreground="Gray"/>
                                                 </VisualBrush.Visual>
                                             </VisualBrush>
                                         </Setter.Value>

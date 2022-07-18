@@ -17,7 +17,54 @@ namespace Client.Main.ViewModels
         public InformesBuscarLocalesViewModel(MainWindowViewModel ventanaPrincipal)
         {
             this.VentanaPrincipal = ventanaPrincipal;
+            getInfo();
         }
+
+
+        public async void getInfo()
+        {
+            try
+            {
+                if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
+                {
+
+                    Task<object> re = conexion.CallServerMethod("ServidorgetTotal", Arguments: new object[] { });
+                    await re;
+                    decimal?[] respuesta = System.Text.Json.JsonSerializer.Deserialize<decimal?[]>(re.Result.ToString());
+                    if (respuesta != null && respuesta.Length == 5)
+                    {
+                        Ingresos = respuesta[0];
+                        Egresos = respuesta[1];
+                        TotalCompras = respuesta[2];
+                        TotalCancelado = respuesta[3];
+                        TotalPendiente = respuesta[4];
+                    }
+
+                    NotifyOfPropertyChange(()=> Ingresos);
+                    NotifyOfPropertyChange(() => Egresos);
+                    NotifyOfPropertyChange(() => TotalCompras);
+                    NotifyOfPropertyChange(() => TotalCancelado);
+                    NotifyOfPropertyChange(() => TotalPendiente);
+
+                }
+                if (MainWindowViewModel.Status == "Trabajando localmente")
+                {
+                    MessageBox.Show("No esta conectado al servidor");
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+        }
+
+        public decimal? Ingresos { get; set; } = 0;
+        public decimal? Egresos { get; set; } = 0;
+        public decimal? TotalCompras { get; set; } = 0;
+        public decimal? TotalCancelado { get; set; } = 0;
+        public decimal? TotalPendiente { get; set; } = 0;
+
+        public decimal? Total{ get { return Ingresos - Egresos - TotalPendiente - TotalCancelado; } } 
 
 
         private string _buscarTbx;

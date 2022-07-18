@@ -38,7 +38,7 @@ namespace Client.Main.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    string cadena = "select empleado.Password, Empleado.CedulaEmpleado,empleado.CodigoPuntoVenta,empleado.Nombres,Empleado.Apellidos,Empleado.FechaContratacion,empleado.Salario,Empleado.Telefono,Empleado.Cargo,Empleado.Direccion, PuntoVenta.Nombres as nombrePuntoVenta from empleado join puntoventa on empleado.codigopuntoventa = puntoventa.codigopuntoventa where [CedulaEmpleado]=@user ";
+                    string cadena = "select empleado.Password, Empleado.CedulaEmpleado,empleado.CodigoPuntoVenta,empleado.Nombres,Empleado.Apellidos,Empleado.FechaContratacion,empleado.Salario,Empleado.Telefono,Empleado.Cargo,Empleado.Direccion, PuntoVenta.Nombres as nombrePuntoVenta from empleado join puntoventa on empleado.codigopuntoventa = puntoventa.codigopuntoventa where [CedulaEmpleado]=@user and empleado.Estado = 'Activo'";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     cmd.Parameters.AddWithValue("@user", User);
                     conn.Open();
@@ -62,8 +62,6 @@ namespace Client.Main.Utilities
                                 persona.telefono = reader["Telefono"].ToString();
                                 persona.cargo = reader["Cargo"].ToString();
                                 persona.direccion = reader["Direccion"].ToString();
-
-
                                 return new object[] { "Registrado", persona };
                             }
 

@@ -99,14 +99,21 @@ namespace Client.Main.ViewModels
                         {
                             Task<object> re = conexion.CallServerMethod("ServidorValidarUsuario", Arguments: new[] { usuario.cedula, usuario.password });
                             await re;
-
-
                             object[] respuesta = System.Text.Json.JsonSerializer.Deserialize<object[]>(re.Result.ToString());
-
-
-                            if ((string)respuesta[0] == "Registrado")
+                            EmpleadoModel usr = new EmpleadoModel();
+                            if (respuesta.Length == 2)
                             {
-                                window.ShowWindow(new MainWindowViewModel((EmpleadoModel)respuesta[1]));                                
+                                usr = System.Text.Json.JsonSerializer.Deserialize<EmpleadoModel>(respuesta[1].ToString());
+                            }
+
+                            if ((string)respuesta[0].ToString() == "Contraseña incorrecta.")
+                            {
+                                MessageBox.Show("Usuario o contraseña incorrectos");
+                                return;
+                            }
+                            if ((string)respuesta[0].ToString() == "Registrado")
+                            {
+                                window.ShowWindow(new MainWindowViewModel(usr));                                
                                 this.TryClose();
                                 return;
                             }
@@ -144,17 +151,22 @@ namespace Client.Main.ViewModels
                         await re;
 
                         object[] respuesta = System.Text.Json.JsonSerializer.Deserialize<object[]>(re.Result.ToString());
-                        EmpleadoModel usuario = System.Text.Json.JsonSerializer.Deserialize<EmpleadoModel>(respuesta[1].ToString());
+                        EmpleadoModel usr = new EmpleadoModel();
+                        if (respuesta.Length == 2) 
+                        { 
+                             usr = System.Text.Json.JsonSerializer.Deserialize<EmpleadoModel>(respuesta[1].ToString());
+                        }
 
                         if ((string)respuesta[0].ToString() == "Registrado")
                         {
-                            window.ShowWindow(new MainWindowViewModel(usuario));
+                            window.ShowWindow(new MainWindowViewModel(usr));
                             this.TryClose();
                             return;
                         }
                         else
                         {
                             MessageBox.Show("El nombre de usuario o la contraseña son incorrectos.");
+                            return;
                         }
                     }
 

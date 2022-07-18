@@ -43,7 +43,7 @@ namespace Client.Main.ViewModels
                     }
                     if (resultadoCliente.facturas != null && resultadoCliente.facturas.Count > 0 ) 
                     { 
-                        UltimaCompra = $"{resultadoCliente.facturas[0].fecha.ToString("dd-MM-yyyy")}, {(DateTime.Today - resultadoCliente.facturas[0].fecha).Days} día(s) atras. N. facturas: {resultadoCliente.facturas.Count}.";
+                        UltimaCompra = $"{resultadoCliente.facturas[0].fecha.ToString("dd-MM-yyyy")}, {(DateTime.Today - resultadoCliente.facturas[0].fecha).Days} día(s) atras. {resultadoCliente.facturas.Count} Facturas.";
                         ComprasTotal = resultadoCliente.facturas.Sum<FacturaModel>(f => f.valorTotal);
                     }
 

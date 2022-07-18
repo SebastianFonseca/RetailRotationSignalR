@@ -40,7 +40,7 @@
     </UserControl.Resources>
 
     <Border Background="#F3E0C2" CornerRadius="10">
-        <Grid Background="Transparent" ShowGridLines="True" Opacity="0.9" Focusable="False" >
+        <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9" Focusable="False" >
             <Grid.ColumnDefinitions>
 
                 <ColumnDefinition Width="1*"/>
@@ -67,7 +67,7 @@
                                         <Setter.Value>
                                             <VisualBrush Stretch="None">
                                                 <VisualBrush.Visual>
-                                                    <TextBlock Text="Escriba el nombre de un proveedor o el nombre o código de un producto" Foreground="Gray"/>
+                                                    <TextBlock Text="Nombre de proveedor - Nombre o código de producto" Foreground="Gray"/>
                                                 </VisualBrush.Visual>
                                             </VisualBrush>
                                         </Setter.Value>
