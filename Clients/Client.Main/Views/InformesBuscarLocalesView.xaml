@@ -127,7 +127,7 @@
 
                     <!--INGRESOS -->
                     <Grid  HorizontalAlignment="Stretch" Margin="10 2 10 2">
-                        <fa:ImageAwesome Icon="Plus" Height="12" Foreground="Beige" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                        <fa:ImageAwesome Icon="Plus" Height="12" Foreground="Gray" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                         <Grid Margin="20 0 0 0" HorizontalAlignment="Stretch" ShowGridLines="False">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
@@ -144,7 +144,7 @@
                     
                     <!--Egresos -->
                     <Grid  HorizontalAlignment="Stretch" Margin="10 2 10 2">
-                        <fa:ImageAwesome Icon="Minus" Width="12" Foreground="Beige" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                        <fa:ImageAwesome Icon="Minus" Width="12" Foreground="Gray" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                         <Grid Margin="20 0 0 0" HorizontalAlignment="Stretch" ShowGridLines="False">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
@@ -161,7 +161,7 @@
 
                     <!--total -->
                     <Grid  HorizontalAlignment="Stretch" Margin="10 2 10 2">
-                        <fa:ImageAwesome Icon="Minus" Width="12" Foreground="Beige" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                        <fa:ImageAwesome Icon="Minus" Width="12" Foreground="Gray" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                         <Grid Margin="20 0 0 0" HorizontalAlignment="Stretch" ShowGridLines="False">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
@@ -179,7 +179,7 @@
 
                     <!--Pagado -->
                     <Grid  HorizontalAlignment="Stretch" Margin="10 2 10 2">
-                        <fa:ImageAwesome Icon="Plus" Height="12" Foreground="Beige" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                        <fa:ImageAwesome Icon="Plus" Height="12" Foreground="Gray" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                         <Grid Margin="20 0 0 0" HorizontalAlignment="Stretch" ShowGridLines="False">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
@@ -192,14 +192,11 @@
                         </Grid>
                     </Grid>
 
-
-
-
                     <Separator BorderBrush="Beige" BorderThickness="1" Opacity="1"  />
 
                     <!--Pendiente -->
                     <Grid  HorizontalAlignment="Stretch" Margin="10 2 10 2">
-                        <fa:ImageAwesome Icon="Question" Height="12" Foreground="Beige" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                        <fa:ImageAwesome Icon="Question" Height="12" Foreground="Gray" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                         <Grid Margin="20 0 0 0" HorizontalAlignment="Stretch" ShowGridLines="False">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>

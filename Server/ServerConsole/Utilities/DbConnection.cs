@@ -1,6 +1,7 @@
 ﻿using Caliburn.Micro;
 using ServerConsole.Models;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
 
@@ -4331,7 +4332,7 @@ namespace ServerConsole.Utilities
                     {
                         conn.Close();
                         NuevoMovimientoDeEfectivo(aumentoDisminucion: Ingreso.efectivo, codigoPuntoVenta: Ingreso.puntoVenta.codigo, codigoIngreso: Ingreso.id, codigoEgreso: null);
-                        Statics.Imprimir($"{RetailHUB.usuarioConectado}:Ha registrado un  nuevo ingreso => Cod. {Ingreso.id} | Valor: {Ingreso.valor}");
+                        Statics.Imprimir($"{RetailHUB.usuarioConectado}:Ha registrado un  nuevo ingreso => Cod. {Ingreso.id} | Valor: {Ingreso.efectivo}");
                         Statics.Imprimir($"Punto de pago: {Ingreso.puntoPago} | Punto de venta: {Ingreso.puntoVenta.codigo} | Caja:{Ingreso.cajero.cedula}");
                         return "true";
                     }
@@ -4494,6 +4495,56 @@ namespace ServerConsole.Utilities
                 return null;
             }
 
+        }
+
+        /// <summary>
+        /// Obtiene los ingresos por fecha d eun local
+        /// </summary>
+        /// <param name="codLocal"></param>
+        /// <returns></returns>
+        public static BindableCollection<IngresoModel> getIngresos(string codLocal)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+
+
+                    string cadena = $"select sum(valortotal) as valor, CAST(fecha as date) as fecha  from FacturasVenta where CodigoPuntoPago like @local group by CAST(fecha as date)";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@local", codLocal + ":%" );
+                    conn.Open();
+                    BindableCollection<IngresoModel> igresos = new BindableCollection<IngresoModel>();
+
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+
+                        while (reader.Read()) 
+                        {
+                            IngresoModel ing = new IngresoModel()
+                            {
+                                fecha = DateTime.Parse(reader["fecha"].ToString()),
+                                valor = decimal.Parse(reader["valor"].ToString())
+                            };
+
+
+                            igresos.Add(ing);
+
+                        }
+                    }
+                 
+                    conn.Close();
+
+                    return  igresos ;
+
+                }
+            }
+            catch (Exception e)
+            {
+                Statics.Imprimir(e.Message);
+                return null;
+            }
         }
 
         #endregion
@@ -4978,10 +5029,7 @@ namespace ServerConsole.Utilities
 
                     conn.Close();
 
-                    return new decimal[] { ingresos, egresos, totalCompras, totalComprasPagas, totalComprasPendientes };
-                    
-                    
-
+                    return new decimal[] { ingresos, egresos, totalCompras, totalComprasPagas, totalComprasPendientes };                                        
                 }
             }
             catch (Exception e)
@@ -4990,6 +5038,121 @@ namespace ServerConsole.Utilities
                 return null;
             }
         }
+
+
+
+        public static decimal[] getInfoLocal(string codigoLocal, DateTime fechaInicio, DateTime fechaFinal)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+
+                    decimal ingresos;
+                    decimal egresos;
+                    decimal facturas;
+                    decimal empleados;
+
+                    string cadena = $"select sum(Valor) as ingresos from (select valor, CAST(fecha as date) as f , PuntoVenta from Ingresos as res) as m where m.f >= @fInicio and m.f <= @fFinal  and m.PuntoVenta = @local";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@local", codigoLocal );
+                    cmd.Parameters.AddWithValue("@fInicio", fechaInicio.Date);
+                    cmd.Parameters.AddWithValue("@fFinal", fechaFinal.Date);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        reader.Read();
+                        decimal.TryParse(reader["ingresos"].ToString(), out decimal ing);
+                        ingresos = ing;
+                    }
+
+                    string cadena0 = $"select sum(Valor) as egresos from (select valor, CAST(fecha as date) as f , codigoPuntoVenta from Egresos as res) as m where m.f >= @fInicio and m.f <= @fFinal  and m.CodigoPuntoVenta = @local";
+                    SqlCommand cmd0 = new SqlCommand(cadena0, conn);
+                    cmd0.Parameters.AddWithValue("@local", codigoLocal);
+                    cmd0.Parameters.AddWithValue("@fInicio", fechaInicio.Date);
+                    cmd0.Parameters.AddWithValue("@fFinal", fechaFinal.Date);
+                    using (SqlDataReader reader0 = cmd0.ExecuteReader())
+                    {
+                        reader0.Read();
+                        decimal.TryParse(reader0["egresos"].ToString(), out decimal egr);
+                        egresos = egr;
+                    }
+
+                    string cadena1 = $"select count(CodigoFactura) as numerofacturas from (select CAST(fecha as date) as f , CodigoFactura, CodigoPuntoPago from FacturasVenta as res) as m where m.f >= @fInicio and m.f <= @fFinal  and m.codigoPuntoPago like @local'";
+                    SqlCommand cmd1 = new SqlCommand(cadena1, conn);
+                    cmd1.Parameters.AddWithValue("@local", codigoLocal+":%");
+                    cmd1.Parameters.AddWithValue("@fInicio", fechaInicio.Date);
+                    cmd1.Parameters.AddWithValue("@fFinal", fechaFinal.Date);
+                    using (SqlDataReader reader1 = cmd1.ExecuteReader())
+                    {
+                        reader1.Read();
+                        decimal.TryParse(reader1["numerofacturas"].ToString(), out decimal facts);
+                        facturas = facts;
+                    }
+
+                    string cadena2 = $"select count(CedulaEmpleado) numeroempleados from Empleado where CodigoPuntoVenta  = @local and estado = 'Activo'";
+                    SqlCommand cmd2 = new SqlCommand(cadena2, conn);
+                    cmd2.Parameters.AddWithValue("@local", codigoLocal);
+                    using (SqlDataReader reader2 = cmd2.ExecuteReader())
+                    {
+                        reader2.Read();
+                        decimal.TryParse(reader2["numeroempleados"].ToString(), out decimal emp);
+                        empleados = emp;
+                    }
+
+
+                    conn.Close();
+
+                    return new decimal[] { ingresos, egresos, facturas, empleados };
+                }
+            }
+            catch (Exception e)
+            {
+                Statics.Imprimir(e.Message);
+                return null;
+            }
+        }
+
+
+        public static decimal[] getPorcentajeMercancia(string codigoLocal, DateTime fechaInicio, DateTime fechaFinal)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+
+                    decimal porcentaje;
+
+
+                    string cadena = $"select cantidadpuntoventa / cantidadgeneral as porcentaje, general.UnidadVenta from (select  unidadventa,sum(cantidad) as cantidadpuntoventa from (select envioproducto.CodigoProducto, Cantidad from EnvioProducto  where CodigoEnvio in (select CodigoEnvio from Envio where CodigoPuntoVenta = @local and FechaEnvio <= @fFinal and FechaEnvio >= @fInicio)) as a left join (select codigoproducto, UnidadVenta from producto) as b on a.CodigoProducto = b.CodigoProducto group by UnidadVenta) as local join (select  unidadventa,sum(cantidad) as cantidadgeneral from (select envioproducto.CodigoProducto, Cantidad from EnvioProducto  where CodigoEnvio in (select CodigoEnvio from Envio where FechaEnvio <= @fFinal and FechaEnvio >= @fInicio)) as a left join (select codigoproducto, UnidadVenta from producto) as b on a.CodigoProducto = b.CodigoProducto group by UnidadVenta) as general on local.UnidadVenta = general.UnidadVenta";
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
+                    cmd.Parameters.AddWithValue("@local", codigoLocal);
+                    cmd.Parameters.AddWithValue("@fInicio", fechaInicio.Date);
+                    cmd.Parameters.AddWithValue("@fFinal", fechaFinal.Date);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        reader.Read();
+                        decimal.TryParse(reader["ingresos"].ToString(), out decimal ing);
+                        ingresos = ing;
+                    }
+
+                    conn.Close();
+
+                    return new decimal[] { ingresos, egresos, facturas, empleados };
+                }
+            }
+            catch (Exception e)
+            {
+                Statics.Imprimir(e.Message);
+                return null;
+            }
+        }
+
+
+
+
+
 
 
 

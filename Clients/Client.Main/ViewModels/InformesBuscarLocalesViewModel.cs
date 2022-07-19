@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Client.Main.ViewModels
 {
-    class InformesBuscarLocalesViewModel: Screen
+    public class InformesBuscarLocalesViewModel: Screen
     {
 
         public MainWindowViewModel VentanaPrincipal;
@@ -156,7 +156,7 @@ namespace Client.Main.ViewModels
                             {
                                 if (e.Current.codigo == BuscarTbx.Split('-')[0].Trim())
                                 {
-                                    VentanaPrincipal.ActivateItem(new LocalResultadoBusquedaViewModel(VentanaPrincipal, e.Current));
+                                    VentanaPrincipal.ActivateItem(new InformesBuscarLocalesResultadoViewModel(VentanaPrincipal, e.Current));
                                 }
 
 

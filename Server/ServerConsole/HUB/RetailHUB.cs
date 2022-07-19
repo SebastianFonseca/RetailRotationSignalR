@@ -853,6 +853,16 @@ namespace ServerConsole
         }
 
 
+        /// <summary>
+        /// Obtiene los ingresos por fecha d eun local
+        /// </summary>
+        /// <param name="codLocal"></param>
+        /// <returns></returns>
+        public BindableCollection<IngresoModel> ServidorgetIngresos(string codLocal)
+        {
+            return DbConnection.getIngresos(codLocal);
+        }
+
 
         #endregion
 
@@ -950,7 +960,10 @@ namespace ServerConsole
             return DbConnection.getTotal();
         }
 
-
+        public  decimal[] ServidorgetInfoLocal(string codigoLocal, DateTime fechaInicio, DateTime fechaFinal)
+        {
+            return DbConnection.getInfoLocal(codigoLocal, fechaInicio, fechaFinal);
+        }
 
         /// <summary>
         /// Cuando es llamado desde un cliente retorna los registros de cambios guardados en la tabla que consigna dicha informacion en la base de datos

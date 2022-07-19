@@ -13,6 +13,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Collections.Generic;
 
 
 namespace Client.Main
@@ -92,22 +93,21 @@ namespace Client.Main
         public async Task<object> CallServerMethod(string MethodName, Object[] Arguments)
         {
             if (hubConnection.ConnectionId != null && hubConnection.State != HubConnectionState.Connecting) { 
-            try
-            {
-               /// MessageBox.Show(Connection.State.ToString());
-                Task<object> result = hubConnection.InvokeCoreAsync<object>(MethodName, args: Arguments);
-                await result ;
-                if (hubConnection.ConnectionId != null && hubConnection.State != HubConnectionState.Connecting && result.Status == TaskStatus.RanToCompletion )
+                try
                 {
-                    return result.Result;
-                }
-            }
-            
+                   /// MessageBox.Show(Connection.State.ToString());
+                    Task<object> result = hubConnection.InvokeCoreAsync<object>(MethodName, args: Arguments);
+                    await result ;
+                    if (hubConnection.ConnectionId != null && hubConnection.State != HubConnectionState.Connecting && result.Status == TaskStatus.RanToCompletion )
+                    {
+                        return result.Result;
+                    }
+                }            
                 catch (Exception e)
-            {
-                MessageBox.Show(e.Message);
-                return null;
-            }
+                {
+                    MessageBox.Show(e.Message);
+                    return null;
+                }
             }
             return null;
 

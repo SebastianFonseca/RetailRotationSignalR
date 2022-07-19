@@ -62,6 +62,7 @@
     <PackageReference Include="Dotmim.Sync.SqlServer" Version="0.8.1-beta-0687" />
     <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
     <PackageReference Include="JWT" Version="8.2.3" />
+    <PackageReference Include="LiveCharts.Wpf.NetCore3" Version="0.9.7" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.8" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.12.2" />
     <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="150.18208.0" />
