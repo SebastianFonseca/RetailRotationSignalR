@@ -129,7 +129,7 @@
 
                     <!--Linea 8-->
                     <TextBlock Grid.Row="8" Grid.Column="0" VerticalAlignment="Bottom">Salario:</TextBlock>
-                    <TextBlock  Grid.Row="8" Grid.Column="1" HorizontalAlignment="Left"  x:Name="Salario" FontWeight="Normal"/>
+                    <TextBlock  Grid.Row="8" Grid.Column="1" HorizontalAlignment="Left"  x:Name="Salario" Text="{Binding Salario, StringFormat='{}${0:#,#}'}" FontWeight="Normal"/>
                     <!--linea 9-->
                 </Grid>
             </ScrollViewer>

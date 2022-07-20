@@ -107,9 +107,9 @@
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0" FontSize="17" Text="{Binding Path=unidadCompra}"    HorizontalAlignment="Center" />
                                 <TextBlock Grid.Column="1" FontSize="17" Text="{Binding Path=nombre}"   HorizontalAlignment="Left" Margin="20 0 0 0"/>
-                                <TextBlock Grid.Column="2" FontSize="17" Width="60" Text="{Binding Path=sumaPedido}" HorizontalAlignment="Center" TextAlignment="Center"  />
-                                <TextBox   Grid.Column="3" FontSize="17" Width="60" Text="{Binding compra, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource GeneralTextBox}"    HorizontalAlignment="Center" MaxLength="5" TextAlignment="Right"  />
-                                <TextBox   Grid.Column="4" FontSize="17" Width="100" Style="{StaticResource GeneralTextBox}"   Text="{Binding Path=precioCompra, StringFormat={}${0:#.}, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" TextAlignment="Right" />
+                                <TextBlock Grid.Column="2" FontSize="17" Width="60" Text="{Binding Path=sumaPedido, StringFormat='{}{0:#.}'}" HorizontalAlignment="Center" TextAlignment="Center"  />
+                                <TextBox   Grid.Column="3" FontSize="17" Width="60" Text="{Binding compra, UpdateSourceTrigger=PropertyChanged, StringFormat='{}{0:#.}'}" Style="{StaticResource GeneralTextBox}"    HorizontalAlignment="Center" MaxLength="5" TextAlignment="Right"  />
+                                <TextBox   Grid.Column="4" FontSize="17" Width="100" Style="{StaticResource GeneralTextBox}"   Text="{Binding Path=precioCompra, StringFormat='{}${0:#.}', UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" TextAlignment="Right" />
                                 <ComboBox  Grid.Column="5" FontSize="17" Width="115"  SelectedItem="{Binding Path=proveedor, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Bottom" Template="{StaticResource GeneralComboBox}" HorizontalAlignment="Right"   MaxDropDownHeight="100" ItemsSource="{Binding Path=DataContext.Proveedores, ElementName=Productos, UpdateSourceTrigger=PropertyChanged}" x:Name="Proveedores">
                                     <ComboBox.ItemTemplate>
                                         <DataTemplate >

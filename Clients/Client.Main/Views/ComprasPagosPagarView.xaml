@@ -42,7 +42,7 @@
             <TextBox Grid.Row="0" Grid.Column="2" x:Name="CodigoSoporte" Style="{StaticResource GeneralTextBox}" BorderThickness="0 1 0 1" PreviewTextInput="NumberValidationTextBox"/>
 
             <TextBlock Grid.Row="1" Grid.Column="1" >Valor pagado:</TextBlock>
-            <TextBox Grid.Row="1" Grid.Column="2" Style="{StaticResource GeneralTextBox}" Text="{Binding Path=Valor, StringFormat='{}{0:#,#}' ,UpdateSourceTrigger=PropertyChanged}" x:Name="Valor" PreviewTextInput="NumberValidationTextBox"/>
+            <TextBox Grid.Row="1" Grid.Column="2" Style="{StaticResource GeneralTextBox}" Text="{Binding Path=Valor, StringFormat='{}${0:#,}' ,UpdateSourceTrigger=PropertyChanged}" x:Name="Valor" PreviewTextInput="NumberValidationTextBox"/>
 
             <Button Grid.Row="2" Grid.Column="1"  Grid.ColumnSpan="2" Style="{StaticResource GeneralButton}" x:Name="Guardar" Content="GUARDAR">
                 <Button.IsEnabled>

@@ -58,7 +58,7 @@ namespace Client.Main.ViewModels
                 Task<object> re = conexion.CallServerMethod("ServidorgetNextIdEgreso", Arguments: new object[] { });
                 await re;
                 
-                Id = ConfigurationManager.AppSettings["Caja"].Split(':')[0] + ":" +  re.Result.ToString();
+                Id = VentanaPrincipal.usuario.puntoDeVenta + ":" +  re.Result.ToString();
                 egreso.id = Id;
             }
         }

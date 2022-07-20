@@ -153,7 +153,7 @@
 
                     <!--Linea 8-->
                     <TextBlock Grid.Row="11" Grid.Column="0" VerticalAlignment="Bottom">Salario:</TextBlock>
-                    <TextBox  Grid.Row="11" Grid.Column="1" Style="{StaticResource GeneralTextBox}"  PreviewTextInput="NumberValidationTextBox" x:Name="Salario" />
+                    <TextBox  Grid.Row="11" Grid.Column="1" Style="{StaticResource GeneralTextBox}" Text="{Binding Salario, StringFormat='{}${0:#,#}', UpdateSourceTrigger=PropertyChanged}"  PreviewTextInput="NumberValidationTextBox" x:Name="Salario" />
                     
 
 

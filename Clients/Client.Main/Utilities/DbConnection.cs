@@ -2565,8 +2565,8 @@ namespace Client.Main.Utilities
 
                 if (e.Message.Length > 35 && e.Message.Substring(0, 24) == $"Violation of PRIMARY KEY")
                 {
-                    ///El envio ya esta registrado entonces no se aroja la excepcion
-                MessageBox.Show("No se insero envio repetido");
+                    ///El envio ya esta registrado entonces no se arroja la excepcion
+                   // MessageBox.Show("No se inserto envio repetido");
 
                     return true;
                 }
@@ -3007,7 +3007,7 @@ namespace Client.Main.Utilities
                     conn.Open();
                     SqlDataReader reader = cmd1.ExecuteReader();
                     if (reader.HasRows)
-                    { conn.Close(); MessageBox.Show("No se insero recibido repetido"); return true; }
+                    { /*conn.Close(); MessageBox.Show("No se insero recibido repetido"); */return true; }
                     conn.Close();
 
                     string cadena = $"INSERT INTO Recibido(CodigoRecibido,CodigoPuntoVenta,CedulaEmpleado,Fecha,NombreConductor,Peso,PlacasCarro) VALUES (@codigo,@pv,@empleado,@fecha,@conductor,@peso,@placa);";

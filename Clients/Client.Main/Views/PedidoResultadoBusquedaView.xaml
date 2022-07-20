@@ -148,8 +148,8 @@
 
                             <TextBlock Text="{Binding Path=codigoProducto}" Grid.Column="0" FontSize="18" HorizontalAlignment="Center" TextAlignment="Center"  />
                             <TextBlock Text="{Binding Path=nombre}"         Grid.Column="1" FontSize="18" HorizontalAlignment="Center" TextAlignment="Center"  />
-                            <TextBlock Text="{Binding Path=existencia}"     Grid.Column="2" FontSize="18" HorizontalAlignment="Center" TextAlignment="Center"  />
-                            <TextBlock Text="{Binding Path=pedido}"         Grid.Column="3" FontSize="18" HorizontalAlignment="Center" TextAlignment="Center"  />
+                            <TextBlock Text="{Binding Path=existencia, StringFormat='{}{0:#.}'}"     Grid.Column="2" FontSize="18" HorizontalAlignment="Center" TextAlignment="Center"  />
+                            <TextBlock Text="{Binding Path=pedido, StringFormat='{}{0:#.}'}"         Grid.Column="3" FontSize="18" HorizontalAlignment="Center" TextAlignment="Center"  />
                             <TextBlock Text="{Binding Path=unidadVenta}"    Grid.Column="4" FontSize="18" HorizontalAlignment="Center" TextAlignment="Center"  />
                         </Grid>
 

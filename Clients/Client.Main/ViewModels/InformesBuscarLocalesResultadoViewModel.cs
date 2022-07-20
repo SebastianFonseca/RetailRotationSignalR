@@ -6,8 +6,8 @@ using Caliburn.Micro;
 using Client.Main.Models;
 using System.Windows;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using LiveCharts;
+using Client.Main.Utilities;
 
 namespace Client.Main.ViewModels
 {
@@ -92,7 +92,6 @@ namespace Client.Main.ViewModels
                     if(FechaInicio <= value) 
                     {
                         _fFinal = value;
-                        Consultar();
                     }
                         
 
@@ -110,6 +109,8 @@ namespace Client.Main.ViewModels
         public decimal? Egresos { get; set; } = 0;
 
         public string Nombre { get { return local.nombre; } }
+
+        public string Porcentajes { get; set; } 
         public ChartValues<decimal> valor { get; set; } = new ChartValues<decimal>();
         public List<string> fecha { get; set; } = new List<string>();
        
@@ -117,6 +118,7 @@ namespace Client.Main.ViewModels
          {
             if(FechaFinal == null | FechaFinal == null)
             {
+
                 if(FechaFinal < FechaInicio)
                 {
                     MessageBox.Show("La fecha de inicio es mayor a la fecha final, intervalo incorrecto");
@@ -129,6 +131,22 @@ namespace Client.Main.ViewModels
             {
                 if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
                 {
+
+                    Task<object> re1 = conexion.CallServerMethod("ServidorgetPorcentajeMercancia", Arguments: new object[] { local.codigo, FechaInicio.Date, FechaFinal.Date });
+                    await re1;
+                    if (re1.Result == null)
+                    {
+                        MessageBox.Show("No se obtuvo respuesta del servidor");
+                        return;
+                    }
+                    BindableCollection<UnidadVentaPorcentaje> porcent = System.Text.Json.JsonSerializer.Deserialize<BindableCollection<UnidadVentaPorcentaje>>(re1.Result.ToString());
+
+                    Porcentajes = "";
+                    foreach (UnidadVentaPorcentaje item in porcent)
+                    {
+                        Porcentajes = Porcentajes +  $"{item.unidadVenta}: {item.porcentaje * 100:#.}%, ";
+                    }
+
 
                     Task<object> re = conexion.CallServerMethod("ServidorgetInfoLocal", Arguments: new object[] { local.codigo, FechaInicio.Date, FechaFinal.Date });
                     await re;
@@ -148,6 +166,7 @@ namespace Client.Main.ViewModels
                     NotifyOfPropertyChange(() => Egresos);
                     NotifyOfPropertyChange(() => Facturas);
                     NotifyOfPropertyChange(() => Empleados);
+                    NotifyOfPropertyChange(() => Porcentajes);
 
                 }
                 if (MainWindowViewModel.Status == "Trabajando localmente")
@@ -160,6 +179,11 @@ namespace Client.Main.ViewModels
                 MessageBox.Show(e.Message);
             }
          }
+
+        public void BackButton()
+        {
+            VentanaPrincipal.ActivateItem(new InformesBuscarLocalesViewModel(VentanaPrincipal));
+        }
 
 
     }

@@ -136,7 +136,7 @@
 
                                 <TextBlock Text="{Binding Path=codigoProducto}" Margin="0" FontSize="18" HorizontalAlignment="Center"/>
                                 <TextBlock Text="{Binding Path=nombre}" Grid.Column="1"  FontSize="18" HorizontalAlignment="Center"/>
-                                <TextBlock  Grid.Column="2"  Width="60" Text="{Binding Path=existencia}" HorizontalAlignment="Center" TextAlignment="Center" FontSize="18" />
+                                <TextBlock  Grid.Column="2"  Width="60" Text="{Binding Path=existencia, StringFormat='{}{0:#.}'}" HorizontalAlignment="Center" TextAlignment="Center" FontSize="18" />
                                 <TextBlock Text="{Binding Path=unidadVenta}" Grid.Column="3"  FontSize="18" HorizontalAlignment="Center"/>
                             </Grid>
 

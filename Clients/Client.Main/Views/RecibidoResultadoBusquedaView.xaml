@@ -115,8 +115,8 @@
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0" Text="{Binding Path=unidadVenta}"   FontSize="18" HorizontalAlignment="Center" />
                                 <TextBlock Grid.Column="1" Text="{Binding Path=nombre}"  FontSize="18" HorizontalAlignment="Left" Margin="20 0 0 0"/>
-                                <TextBlock Grid.Column="2" Width="60" Text="{Binding Path=compraPorLocal}" HorizontalAlignment="Center" TextAlignment="Center" FontSize="18" />
-                                <TextBox   Grid.Column="3" Style="{StaticResource GeneralTextBox}"  Width="60"  Text="{Binding Path=recibido}" HorizontalAlignment="Center" MaxLength="5" TextAlignment="Center"  />
+                                <TextBlock Grid.Column="2" Width="60" Text="{Binding Path=compraPorLocal, StringFormat='{}{0:#.}'}" HorizontalAlignment="Center" TextAlignment="Center" FontSize="18" />
+                                <TextBox   Grid.Column="3" Style="{StaticResource GeneralTextBox}"  Width="60"  Text="{Binding Path=recibido, StringFormat='{}{0:#.}'}" HorizontalAlignment="Center" MaxLength="5" TextAlignment="Center"  />
                                 <Separator Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Bottom"  Background="#F7EBD7" Margin="0 0 0 0" Panel.ZIndex="1"/>
                             </Grid>
                         </DataTemplate>

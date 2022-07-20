@@ -52,13 +52,15 @@
     <Border Background="#F3E0C2" CornerRadius="10">
         <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9" Focusable="False" c:KeyboardFocus.On="{Binding ElementName=Name}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="90"/>
+                <ColumnDefinition Width="95"/>
+                <ColumnDefinition />
+                <ColumnDefinition />
                 <ColumnDefinition />
                 <ColumnDefinition />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition/>
+                <RowDefinition Height="50"/>
                 <RowDefinition/>
                 <RowDefinition/>
                 <RowDefinition/>
@@ -70,31 +72,42 @@
             </Grid.RowDefinitions>
 
             <!--Boton atras-->
-            <Button x:Name="BackButton" Grid.Column="0" Grid.Row="0"  Height="37" Margin="1" Style="{StaticResource GeneralButton}" VerticalAlignment="Center" HorizontalAlignment="Left" Width="80" >
+            <Button x:Name="BackButton" Grid.Column="0" Grid.Row="0"  Width="80" Margin="10 0 0 0"  Style="{StaticResource GeneralButton}" VerticalAlignment="Center" HorizontalAlignment="Left" >
                 <fa:ImageAwesome Icon="ArrowLeft" Height="25"/>
             </Button>
 
             <!--Linea Nombres-->
-            <TextBlock x:Name="Nombre" Grid.Row="0" Grid.Column="1"  HorizontalAlignment="Center" FontWeight="Normal"  FontSize="28"/>
-            <Separator Grid.Row="0" Grid.Column="1" VerticalAlignment="Bottom"  BorderBrush="Gray" BorderThickness="0.5"  Margin="20 0 20 0" />
+            <TextBlock x:Name="Nombre" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"  HorizontalAlignment="Center" FontWeight="Normal"  FontSize="28"/>
+            <Separator Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Bottom"  BorderBrush="Gray" BorderThickness="0.5"  Margin="20 0 20 0" />
+            
+            <!---Fechas-->      
+            <DatePicker   Style="{DynamicResource date}" Grid.Row="0" Grid.Column="4"  x:Name="FechaInicio" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Margin="3 12 3 12" FontWeight="DemiBold" />
+            <DatePicker   Style="{DynamicResource date}" Grid.Row="0" Grid.Column="5"  x:Name="FechaFinal" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Margin="3 12 3 12" FontWeight="DemiBold" />
+            
+            <!---Boton buscar-->
+            <Button Style="{StaticResource GeneralButton}"  Grid.Column="5" Grid.Row="1"   x:Name="Consultar"  Margin="25 1 15 1" >
+                <fa:ImageAwesome Icon="Search" Height="20"/>
+            </Button>
 
-            <DatePicker   Style="{DynamicResource date}" Grid.Row="0" Grid.Column="2"  x:Name="FechaInicio" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Margin="2 0 2 0" FontWeight="DemiBold" />
-            <DatePicker   Style="{DynamicResource date}" Grid.Row="0" Grid.Column="3"  x:Name="FechaFinal" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Margin="2 0 2 0" FontWeight="DemiBold" />
 
             <!-- Ingresos -->
-            <TextBlock  Grid.Row="1" Grid.Column="1"  HorizontalAlignment="Left" Margin="0 0 0 0" FontWeight="Normal"  Text="{Binding Path = Ingreso, StringFormat='{} Ingresos: ${0:#,#}'}" FontSize="20"/>
+            <TextBlock  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" Margin="0 0 0 0" FontWeight="Normal"  Text="{Binding Path = Ingreso, StringFormat='{} Ingresos: ${0:#,#}'}" FontSize="20"/>
 
             <!--Egresos-->
-            <TextBlock Grid.Row="1" Grid.Column="2"  HorizontalAlignment="Left"  Margin="5 0 0 0" FontWeight="Normal"  Text="{Binding Path=Egresos,StringFormat='{} Egresos: ${0:#,#}'}" FontSize="20"/>
+            <TextBlock Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" HorizontalAlignment="Left"  Margin="5 0 0 0" FontWeight="Normal"  Text="{Binding Path=Egresos,StringFormat='{} Egresos: ${0:#,#}'}" FontSize="20"/>
 
             <!--Linea  Compras-->
-            <StackPanel Grid.Row="1" Grid.Column="3" Orientation="Horizontal"  >
-                <TextBlock  HorizontalAlignment="Left" FontWeight="Normal" Text="{Binding Path=Facturas, StringFormat='{} Facts. {0:#.}'}" FontSize="20"/>
-                <TextBlock  HorizontalAlignment="Left" FontWeight="Normal" Text="{Binding Path=Empleados, StringFormat='{} Empl. {0:#.} '}" FontSize="20"/>
+            <StackPanel Grid.Row="1" Grid.Column="4" Orientation="Horizontal"  >
+                <TextBlock  HorizontalAlignment="Left" FontWeight="Normal" Text="{Binding Path=Facturas, StringFormat='{} Facts. {0:#.}'}" FontSize="15"/>
+                <TextBlock  HorizontalAlignment="Left" FontWeight="Normal" Text="{Binding Path=Empleados, StringFormat='{} Empl. {0:#.} '}" FontSize="15"/>
             </StackPanel>
 
+            <!--Porcentajes-->
+            <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="6"  HorizontalAlignment="Center"  Margin="5 0 0 0" FontWeight="Normal"  Text="{Binding Path=Porcentajes,StringFormat='{} Envio: {0}'}" FontSize="20"/>
+
+
             <!--Ventas -->
-            <Separator Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="5" VerticalAlignment="Bottom"  BorderBrush="Gray" BorderThickness="0.5"  Margin="20 0 20 0" />
+            <Separator Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="6" VerticalAlignment="Bottom"  BorderBrush="Gray" BorderThickness="0.5"  Margin="20 0 20 0" />
             <lvc:CartesianChart  Grid.Row="3"  Grid.ColumnSpan="6" Grid.RowSpan="6" Zoom="X" Background="#F3E0D2"  Margin="15 2 15 2">
                 <lvc:CartesianChart.Series>
                     <lvc:LineSeries Title="Ventas" Values="{Binding valor}"  Foreground="Black" Fill="Transparent" Stroke="Gray"  StrokeThickness="1.5" />

@@ -48,17 +48,17 @@
 
             <!--Fila 1-->
             <TextBlock Grid.Row="1" Grid.Column="1"  Text="Total:"/>
-            <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Path=Total, StringFormat={}${0:#.}}"  TextAlignment="Left"/>
+            <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Path=Total, StringFormat='{}${0:#,#}'}"  TextAlignment="Left"/>
 
             <TextBlock Grid.Row="1" Grid.Column="3"  Text="Efectivo:"/>
-            <TextBox   Grid.Row="1" Grid.Column="4"  Text="{Binding Path=Efectivo}" Style="{StaticResource GeneralTextBox}" Height="30" />
+            <TextBox   Grid.Row="1" Grid.Column="4"  Text="{Binding Path=Efectivo, StringFormat='{}${0:#,#}'}" Style="{StaticResource GeneralTextBox}" Height="30" />
 
             <!--Fila 2-->
             <TextBlock Grid.Row="2" Grid.Column="1"  Text="Responsable:"/>
             <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding Path=Responsable}" FontSize="18" FontWeight="Normal"/>
                                  
             <TextBlock Grid.Row="2" Grid.Column="3"  Text="Diferencia:"/>
-            <TextBlock Grid.Row="2" Grid.Column="4" Text="{Binding Path=Diferencia, StringFormat={}${0:#.}}" FontSize="18" FontWeight="Normal"/>
+            <TextBlock Grid.Row="2" Grid.Column="4" Text="{Binding Path=Diferencia, StringFormat='{}${0:#,#}'}" FontSize="18" FontWeight="Normal"/>
 
             <!--Fila 3-->
             <TextBlock Grid.Row="3" Grid.Column="1"  Text="Usuario:" />

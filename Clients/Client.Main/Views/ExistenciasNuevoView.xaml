@@ -156,7 +156,7 @@
 
                                 <TextBlock Text="{Binding Path=codigoProducto}" Margin="0" FontSize="18" HorizontalAlignment="Center"/>
                                 <TextBlock Text="{Binding Path=nombre}" Grid.Column="1"  FontSize="18" HorizontalAlignment="Center"/>
-                                <TextBox Style="{StaticResource GeneralTextBox}" Grid.Column="2"  Width="60" MaxLength="5" Text="{Binding Path=existencia}" HorizontalAlignment="Center" TextAlignment="Center" PreviewTextInput="NumberValidationTextBox"/>
+                                <TextBox Style="{StaticResource GeneralTextBox}" Grid.Column="2"  Width="60" MaxLength="5" Text="{Binding Path=existencia, StringFormat='{}{0:#.}'}" HorizontalAlignment="Center" TextAlignment="Center" PreviewTextInput="NumberValidationTextBox"/>
                                 <TextBlock Text="{Binding Path=unidadVenta}" Grid.Column="3"  FontSize="18" HorizontalAlignment="Center"/>
                             </Grid>
                             

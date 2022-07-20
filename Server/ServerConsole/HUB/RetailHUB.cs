@@ -965,6 +965,13 @@ namespace ServerConsole
             return DbConnection.getInfoLocal(codigoLocal, fechaInicio, fechaFinal);
         }
 
+        public BindableCollection<UnidadVentaPorcentaje> ServidorgetPorcentajeMercancia(string codigoLocal, DateTime fechaInicio, DateTime fechaFinal)
+        {
+            return DbConnection.getPorcentajeMercancia(codigoLocal, fechaInicio, fechaFinal);
+        }
+
+
+
         /// <summary>
         /// Cuando es llamado desde un cliente retorna los registros de cambios guardados en la tabla que consigna dicha informacion en la base de datos
         /// </summary>
