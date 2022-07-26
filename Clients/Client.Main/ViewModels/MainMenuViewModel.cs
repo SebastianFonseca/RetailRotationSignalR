@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
+using Microsoft.AspNetCore.SignalR.Client;
 
 namespace Client.Main.ViewModels
 {
@@ -21,12 +22,31 @@ namespace Client.Main.ViewModels
         {
             
             VentanaPrincipal = argVentana;
+
             act();
         }
 
         public async void act()
-
         {
+            if (conexion.Connection == null || conexion.Connection.State == HubConnectionState.Disconnected || conexion.Connection.State == HubConnectionState.Connecting)
+            {
+                await Connect.ConnectToServer(VentanaPrincipal.usuario.cedula);
+                //conexion.connection.on("setstatus", handler: (string a) =>
+                //{
+                //    mainwindowviewmodel.status = "conectado al servidor";
+                //    messagebox.show(a);
+                //});
+                //conexion.connection.on("setstatusdisconnected", handler: (string a) =>
+                //{
+                //    mainwindowviewmodel.status = "trabajando localmente";
+                //    messagebox.show(a);
+                //});
+
+                await conexion.CallServerMethod("TestMethod", Arguments: new[] { "Conectado al sevidor." });
+
+            }
+
+
             if ((MainWindowViewModel.Status == "Conectado al servidor") & (conexion.Connection.State == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Connected))
             {
                 try
