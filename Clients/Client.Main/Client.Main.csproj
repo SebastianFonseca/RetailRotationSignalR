@@ -4,6 +4,8 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>LOGOPOS-removebg-preview.ico</ApplicationIcon>
+    <Win32Resource />
   </PropertyGroup>
 
   <ItemGroup>
@@ -69,8 +71,8 @@
     <PackageReference Include="System.Composition.AttributedModel" Version="5.0.1" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.12.2" />
+    <PackageReference Include="XamlAnimatedGif" Version="2.0.2" />
     <!--PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.8.0" /-->
-    <PackageReference Include="WpfAnimatedGif" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -98,9 +100,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Views\iniciodesesion.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Resource Include="Resources\waiting.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
@@ -108,7 +107,7 @@
 
   <ItemGroup>
     <Resource Include="Resources\iniciodesesion.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
 

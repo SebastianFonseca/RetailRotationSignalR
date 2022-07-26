@@ -121,15 +121,15 @@ namespace ServerConsole.Utilities
                             cmd2.Parameters.AddWithValue("@codigo", Statics.PrimeraAMayuscula(Producto.codigoProducto));
                             cmd2.Parameters.AddWithValue("@nombre", Statics.PrimeraAMayuscula(Producto.nombre));
                             cmd2.Parameters.AddWithValue("@univenta", Statics.PrimeraAMayuscula(Producto.unidadVenta));
-                            cmd2.Parameters.AddWithValue("@unicompra", Statics.PrimeraAMayuscula(Producto.unidadCompra));     
-                            cmd2.Parameters.AddWithValue("@precio",  decimal.TryParse(Producto.precioVenta.ToString(), out decimal b ) ? b : (object)DBNull.Value);
+                            cmd2.Parameters.AddWithValue("@unicompra", Statics.PrimeraAMayuscula(Producto.unidadCompra));
+                            cmd2.Parameters.AddWithValue("@precio", decimal.TryParse(Producto.precioVenta.ToString(), out decimal b) ? b : (object)DBNull.Value);
                             cmd2.Parameters.AddWithValue("@seccion", Statics.PrimeraAMayuscula(Producto.seccion));
                             cmd2.Parameters.AddWithValue("@fv", Producto.fechaVencimiento == DateTime.Today ? (object)DBNull.Value : Producto.fechaVencimiento);
                             cmd2.Parameters.AddWithValue("@iva", decimal.TryParse(Producto.iva.ToString(), out decimal c) ? c : (object)DBNull.Value);
                             cmd2.Parameters.AddWithValue("@cb", string.IsNullOrEmpty(Producto.codigoBarras) ? (object)DBNull.Value : Producto.codigoBarras);
-                            cmd2.Parameters.AddWithValue("@fc", decimal.TryParse(Producto.factorConversion.ToString(), out decimal d ) ? d : (object)DBNull.Value);
+                            cmd2.Parameters.AddWithValue("@fc", decimal.TryParse(Producto.factorConversion.ToString(), out decimal d) ? d : (object)DBNull.Value);
                             cmd2.ExecuteNonQuery();
-                            conn.Close();                            
+                            conn.Close();
                             nuevoInventarioProducto(Producto.codigoProducto);
                             Registrar("Insert", "ServidorGetProductos", Producto.codigoProducto, "ProductoModel[]", "NuevoProducto", "codigoProducto");
                             Statics.Imprimir($"El usuario {RetailHUB.usuarioConectado} registro un nuevo producto: {Producto.codigoProducto} - {Producto.nombre}.");
@@ -141,7 +141,7 @@ namespace ServerConsole.Utilities
             catch (Exception e)
             {
 
-                Statics.Imprimir (e.Message);
+                Statics.Imprimir(e.Message);
                 return e.Message;
             }
         }
@@ -182,12 +182,12 @@ namespace ServerConsole.Utilities
                             if (decimal.TryParse(reader["PrecioVenta"].ToString(), out decimal b)) { producto.precioVenta = b; } else { producto.precioVenta = null; }
                             if (decimal.TryParse(reader["IVA"].ToString(), out decimal c)) { producto.iva = c; } else { producto.iva = null; }
                             if (decimal.TryParse(reader["FactorConversion"].ToString(), out decimal d)) { producto.factorConversion = d; } else { producto.factorConversion = null; }
-                            if (reader["FechaVencimiento"].ToString() == ""){producto.fechaVencimiento = DateTime.MinValue;}else{producto.fechaVencimiento = DateTime.Parse(reader["FechaVencimiento"].ToString());}
+                            if (reader["FechaVencimiento"].ToString() == "") { producto.fechaVencimiento = DateTime.MinValue; } else { producto.fechaVencimiento = DateTime.Parse(reader["FechaVencimiento"].ToString()); }
                             productos.Add(producto);
                         }
                     }
                     conn.Close();
-                   // Statics.Imprimir("Se consultaron los productos.");
+                    // Statics.Imprimir("Se consultaron los productos.");
                     return productos;
                 }
             }
@@ -228,21 +228,21 @@ namespace ServerConsole.Utilities
                                 seccion = reader["Seccion"].ToString(),
                                 codigoBarras = reader["CodigoBarras"].ToString()
                             };
-                            if (decimal.TryParse(reader["PrecioVenta"].ToString(), out decimal precio)){producto.precioVenta = precio;}
-                            else{ producto.precioVenta = null;}
-                            if (decimal.TryParse(reader["IVA"].ToString(), out decimal iva)){producto.iva = iva;}
-                            else{producto.iva = null;}
-                            if (decimal.TryParse(reader["FactorConversion"].ToString(), out decimal FactorConversion)){producto.factorConversion = FactorConversion;}
-                            else{producto.factorConversion = null;}
-                            if (reader["FechaVencimiento"].ToString() == ""){producto.fechaVencimiento = DateTime.MinValue;}
-                            else{producto.fechaVencimiento = DateTime.Parse(reader["FechaVencimiento"].ToString());}
+                            if (decimal.TryParse(reader["PrecioVenta"].ToString(), out decimal precio)) { producto.precioVenta = precio; }
+                            else { producto.precioVenta = null; }
+                            if (decimal.TryParse(reader["IVA"].ToString(), out decimal iva)) { producto.iva = iva; }
+                            else { producto.iva = null; }
+                            if (decimal.TryParse(reader["FactorConversion"].ToString(), out decimal FactorConversion)) { producto.factorConversion = FactorConversion; }
+                            else { producto.factorConversion = null; }
+                            if (reader["FechaVencimiento"].ToString() == "") { producto.fechaVencimiento = DateTime.MinValue; }
+                            else { producto.fechaVencimiento = DateTime.Parse(reader["FechaVencimiento"].ToString()); }
                             if (int.TryParse(reader["PorcentajePromocion"].ToString(), out int porcentajePromocion)) { producto.porcentajePromocion = porcentajePromocion; }
                             else { producto.porcentajePromocion = null; }
                             productos.Add(producto);
                             //Statics.Imprimir($"se consulto el producto {producto.nombre}");
                         }
                     }
-                    conn.Close();                    
+                    conn.Close();
                     return productos;
                 }
             }
@@ -377,10 +377,10 @@ namespace ServerConsole.Utilities
                     cmd.ExecuteNonQuery();
                     Statics.Imprimir($"{RetailHUB.usuarioConectado}: Ha Actualizado precio de: {Producto.codigoProducto} - {Producto.nombre} | {Producto.precioVenta} | {Producto.unidadVenta}");
                     conn.Close();
-                    Registrar(Tipo: "Update", NombreMetodoServidor: "ServidorGetProductos", ClavePrimaria: Producto.codigoProducto, TipoRetornoMetodoServidor: "ProductoModel[]", NombreMetodoCliente: "actualizarPrecioProducto", NombrePK: "codigoProducto"); 
+                    Registrar(Tipo: "Update", NombreMetodoServidor: "ServidorGetProductos", ClavePrimaria: Producto.codigoProducto, TipoRetornoMetodoServidor: "ProductoModel[]", NombreMetodoCliente: "actualizarPrecioProducto", NombrePK: "codigoProducto");
                     return "true";
-                        
-                    
+
+
                 }
 
             }
@@ -421,7 +421,7 @@ namespace ServerConsole.Utilities
                     string response = insertProductoProveedor(proveedor.cedula, proveedor.productos);
                     if (response == "Y")
                     {
-        
+
                         Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo proveedor {proveedor.firstName} {proveedor.lastName}");
                         Registrar("Insert", "ServidorGetProveedor", proveedor.cedula, "ProveedorModel[]", "NuevoProveedor", "cedula");
                         conn.Close();
@@ -746,7 +746,7 @@ namespace ServerConsole.Utilities
                     string response = insertProductoProveedor(proveedor.cedula, proveedor.productos);
                     if (response == "Y")
                     {
- 
+
                         Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha editado la información del proveedor {proveedor.firstName} {proveedor.lastName}");
                         conn.Close();
                         Registrar("Update", "ServidorGetProveedor", proveedor.cedula, "ProveedorModel[]", "actualizarProveedor", "cedula");
@@ -797,9 +797,9 @@ namespace ServerConsole.Utilities
                                 codigoProducto = reader["CodigoProducto"].ToString(),
                                 estado = reader["Estado"].ToString()
                             };
-                            producto.proveedor.cedula = reader["CedulaProveedor"].ToString(); 
+                            producto.proveedor.cedula = reader["CedulaProveedor"].ToString();
                             if (DateTime.TryParse(reader["fehacompra"].ToString(), out DateTime fecha)) { producto.fechaDeCompra = fecha; }
-                            if (DateTime.TryParse(reader["FechaPago"].ToString(), out DateTime date)){ producto.fechaDePago = date; }
+                            if (DateTime.TryParse(reader["FechaPago"].ToString(), out DateTime date)) { producto.fechaDePago = date; }
                             producto.soportePago = reader["Soporte"].ToString();
                             if (decimal.TryParse(reader["CantidadComprada"].ToString(), out decimal a)) { producto.compra = a; }
                             else { producto.compra = null; }
@@ -854,7 +854,7 @@ namespace ServerConsole.Utilities
                     cmd.Parameters.AddWithValue("@contraseña", Statics.Hash(Empleado.password));
                     conn.Open();
                     cmd.ExecuteNonQuery();
-        
+
                     Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo usuario {Empleado.firstName} {Empleado.lastName}");
                     conn.Close();
                     Registrar("Insert", "ServidorGetUsuarios", Empleado.cedula, "EmpleadoModel[]", "NuevoUsuario", "cedula");
@@ -1051,7 +1051,7 @@ namespace ServerConsole.Utilities
                     Statics.Imprimir($"{RetailHUB.usuarioConectado} ha registrado el nuevo local: {NuevoLocal.nombre }");
                     conn.Close();
                     Registrar("Insert", "ServidorGetLocales", NuevoLocal.codigo, "LocalModel[]", "NuevoLocal", "codigo");
-                    nuevoPuntoVentaEfectivo(codigoLocal:NuevoLocal.codigo);
+                    nuevoPuntoVentaEfectivo(codigoLocal: NuevoLocal.codigo);
                     nuevoInventario(NuevoLocal.nombre);
                     return $"Se ha registrado el nuevo local: {NuevoLocal.nombre }";
 
@@ -1195,7 +1195,7 @@ namespace ServerConsole.Utilities
                             //conn.Open();
                             cmd.ExecuteNonQuery();
                             conn.Close();
-                 
+
                             Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha eliminado al local {Codigo} - {nombre}. \n");
                             Registrar("Delete", "", Codigo, "", "deleteLocal", "codigo");
                             return new object[] { "Local eliminado" };
@@ -1324,11 +1324,11 @@ namespace ServerConsole.Utilities
                     cmd.Parameters.AddWithValue("@fecha", existencia.fecha.Date);
                     conn.Open();
                     cmd.ExecuteNonQuery();
-                    Registrar(Tipo:"Insert", NombreMetodoServidor:"servidorGetExistenciasConProductos", ClavePrimaria: existencia.codigo, TipoRetornoMetodoServidor: "ExistenciasModel[]", NombreMetodoCliente: "NuevaExistenciaBool", NombrePK: "codigo");
+                    Registrar(Tipo: "Insert", NombreMetodoServidor: "servidorGetExistenciasConProductos", ClavePrimaria: existencia.codigo, TipoRetornoMetodoServidor: "ExistenciasModel[]", NombreMetodoCliente: "NuevaExistenciaBool", NombrePK: "codigo");
                     string response = InsertarExistenciaProducto(existencia);
                     if (response == "Y")
                     {
-                      
+
                         Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo documento: Existencias con fecha {existencia.fecha.ToString("dd'/'MM'/'yyyy")}.");
                         //Registrar("Insert", "ServidorGetLocales", NuevoLocal.codigo, "LocalModel[]", "NuevoLocal");
                         conn.Close();
@@ -1412,7 +1412,10 @@ namespace ServerConsole.Utilities
                     BindableCollection<ExistenciasModel> cExistencias = new BindableCollection<ExistenciasModel>();
                     DateTime fecha = new DateTime();
                     if (!DateTime.TryParse(Caracteres, out fecha))
+                    {
                         fecha = DateTime.MinValue;
+                    }
+
                     string cadena = $" select * from ExistenciasFisicas where FechaExistencia = '{fecha.ToString("yyyy-MM-dd")}' or CodigoExistencia like '%{Caracteres}%'  or CodigoExistencia like '______________{Caracteres}' ORDER BY CodigoExistencia;";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     conn.Open();
@@ -1594,7 +1597,7 @@ namespace ServerConsole.Utilities
                     if (response == "Y")
                     {
                         conn.Close();
-               
+
                         Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo documento: Pedido con fecha {pedido.fecha.ToString("dd'/'MM'/'yyyy")}.");
 
                         return "Se ha registrado el nuevo documento.";
@@ -1869,8 +1872,8 @@ namespace ServerConsole.Utilities
                     if (response == "Y" && rta == "Y")
                     {
                         conn.Close();
-                
-                        Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo documento: Compra con fecha {compra .fecha.ToString("dd'/'MM'/'yyyy")}.");
+
+                        Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo documento: Compra con fecha {compra.fecha.ToString("dd'/'MM'/'yyyy")}.");
 
                         return "true";
                     }
@@ -1892,7 +1895,7 @@ namespace ServerConsole.Utilities
                 else
                 {
                     Statics.Imprimir(e.Message);
-                    return  e.Message ;
+                    return e.Message;
                 }
             }
         }
@@ -1982,10 +1985,10 @@ namespace ServerConsole.Utilities
                     return "Ya registrado.";
                 }
                 else
-                {              
+                {
                     Statics.Imprimir(e.Message);
                     return "Server " + e.Message;
-     
+
                 }
             }
         }
@@ -2010,7 +2013,9 @@ namespace ServerConsole.Utilities
                     cmd.ExecuteNonQuery();
                     conn.Close();
                     if (compra.codigo != null && compra.productos[0].codigoProducto != null)
+                    {
                         Registrar(Tipo: "Update", NombreMetodoServidor: "ServidorgetRegistroCompra", ClavePrimaria: $"{compra.codigo}+{compra.productos[0].codigoProducto}", TipoRetornoMetodoServidor: "ProductoModel[]", NombreMetodoCliente: "UpdateRegistroCompraServidor", NombrePK: "codigoProducto");
+                    }
 
                     return "true";
 
@@ -2019,7 +2024,7 @@ namespace ServerConsole.Utilities
             catch (Exception e)
             {
                 Statics.Imprimir(e.Message);
-                return e.Message +"false";
+                return e.Message + "false";
 
             }
         }
@@ -2063,7 +2068,7 @@ namespace ServerConsole.Utilities
                 else
                 {
                     return "Server " + e.Message;
-                }                                
+                }
             }
         }
 
@@ -2295,7 +2300,7 @@ namespace ServerConsole.Utilities
                         productos.Clear();
                         while (reader.Read())
                         {
-                            ProductoModel producto = new ProductoModel { codigoProducto = reader["CodigoCompra"].ToString()+ "+" + reader["CodigoProducto"].ToString() };
+                            ProductoModel producto = new ProductoModel { codigoProducto = reader["CodigoCompra"].ToString() + "+" + reader["CodigoProducto"].ToString() };
                             if (decimal.TryParse(reader["CantidadComprada"].ToString(), out decimal a)) { producto.compra = a; }
                             else { producto.compra = null; }
                             if (decimal.TryParse(reader["PrecioCompra"].ToString(), out decimal b)) { producto.precioCompra = b; }
@@ -2337,9 +2342,9 @@ namespace ServerConsole.Utilities
                         productos.Clear();
                         while (reader.Read())
                         {
-                            ProductoModel producto = new ProductoModel 
-                            { 
-                                codigoProducto =  reader["CodigoProducto"].ToString(),
+                            ProductoModel producto = new ProductoModel
+                            {
+                                codigoProducto = reader["CodigoProducto"].ToString(),
                                 codigoCompra = reader["CodigoCompra"].ToString(),
                                 unidadCompra = reader["UnidadCompra"].ToString(),
                                 unidadVenta = reader["UnidadVenta"].ToString(),
@@ -2433,7 +2438,7 @@ namespace ServerConsole.Utilities
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
-                { 
+                {
                     decimal Total;
                     decimal TotalRegistros;
                     decimal TotalRegistrosPendientes;
@@ -2502,7 +2507,7 @@ namespace ServerConsole.Utilities
                     if (response == "Y")
                     {
                         conn.Close();
-                        
+
                         Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo documento: Envio con fecha {envio.fechaEnvio.ToString("dd'/'MM'/'yyyy")}.");
                         return "true";
                     }
@@ -2730,7 +2735,7 @@ namespace ServerConsole.Utilities
                     {
                         conn.Close();
                         Registrar(Tipo: "Update", NombreMetodoServidor: "ServidorgetEnvioConProductos", ClavePrimaria: envio.codigo, TipoRetornoMetodoServidor: "EnvioModel[]", NombreMetodoCliente: "updateEnvioServidor", NombrePK: "codigo");
-                        
+
                         Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha editado un documento: Envio con fecha {envio.fechaEnvio.ToString("dd'/'MM'/'yyyy")}.");
 
                         return "true";
@@ -2747,7 +2752,7 @@ namespace ServerConsole.Utilities
                 }
                 else
                 {
-                    return "false: "+ e.Message;
+                    return "false: " + e.Message;
                 }
 
             }
@@ -2850,13 +2855,13 @@ namespace ServerConsole.Utilities
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
-                {                    
+                {
                     string cadena = $"select sum(Cantidad) as Total from envioproducto where CodigoEnvio in (select CONCAT(CodigoPedido,':',CodigoCompra) as CodigoEnvio from CompraPedido where CodigoCompra = (select codigocompra from compras where id= (select max(id) from compras))) and CodigoProducto = @codProducto; ";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
                     cmd.Parameters.AddWithValue("@codProducto", codigoProducto);
                     conn.Open();
                     SqlDataReader reader = cmd.ExecuteReader();
-                    reader.Read();                        
+                    reader.Read();
                     decimal.TryParse(reader["Total"].ToString(), out decimal a);
                     reader.Close();
                     conn.Close();
@@ -2899,10 +2904,10 @@ namespace ServerConsole.Utilities
                     cmd.Parameters.AddWithValue("@placa", recibido.placas.ToString().ToUpper());
                     conn.Open();
                     cmd.ExecuteNonQuery();
-                    string response = InsertarRecibidoProducto(recibido,cambiarInventario:true);
+                    string response = InsertarRecibidoProducto(recibido, cambiarInventario: true);
                     if (response == "Y")
                     {
-                        updateEstadoEnvio(recibido.codigo);                        
+                        updateEstadoEnvio(recibido.codigo);
                         Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo documento: Recibido con fecha {recibido.fechaRecibido.ToString("dd'/'MM'/'yyyy")}.");
                         conn.Close();
                         Registrar(Tipo: "Insert", NombreMetodoServidor: "ServidorgetRecibidoConProductos", ClavePrimaria: recibido.codigo, TipoRetornoMetodoServidor: "RecibidoModel[]", NombreMetodoCliente: "NuevoRecibidoBoolServidor", NombrePK: "codigo");
@@ -2954,7 +2959,7 @@ namespace ServerConsole.Utilities
                     cmd.Parameters.AddWithValue("@placa", Statics.PrimeraAMayuscula(recibido.placas.ToString()));
                     conn.Open();
                     cmd.ExecuteNonQuery();
-                    string response = InsertarRecibidoProducto(recibido,cambiarInventario:false);
+                    string response = InsertarRecibidoProducto(recibido, cambiarInventario: false);
                     if (response == "Y")
                     {
                         updateEstadoEnvio(recibido.codigo);
@@ -2991,7 +2996,7 @@ namespace ServerConsole.Utilities
         /// </summary>
         /// <param name="recibido"></param>
         /// <returns></returns>
-        public static string InsertarRecibidoProducto(RecibidoModel recibido,bool cambiarInventario)
+        public static string InsertarRecibidoProducto(RecibidoModel recibido, bool cambiarInventario)
         {
             try
             {
@@ -3208,12 +3213,12 @@ namespace ServerConsole.Utilities
                     cmd.Parameters.AddWithValue("@placas", Statics.PrimeraAMayuscula(recibido.placas.ToUpper()));
                     conn.Open();
                     cmd.ExecuteNonQuery();
-                    string response = updateProductosRecibido(recibido,cambiarInventario:true);
+                    string response = updateProductosRecibido(recibido, cambiarInventario: true);
                     if (response == "Y")
-                    {                        
+                    {
                         conn.Close();
                         Registrar(Tipo: "Update", NombreMetodoServidor: "ServidorgetRecibidoConProductos", ClavePrimaria: recibido.codigo, TipoRetornoMetodoServidor: "RecibidoModel[]", NombreMetodoCliente: "updateRecibidoServidor", NombrePK: "codigo");
-                        
+
                         Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha registrado un documento: Recibido con fecha {recibido.fechaRecibido.ToString("dd'/'MM'/'yyyy")}.");
                         return "true";
                     }
@@ -3256,7 +3261,7 @@ namespace ServerConsole.Utilities
                     cmd.Parameters.AddWithValue("@placas", Statics.PrimeraAMayuscula(recibido.placas.ToUpper()));
                     conn.Open();
                     cmd.ExecuteNonQuery();
-                    string response = updateProductosRecibido(recibido, cambiarInventario: false );
+                    string response = updateProductosRecibido(recibido, cambiarInventario: false);
                     if (response == "Y")
                     {
                         conn.Close();
@@ -3354,7 +3359,7 @@ namespace ServerConsole.Utilities
                 {
                     conn.Open();
                     string cadena = $"insert into Inventario(CodigoPuntoVenta) values ((select CodigoPuntoVenta from PuntoVenta where Nombres = '{nombreLocal}'));";
-                    SqlCommand cmd = new SqlCommand(cadena, conn);                   
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
                     cmd.ExecuteNonQuery();
                     Registrar(Tipo: "Insert", NombreMetodoServidor: "ServidorgetInventario", ClavePrimaria: getIdInventario(nombreLocal), TipoRetornoMetodoServidor: "InventarioModel[]", NombreMetodoCliente: "nuevoInventario", NombrePK: "codigoDelInventarioDelLocal");
                     Statics.Imprimir($"Se han registrado los datos de inventario del nuevo local");
@@ -3364,7 +3369,7 @@ namespace ServerConsole.Utilities
             }
             catch (Exception e)
             {
-                Statics.Imprimir("No se guardaron los datos del inventario del nuevo local. Escepcion: " + e.Message);                
+                Statics.Imprimir("No se guardaron los datos del inventario del nuevo local. Escepcion: " + e.Message);
             }
         }
 
@@ -3381,16 +3386,16 @@ namespace ServerConsole.Utilities
                     BindableCollection<LocalModel> locales = getLocales();
                     foreach (LocalModel local in locales)
                     {
-                    string cadena = $"insert into InventarioProducto(codigoinventario, Codigoproducto, Cantidad) values ((select CodigoInventario from inventario where CodigoPuntoVenta = '{local.codigo}'), '{codigoProducto}',0) ";
-                    SqlCommand cmd = new SqlCommand(cadena, conn);
-                    conn.Open();
+                        string cadena = $"insert into InventarioProducto(codigoinventario, Codigoproducto, Cantidad) values ((select CodigoInventario from inventario where CodigoPuntoVenta = '{local.codigo}'), '{codigoProducto}',0) ";
+                        SqlCommand cmd = new SqlCommand(cadena, conn);
+                        conn.Open();
                         cmd.ExecuteNonQuery();
-                    conn.Close();
+                        conn.Close();
                     }
                 }
             }
             catch (Exception e)
-            
+
             {
                 Statics.Imprimir(e.Message);
             }
@@ -3401,7 +3406,7 @@ namespace ServerConsole.Utilities
         /// </summary>
         /// <param name="nombreLocal"></param>
         /// <returns></returns>
-         public static BindableCollection<InventarioModel> getInventario(string codigoInventario)
+        public static BindableCollection<InventarioModel> getInventario(string codigoInventario)
         {
             try
             {
@@ -3418,7 +3423,7 @@ namespace ServerConsole.Utilities
                         {
                             InventarioModel rec = new InventarioModel
                             {
-                                codigoDelInventarioDelLocal = reader["CodigoInventario"].ToString(),                               
+                                codigoDelInventarioDelLocal = reader["CodigoInventario"].ToString(),
                             };
                             rec.puntoVenta.codigo = reader["CodigoPuntoVenta"].ToString();
                             cInventarios.Add(rec);
@@ -3456,7 +3461,7 @@ namespace ServerConsole.Utilities
                     {
 
                         reader.Read();
-                        codigo =  reader["CodigoInventario"].ToString();
+                        codigo = reader["CodigoInventario"].ToString();
 
                     }
                     conn.Close();
@@ -3484,7 +3489,10 @@ namespace ServerConsole.Utilities
                 {
                     ///Si no hubo aumento o disminucion no se hace el registro en el inventario, esto debe estar o de otro modo se sumaria dos veces la cantidad actual, 
                     ///ademas que se ejecutaria el metodo inutilmente
-                    if (inventario.aumentoDisminucion == 0 || inventario.aumentoDisminucion == null) return "true";
+                    if (inventario.aumentoDisminucion == 0 || inventario.aumentoDisminucion == null)
+                    {
+                        return "true";
+                    }
 
                     //Hacer esta comprobacion pues el valor por defecto en la base de datos de idregistroservidor va a ser 0
                     if (inventario.idRegistroLocal == 0) { inventario.idRegistroLocal = null; }
@@ -3499,7 +3507,7 @@ namespace ServerConsole.Utilities
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         if (reader.HasRows)
-                        {  return "true"; }
+                        { return "true"; }
                     }
                     conn.Close();
 
@@ -3517,7 +3525,9 @@ namespace ServerConsole.Utilities
 
                         reader1.Read();
                         if (decimal.TryParse(reader1["Cantidad"].ToString(), out decimal valor))
+                        {
                             cantidad = cantidad + valor;
+                        }
                     }
                     conn.Close();
 
@@ -3544,10 +3554,10 @@ namespace ServerConsole.Utilities
                     conn.Open();
                     cmd2.ExecuteNonQuery();
                     conn.Close();
-                    Registrar(Tipo: "Insert", NombreMetodoServidor: "ServidorgetCambioInventario", ClavePrimaria: $"{Id}" , TipoRetornoMetodoServidor: "InventarioModel[]", NombreMetodoCliente: "NuevoRegistroCambioEnInventario", NombrePK: "idRegistroServidor");
+                    Registrar(Tipo: "Insert", NombreMetodoServidor: "ServidorgetCambioInventario", ClavePrimaria: $"{Id}", TipoRetornoMetodoServidor: "InventarioModel[]", NombreMetodoCliente: "NuevoRegistroCambioEnInventario", NombrePK: "idRegistroServidor");
                     Statics.Imprimir($"Cambio en inventario. Valor: {inventario.aumentoDisminucion} Producto: {inventario.codigoProducto} Numero de inventario: {inventario.codigoDelInventarioDelLocal}");
                     return "true";
-                    
+
                 }
             }
             catch (Exception e)
@@ -3866,7 +3876,7 @@ namespace ServerConsole.Utilities
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    if(idLocal == null)
+                    if (idLocal == null)
                     {
                         decimal Promedio;
                         decimal totalFacturas;
@@ -3900,8 +3910,8 @@ namespace ServerConsole.Utilities
                         }
 
                         conn.Close();
-                                                                                              
-                        return new decimal[] {Promedio, totalFacturas, totalClientes };
+
+                        return new decimal[] { Promedio, totalFacturas, totalClientes };
                     }
                     else
                     {
@@ -3909,7 +3919,7 @@ namespace ServerConsole.Utilities
                         decimal totalFacturas;
                         string cadena = $"select (select TOP 500 count(codigofactura) from FacturasVenta where CedulaCliente is null and CodigoPuntoPago like @local)  /  ((select TOP 500  cast(count(codigofactura) AS DECIMAL(7,2))  from FacturasVenta where CodigoPuntoPago like @local )) * 100 as prom";
                         SqlCommand cmd = new SqlCommand(cadena, conn);
-                        cmd.Parameters.AddWithValue("@local", idLocal + ":%" );
+                        cmd.Parameters.AddWithValue("@local", idLocal + ":%");
                         conn.Open();
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
@@ -3921,7 +3931,7 @@ namespace ServerConsole.Utilities
 
                         string cadena0 = $"SELECT COUNT(CodigoFactura) as Facturas FROM FacturasVenta where CodigoPuntoPago like @local";
                         SqlCommand cmd0 = new SqlCommand(cadena0, conn);
-                        cmd0.Parameters.AddWithValue("@local", idLocal + ":%"  );
+                        cmd0.Parameters.AddWithValue("@local", idLocal + ":%");
                         using (SqlDataReader reader0 = cmd0.ExecuteReader())
                         {
                             reader0.Read();
@@ -3930,8 +3940,8 @@ namespace ServerConsole.Utilities
                         }
 
                         conn.Close();
-                        return  new decimal[] { Promedio, totalFacturas};
-                        
+                        return new decimal[] { Promedio, totalFacturas };
+
                     }
 
                 }
@@ -3972,7 +3982,11 @@ namespace ServerConsole.Utilities
                     conn.Open();
                     cmd.ExecuteNonQuery();
                     string response = InsertarFacturaProductos(factura: factura);
-                    if(factura.cliente.cedula != null)  ActualizarPuntosCliente(Cliente: factura.cliente, puntos: factura.valorTotal / 1000);
+                    if (factura.cliente.cedula != null)
+                    {
+                        ActualizarPuntosCliente(Cliente: factura.cliente, puntos: factura.valorTotal / 1000);
+                    }
+
                     if (response == "Y")
                     {
                         conn.Close();
@@ -4100,7 +4114,7 @@ namespace ServerConsole.Utilities
             {
                 Statics.Imprimir(e.Message);
 
-                
+
                 return null;
             }
         }
@@ -4143,7 +4157,7 @@ namespace ServerConsole.Utilities
             {
                 Statics.Imprimir(e.Message);
 
-                
+
                 return null;
             }
 
@@ -4185,18 +4199,21 @@ namespace ServerConsole.Utilities
                             factura.puntoVenta.codigo = factura.puntoDePago.Split(':')[0];
                             factura.fecha = DateTime.Parse(reader["Fecha"].ToString());
                             if (fechaAnterior != DateTime.Today && fechaAnterior != factura.fecha)
-                            { sumaDias = sumaDias  + (fechaAnterior - factura.fecha).Days;  cuenta += 1; }
+                            { sumaDias = sumaDias + (fechaAnterior - factura.fecha).Days; cuenta += 1; }
                             fechaAnterior = factura.fecha;
                             decimal.TryParse(reader["ValorTotal"].ToString(), out decimal total);
-                            factura.valorTotal = total; 
+                            factura.valorTotal = total;
                             cFacturas.Add(factura);
                         }
                     }
                     conn.Close();
                     decimal? promedio = 0;
-                    if (sumaDias * cuenta != 0) 
+                    if (sumaDias * cuenta != 0)
+                    {
                         promedio = (sumaDias / cuenta);
-                    return new object[] {cFacturas,  promedio};
+                    }
+
+                    return new object[] { cFacturas, promedio };
                 }
             }
             catch (Exception e)
@@ -4377,7 +4394,7 @@ namespace ServerConsole.Utilities
                         cmd.Parameters.AddWithValue("@codigoFactura", factura.codigo);
                         conn.Open();
                         cmd.ExecuteNonQuery();
-                        conn.Close();     
+                        conn.Close();
                     }
                     conn.Close();
                     return "Y";
@@ -4521,7 +4538,7 @@ namespace ServerConsole.Utilities
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
 
-                        while (reader.Read()) 
+                        while (reader.Read())
                         {
                             IngresoModel ing = new IngresoModel()
                             {
@@ -4534,10 +4551,10 @@ namespace ServerConsole.Utilities
 
                         }
                     }
-                 
+
                     conn.Close();
 
-                    return  igresos ;
+                    return igresos;
 
                 }
             }
@@ -4556,7 +4573,7 @@ namespace ServerConsole.Utilities
         /// retorna el proximo valor de la coumna indentada ItemsMovimientoEfectivo
         /// </summary>
         /// <returns></returns>
-        public static string getNextIdMovimientoEfectivo() 
+        public static string getNextIdMovimientoEfectivo()
         {
             try
             {
@@ -4582,7 +4599,7 @@ namespace ServerConsole.Utilities
                 Statics.Imprimir(e.Message);
                 return null;
             }
-        }        
+        }
 
         /// <summary>
         /// Inserta la descripcion y tipo del nuevo itemMovimientoEfectivo
@@ -4602,7 +4619,7 @@ namespace ServerConsole.Utilities
                     conn.Open();
                     cmd.ExecuteNonQuery();
                     return "true";
-     
+
                 }
             }
             catch (Exception e)
@@ -4648,7 +4665,7 @@ namespace ServerConsole.Utilities
         /// Retorna los items de egresos
         /// </summary>
         /// <returns></returns>
-        public static BindableCollection<ItemMovimientoEfectivoModel> getItemsEgresos() 
+        public static BindableCollection<ItemMovimientoEfectivoModel> getItemsEgresos()
         {
             BindableCollection<ItemMovimientoEfectivoModel> items = new BindableCollection<ItemMovimientoEfectivoModel>();
             try
@@ -4662,7 +4679,7 @@ namespace ServerConsole.Utilities
                     {
                         while (reader.Read())
                         {
-                            ItemMovimientoEfectivoModel  item = new ItemMovimientoEfectivoModel();
+                            ItemMovimientoEfectivoModel item = new ItemMovimientoEfectivoModel();
                             Int32.TryParse(reader["CodigoItem"].ToString(), out int codigo);
                             item.codigoItem = codigo;
                             item.descripcion = reader["Descripcion"].ToString();
@@ -4688,16 +4705,16 @@ namespace ServerConsole.Utilities
         /// <param name="codigoIngreso"></param>
         /// <param name="codigoEgreso"></param>
         /// <returns></returns>
-        public static string NuevoMovimientoDeEfectivo(decimal? aumentoDisminucion, string codigoPuntoVenta, string codigoIngreso= null,string codigoEgreso = null)
+        public static string NuevoMovimientoDeEfectivo(decimal? aumentoDisminucion, string codigoPuntoVenta, string codigoIngreso = null, string codigoEgreso = null)
         {
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connString))
-                {                    
+                {
                     string cadena = $"insert into movimientosEfectivo(codigoIngreso,codigoEgreso,aumentodisminucion,total,codigopuntoventa) " +
                                     $"output inserted.total values   (@codIngreso,@codEgreso,@aumentoDisminucion,(select cantidadefectivo from PuntoVentaEfectivo where CodigoPuntoVenta = @pv)+@aumentoDisminucion,@pv);";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
-                    cmd.Parameters.AddWithValue("@codIngreso", codigoIngreso != null ?  codigoIngreso : (object)DBNull.Value );
+                    cmd.Parameters.AddWithValue("@codIngreso", codigoIngreso != null ? codigoIngreso : (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@codEgreso", codigoEgreso != null ? codigoEgreso : (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@aumentoDisminucion", aumentoDisminucion);
                     cmd.Parameters.AddWithValue("@pv", codigoPuntoVenta);
@@ -4708,11 +4725,11 @@ namespace ServerConsole.Utilities
                         reader.Read();
                         decimal.TryParse(reader["total"].ToString(), out decimal valor);
                         total = valor;
-                    }                    
+                    }
                     string cadena2 = $"update PuntoVentaEfectivo set CantidadEfectivo = @cantidad where codigoPuntoVenta = @pv;";
                     SqlCommand cmd2 = new SqlCommand(cadena2, conn);
                     cmd2.Parameters.AddWithValue("@cantidad", total);
-                    cmd2.Parameters.AddWithValue("@pv", codigoPuntoVenta);                    
+                    cmd2.Parameters.AddWithValue("@pv", codigoPuntoVenta);
                     cmd2.ExecuteNonQuery();
                     conn.Close();
                     return "true";
@@ -4730,7 +4747,7 @@ namespace ServerConsole.Utilities
         /// </summary>
         /// <param name="codigoLocal"></param>
         /// <returns></returns>
-        public static BindableCollection<MovimientoEfectivoModel> GetMovimientosEfectivoLocal(string codigoLocal) 
+        public static BindableCollection<MovimientoEfectivoModel> GetMovimientosEfectivoLocal(string codigoLocal)
         {
             try
             {
@@ -4747,7 +4764,7 @@ namespace ServerConsole.Utilities
                         while (reader.Read())
                         {
                             MovimientoEfectivoModel mov = new MovimientoEfectivoModel();
-                            mov.id = Int32.Parse(reader["ID"].ToString());                            
+                            mov.id = Int32.Parse(reader["ID"].ToString());
                             /*Int32.TryParse(reader["CodigoEgreso"].ToString(), out int codEgre);*/
                             mov.egreso.id = reader["CodigoEgreso"].ToString();
                             mov.ingreso.id = reader["CodigoIngreso"].ToString();
@@ -4801,7 +4818,7 @@ namespace ServerConsole.Utilities
                 Statics.Imprimir(e.Message);
                 return null;
             }
-        } 
+        }
 
         /// <summary>
         /// Registra el nuevo egreso y su correspondiente registro en el movimiemto de efectivo
@@ -4833,14 +4850,14 @@ namespace ServerConsole.Utilities
                         reader.Read();
                         codigo = reader["CodigoEgreso"].ToString();
                     }
-                    NuevoMovimientoDeEfectivo(aumentoDisminucion: -(egreso.valor), codigoPuntoVenta: egreso.local.codigo, codigoIngreso:null,codigoEgreso:codigo) ;
+                    NuevoMovimientoDeEfectivo(aumentoDisminucion: -(egreso.valor), codigoPuntoVenta: egreso.local.codigo, codigoIngreso: null, codigoEgreso: codigo);
                     Statics.Imprimir($" {RetailHUB.usuarioConectado}: Ha registrado un nuevo egreso.");
                     Statics.Imprimir($" Valor:${egreso.valor} | Descripcion: {egreso.descripcion} | Item: {egreso.itemMovimientoefectivo.descripcion}");
                     conn.Close();
 
                     return "true";
-                  
-                                    
+
+
                 }
             }
             catch (Exception e)
@@ -4848,7 +4865,7 @@ namespace ServerConsole.Utilities
 
                 Statics.Imprimir(e.Message);
                 return e.Message;
-                
+
             }
         }
 
@@ -4865,7 +4882,7 @@ namespace ServerConsole.Utilities
                 {
                     BindableCollection<EgresoModel> egresos = new BindableCollection<EgresoModel>();
                     string cadena = $"select Egresos.CodigoEgreso, Egresos.CodigoItemMovimientoEfectivo,Egresos.CedulaEmpleado,Egresos.CodigoPuntoVenta, egresos.CedulaProveedor, Egresos.Fecha,Egresos.Soporte, Egresos.Valor,Egresos.Descripcion as descripcionegreso,ItemsMovimientoEfectivo.Descripcion as descripcionitem from egresos join ItemsMovimientoEfectivo on ItemsMovimientoEfectivo.CodigoItem = Egresos.CodigoItemMovimientoEfectivo where CodigoEgreso = @cod;";
-                    SqlCommand cmd = new SqlCommand(cadena, conn); 
+                    SqlCommand cmd = new SqlCommand(cadena, conn);
                     cmd.Parameters.AddWithValue("@cod", codigoEgreso);
                     conn.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -4915,7 +4932,7 @@ namespace ServerConsole.Utilities
                 {
                     string cadena = "INSERT INTO PagosProveedores(Fecha,Soporte,CedulaEmpleado,Valor) OUTPUT inserted.id VALUES (@fecha,@soporte,@empleado,@valor);";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
-                    cmd.Parameters.AddWithValue("@fecha", egreso.fecha); 
+                    cmd.Parameters.AddWithValue("@fecha", egreso.fecha);
                     cmd.Parameters.AddWithValue("@soporte", egreso.soporte);
                     cmd.Parameters.AddWithValue("@empleado", egreso.responsable.cedula);
                     cmd.Parameters.AddWithValue("@valor", egreso.valor);
@@ -5030,7 +5047,7 @@ namespace ServerConsole.Utilities
 
                     conn.Close();
 
-                    return new decimal[] { ingresos, egresos, totalCompras, totalComprasPagas, totalComprasPendientes };                                        
+                    return new decimal[] { ingresos, egresos, totalCompras, totalComprasPagas, totalComprasPendientes };
                 }
             }
             catch (Exception e)
@@ -5056,7 +5073,7 @@ namespace ServerConsole.Utilities
 
                     string cadena = $"select sum(Efectivo) as ingresos from (select efectivo, CAST(fecha as date) as f , PuntoVenta from Ingresos as res) as m where m.f >= @fInicio and m.f <= @fFinal  and m.PuntoVenta = @local";
                     SqlCommand cmd = new SqlCommand(cadena, conn);
-                    cmd.Parameters.AddWithValue("@local", codigoLocal );
+                    cmd.Parameters.AddWithValue("@local", codigoLocal);
                     cmd.Parameters.AddWithValue("@fInicio", fechaInicio.Date);
                     cmd.Parameters.AddWithValue("@fFinal", fechaFinal.Date);
                     conn.Open();
@@ -5081,7 +5098,7 @@ namespace ServerConsole.Utilities
 
                     string cadena1 = $"select count(CodigoFactura) as numerofacturas from (select CAST(fecha as date) as f , CodigoFactura, CodigoPuntoPago from FacturasVenta as res) as m where m.f >= @fInicio and m.f <= @fFinal  and m.codigoPuntoPago like @local";
                     SqlCommand cmd1 = new SqlCommand(cadena1, conn);
-                    cmd1.Parameters.AddWithValue("@local", codigoLocal+":%");
+                    cmd1.Parameters.AddWithValue("@local", codigoLocal + ":%");
                     cmd1.Parameters.AddWithValue("@fInicio", fechaInicio.Date);
                     cmd1.Parameters.AddWithValue("@fFinal", fechaFinal.Date);
                     using (SqlDataReader reader1 = cmd1.ExecuteReader())
@@ -5136,11 +5153,11 @@ namespace ServerConsole.Utilities
                             UnidadVentaPorcentaje up = new UnidadVentaPorcentaje()
                             {
                                 unidadVenta = reader["UnidadVenta"].ToString(),
-                                porcentaje = decimal.Parse( reader["Porcentaje"].ToString())
+                                porcentaje = decimal.Parse(reader["Porcentaje"].ToString())
                             };
                             porcentajes.Add(up);
 
-                        } 
+                        }
 
                     }
 
@@ -5159,7 +5176,7 @@ namespace ServerConsole.Utilities
 
 
 
-       
+
 
 
 
@@ -5174,7 +5191,7 @@ namespace ServerConsole.Utilities
         /// <param name="TipoRetornoMetodoServidor"></param>
         /// <param name="NombreMetodoCliente"></param>
         /// <returns></returns>
-        public static bool Registrar(string Tipo, string NombreMetodoServidor,string ClavePrimaria, string TipoRetornoMetodoServidor, string NombreMetodoCliente, string NombrePK)
+        public static bool Registrar(string Tipo, string NombreMetodoServidor, string ClavePrimaria, string TipoRetornoMetodoServidor, string NombreMetodoCliente, string NombrePK)
         {
             try
             {

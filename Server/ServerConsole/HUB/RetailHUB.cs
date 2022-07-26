@@ -1,15 +1,15 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Caliburn.Micro;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.AspNetCore.SignalR;
+using ServerConsole.Models;
+using ServerConsole.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Security.Policy;
 using System.Text;
-using ServerConsole.Utilities;
 using System.Threading.Tasks;
-using ServerConsole.Models;
-using Caliburn.Micro;
 
 namespace ServerConsole
 {
@@ -20,6 +20,12 @@ namespace ServerConsole
         /// Nombre del usuario corespondiente al cliente conectado.
         /// </summary>
         public static string usuarioConectado;
+
+        public override Task OnDisconnectedAsync(Exception exception)
+        {
+            Statics.Imprimir($"e ha desconectado.\n\n");
+            return base.OnDisconnectedAsync(exception);
+        }
 
         /// <summary>
         /// Usado para testear la conexion entre el servidor y un cliente.
@@ -32,7 +38,7 @@ namespace ServerConsole
         }
         public async Task Desconectado(string a)
         {
-            await Clients.Caller.SendCoreAsync("SetStatusDisconnected", args: new[] { "Desconectado del servidor." });
+            await Clients.All.SendCoreAsync("SetStatusDisconnected", args: new[] { "Desconectado del servidor." });
         }
 
         /// <summary>
@@ -72,7 +78,7 @@ namespace ServerConsole
         {
 
             Statics.Imprimir($"El usuario {a} se ha desconectado.\n\n");
-            
+
         }
 
         /// <summary>
@@ -81,9 +87,9 @@ namespace ServerConsole
         /// <param name="a">Nombre del usuario que se reconecto.</param>
         public void ClienteReconectado(string a)
         {
-            
+
             Statics.Imprimir($"El usuario {a} se ha conectado de nuevo.\n");
-            
+
 
         }
 
@@ -136,13 +142,13 @@ namespace ServerConsole
         {
             return DbConnection.actualizarProducto(producto);
         }
-        
+
         /// <summary>
         /// Actualiza en la base de datos el precio del producto pasado como parametro.
         /// </summary>
         /// <param name="Producto"></param>
         /// <returns></returns>
-        public  string ServidoractualizarPrecioProducto(ProductoModel Producto) 
+        public string ServidoractualizarPrecioProducto(ProductoModel Producto)
         {
             return DbConnection.actualizarPrecioProducto(Producto);
         }
@@ -224,7 +230,7 @@ namespace ServerConsole
         /// /// </summary>
         /// <param name="Cedula"></param>
         /// <returns></returns>
-        public  BindableCollection<ProductoModel> ServidorgetTodosLosRegistrosDeCompraCedula(string Cedula)
+        public BindableCollection<ProductoModel> ServidorgetTodosLosRegistrosDeCompraCedula(string Cedula)
         {
             return DbConnection.getTodosLosRegistrosDeCompraCedula(Cedula);
         }
@@ -392,14 +398,14 @@ namespace ServerConsole
         public string ServidorNuevoPedido(PedidoModel pedido)
         {
             return DbConnection.NuevoPedido(pedido);
-        } 
-       
+        }
+
         /// <summary>
         /// Al ser llamado desde un cliente retorna los pedidoc que coinciden con el numero d elocal, la fecha o el codigo dado en los caracteres
         /// </summary>
         /// <param name="caracteres"></param>
         /// <returns></returns>
-        public BindableCollection<PedidoModel> ServidorGetPedidos(string caracteres) 
+        public BindableCollection<PedidoModel> ServidorGetPedidos(string caracteres)
         {
             return DbConnection.getPedidos(caracteres);
         }
@@ -441,9 +447,9 @@ namespace ServerConsole
         /// </summary>
         /// <param name="compra"></param>
         /// <returns></returns>
-        public  string ServidorNuevaCompra(ComprasModel compras) 
+        public string ServidorNuevaCompra(ComprasModel compras)
         {
-            return DbConnection.NuevaCompra(compras); 
+            return DbConnection.NuevaCompra(compras);
         }
 
         /// <summary>
@@ -451,9 +457,9 @@ namespace ServerConsole
         /// </summary>
         /// <param name="compra"></param>
         /// <returns></returns>
-        public  string ServidorInsertarRegistroCompraProducto(ComprasModel compra)
-        { 
-            return DbConnection.InsertarRegistroCompraProducto(compra); 
+        public string ServidorInsertarRegistroCompraProducto(ComprasModel compra)
+        {
+            return DbConnection.InsertarRegistroCompraProducto(compra);
         }
 
         /// <summary>
@@ -461,8 +467,8 @@ namespace ServerConsole
         /// </summary>
         /// <param name="compra"></param>
         /// <returns></returns>
-        public  string ServidorUpdateRegistroCompra(ComprasModel compra)
-        { 
+        public string ServidorUpdateRegistroCompra(ComprasModel compra)
+        {
             return DbConnection.UpdateRegistroCompra(compra);
         }
 
@@ -471,9 +477,9 @@ namespace ServerConsole
         /// </summary>
         /// <param name="compra"></param>
         /// <returns></returns>
-        public  string ServidorInsertarPedidosCompra(ComprasModel compra)
+        public string ServidorInsertarPedidosCompra(ComprasModel compra)
         {
-            return DbConnection.InsertarPedidosCompra(compra); 
+            return DbConnection.InsertarPedidosCompra(compra);
         }
 
         /// <summary>
@@ -481,9 +487,9 @@ namespace ServerConsole
         /// </summary>
         /// <param name="Caracteres"></param>
         /// <returns></returns>
-        public  BindableCollection<ComprasModel> ServidorgetCompra(string Caracteres) 
-        { 
-            return DbConnection.getCompras(Caracteres); 
+        public BindableCollection<ComprasModel> ServidorgetCompra(string Caracteres)
+        {
+            return DbConnection.getCompras(Caracteres);
         }
 
         /// <summary>
@@ -491,9 +497,9 @@ namespace ServerConsole
         /// </summary>
         /// <param name="codigoCompra"></param>
         /// <returns></returns>
-        public  BindableCollection<ProductoModel> ServidorgetProductoCompra(string codigoCompra)
+        public BindableCollection<ProductoModel> ServidorgetProductoCompra(string codigoCompra)
         {
-            return DbConnection.getProductoCompra(codigoCompra); 
+            return DbConnection.getProductoCompra(codigoCompra);
         }
 
         /// <summary>
@@ -503,7 +509,7 @@ namespace ServerConsole
         /// <returns></returns>
         public BindableCollection<ComprasModel> ServidorGetComprasConProductos(string Caracteres)
         {
-          return  DbConnection.getComprasConProductos(Caracteres);
+            return DbConnection.getComprasConProductos(Caracteres);
         }
 
         /// <summary>
@@ -511,9 +517,9 @@ namespace ServerConsole
         /// </summary>
         /// <param name="codigoCompraCodigoProducto"></param>
         /// <returns></returns>
-        public  BindableCollection<ProductoModel> ServidorgetRegistroCompra(string codigoCompraCodigoProducto)
+        public BindableCollection<ProductoModel> ServidorgetRegistroCompra(string codigoCompraCodigoProducto)
         {
-           return  DbConnection.getRegistroCompra(codigoCompraCodigoProducto);
+            return DbConnection.getRegistroCompra(codigoCompraCodigoProducto);
         }
 
         /// <summary>
@@ -531,7 +537,7 @@ namespace ServerConsole
         /// </summary>
         /// <param name="codigoCompra"></param>
         /// <returns></returns>
-        public  BindableCollection<ProductoModel> ServidorgetUltimoRegistroCompraProducto(string codigoProducto)
+        public BindableCollection<ProductoModel> ServidorgetUltimoRegistroCompraProducto(string codigoProducto)
         {
             return DbConnection.getUltimoRegistroCompraProducto(codigoProducto);
         }
@@ -556,7 +562,7 @@ namespace ServerConsole
         /// <returns></returns>
         public string ServidorNuevoEnvioBool(EnvioModel envio)
         {
-            return   DbConnection.NuevoEnvioBool(envio);
+            return DbConnection.NuevoEnvioBool(envio);
         }
 
         /// <summary>
@@ -595,17 +601,17 @@ namespace ServerConsole
         /// </summary>
         /// <param name="Caracteres"></param>
         /// <returns></returns>
-        public  BindableCollection<EnvioModel> ServidorgetTodosLosEnviosPorLocal(string ccEmpleado)
+        public BindableCollection<EnvioModel> ServidorgetTodosLosEnviosPorLocal(string ccEmpleado)
         {
             return DbConnection.getTodosLosEnviosPorLocal(ccEmpleado);
         }
-        
+
         /// <summary>
         /// Obtiene la suma de envios de la ultima compra del producto con el codigo dado
         /// </summary>
         /// <param name="codigoProducto"></param>
         /// <returns></returns>
-        public decimal? ServidorgetTotalEnvioProduco(string codigoProducto) 
+        public decimal? ServidorgetTotalEnvioProduco(string codigoProducto)
         {
             return DbConnection.getTotalEnvioProduco(codigoProducto);
         }
@@ -640,7 +646,7 @@ namespace ServerConsole
         /// </summary>
         /// <param name="Caracteres"></param>
         /// <returns></returns>
-        public  BindableCollection<RecibidoModel> ServidorgetRecibidoConProductos(string Caracteres)
+        public BindableCollection<RecibidoModel> ServidorgetRecibidoConProductos(string Caracteres)
         {
             return DbConnection.getRecibidoConProductos(Caracteres);
         }
@@ -651,7 +657,7 @@ namespace ServerConsole
         /// <param name="Caracteres"></param>
         /// <param name="codigoPuntoVenta"></param>
         /// <returns></returns>
-        public  BindableCollection<RecibidoModel> ServidorgetRecibidos(string Caracteres, string codigoPuntoVenta)
+        public BindableCollection<RecibidoModel> ServidorgetRecibidos(string Caracteres, string codigoPuntoVenta)
         {
             return DbConnection.getRecibidos(Caracteres, codigoPuntoVenta);
         }
@@ -661,7 +667,7 @@ namespace ServerConsole
         /// </summary>
         /// <param name="codigoRecibido"></param>
         /// <returns></returns>
-        public  BindableCollection<ProductoModel> ServidorgetProductosRecibido(string codigoRecibido)
+        public BindableCollection<ProductoModel> ServidorgetProductosRecibido(string codigoRecibido)
         {
             return DbConnection.getProductosRecibido(codigoRecibido);
         }
@@ -672,7 +678,7 @@ namespace ServerConsole
         /// <param name="recibido"></param>
         /// <returns></returns>
         public string ServidorupdateRecibido(RecibidoModel recibido)
-        {            
+        {
             return DbConnection.updateRecibido(recibido);
         }
 
@@ -681,7 +687,7 @@ namespace ServerConsole
         /// </summary>
         /// <param name="recibido"></param>
         /// <returns></returns>
-        public  string ServidorupdateRecibidoNoInventario(RecibidoModel recibido) 
+        public string ServidorupdateRecibidoNoInventario(RecibidoModel recibido)
         {
             return DbConnection.updateRecibidoNoInventario(recibido);
         }
@@ -715,7 +721,7 @@ namespace ServerConsole
         /// </summary>
         /// <param name="codigo"></param>
         /// <returns></returns>
-        public  BindableCollection<InventarioModel> ServidorgetCambioInventario(string codigo)
+        public BindableCollection<InventarioModel> ServidorgetCambioInventario(string codigo)
         {
             return DbConnection.getCambioInventario(codigo);
         }
@@ -732,7 +738,7 @@ namespace ServerConsole
         /// <returns></returns>
         public string ServidorAddClient(ClientesModel Cliente)
         {
-                return DbConnection.AddClient(Cliente);
+            return DbConnection.AddClient(Cliente);
         }
 
         /// <summary>
@@ -740,17 +746,17 @@ namespace ServerConsole
         /// </summary>
         /// <param name="Caracteres"></param>
         /// <returns></returns>
-        public  BindableCollection<ClientesModel> ServidorgetClientes(string Caracteres)
+        public BindableCollection<ClientesModel> ServidorgetClientes(string Caracteres)
         {
             return DbConnection.getClientes(Caracteres);
         }
-        
+
         /// <summary>
         /// Method that does a select query against the 'Clientes' table at the local database and get the result of searching the coincidences into the cedula, nombre or apellido of the given characters.
         /// </summary>
         /// <param name="Caracteres"></param>
         /// <returns></returns>
-        public  BindableCollection<ClientesModel> ServidorgetClienteCedula(string Caracteres)
+        public BindableCollection<ClientesModel> ServidorgetClienteCedula(string Caracteres)
         {
             return DbConnection.getClienteCedula(Caracteres);
         }
@@ -760,17 +766,17 @@ namespace ServerConsole
         /// </summary>
         /// <param name="Cedula">Número de cédula del cliente a eliminar.</param>
         /// <returns></returns>
-        public  string ServidordeleteCliente(string Cedula)
+        public string ServidordeleteCliente(string Cedula)
         {
             return DbConnection.deleteCliente(Cedula);
         }
-       
+
         /// <summary>
         /// Actualiza los datos del usuario dado.
         /// </summary>
         /// <param name="Cliente"></param>
         /// <returns></returns>
-        public  string ServidorActualizarCliente(ClientesModel Cliente)
+        public string ServidorActualizarCliente(ClientesModel Cliente)
         {
             return DbConnection.ActualizarCliente(Cliente);
         }
@@ -780,7 +786,7 @@ namespace ServerConsole
         /// </summary>
         /// <param name="idLocal"></param>
         /// <returns></returns>
-        public  decimal[] ServidorpromediofacturasRegistradas(string? idLocal)
+        public decimal[] ServidorpromediofacturasRegistradas(string? idLocal)
         {
             return DbConnection.promediofacturasRegistradas(idLocal);
         }
@@ -796,7 +802,7 @@ namespace ServerConsole
         /// </summary>
         /// <param name="factura">Datos de la factura que se va a registrar</param>
         /// <returns></returns>
-        public string ServidorNuevaFacturaBool(FacturaModel factura) 
+        public string ServidorNuevaFacturaBool(FacturaModel factura)
         {
             return DbConnection.NuevaFacturaBool(factura);
         }
@@ -806,7 +812,7 @@ namespace ServerConsole
         /// </summary>
         /// <param name="factura">Datos de la factura que se va a registrar</param>
         /// <returns></returns>
-        public  string ServidorNuevaFacturaBorradaBool(FacturaModel factura)
+        public string ServidorNuevaFacturaBorradaBool(FacturaModel factura)
         {
             return DbConnection.NuevaFacturaBorradaBool(factura);
         }
@@ -817,9 +823,9 @@ namespace ServerConsole
         /// </summary>
         /// <param name="cedulaCliente"></param>
         /// <returns></returns>
-        public  object[] ServidorgetFacturasCliente(string cedulaCliente)
+        public object[] ServidorgetFacturasCliente(string cedulaCliente)
         {
-          return  DbConnection.getFacturasCliente(cedulaCliente);
+            return DbConnection.getFacturasCliente(cedulaCliente);
         }
 
 
@@ -847,7 +853,7 @@ namespace ServerConsole
         /// </summary>
         /// <param name="codigoIngreso"></param>
         /// <returns></returns>
-        public  BindableCollection<IngresoModel> ServidorgetIngresoConFacturas(string codigoIngreso)
+        public BindableCollection<IngresoModel> ServidorgetIngresoConFacturas(string codigoIngreso)
         {
             return DbConnection.getIngresoConFacturas(codigoIngreso);
         }
@@ -891,7 +897,7 @@ namespace ServerConsole
         /// Retorna los items de egresos
         /// </summary>
         /// <returns></returns>
-        public BindableCollection<ItemMovimientoEfectivoModel> ServidorgetItemsEgresos() 
+        public BindableCollection<ItemMovimientoEfectivoModel> ServidorgetItemsEgresos()
         {
             return DbConnection.getItemsEgresos();
         }
@@ -902,7 +908,7 @@ namespace ServerConsole
         /// </summary>
         /// <param name="codigoLocal"></param>
         /// <returns></returns>
-        public  BindableCollection<MovimientoEfectivoModel> ServidorGetMovimientosEfectivoLocal(string codigoLocal)
+        public BindableCollection<MovimientoEfectivoModel> ServidorGetMovimientosEfectivoLocal(string codigoLocal)
         {
             return DbConnection.GetMovimientosEfectivoLocal(codigoLocal);
         }
@@ -914,17 +920,17 @@ namespace ServerConsole
         /// Retorna el valor del codigo del nuevo egreso
         /// </summary>
         /// <returns></returns>
-        public string ServidorgetNextIdEgreso() 
+        public string ServidorgetNextIdEgreso()
         {
             return DbConnection.getNextIdEgreso();
-         }
+        }
 
         /// <summary>
         /// Registra el nuevo egreso y su correspondiente registro en el movimiemto de efectivo
         /// </summary>
         /// <param name="egreso"></param>
         /// <returns></returns>
-        public  string ServidorNuevoEgreso(EgresoModel egreso)
+        public string ServidorNuevoEgreso(EgresoModel egreso)
         {
             return DbConnection.NuevoEgreso(egreso);
         }
@@ -934,7 +940,7 @@ namespace ServerConsole
         /// </summary>
         /// <param name="codigoEgreso"></param>
         /// <returns></returns>
-        public  BindableCollection<EgresoModel> ServidorgetEgreso(string codigoEgreso)
+        public BindableCollection<EgresoModel> ServidorgetEgreso(string codigoEgreso)
         {
             return DbConnection.getEgreso(codigoEgreso);
         }
@@ -952,7 +958,7 @@ namespace ServerConsole
         #endregion
 
         /// <summary>
-        /// Obtiene ingormacion general a cerca de todos los locales
+        /// Obtiene informacion general a cerca de todos los locales
         /// </summary>
         /// <returns></returns>
         public decimal[] ServidorgetTotal()
@@ -960,7 +966,7 @@ namespace ServerConsole
             return DbConnection.getTotal();
         }
 
-        public  decimal[] ServidorgetInfoLocal(string codigoLocal, DateTime fechaInicio, DateTime fechaFinal)
+        public decimal[] ServidorgetInfoLocal(string codigoLocal, DateTime fechaInicio, DateTime fechaFinal)
         {
             return DbConnection.getInfoLocal(codigoLocal, fechaInicio, fechaFinal);
         }
@@ -977,16 +983,10 @@ namespace ServerConsole
         /// </summary>
         /// <returns></returns>
         public BindableCollection<string[]> ServidorNuevosRegistros(int a)
-        
+
         {
-            return DbConnection.registroCambios(a); 
+            return DbConnection.registroCambios(a);
         }
-
-
-
-
-
-
 
     }
 

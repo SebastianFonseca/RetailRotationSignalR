@@ -14,7 +14,7 @@ namespace Client.Main.Models
     public class ClientesModel : PersonModel
     {
         public decimal puntos { get; set; }
-        public string estado { get; set; }
+//        public string estado { get; set; }
 
         public BindableCollection<FacturaModel> facturas { get; set; } = new BindableCollection<FacturaModel>();
     }

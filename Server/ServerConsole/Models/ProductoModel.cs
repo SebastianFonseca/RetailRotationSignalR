@@ -44,15 +44,15 @@ namespace ServerConsole.Models
         private decimal? _cantidadVenta = 0;
         public decimal? cantidadVenta
         {
-            get { return _cantidadVenta; }
-            set { _cantidadVenta = value; }
+            get => _cantidadVenta;
+            set => _cantidadVenta = value;
         }
 
         private decimal? _totalValorVenta;
         public decimal? totalValorVenta
         {
-            get { return _totalValorVenta; }
-            set { _totalValorVenta = value; }
+            get => _totalValorVenta;
+            set => _totalValorVenta = value;
         }
 
     }

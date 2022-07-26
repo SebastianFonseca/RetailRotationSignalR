@@ -2,6 +2,7 @@
 using Client.Main.Utilities;
 using Client.Main.ViewModels;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -44,43 +45,60 @@ namespace Client.Main
                 {
                     hubConnection = new HubConnectionBuilder()
                     .WithUrl(GetServerAddress(), options =>
-
-                     options.AccessTokenProvider = () =>
                      {
-                         IJWTContainerModel model = GetJWTContainerModel(User, HashedPassword);
+                         options.Transports = HttpTransportType.WebSockets;
 
-                         IJWTService authService = new JWTService(model.SecretKey);
+                         options.SkipNegotiation = true;
 
-                         var token = authService.GenerateToken(model);
-                        
-                         return Task.FromResult(token);
-
-                         static JWTContainerModel GetJWTContainerModel(string name, string HashedPassword)
+                         options.AccessTokenProvider = () =>
                          {
-                             return new JWTContainerModel()
+                             IJWTContainerModel model = GetJWTContainerModel(User, HashedPassword);
+
+                             IJWTService authService = new JWTService(model.SecretKey);
+
+                             var token = authService.GenerateToken(model);
+
+                             return Task.FromResult(token);
+
+                             static JWTContainerModel GetJWTContainerModel(string name, string HashedPassword)
                              {
-                                Claims = new Claim[]
-                                {
-                                     new Claim(ClaimTypes.Name, name),
-                                     new Claim(ClaimTypes.Hash, HashedPassword)
-                                }
-                             };
-                         }
+                                 return new JWTContainerModel()
+                                 {
+                                     Claims = new Claim[]
+                                     {
+                                          new Claim(ClaimTypes.Name, name),
+                                          new Claim(ClaimTypes.Hash, HashedPassword)
+                                     }
+                                 };
+                             }
+                         };
+
                      }
+
+
                      ).WithAutomaticReconnect().Build();
                     hubConnection.Closed += HubConnection_Closed;
+                    hubConnection.Reconnecting += HubConnection_Closed;
                     hubConnection.Reconnected += HubConnection_Reconnected;
                     Task t = hubConnection.StartAsync();
                     await t;
+                    /*new TimeSpan[] { TimeSpan.FromSeconds(1) }*/
                     return t;
                 }
             }
-            catch ///(Exception es)
+            catch (Exception es)
             {
-                return null;
-                ///MessageBox.Show(es.Message + "ConnectToServer");
+             
+                //MessageBox.Show(es.Message + "ConnectToServer" + es.InnerException.Message );   return null;
             }
             return null;
+        }
+
+        private static Task HubConnection_Closed(Exception arg)
+        {
+            MainWindowViewModel.Status = "Trabajando localmente";
+            return null;
+
         }
 
 
@@ -92,13 +110,14 @@ namespace Client.Main
         /// <param name="Arguments">The needed arguments fot the specified method.</param>
         public async Task<object> CallServerMethod(string MethodName, Object[] Arguments)
         {
-            if (hubConnection.ConnectionId != null && hubConnection.State != HubConnectionState.Connecting) { 
+            if (/*hubConnection.ConnectionId != null && hubConnection.State != HubConnectionState.Connecting*/ hubConnection.State == HubConnectionState.Connected) { 
                 try
                 {
                    /// MessageBox.Show(Connection.State.ToString());
                     Task<object> result = hubConnection.InvokeCoreAsync<object>(MethodName, args: Arguments);
                     await result ;
-                    if (hubConnection.ConnectionId != null && hubConnection.State != HubConnectionState.Connecting && result.Status == TaskStatus.RanToCompletion )
+                    
+                    if (/*hubConnection.ConnectionId != null &&*/ hubConnection.State != HubConnectionState.Connecting && result.Status == TaskStatus.RanToCompletion )
                     {
                         return result.Result;
                     }
@@ -116,39 +135,40 @@ namespace Client.Main
         
 
 
-        private static  async Task HubConnection_Closed(Exception arg)
-        {
-           Connect conexion = ContainerConfig.scope.Resolve<Connect>();
-           MainWindowViewModel.Status = "Trabajando localmente";
+        //private static async Task OnClosed(Exception arg)
+        //{
+        //   Connect conexion = ContainerConfig.scope.Resolve<Connect>();
+        //   MainWindowViewModel.Status = "Trabajando localmente";
             
-           await  conexion.CallServerMethod("ClienteDesconectado", Arguments: new[] { Usuario });
-            if (arg.Message.Substring(0, 61) == "Reconnect retries have been exhausted after 5 failed attempts")
-            {
-                while (hubConnection.State == HubConnectionState.Disconnected)
-                {
-                    try
-                    {
-                        await Task.Delay(TimeSpan.FromSeconds(0.5));
-                        //MessageBox.Show(hubConnection.State.ToString());
-                        await hubConnection.StartAsync();
-                        MainWindowViewModel.Status = "Conectado al servidor";
-                        await conexion.CallServerMethod("ClienteReconectado", Arguments: new[] { Usuario });
+        //   await  conexion.CallServerMethod("ClienteDesconectado", Arguments: new[] { Usuario });
+        //    if (arg.Message.Substring(0, 61) == "Reconnect retries have been exhausted after 5 failed attempts")
+        //    {
+        //        while (hubConnection.State == HubConnectionState.Disconnected)
+        //        {
+        //            try
+        //            {
+        //                await Task.Delay(TimeSpan.FromSeconds(0.5));
+        //                //MessageBox.Show(hubConnection.State.ToString());
+        //                await hubConnection.StartAsync();
+        //                MainWindowViewModel.Status = "Conectado al servidor";
+        //                await conexion.CallServerMethod("ClienteReconectado", Arguments: new[] { Usuario });
 
 
 
-                    }
-                    catch (Exception e)
-                    {
-                        if (e.Message == "No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión.")
-                        {
-                        }
-                        else
-                            MessageBox.Show(e.Message);
-                    }
-                }
-            }
+        //            }
+        //            catch (Exception e)
+        //            {
+        //                if (e.Message == "No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión.")
+        //                {
+        //                   MainWindowViewModel.Status = "Trabajando localmente";
+        //                }
+        //                else
+        //                    MessageBox.Show(e.Message);
+        //            }
+        //        }
+        //    }
         
-        }
+        //}
 
 
         private static async Task HubConnection_Reconnected(string arg)

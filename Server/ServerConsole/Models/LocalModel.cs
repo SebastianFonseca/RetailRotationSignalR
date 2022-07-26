@@ -11,7 +11,7 @@ namespace ServerConsole.Models
         public string direccion { get; set; }
         public string telefono { get; set; }
         public string ciudad { get; set; }
-        public int numeroDeCanastillas { get; set; } 
+        public int numeroDeCanastillas { get; set; }
         public DateTime fechaDeApertura { get; set; } = DateTime.Now;
     }
 }

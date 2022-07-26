@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Caliburn;
+using Caliburn.Micro;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using Caliburn;
-using Caliburn.Micro;
 
 namespace ServerConsole.Models
 {
-     public class MovimientoEfectivoModel : Screen
+    public class MovimientoEfectivoModel : Screen
     {
         public int id { get; set; }
         public decimal? aumentoDisminucion { get; set; }
@@ -21,5 +21,5 @@ namespace ServerConsole.Models
         public decimal valor { get; set; }*/
 
     }
-    
+
 }

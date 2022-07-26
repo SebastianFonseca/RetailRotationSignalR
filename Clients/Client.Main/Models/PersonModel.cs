@@ -24,6 +24,9 @@ namespace Client.Main.Models
 
         public string correo { get; set; } = null;
 
+        public string estado { get; set; }
+
+
     }
- }
+}
 

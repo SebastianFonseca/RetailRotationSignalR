@@ -55,6 +55,7 @@
         <Grid ShowGridLines="False">
 
             <Grid.RowDefinitions>
+                <RowDefinition Height="0.25*"/>
                 <RowDefinition Height="0.75*"/>
                 <RowDefinition Height="0.25*"/>
             </Grid.RowDefinitions>
@@ -70,24 +71,11 @@
                 <fa:ImageAwesome Icon="ArrowLeft" Height="25"/>
             </Button>
 
-            <!--Sombra inferior-->
-            <Border  Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" BorderBrush="#F3E0C2" BorderThickness="0 0 0 1" Height="50" VerticalAlignment="Bottom" Margin="0 0 10 0">
-                <Border.Effect>
-                    <DropShadowEffect ShadowDepth="10" Color="#F3E0C2" BlurRadius="5"/>
-                </Border.Effect>
-            </Border>
 
-            <!--Formulario principal-->
-            <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9"   Grid.Column="1"  Grid.Row="0" Margin="10" Grid.ColumnSpan="2" HorizontalAlignment="Center">
 
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="0.24*"/>
-                    <RowDefinition Height="0.12*"/>
-                    <RowDefinition Height="0.44*"/>
-                </Grid.RowDefinitions>
-
-                <!--Parte superior, informacion general del documento de existencias-->
-                <Grid Grid.Row="0" ShowGridLines="False" Margin="1">
+            <!--Parte superior, informacion general del documento de existencias-->
+                    
+                <Grid ShowGridLines="False" Margin="1" Grid.Column="1" Grid.Row="0" Background="Transparent"  >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="0.112*"/>
                         <ColumnDefinition Width="0.2*"/>
@@ -126,10 +114,12 @@
 
                 </Grid>
 
-                <Separator Grid.Row="0" VerticalAlignment="Bottom" Foreground="Beige" Margin="0"/>
+            <DockPanel Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" >
+
+                <Separator Grid.Row="0"  Foreground="Gray" Margin="0" DockPanel.Dock="Top" HorizontalAlignment="Stretch"/>
 
                 <!--Encabezado de la tabla con el nombre de las columnas-->
-                <StackPanel Grid.Row="1" Orientation="Horizontal" Background="#F3E0D2">
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Background="#F3E0D2" DockPanel.Dock="Top">
                     <TextBlock Text="Código" Margin="15 0 10 0" VerticalAlignment="Center"/>
                     <TextBlock Text="Producto" Margin="45 0 10 0"/>
                     <TextBlock Text="Existencia" Margin="20 0 10 0"/>
@@ -137,7 +127,10 @@
                     <TextBlock Text="Unidades" Margin="25 0 10 0"/>
                 </StackPanel>
 
-                <Separator Grid.Row="1" VerticalAlignment="Bottom" Foreground="Beige" Margin="0"/>
+                
+                <Grid>
+
+                <Separator Grid.Row="1" VerticalAlignment="Top" Foreground="Beige" Margin="0"/>
 
                 <ListView  KeyboardNavigation.TabNavigation="Cycle" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True" ScrollViewer.HorizontalScrollBarVisibility="Hidden" x:Name="Productos" Background="#F3E0D2" BorderThickness="0"  FlowDirection="LeftToRight" HorizontalAlignment="Stretch" Grid.Row="2" ItemsSource="{Binding Path=Productos}" Margin="0 3 0 0">
                     <ListBox.ItemTemplate  >
@@ -162,10 +155,14 @@
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListView>
-            </Grid>
+                <Separator  VerticalAlignment="Bottom" Background="Gray" Margin="0" Panel.ZIndex="10" HorizontalAlignment="Stretch"/>
+                </Grid>
+
+
+            </DockPanel>
 
             <!--Boton guardar-->
-            <Button Style="{StaticResource GeneralButton}"  Margin="11" Height="50" HorizontalAlignment="Center"  Width="250" Content="    GUARDAR    "  x:Name="Guardar" Grid.Column="1" Grid.Row="1"  />
+            <Button Style="{StaticResource GeneralButton}"  Margin="11" Height="50" HorizontalAlignment="Center"  Width="250" Content="    GUARDAR    "  x:Name="Guardar" Grid.Column="1" Grid.Row="2"  />
         </Grid>
     </Border>
 </UserControl>

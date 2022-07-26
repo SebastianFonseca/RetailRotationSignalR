@@ -21,7 +21,11 @@ namespace ServerConsole
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+
         }
+
+
+
         public IConfiguration Configuration { get; }
         public string SecretKey { get; set; } = "TW9zaGVFcmV6UHJpdmF0ZUtleQ==";
         private SecurityKey GetSymmetricSecurityKey()
@@ -36,28 +40,30 @@ namespace ServerConsole
                 // Identity made Cookie authentication the default.
                 // However, we want JWT Bearer Auth to be the default.
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;                
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
            .AddJwtBearer(options =>
            {
                options.TokenValidationParameters = new TokenValidationParameters
                {
-                       // Clock skew compensates for server time drift.
-                       // We recommend 5 minutes or less:
-                    ClockSkew = TimeSpan.FromMinutes(5),
-                       // Specify the key used to sign the token:
-                       IssuerSigningKey = GetSymmetricSecurityKey(),
+                   // Clock skew compensates for server time drift.
+                   // We recommend 5 minutes or less:
+                   ClockSkew = TimeSpan.FromMinutes(5),
+                   // Specify the key used to sign the token:
+                   IssuerSigningKey = GetSymmetricSecurityKey(),
                    RequireSignedTokens = true,
-                       // Ensure the token hasn't expired:
-                       RequireExpirationTime = true,
+                   // Ensure the token hasn't expired:
+                   RequireExpirationTime = true,
                    ValidateLifetime = true,
-                  // Ensure the token audience matches our audience value(default true):
-                       ValidateAudience = false,
+                   // Ensure the token audience matches our audience value(default true):
+                   ValidateAudience = false,
                    ValidAudience = "api://default",
                    // Ensure the token was issued by a trusted authorization server (default true):
                    ValidateIssuer = false,
                    ValidIssuer = "https://{yourOktaDomain}/oauth2/default"
                };
+
+
 
                options.Events = new JwtBearerEvents
                {
@@ -72,19 +78,24 @@ namespace ServerConsole
 
                    }
 
-               };
-               
-               
 
-           }) ;           
+               };
+
+
+
+
+
+           });
+
 
             services.AddMvc();
+
             services.AddSignalRCore();
+
             services.AddSignalR(options =>
             {
+                options.EnableDetailedErrors = true;
 
-                    options.EnableDetailedErrors = true;
-                
             });
         }
 
@@ -94,10 +105,6 @@ namespace ServerConsole
 
             app.UseAuthentication();
             app.UseAuthorization();
-
-
-            
-
 
             app.UseEndpoints(endpoints =>
             {

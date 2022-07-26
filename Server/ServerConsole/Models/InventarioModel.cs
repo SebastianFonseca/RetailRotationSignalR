@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ServerConsole.Models
 {
-    public class InventarioModel: DocumentoModel
+    public class InventarioModel : DocumentoModel
     {
         public string codigoProducto { get; set; }
         public string tipo { get; set; }

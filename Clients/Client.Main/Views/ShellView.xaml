@@ -4,12 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:pwbx="clr-namespace:Client.Main"
-        xmlns:gif="http://wpfanimatedgif.codeplex.com"
+        xmlns:gif="https://github.com/XamlAnimatedGif/XamlAnimatedGif"
         xmlns:c="clr-namespace:Client.Main.Utilities"
         mc:Ignorable="d"
         Title="  " Height="400" Width="247.2" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
         
-    <Grid x:Name="MainGrid" c:KeyboardFocus.On="{Binding ElementName=User}" >
+    <Grid x:Name="MainGrid" c:KeyboardFocus.On="{Binding ElementName=User}" ShowGridLines="False">
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"   />
@@ -45,23 +45,18 @@
         
             <!--Fila 4.Boton de entrar-->        
         <Button  Grid.Row="4" Grid.Column="1" Margin="5  0  5   0" HorizontalAlignment="Stretch" x:Name="Entrar"    VerticalAlignment="Center" FontSize="14"  FontFamily="Corbel"   Foreground="Black"    FontWeight="ExtraBlack"   Content="ENTRAR"                           
-         Background="#FFF3E0C2"     Opacity="0.6" BorderThickness="0"       Grid.ColumnSpan="2" Cursor="Hand" Style="{StaticResource GeneralButton}">
-            
-            <Button.IsEnabled>
-                <MultiBinding Converter="{StaticResource Converter }" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
-                    <Binding ElementName="User" Path="(Validation.HasError)" />
-                    <Binding ElementName="UserPassword" Path="(Validation.HasError)" />
-                </MultiBinding>
-            </Button.IsEnabled>
+         Background="#FFF3E0C2"     Opacity="0.6" BorderThickness="0" Grid.ColumnSpan="2" Cursor="Hand" Style="{StaticResource GeneralButton}">
+           
         </Button>
 
 
         <!--WaitingGIF-->
-   <!-- <Image Grid.Column="0"  Grid.Row="1" Grid.RowSpan="4" Grid.ColumnSpan="4"  Visibility="{Binding  Path=StackVisibility}"  Height="80"  Width="150" gif:ImageBehavior.AnimatedSource="D:\RetailRotationSignalR\Clients\Client.Main\Resources\waiting.gif" Margin="0 0 0 0" />-->
+        <Border Grid.Column="1"  Grid.Row="0" Grid.RowSpan="6" Grid.ColumnSpan="2" Background="SlateGray" Opacity="0.5" Margin="0 20 0 20"  Visibility="{Binding  Path=StackVisibility}"  CornerRadius="15"/>
+        <Image Grid.Column="0"  Grid.Row="1" Grid.RowSpan="4" Grid.ColumnSpan="4"   Height="80"  Visibility="{Binding  Path=StackVisibility}"  Width="150" gif:AnimationBehavior.SourceUri="pack://application:,,,/Resources/waiting.gif" Margin="0 0 0 0"  Panel.ZIndex="10" />
 
         <!--Grid background-->
         <Grid.Background>
-            <ImageBrush ImageSource="/views/iniciodesesion.png"/>
+            <ImageBrush ImageSource="pack://application:,,,/Resources/iniciodesesion.png"/>
         </Grid.Background>
 
     </Grid>

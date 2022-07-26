@@ -55,6 +55,7 @@
         <Grid ShowGridLines="False">
 
             <Grid.RowDefinitions>
+                <RowDefinition Height="0.25*"/>
                 <RowDefinition Height="0.75*"/>
                 <RowDefinition Height="0.25*"/>
             </Grid.RowDefinitions>
@@ -76,18 +77,9 @@
                     <DropShadowEffect ShadowDepth="10" Color="#F3E0C2" BlurRadius="5"/>
                 </Border.Effect>
             </Border>
-
-            <!--Formulario principal-->
-            <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9"   Grid.Column="1"  Grid.Row="0" Margin="10" Grid.ColumnSpan="2" >
-
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="0.24*"/>
-                    <RowDefinition Height="0.12*"/>
-                    <RowDefinition Height="0.44*"/>
-                </Grid.RowDefinitions>
                  
                 <!--Parte superior, informacion general del documento de existencias-->
-                <Grid Grid.Row="0" ShowGridLines="False" Margin="1">
+                <Grid Grid.Row="0" Grid.Column="1" ShowGridLines="False" Margin="1">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="0.112*"/>
                         <ColumnDefinition Width="0.2*"/>
@@ -130,46 +122,48 @@
 
                 </Grid>
                 
-                <Separator Grid.Row="0" VerticalAlignment="Bottom" Foreground="Beige" Margin="0"/>
-
+                <Separator Grid.Row="0" Grid.ColumnSpan="3" VerticalAlignment="Bottom" Background="Gray" Margin="10 0 10 0"/>
+            <DockPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="10 0 10 0">
                 <!--Encabezado de la tabla con el nombre de las columnas-->
-                <StackPanel Grid.Row="1" Orientation="Horizontal" Background="#F3E0D2">
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Background="#F3E0D2" DockPanel.Dock="Top">
                     <TextBlock Text="Código" Margin="25 0 10 0" VerticalAlignment="Center"/>
                     <TextBlock Text="Producto" Margin="58 0 10 0"/>
                     <TextBlock Text="Existencia" Margin="20 0 10 0"/>
                     <TextBlock Text="Unidades" Margin="25 0 10 0"/>
                 </StackPanel>
-                
-                <Separator Grid.Row="1" VerticalAlignment="Bottom" Foreground="Beige" Margin="0"/>
-                
-                <ListView  KeyboardNavigation.TabNavigation="Cycle" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True" x:Name="Productos" Background="#F3E0D2" BorderThickness="0"  FlowDirection="LeftToRight" HorizontalAlignment="Stretch" Grid.Row="2" ItemsSource="{Binding Path=Productos}" Margin="0 3 0 0">
-                    <ListBox.ItemTemplate  >
-                        <DataTemplate >
-                            <Grid Focusable="False">
-                                
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="200"/>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition Width="200"/>
-                                </Grid.ColumnDefinitions>
 
-                                <TextBlock Text="{Binding Path=codigoProducto}" Margin="0" FontSize="18" HorizontalAlignment="Center"/>
-                                <TextBlock Text="{Binding Path=nombre}" Grid.Column="1"  FontSize="18" HorizontalAlignment="Center"/>
-                                <TextBox Style="{StaticResource GeneralTextBox}" Grid.Column="2"  Width="60" MaxLength="5" Text="{Binding Path=existencia, StringFormat='{}{0:#.}'}" HorizontalAlignment="Center" TextAlignment="Center" PreviewTextInput="NumberValidationTextBox"/>
-                                <TextBlock Text="{Binding Path=unidadVenta}" Grid.Column="3"  FontSize="18" HorizontalAlignment="Center"/>
-                            </Grid>
-                            
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-        
-                </ListView>
 
+                <Grid Margin="0 0 0 -5">
+                    <Separator  VerticalAlignment="Top" Foreground="Gray" Margin="0" HorizontalAlignment="Stretch" Panel.ZIndex="10"/>
+
+                    <ListView  KeyboardNavigation.TabNavigation="Cycle" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True" x:Name="Productos" Background="#F3E0D2" BorderThickness="0"  FlowDirection="LeftToRight" HorizontalAlignment="Stretch" Grid.Row="2" ItemsSource="{Binding Path=Productos}" Margin="0 3 0 0">
+                        <ListBox.ItemTemplate  >
+                            <DataTemplate >
+                                <Grid Focusable="False">
+
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="200"/>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="200"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Text="{Binding Path=codigoProducto}" Margin="0" FontSize="18" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Path=nombre}" Grid.Column="1"  FontSize="18" HorizontalAlignment="Center"/>
+                                    <TextBox Style="{StaticResource GeneralTextBox}" Grid.Column="2"  Width="60" MaxLength="5" Text="{Binding Path=existencia, StringFormat='{}{0:#.}'}" HorizontalAlignment="Center" TextAlignment="Center" PreviewTextInput="NumberValidationTextBox"/>
+                                    <TextBlock Text="{Binding Path=unidadVenta}" Grid.Column="3"  FontSize="18" HorizontalAlignment="Center"/>
+                                </Grid>
+
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListView>
+                    <Separator  VerticalAlignment="Bottom" Foreground="Gray" Margin="0 -100 0 0" HorizontalAlignment="Stretch" Panel.ZIndex="10"/>
                 </Grid>
-          
+            </DockPanel>
+
 
             <!--Boton guardar-->
-            <Button Style="{StaticResource GeneralButton}"  Margin="11" Height="50" HorizontalAlignment="Center"  Width="250" Content="    GUARDAR    "  x:Name="Guardar" Grid.Column="1" Grid.Row="1"  />
+            <Button Style="{StaticResource GeneralButton}"  Margin="11" Height="50" HorizontalAlignment="Center"  Width="250" Content="    GUARDAR    "  x:Name="Guardar" Grid.Column="1" Grid.Row="2"  />
 
 
         </Grid>
