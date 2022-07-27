@@ -31,16 +31,16 @@ namespace Client.Main.ViewModels
             if (conexion.Connection == null || conexion.Connection.State == HubConnectionState.Disconnected || conexion.Connection.State == HubConnectionState.Connecting)
             {
                 await Connect.ConnectToServer(VentanaPrincipal.usuario.cedula);
-                //conexion.connection.on("setstatus", handler: (string a) =>
-                //{
-                //    mainwindowviewmodel.status = "conectado al servidor";
-                //    messagebox.show(a);
-                //});
-                //conexion.connection.on("setstatusdisconnected", handler: (string a) =>
-                //{
-                //    mainwindowviewmodel.status = "trabajando localmente";
-                //    messagebox.show(a);
-                //});
+                conexion.Connection.On("SetStatus", handler: (string a) =>
+                {
+                    MainWindowViewModel.Status = "Conectado al servidor";
+                    MessageBox.Show(a);
+                });
+                conexion.Connection.On("SetStatusDisconnected", handler: (string a) =>
+                {
+                    MainWindowViewModel.Status = "Trabajando localmente";
+                    MessageBox.Show(a);
+                });
 
                 await conexion.CallServerMethod("TestMethod", Arguments: new[] { "Conectado al sevidor." });
 
@@ -86,7 +86,7 @@ namespace Client.Main.ViewModels
 
         public void Administrativo()
         {
-            if (VentanaPrincipal.Cargo == " Gerente general") //Permitir el acceso al encargado de compras y de distribucion para que puedan agregarnuevos proveedores.
+            if (VentanaPrincipal.Cargo.Trim() == "Gerente general") //Permitir el acceso al encargado de compras y de distribucion para que puedan agregarnuevos proveedores.
             {
                 //if (MainWindowViewModel.Status == "Conectado al servidor")
                 //{               

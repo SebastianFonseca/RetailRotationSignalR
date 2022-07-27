@@ -93,7 +93,7 @@ namespace Client.Main
             catch (Exception es)
             {
              
-                MessageBox.Show(es.Message + "ConnectToServer" + es.InnerException.Message );   return null;
+               // MessageBox.Show(es.Message + "ConnectToServer" + es.InnerException.Message );   return null;
             }
             return null;
         }

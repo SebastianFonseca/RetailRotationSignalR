@@ -106,6 +106,14 @@ namespace Client.Main.ViewModels
                 if (conexion.Connection.State == HubConnectionState.Disconnected | conexion.Connection.State == HubConnectionState.Reconnecting | MainWindowViewModel.Status == "Trabajando localmente")
                 {
                     object[] verificar = DbConnection.Login(User: User, Password: UserPassword);
+                    if ((string)verificar[0].ToString() == "Usuario no registrado.")
+                    {
+                        MessageBox.Show("Usuario no registrado");
+                        Activo = true;
+                        NotifyOfPropertyChange(() => Activo);
+                        StackVisibility = "Collapsed";
+                        return;
+                    }
 
                     if ((string)verificar[0] == "Registrado")
                     {
@@ -115,6 +123,10 @@ namespace Client.Main.ViewModels
                     else
                     {
                         MessageBox.Show("Usuario o contraseña incorrectas.");
+                        Activo = true;
+                        NotifyOfPropertyChange(() => Activo);
+                        StackVisibility = "Collapsed";
+                        return;
                     }
 
                 }
@@ -125,6 +137,17 @@ namespace Client.Main.ViewModels
                         Task<object> re = conexion.CallServerMethod("ServidorValidarUsuario", Arguments: new[] { usuario.cedula, usuario.password });
                         await re;
                         object[] respuesta = System.Text.Json.JsonSerializer.Deserialize<object[]>(re.Result.ToString());
+
+
+                        if ((string)respuesta[0].ToString() == "Usuario no registrado.")
+                        {
+                            MessageBox.Show("Usuario no registrado");
+                            Activo = true;
+                            NotifyOfPropertyChange(() => Activo);
+                            StackVisibility = "Collapsed";
+                            return;
+                        }
+
                         EmpleadoModel usr = new EmpleadoModel();
                         if (respuesta.Length == 2)
                         {
@@ -134,6 +157,9 @@ namespace Client.Main.ViewModels
                         if ((string)respuesta[0].ToString() == "Contraseña incorrecta.")
                         {
                             MessageBox.Show("Usuario o contraseña incorrectos");
+                            Activo = true;
+                            NotifyOfPropertyChange(() => Activo);
+                            StackVisibility = "Collapsed";
                             return;
                         }
                         if ((string)respuesta[0].ToString() == "Registrado")
@@ -145,6 +171,10 @@ namespace Client.Main.ViewModels
                         else
                         {
                             MessageBox.Show(respuesta.ToString());
+                            Activo = true;
+                            NotifyOfPropertyChange(() => Activo);
+                            StackVisibility = "Collapsed";
+
                         }
                     }
                 }
@@ -159,6 +189,8 @@ namespace Client.Main.ViewModels
             {
                 Activo = true;
                 NotifyOfPropertyChange(() => Activo);
+                StackVisibility = "Collapsed";
+
             }
         }
 

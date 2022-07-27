@@ -8,6 +8,7 @@
              xmlns:fa="http://schemas.fontawesome.io/icons/"
              xmlns:cal="http://www.caliburnproject.org"
              mc:Ignorable="d" 
+             xmlns:pwbx="clr-namespace:Client.Main"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              d:DesignHeight="450" d:DesignWidth="800">
 
@@ -120,11 +121,19 @@
 
                     <!--Linea 9-->
                     <TextBlock Grid.Row="6" Grid.Column="0" VerticalAlignment="Bottom">Contraseña:</TextBlock>
-                    <TextBox  Grid.Row="6" Grid.Column="1" Style="{StaticResource GeneralTextBox}" x:Name="Password" SpellCheck.IsEnabled="False"/>
+                    <StackPanel Grid.Row="6" Grid.Column="1" VerticalAlignment="Center">
+                        <PasswordBox  Height="30" Margin="0" VerticalContentAlignment="Center" pwbx:PasswordBoxAssistant.BoundPassword="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True, ValidatesOnDataErrors=True}" Background="#F3E0D2" BorderThickness="0" x:Name="Password" />
+                        <Separator Grid.Row="0"  Grid.Column="2" Grid.ColumnSpan="2" VerticalAlignment="Bottom"  BorderBrush="Black"  BorderThickness="1.5"  />
+                    </StackPanel>
+
+
 
                     <!--Linea 10-->
                     <TextBlock Grid.Row="7" Grid.Column="0" VerticalAlignment="Bottom" FontSize="21">Repita la contraseña:</TextBlock>
-                    <TextBox  Grid.Row="7" Grid.Column="1" Style="{StaticResource GeneralTextBox}" x:Name="PasswordAgain" SpellCheck.IsEnabled="False"/>
+                    <StackPanel Grid.Row="7" Grid.Column="1" VerticalAlignment="Center">
+                        <PasswordBox  Height="30" Margin="0" VerticalContentAlignment="Center" ToolTip="Las contraseñas deben coincidir. Mas de 10 caracteres." pwbx:PasswordBoxAssistant.BoundPassword="{Binding PasswordAgain, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True, ValidatesOnDataErrors=True}" Background="#F3E0D2" BorderThickness="0" x:Name="PasswordAgain" />
+                        <Separator Grid.Row="0"  Grid.Column="2" Grid.ColumnSpan="2" VerticalAlignment="Bottom"  BorderBrush="Black"  BorderThickness="1.5"  />
+                    </StackPanel>
 
                     <!--Linea 7-->
                     <TextBlock Grid.Row="8" Grid.Column="0" VerticalAlignment="Bottom">Local:</TextBlock>

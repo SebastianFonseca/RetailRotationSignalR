@@ -83,7 +83,7 @@
                     </TextBox.Style>
                 </TextBox>
                 <ComboBox HorizontalAlignment="Stretch" Margin="10 -51 11 0" x:Name="Busquedas" Foreground="Black"  Template="{StaticResource ComboBoxDesplegado}" 
-                        Visibility="{Binding Path=BusquedasVisibilidad}"  IsDropDownOpen="{Binding Path=ComboboxDesplegado}" SelectedItem="{Binding Path=SelectedBusquedas}">
+                        Visibility="{Binding Path=BusquedasVisibilidad}"  IsDropDownOpen="{Binding Path=ComboboxDesplegado}" SelectedItem="{Binding Path=SelectedBusquedas}" cal:Message.Attach="[Event SelectionChanged] = [Action SelectionChanged]" >
                     <ComboBox.ItemTemplate>
                         <DataTemplate >
                             <TextBlock>

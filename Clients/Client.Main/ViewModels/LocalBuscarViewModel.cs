@@ -205,7 +205,10 @@ namespace Client.Main.ViewModels
             }
         }
 
-
+        public void SelectionChanged()
+        {
+            BusquedasVisibilidad = "Hidden";
+        }
 
         public async void EscribiendoBusqueda()
         {
@@ -245,10 +248,6 @@ namespace Client.Main.ViewModels
 
                 MessageBox.Show(e.Message);
             }
-
-
-
-
 
         }
 

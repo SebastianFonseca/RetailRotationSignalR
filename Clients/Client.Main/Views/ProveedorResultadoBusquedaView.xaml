@@ -65,11 +65,12 @@
                 </Border.Effect>
             </Border>
 
+
             <!--Scroll del formulario-->
             <ScrollViewer  Style="{StaticResource GeneralScrollViewer}" HorizontalScrollBarVisibility="Disabled" Background="Red" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" Margin="10 20 0 0">
 
                 <!--Formulario principal-->
-                <Grid Background="Transparent" ShowGridLines="False" Opacity="0.9" c:KeyboardFocus.On="{Binding ElementName=Nombre}" HorizontalAlignment="Stretch" >
+                <Grid Background="#F3E0D2" ShowGridLines="False" Opacity="0.9" c:KeyboardFocus.On="{Binding ElementName=Nombre}" HorizontalAlignment="Stretch" >
 
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="0.25*"/>
@@ -86,6 +87,10 @@
                         <RowDefinition/>
                         <RowDefinition Height="200"/>
                     </Grid.RowDefinitions>
+
+                    <Separator Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Background="Gray" VerticalAlignment="Top" Margin="0 0 0 10"/>
+                    <Separator Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="7" Background="Gray" VerticalAlignment="Bottom" Panel.ZIndex="10"/>
+
 
                     <!--Linea 1-->
                     <TextBlock Grid.Row="1" Grid.Column="0" >Nombres:</TextBlock>
@@ -116,16 +121,15 @@
                     <ListBox ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True"  x:Name="Productos" Background="#F3E0D2" BorderThickness="0" Margin="0 10 0 0"  FlowDirection="LeftToRight" HorizontalAlignment="Stretch" Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="2">
                         <ListBox.ItemTemplate >
                             <DataTemplate >
-                                <Grid >
+                                <Grid ShowGridLines="False" HorizontalAlignment="Stretch">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="70" />
-                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="350"/>
                                     </Grid.ColumnDefinitions>
-                                    <StackPanel Orientation="Horizontal" Grid.Column="0" HorizontalAlignment="Center">
-                                        <TextBlock Text="{Binding Path=codigoProducto}" Margin="0" FontSize="18" />
-                                        <TextBlock   VerticalAlignment="Top" FontSize="18" Text=" -"/>
-                                    </StackPanel>
+                                    <TextBlock Text="{Binding Path=codigoProducto, StringFormat='{}{0} -'}" Margin="3" FontSize="18" Grid.Column="0"/>
                                     <TextBlock Text="{Binding Path=nombre}" Grid.Column="2"  FontSize="18"/>
+                                    <Separator Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="7" Background="Beige" Margin="0 15 0 2" VerticalAlignment="Bottom" Panel.ZIndex="10"/>
+
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>

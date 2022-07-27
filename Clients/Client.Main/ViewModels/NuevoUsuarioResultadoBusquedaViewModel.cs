@@ -238,7 +238,8 @@ namespace Client.Main.ViewModels
                     if (re.Result.ToString() == "Se ha eliminado al usuario.")
                     {
                         MessageBox.Show($"Se ha eliminado al usuario {resultadoEmpleado.cedula} - {resultadoEmpleado.firstName} {resultadoEmpleado.lastName}");
-                        VentanaPrincipal.ActivateItem(new LocalBuscarViewModel(VentanaPrincipal));
+                        VentanaPrincipal.ActivateItem(new NuevoUsuarioBusquedaViewModel(VentanaPrincipal));
+                        return;
                     }
                     else
                     {

@@ -187,7 +187,10 @@ namespace Client.Main.ViewModels
             }
         }
 
-
+        public void SelectionChanged()
+        {
+            BusquedasVisibilidad = "Hidden";
+        }
 
         private string _busquedasVisibiliad = "Hidden";
 

@@ -4,11 +4,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Client.Main.Views"    
-            xmlns:c="clr-namespace:Client.Main.Utilities"
-            xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:c="clr-namespace:Client.Main.Utilities"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
              mc:Ignorable="d" 
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:pwbx="clr-namespace:Client.Main"
              d:DesignHeight="450" d:DesignWidth="800">
 
     <UserControl.Resources>
@@ -95,11 +96,11 @@
 
                     <!--Linea 1-->
                     <TextBlock Grid.Row="1" Grid.Column="0" >Nombres:</TextBlock>
-                    <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource GeneralTextBox}" x:Name="Nombre" />
+                    <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource GeneralTextBox}" x:Name="Nombre" SpellCheck.IsEnabled="False" />
 
                     <!--Linea 2-->
                     <TextBlock Grid.Row="2" Grid.Column="0" >Apellidos:</TextBlock>
-                    <TextBox Grid.Row="2" Grid.Column="1"  Style="{StaticResource GeneralTextBox}" x:Name="Apellidos"/>
+                    <TextBox Grid.Row="2" Grid.Column="1"  Style="{StaticResource GeneralTextBox}" x:Name="Apellidos" SpellCheck.IsEnabled="False"/>
 
 
                     <!--Linea 3-->
@@ -110,7 +111,7 @@
 
                     <!--linea 4-->
                     <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Bottom">Direccion:</TextBlock>
-                    <TextBox  Grid.Row="4" Grid.Column="1" Style="{StaticResource GeneralTextBox}"  x:Name="Direccion" />
+                    <TextBox  Grid.Row="4" Grid.Column="1" Style="{StaticResource GeneralTextBox}"  x:Name="Direccion" SpellCheck.IsEnabled="False"/>
 
                     <!--Linea 5-->
                     <TextBlock Grid.Row="5" Grid.Column="0"  >Teléfono:</TextBlock>
@@ -118,15 +119,23 @@
 
                     <!--Linea 9-->
                     <TextBlock Grid.Row="6" Grid.Column="0" VerticalAlignment="Bottom">Contraseña:</TextBlock>
-                    <TextBox  Grid.Row="6" Grid.Column="1" Style="{StaticResource GeneralTextBox}" x:Name="Password"/>
+                    <StackPanel Grid.Row="6" Grid.Column="1" VerticalAlignment="Center">
+                        <PasswordBox  Height="30" Margin="0" VerticalContentAlignment="Center" pwbx:PasswordBoxAssistant.BoundPassword="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True, ValidatesOnDataErrors=True}" Background="#F3E0D2" BorderThickness="0" x:Name="Password" />
+                        <Separator Grid.Row="0"  Grid.Column="2" Grid.ColumnSpan="2" VerticalAlignment="Bottom"  BorderBrush="Black"  BorderThickness="1.5"  />
+                    </StackPanel>
 
                     <!--Linea 10-->
                     <TextBlock Grid.Row="7" Grid.Column="0" VerticalAlignment="Bottom" FontSize="21">Repita la contraseña:</TextBlock>
-                    <TextBox  Grid.Row="7" Grid.Column="1" Style="{StaticResource GeneralTextBox}" x:Name="PasswordAgain" />
+                    <StackPanel Grid.Row="7" Grid.Column="1" VerticalAlignment="Center">
+                        <PasswordBox  Height="30" Margin="0" VerticalContentAlignment="Center" ToolTip="Las contraseñas deben coincidir. Mas de 10 caracteres." pwbx:PasswordBoxAssistant.BoundPassword="{Binding PasswordAgain, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True, ValidatesOnDataErrors=True}" Background="#F3E0D2" BorderThickness="0" x:Name="PasswordAgain" />
+                        <Separator Grid.Row="0"  Grid.Column="2" Grid.ColumnSpan="2" VerticalAlignment="Bottom"  BorderBrush="Black"  BorderThickness="1.5"  />
+                    </StackPanel>
+
+
 
                     <!--Linea 7-->
                     <TextBlock Grid.Row="8" Grid.Column="0" VerticalAlignment="Bottom">Local:</TextBlock>
-                    <ComboBox Template="{StaticResource GeneralComboBox}" Grid.Row="8" Grid.Column="1"  Margin="1" FontWeight="DemiBold" FontSize="12"  x:Name="Locales" SelectedItem="{Binding Path=Local}">
+                    <ComboBox Template="{StaticResource GeneralComboBox}" Grid.Row="8" Grid.Column="1" MaxDropDownHeight="150" Margin="1" FontWeight="DemiBold" FontSize="12"  x:Name="Locales" SelectedItem="{Binding Path=Local}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate >
                                 <TextBlock>
